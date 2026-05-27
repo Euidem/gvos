@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS File Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            background-color: #f7f9fb;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-active {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#001a42",
+                    "status-completed": "#059669",
+                    "on-primary-fixed": "#131b2e",
+                    "tertiary-container": "#271901",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "on-secondary-container": "#fefcff",
+                    "background": "#f7f9fb",
+                    "status-suspended": "#64748B",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-tertiary-fixed": "#271901",
+                    "primary": "#000000",
+                    "on-tertiary-container": "#98805d",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-error": "#ffffff",
+                    "primary-fixed": "#dae2fd",
+                    "on-primary-container": "#7c839b",
+                    "secondary-container": "#2170e4",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d8dadc",
+                    "on-surface": "#191c1e",
+                    "surface-variant": "#e0e3e5",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "on-secondary-fixed-variant": "#004395",
+                    "secondary": "#0058be",
+                    "surface-bright": "#f7f9fb",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "outline": "#76777d",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "surface-tint": "#565e74",
+                    "error-container": "#ffdad6",
+                    "surface-container-highest": "#e0e3e5",
+                    "secondary-fixed": "#d8e2ff",
+                    "inverse-primary": "#bec6e0",
+                    "primary-fixed-dim": "#bec6e0",
+                    "status-urgent": "#B91C1C",
+                    "surface-container-low": "#f2f4f6",
+                    "status-active": "#10B981",
+                    "status-payment-due": "#F59E0B",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface": "#f7f9fb",
+                    "status-blocked": "#EF4444",
+                    "sidebar-bg": "#0B0F19",
+                    "border-subtle": "#E2E8F0",
+                    "outline-variant": "#c6c6cd",
+                    "tertiary": "#000000",
+                    "surface-container": "#eceef0",
+                    "status-trial": "#8B5CF6",
+                    "inverse-surface": "#2d3133",
+                    "tertiary-fixed": "#fcdeb5",
+                    "on-background": "#191c1e",
+                    "primary-container": "#131b2e",
+                    "on-surface-variant": "#45464d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "40px",
+                    "card-padding": "24px",
+                    "base": "4px",
+                    "input-gap": "16px",
+                    "gutter": "24px",
+                    "container-margin": "32px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "label-md": ["Inter"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Desktop Sidebar -->
+<aside class="w-[280px] h-full fixed left-0 top-0 bg-sidebar-bg flex flex-col py-gutter px-4 z-50 hidden md:flex">
+<div class="mb-10 px-2 flex items-center gap-3">
+<div class="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[20px]">layers</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed leading-none">GVOS Platform</h1>
+<p class="font-label-md text-label-md text-on-primary-container mt-1">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary-fixed-dim bg-white/10 border-l-4 border-secondary-fixed font-bold transition-colors" href="#">
+<span class="material-symbols-outlined">workspaces</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Talent Pool</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/10">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<div class="mt-4 p-4 rounded-xl bg-white/5">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-md text-label-md text-on-primary-container">Storage Usage</span>
+<span class="font-label-md text-label-md text-secondary-fixed">24%</span>
+</div>
+<div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 24%"></div>
+</div>
+<p class="font-label-md text-[10px] text-on-primary-container mt-2">1.2TB of 5TB used</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-[280px] min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-40 bg-surface-container-lowest flex items-center justify-between px-gutter h-16 w-full border-b border-border-subtle shadow-sm">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-secondary text-body-sm font-body-sm w-64 transition-all" placeholder="Search workspace files..." type="text"/>
+</div>
+<nav class="hidden lg:flex items-center gap-6">
+<a class="font-label-md text-label-md text-secondary border-b-2 border-secondary font-bold pb-1" href="#">Files</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Workspace</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Messages</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-outline hover:bg-surface-container-low rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-[1px] bg-border-subtle"></div>
+<button class="bg-secondary text-white px-4 py-2 rounded-lg font-label-md text-label-md flex items-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">upload</span>
+                    Upload File
+                </button>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-border-subtle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_3BwRWhYqR9c7SvSkipztjTw0mImli8xhpz6KDSh7Zkj2NM04bTt16xYLAXiC21_JHz5yAsWmMJsSZPigvlCMEEioboytGoNG5NEpsXTroyweiqFRDZUf1EgoUJ_YlWYsgxwWB-iUgyQ-eXoSwIih_JBEqXBBzK5PLv3-he0-8OUniwVt10rDPC77qDwKTLk76cGxLtuy7Z6ZM1Mx2WRITxKR2bDORvkdrS_i8y91QF8AVbe9ckVit1iORUmrWYZYKYJkZbEmzQ"/>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-gutter max-w-[1440px] mx-auto w-full pb-24 md:pb-gutter">
+<!-- Header Section -->
+<div class="mb-8">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-1">File Library</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage and access all operational assets across GVOS ecosystems.</p>
+</div>
+<!-- Folders Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<!-- Workspace Assets -->
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex items-start justify-between mb-4">
+<div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[28px] fill-icon">folder</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors">more_vert</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-bold mb-1">Workspace Assets</h3>
+<p class="font-body-sm text-body-sm text-outline mb-4">482 Files • 42.5 GB</p>
+<div class="flex -space-x-2 overflow-hidden">
+<img alt="User" class="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2WykQgQc1hSE0nncZ1dBgLPnE9cqxgLj14n4vAAkjao53jzpRQTMWaEvzKQE0k-3CeKLKoX2uKv4cIlcogO-VMG7cDBx_CXJXQ2V0iqvu_EfL9Dt8iLcAYP_hbLmYlISAMjFqwhM6XO51ZWSuyhwUPsFvi2UeK68ABaUN41HC_KHwA1C0gQTYgpmWeRjvVI5lAQtoJyrDGoWoVwQ84xlNtK_FpivTZY0x0NgTRzQlwG4GTP1fwJz-5mVfoPU5PWtKlEwu42CAvw"/>
+<img alt="User" class="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtxWcIJmJ-LxreFe5zay5281kX0gkrBw0HYWKjbrOMAVWz-SK6rkC-SEdA66Y1TEb0GfR3gOD1oS6pqI8FvtfLeDA_LeicflKIAT7V0doDssuT86l_d3HCcqoV87TJoXGPInZm9ZIh4jMRiavea7rzlLzTixfN20DRd38AgIJDUxoAuMvn-pU9L74Vz_NKRkFMYBkMVdzskFgpgumXv7IIt3Prl3VJmZRKefxs-IEh6voniqp71DcdXgGToxvpxa8En91ndoKbxg"/>
+<img alt="User" class="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVqA8-GmDyScCQi_Jz1QQBZbkJeLIgWUERHmn3YxYZCXdjzYv6VuwlbuoL138sCKmi4GTyHWGNje9l7xpbdld57M3qRRjB-8F1u04R2bWtjbWkBtshSY_p_hJyRpcoh8mG9uLQf5l_St0aqwqmCyQhQGRtu6GWR-IMmxheF_ZyeqeZm6YCcPgtbtfyvDM56nYrVihKk1LR34lpquQ329VqYM858pztDG-rEll0vpcPZ6gB20l02jacAyiKJ6Mv3QYU9qPLGCLAVg"/>
+</div>
+</div>
+<!-- Task Deliverables -->
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex items-start justify-between mb-4">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[28px] fill-icon">task</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors">more_vert</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-bold mb-1">Task Deliverables</h3>
+<p class="font-body-sm text-body-sm text-outline mb-4">1,204 Files • 188.2 GB</p>
+<div class="flex -space-x-2 overflow-hidden">
+<img alt="User" class="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP4mkA0ZRWNc3CbGzn7WVDyaahCjw2N34F3-pgvh4P0Tvzp5n78xOFaWNjatgdustUi9zjz0SjaaHJlpA0Okhj_ymLItYe46x78cuFSht_sRFwC535Ke8CZazVlCMelLj9IgK4aZHLuPLWJG-kHukQaSjm_g5cUYOF0TpfxfWM13q45zNt4Uq73kDZGsqLXthHbHDSxgFKF2_vhmTBOUAD0X8OSRTIalwx6z9JFx2vwDZtw_9l0ABVPx99kqZJL6-B4D1Exku0RA"/>
+<img alt="User" class="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAWD-lyy-jFukYuuGqtl-Fko6IhQWGzW9vYXqUPy8OcYAOuftlhuDHROotAL6JSE3gu6Pw5lv90SoX-Q12jEf8bWEoRu2fogxH3SuD5EUDTHPliNUttRxu93LAKfYWMLNRILEMTE8mhHL1Xh9OyHwO6Yvo67IIbvQ7dB50vNi66akXub7RAiEOU0MpaJ1xq9JYlLCTDZFcuJxkzYvQHtFGiWaMHbwDdHjoSPJcdTuuVt9RN5p5jpr3TJ_sZ04uFF5MFRpO93qlYQ"/>
+</div>
+</div>
+<!-- Legal/Invoices -->
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex items-start justify-between mb-4">
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined text-[28px] fill-icon">gavel</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors">more_vert</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-bold mb-1">Legal/Invoices</h3>
+<p class="font-body-sm text-body-sm text-outline mb-4">86 Files • 1.4 GB</p>
+<div class="flex -space-x-2 overflow-hidden">
+<img alt="User" class="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVBomc0Sg3iJgfknw5hrjJoM1bWRsXqE-vkpf8HpMixx3X-xlUi3llxx0U9LdMBvX5lZq1wwMGed1dpTI8qu0ffnbxe02aE_Iw7-yWy6yT_YwgbcA1g3Zmcp08nh5BhoB-gKfb-D5FyNLofCnc2e3CC0-pEk2XK_0Szd31zhJivG_2lAp-vIcWJq2jtos4Em4eVxi6gqxQVSxW6Wj3lFbJzU9TXsuyb-It504tA2Y8sgfhzZL_ONegrDQ9LsfFCbBRf4Cyq4h3-Q"/>
+</div>
+</div>
+</div>
+<!-- Drag & Drop Zone -->
+<div class="mb-10 p-10 border-2 border-dashed border-border-subtle rounded-2xl bg-white/50 flex flex-col items-center justify-center text-center group hover:border-secondary transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-outline group-hover:text-secondary text-[32px]">cloud_upload</span>
+</div>
+<h4 class="font-headline-md text-body-lg font-bold">Drag and drop files here</h4>
+<p class="font-body-sm text-body-sm text-outline mt-1">Support for CSV, PDF, JPG, PNG and MP4 up to 500MB</p>
+<button class="mt-6 px-6 py-2 border border-border-subtle rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors">Select from Computer</button>
+</div>
+<!-- Recent Files Table Area -->
+<div class="bg-white rounded-2xl border border-border-subtle shadow-sm overflow-hidden">
+<div class="p-6 border-b border-border-subtle flex flex-col md:flex-row md:items-center justify-between gap-4">
+<h3 class="font-headline-md text-body-lg font-bold">Recent Files</h3>
+<div class="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0">
+<button class="px-4 py-1.5 rounded-full bg-secondary text-white font-label-md text-label-md whitespace-nowrap">All Files</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md whitespace-nowrap">Documents</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md whitespace-nowrap">Images</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md whitespace-nowrap">Videos</button>
+<button class="p-1.5 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Name</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Type</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Size</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Uploaded By</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Date</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<!-- File Row 1 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-red-50 text-red-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</div>
+<div>
+<p class="font-label-md text-body-sm font-semibold">Q3_Operational_Report.pdf</p>
+<p class="font-body-sm text-[11px] text-outline">Workspace Assets</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">Document</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">2.4 MB</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="User" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOgGyVQA9vYKIlQhaBAzHhHZS1RR0lKSXy9gZhadpGES_fQDGwHWI8crcL-33s5Tj7q7vg75JUxx8DgwiICj4NAX4M225maFir9NKk-QfIWgXueLg3j5jZIqWZUGIS8oqVQsauySNk30zYIaqY2HkhRQmJR0xAP5iJUWlWt3WDcLvkJ96LQqtqCmNBC8PJhnvMwHvgi-IOaGAdoJVoNIYgRnXfNAI80rlW9quRHrcrDKt4tVM-8Z1f_bF8AA3GBFQm4IbBpRzjRw"/>
+<span class="font-body-sm text-body-sm">Alex Morgan</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">Oct 12, 2023</td>
+<td class="px-6 py-4 text-right">
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined">download</span></button>
+</td>
+</tr>
+<!-- File Row 2 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-blue-50 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">image</span>
+</div>
+<div>
+<p class="font-label-md text-body-sm font-semibold">Hero_Banner_v2.png</p>
+<p class="font-body-sm text-[11px] text-outline">Deliverables</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">Image</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">18.1 MB</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="User" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfMR1oDlvoPq_wmPV-Riz4pQKAvgB1K-pkE-32PTyfaxARJPK5lcAgQCdKYO4VMdMIE4uFqhJyxB3f5b8YgPUHjhVlwaS3Xg5NiLrYUmVmUFpfEsz-DMd6yRIJv60jmHdfMg4P20sP_Jun1LXFoWEqux1OYmzh8c7g4IyWf9pmgd93k2ILNQbdKQEt8bsokAr0NsFCVvLq6-OrN4FAeJ7YxmH6st_9l-ukGRpXQoR95-BGj_bAQs2t_on4sP3aoaERmIxCzFMw5A"/>
+<span class="font-body-sm text-body-sm">John Doe</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">Oct 10, 2023</td>
+<td class="px-6 py-4 text-right">
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined">download</span></button>
+</td>
+</tr>
+<!-- File Row 3 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-purple-50 text-purple-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">videocam</span>
+</div>
+<div>
+<p class="font-label-md text-body-sm font-semibold">Demo_Walkthrough.mp4</p>
+<p class="font-body-sm text-[11px] text-outline">Deliverables</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">Video</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">142.5 MB</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="User" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO81vh96DEDgLrpJM2a8ojEdFXX3wp2JIBY9eJNw1rJIx9QWom-T0VfURaRxp1qgqcg1iZCrbpC_9NTi9TChddkJ22qRMW9R2n5qMtwEgYJF4nKYHDrbvZqlJU62xs6aCIzZIMIa2H1XQqykGlkaeqP1arcfHj8m6LbVA5u-6NagVSEt3eRwcB7IwmibUYOcU0kdADm9WMZieE6USPmVAY0eb1RdwXTPo5-KwZ5n4HaAzb5tW3hj-paEJ5rZxQGwJ3AkYEsxjIRA"/>
+<span class="font-body-sm text-body-sm">Sarah King</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">Oct 09, 2023</td>
+<td class="px-6 py-4 text-right">
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined">download</span></button>
+</td>
+</tr>
+<!-- File Row 4 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-green-50 text-green-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</div>
+<div>
+<p class="font-label-md text-body-sm font-semibold">Service_Contract_Final.pdf</p>
+<p class="font-body-sm text-[11px] text-outline">Legal/Invoices</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">Document</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">1.1 MB</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img alt="User" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW4Hr8y5ELAKAMXSr5Vgy6poorj0CqJCY_BRvVR-Cmn8S3xSl98UcgseQfKloQ3TicHvYQU2UNN2uhiJiDp_AZzXXt1_ULlO2GODuH1BgluOJWnN9UN1Cys64KxlJCDVFfUK0CEkvGlIc8oG3iP0wcLNUdgh3PxM9rV77sqx5QdwiZZbk51_G7lx1EN1mnSOJYQ8bahfGQGh09w4vK0ujSUR163jrADbDfQKtAA_kkj_KDaiVxhtwL2J-SOaTAYz3bT8nO1sqc_Q"/>
+<span class="font-body-sm text-body-sm">Linda Chen</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-sm text-body-sm">Oct 05, 2023</td>
+<td class="px-6 py-4 text-right">
+<button class="text-outline hover:text-primary"><span class="material-symbols-outlined">download</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-low/30 border-t border-border-subtle flex items-center justify-between">
+<p class="font-body-sm text-body-sm text-outline">Showing 4 of 2,450 files</p>
+<div class="flex gap-2">
+<button class="p-2 border border-border-subtle rounded hover:bg-white transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-2 border border-border-subtle rounded hover:bg-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle shadow-lg md:hidden z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high p-2" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">workspaces</span>
+<span class="font-label-md text-[10px]">Workspace</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high p-2" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-md text-[10px]">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high p-2" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-[10px]">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and interactive effects
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+                row.style.transition = 'transform 0.2s ease-out';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Simulating search highlight
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-secondary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-secondary/20');
+        });
+    </script>
+</body></html>

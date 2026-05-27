@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "on-error": "#ffffff",
+                  "status-payment-due": "#F59E0B",
+                  "primary": "#000000",
+                  "outline": "#76777d",
+                  "secondary": "#0058be",
+                  "status-urgent": "#B91C1C",
+                  "status-blocked": "#EF4444",
+                  "inverse-on-surface": "#eff1f3",
+                  "inverse-surface": "#2d3133",
+                  "sidebar-bg": "#0B0F19",
+                  "tertiary-fixed": "#fcdeb5",
+                  "on-tertiary-container": "#98805d",
+                  "status-active": "#10B981",
+                  "surface-dim": "#d8dadc",
+                  "on-primary": "#ffffff",
+                  "on-background": "#191c1e",
+                  "tertiary-container": "#271901",
+                  "on-primary-container": "#7c839b",
+                  "on-surface": "#191c1e",
+                  "on-tertiary-fixed-variant": "#574425",
+                  "on-primary-fixed": "#131b2e",
+                  "secondary-fixed": "#d8e2ff",
+                  "surface-tint": "#565e74",
+                  "secondary-fixed-dim": "#adc6ff",
+                  "secondary-container": "#2170e4",
+                  "tertiary-fixed-dim": "#dec29a",
+                  "on-surface-variant": "#45464d",
+                  "surface-variant": "#e0e3e5",
+                  "inverse-primary": "#bec6e0",
+                  "status-completed": "#059669",
+                  "on-error-container": "#93000a",
+                  "primary-container": "#131b2e",
+                  "on-tertiary": "#ffffff",
+                  "surface": "#f7f9fb",
+                  "primary-fixed-dim": "#bec6e0",
+                  "on-secondary-fixed-variant": "#004395",
+                  "on-secondary-container": "#fefcff",
+                  "on-primary-fixed-variant": "#3f465c",
+                  "outline-variant": "#c6c6cd",
+                  "on-secondary-fixed": "#001a42",
+                  "status-suspended": "#64748B",
+                  "surface-container-high": "#e6e8ea",
+                  "primary-fixed": "#dae2fd",
+                  "tertiary": "#000000",
+                  "error": "#ba1a1a",
+                  "surface-container-highest": "#e0e3e5",
+                  "surface-container-lowest": "#ffffff",
+                  "surface-container": "#eceef0",
+                  "error-container": "#ffdad6",
+                  "surface-bright": "#f7f9fb",
+                  "status-trial": "#8B5CF6",
+                  "background": "#f7f9fb",
+                  "surface-container-low": "#f2f4f6",
+                  "on-tertiary-fixed": "#271901",
+                  "on-secondary": "#ffffff",
+                  "border-subtle": "#E2E8F0"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "input-gap": "16px",
+                  "gutter": "24px",
+                  "container-margin": "32px",
+                  "card-padding": "24px",
+                  "base": "4px",
+                  "section-gap": "40px"
+          },
+          "fontFamily": {
+                  "body-sm": ["Inter"],
+                  "body-md": ["Inter"],
+                  "label-md": ["Inter"],
+                  "headline-md": ["Manrope"],
+                  "display-lg": ["Manrope"],
+                  "headline-lg": ["Manrope"],
+                  "headline-lg-mobile": ["Manrope"],
+                  "body-lg": ["Inter"],
+                  "mono-sm": ["JetBrains Mono"]
+          },
+          "fontSize": {
+                  "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                  "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                  "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                  "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                  "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+    }
+    .shadow-subtle {
+      box-shadow: 0px 4px 20px rgba(0,0,0,0.04);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-secondary/20">
+<!-- Shell Suppression: Transactional/Focused screen - SideNav and TopNav are hidden to prioritize the Canvas as per "The Destination Rule" -->
+<main class="min-h-screen flex items-center justify-center p-gutter">
+<!-- Content Canvas -->
+<div class="max-w-[1200px] w-full grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+<!-- Visual Side (Bento-style layout for context) -->
+<div class="lg:col-span-5 hidden lg:flex flex-col gap-6">
+<div class="p-card-padding bg-sidebar-bg rounded-xl shadow-xl flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-bold text-white">GVOS</span>
+<span class="px-2 py-0.5 bg-status-blocked/20 text-status-blocked font-label-md text-label-md rounded border border-status-blocked/30">LOCKED</span>
+</div>
+<div class="h-[2px] bg-white/10 w-full"></div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 text-white/40 font-label-md text-label-md">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+              INSTANCE SECURITY AUDIT
+            </div>
+<div class="flex flex-col gap-2">
+<div class="h-4 w-3/4 bg-white/5 rounded"></div>
+<div class="h-4 w-1/2 bg-white/5 rounded"></div>
+</div>
+</div>
+</div>
+<div class="relative rounded-xl overflow-hidden aspect-square shadow-subtle border border-border-subtle group">
+<img class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all duration-700" data-alt="A sophisticated close-up of a high-tech server rack with glowing blue LED indicators in a darkened, temperature-controlled data center. The lighting is dramatic, with sharp shadows and cold metallic textures, emphasizing security and institutional power. The overall aesthetic is clean and professional, using a palette of deep grays and corporate blues to convey a sense of a silent, powerful infrastructure currently on standby." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQaxioek_9EL3e09632wXwOvcfydYKEiNe8lDf3Eg2nbvk4p0sU2MxYZctzrnQ5BqCpIQu6h0_cWu-FRQwcFmh9LE954KOPMvzN1EGNcz4bHGOJz4xCBEbHixO5e4XZVg4Kc4coqahMXJlr90dGG2sXfjaI6Ve1yui_DvWj449lC8S3iuzugxH8BVZ2Zo_c8vygf2EvxWdze0Zr4KwM7487wTkuWUU53ULj3cPCqWjYBhP-Bf6czcLn3j3p6i_IjRF6Y7f5EN5LQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent flex items-end p-gutter">
+<div class="space-y-1">
+<p class="font-label-md text-label-md text-secondary">SYSTEM STATUS</p>
+<p class="font-headline-md text-headline-md text-on-surface font-bold">Access Restricted</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Interaction Card -->
+<div class="lg:col-span-7 flex flex-col gap-8">
+<!-- Prominent Alert Banner -->
+<div class="bg-status-blocked/10 border-l-4 border-status-blocked p-gutter flex items-start gap-4 rounded-r-lg">
+<span class="material-symbols-outlined text-status-blocked scale-125" data-icon="report" style="font-variation-settings: 'FILL' 1;">report</span>
+<div>
+<h2 class="font-label-md text-label-md text-status-blocked mb-1">IMMEDIATE ACTION REQUIRED</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Your enterprise workspace has been deactivated by the GVOS Security Layer. Core operations are currently offline.</p>
+</div>
+</div>
+<!-- Heading & Description -->
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="lock_person">lock_person</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary">Account Suspended</h1>
+</div>
+<div class="space-y-4 max-w-2xl">
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+              The GVOS Control Plane has detected a status change associated with your organizational profile. Access to the Dashboard, Vault, and Network Operations is restricted until the following is resolved:
+            </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-4 bg-surface-container-low border border-border-subtle rounded-lg">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-status-payment-due" data-icon="credit_card">credit_card</span>
+<span class="font-label-md text-label-md uppercase">Billing Status</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">A pending payment of <span class="font-mono-sm text-mono-sm text-primary">$4,280.00</span> for the Q3 Billing Cycle was not completed by the deadline.</p>
+</div>
+<div class="p-4 bg-surface-container-low border border-border-subtle rounded-lg">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-status-suspended" data-icon="gavel">gavel</span>
+<span class="font-label-md text-label-md uppercase">Security Review</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Your workspace is undergoing a scheduled compliance review (GVOS-SEC-882) to ensure alignment with updated SOC2 protocols.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Next Steps / Actions -->
+<div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
+<button class="w-full sm:w-auto px-8 py-3 bg-secondary text-on-secondary font-label-md text-label-md rounded-lg shadow-subtle hover:brightness-110 active:opacity-80 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+            Resolve Billing
+          </button>
+<button class="w-full sm:w-auto px-8 py-3 bg-surface-container-lowest border border-border-subtle text-primary font-label-md text-label-md rounded-lg hover:bg-surface-container-low transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+            Contact Support
+          </button>
+<button class="w-full sm:w-auto px-6 py-3 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md flex items-center justify-center gap-2">
+            View Policy Documents
+          </button>
+</div>
+<!-- Footer Note -->
+<div class="pt-8 border-t border-outline-variant/30">
+<div class="flex items-center gap-2 text-on-surface-variant/60 font-label-md text-label-md">
+<span class="material-symbols-outlined text-sm" data-icon="info">info</span>
+            Data retention is guaranteed for 30 days from deactivation. Reference Ticket: GVOS-992384
+          </div>
+</div>
+</div>
+</div>
+</main>
+<!-- Interactive Subtle Effects -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Subtle parallax or hover logic can be added here
+      console.log('GVOS Suspension Interface Initialized');
+    });
+  </script>
+</body></html>

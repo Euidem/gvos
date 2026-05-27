@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | GVOS Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#45464d",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#d8e2ff",
+                    "sidebar-bg": "#0B0F19",
+                    "surface-container-low": "#f2f4f6",
+                    "status-completed": "#059669",
+                    "surface-container-highest": "#e0e3e5",
+                    "outline-variant": "#c6c6cd",
+                    "surface-dim": "#d8dadc",
+                    "on-background": "#191c1e",
+                    "on-primary-fixed": "#131b2e",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "primary-fixed": "#dae2fd",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "status-payment-due": "#F59E0B",
+                    "status-suspended": "#64748B",
+                    "inverse-primary": "#bec6e0",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#001a42",
+                    "surface-tint": "#565e74",
+                    "border-subtle": "#E2E8F0",
+                    "on-secondary-fixed-variant": "#004395",
+                    "on-tertiary-container": "#98805d",
+                    "on-surface": "#191c1e",
+                    "status-trial": "#8B5CF6",
+                    "on-tertiary-fixed": "#271901",
+                    "primary-container": "#131b2e",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-primary-container": "#7c839b",
+                    "status-urgent": "#B91C1C",
+                    "outline": "#76777d",
+                    "primary-fixed-dim": "#bec6e0",
+                    "status-active": "#10B981",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#2170e4",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#271901",
+                    "surface-container-high": "#e6e8ea",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#0058be",
+                    "surface-bright": "#f7f9fb",
+                    "tertiary": "#000000",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f7f9fb",
+                    "background": "#f7f9fb",
+                    "on-secondary": "#ffffff",
+                    "status-blocked": "#EF4444",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#fcdeb5",
+                    "error": "#ba1a1a",
+                    "surface-container": "#eceef0",
+                    "on-secondary-container": "#fefcff",
+                    "on-error-container": "#93000a",
+                    "primary": "#000000"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "input-gap": "16px",
+                    "container-margin": "32px",
+                    "card-padding": "24px",
+                    "base": "4px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "mono-sm": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .login-glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased overflow-hidden">
+<main class="flex min-h-screen w-full">
+<!-- Form Section -->
+<section class="flex flex-col justify-center items-center w-full lg:w-[45%] px-gutter relative z-10 bg-surface-container-lowest">
+<div class="w-full max-w-[400px] flex flex-col space-y-8">
+<!-- Brand Header -->
+<header class="flex flex-col space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<h1 class="font-headline-md text-headline-md font-black text-secondary">GVOS</h1>
+</div>
+<div class="space-y-1">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Welcome Back</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Secure workspaces for managed virtual talent</p>
+</div>
+</header>
+<!-- Login Form -->
+<form class="flex flex-col space-y-input-gap" onsubmit="event.preventDefault();">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="email">Business Email</label>
+<div class="relative group">
+<input class="w-full h-12 bg-surface border border-border-subtle rounded-lg px-4 font-body-md text-on-surface focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none" id="email" name="email" placeholder="name@company.com" type="email"/>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="password">Security Key</label>
+<a class="font-label-md text-label-md text-secondary hover:underline transition-all" href="#">Reset Access</a>
+</div>
+<div class="relative group">
+<input class="w-full h-12 bg-surface border border-border-subtle rounded-lg px-4 font-body-md text-on-surface focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none" id="password" name="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center space-x-3 pt-2">
+<input class="w-4 h-4 rounded border-border-subtle text-secondary focus:ring-secondary" id="remember" type="checkbox"/>
+<label class="font-body-sm text-body-sm text-on-surface-variant" for="remember">Persistent session for 24 hours</label>
+</div>
+<button class="w-full h-12 bg-secondary text-white font-label-md text-label-md rounded-lg flex items-center justify-center space-x-2 hover:bg-secondary/90 transition-all active:scale-[0.98] shadow-sm" type="submit">
+<span>Initialize Session</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</form>
+<!-- Security Note -->
+<footer class="pt-8 border-t border-border-subtle">
+<div class="flex items-start space-x-3 bg-surface-container-low p-4 rounded-xl">
+<span class="material-symbols-outlined text-status-active text-[20px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div class="space-y-1">
+<p class="font-label-md text-label-md text-on-surface">Security Protocol Active</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                                You are accessing a GVOS Enterprise Node. All sessions are encrypted with AES-256 and monitored for compliance standards.
+                            </p>
+</div>
+</div>
+<div class="mt-8 flex justify-between items-center text-outline">
+<p class="font-label-md text-label-md">© 2024 GVOS Enterprise Ops</p>
+<div class="flex space-x-4">
+<a class="font-label-md text-label-md hover:text-primary transition-colors" href="#">Legal</a>
+<a class="font-label-md text-label-md hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+</div>
+</section>
+<!-- Graphic Section -->
+<section class="hidden lg:flex lg:w-[55%] relative overflow-hidden bg-sidebar-bg">
+<!-- Background Image with data-alt -->
+<div class="absolute inset-0 opacity-40">
+<img alt="Abstract Secure Workspace" class="w-full h-full object-cover" data-alt="A futuristic and sophisticated digital workspace abstract background featuring interconnected blue circuit lines and glowing data nodes. The aesthetic is clean and high-tech, reflecting a premium enterprise security environment with deep midnight blue tones and bright cyan accents. Soft ambient light illuminates floating translucent interface panels, creating a sense of depth and operational precision. The mood is calm, professional, and unshakeable, perfectly aligning with a corporate fintech command center." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoIBaQSSPWObvbp2AXWbiTzroTJ7blZukYkFgB9h8Gs3L-J3jpjLkGmUYSU9YTjGORGTqDphyEwo9whThOml0gkvLo9tBb4SF92THphfGPeo5NEAobi0N-vM3_tVOVEwq5AJn08yUssZTB_aRTGIfUSdvtGnb9eiRZ0CmbbGkCZrEJN7Yi1Gclj6PkNdCRF-kqPFiPRYy9W6_Yy4z7kUBolvnPGaXBnIUZGeODujQcOnUOta7ED-kMXnrsxx8lTEJTSm-LQLO1UA"/>
+</div>
+<!-- Overlay Elements -->
+<div class="relative z-20 flex flex-col justify-center items-center h-full w-full p-20 text-center">
+<div class="space-y-6 max-w-lg">
+<!-- Floating Data Card 1 -->
+<div class="login-glass border border-white/10 rounded-2xl p-card-padding text-left shadow-2xl animate-float-slow">
+<div class="flex items-center space-x-4 mb-4">
+<div class="w-12 h-12 bg-secondary-fixed-dim/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary-fixed-dim">hub</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-secondary-fixed-dim uppercase">Node Distribution</p>
+<p class="font-headline-md text-headline-md text-white">Global Access Hub</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-fixed-dim w-[75%] rounded-full"></div>
+</div>
+<div class="flex justify-between font-mono-sm text-mono-sm text-white/60">
+<span>LHR-4: Active</span>
+<span>99.9% Uptime</span>
+</div>
+</div>
+</div>
+<!-- Floating Data Card 2 -->
+<div class="login-glass border border-white/10 rounded-2xl p-card-padding text-left shadow-2xl translate-x-12 animate-float-delayed">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 bg-status-active/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-status-active">fingerprint</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-status-active uppercase">Security Audit</p>
+<p class="font-headline-md text-headline-md text-white">Biometric Verified</p>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-12 left-12 right-12 flex justify-between items-end">
+<div class="text-left">
+<p class="font-display-lg text-white opacity-20 select-none">PRECISION</p>
+<p class="font-headline-md text-secondary-fixed-dim">Operational Excellence</p>
+</div>
+<div class="flex -space-x-2">
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-sidebar-bg" data-alt="Close up portrait of a professional male analyst in a modern office, soft lighting, 8k resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2UgrS3YfuLiNR-1BdsWYRKpPeWO-yn1V3rPFyjSBAZcZc8wBXK10-e0m3Ra9iPpkjc1STKtFUTPluOuKI2LXitvIS2bIWOuw5JXxhxvSH1Ak1AlKtgqHCDUX1qN_3GS-veAnqfOPYcx95SdqX-uWPXJ5o28WV4tNVRk40nZh41VC0WXuyJivUMTpU8c7hxDXGRILm99JU2WsebR-SCGmdVz-i0CNBd-JKhJ2ZCBEguwazDR17gYlSYia7A5YoNGYp-4jp9jt05g"/>
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-sidebar-bg" data-alt="Close up portrait of a female software engineer smiling, high-key corporate lighting, professional headshot." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdXCV49qhP_qK_PvYqDG4Se4NJNsRUq0ndyJYpMkYzLujeD3WT1J61-ksrqwjC8VsbkFQZ9i82DZAdMjZTWkYWDDVGfmcsxcpQWMvZGLizeHqH-zx-euJ5xsTVP3WP63m98D47H61-wJ2PXD0OAXKaUwzq7k0GbauHM2mPvuu44MVdfCH4ickhv8PtUpq88pcZFpFpmm-u8M5BBL7QCCV0CTFSi1uLPQDou2Z53obonDU0ddWedcYxHqe2fWk2Vx9iT9KE6Zqag"/>
+<div class="w-10 h-10 rounded-full border-2 border-sidebar-bg bg-secondary flex items-center justify-center text-[10px] font-bold text-white">+2.4k</div>
+</div>
+</div>
+</div>
+<!-- Decorative Pattern Overlay -->
+<div class="absolute inset-0 pointer-events-none" style="background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 32px 32px;"></div>
+</section>
+</main>
+<script>
+        // Micro-interactions and subtle effects
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input');
+            
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.closest('.group')?.classList.add('scale-[1.01]');
+                });
+                
+                input.addEventListener('blur', () => {
+                    input.parentElement.closest('.group')?.classList.remove('scale-[1.01]');
+                });
+            });
+
+            // Smooth reveal animation
+            const formContainer = document.querySelector('section:first-child');
+            formContainer.style.opacity = '0';
+            formContainer.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                formContainer.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                formContainer.style.opacity = '1';
+                formContainer.style.transform = 'translateX(0)';
+            }, 100);
+        });
+    </script>
+<style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .animate-float-slow {
+            animation: float 8s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+            animation: float 10s ease-in-out infinite 1.5s;
+        }
+    </style>
+</body></html>

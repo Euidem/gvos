@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Client Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        body {
+            background-color: #f7f9fb;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#000000",
+                      "status-urgent": "#B91C1C",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "surface-container-high": "#e6e8ea",
+                      "on-surface": "#191c1e",
+                      "surface-container": "#eceef0",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "on-error": "#ffffff",
+                      "on-primary-container": "#7c839b",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "outline": "#76777d",
+                      "on-secondary": "#ffffff",
+                      "border-subtle": "#E2E8F0",
+                      "on-surface-variant": "#45464d",
+                      "on-secondary-fixed-variant": "#004395",
+                      "status-active": "#10B981",
+                      "on-primary": "#ffffff",
+                      "inverse-primary": "#bec6e0",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "status-payment-due": "#F59E0B",
+                      "status-completed": "#059669",
+                      "outline-variant": "#c6c6cd",
+                      "on-tertiary-fixed": "#271901",
+                      "surface-container-highest": "#e0e3e5",
+                      "primary-fixed-dim": "#bec6e0",
+                      "inverse-on-surface": "#eff1f3",
+                      "status-blocked": "#EF4444",
+                      "surface-tint": "#565e74",
+                      "on-tertiary": "#ffffff",
+                      "on-background": "#191c1e",
+                      "primary": "#000000",
+                      "inverse-surface": "#2d3133",
+                      "on-secondary-container": "#fefcff",
+                      "surface-variant": "#e0e3e5",
+                      "status-suspended": "#64748B",
+                      "sidebar-bg": "#0B0F19",
+                      "background": "#f7f9fb",
+                      "primary-container": "#131b2e",
+                      "status-trial": "#8B5CF6",
+                      "secondary": "#0058be",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "tertiary-container": "#271901",
+                      "surface-bright": "#f7f9fb",
+                      "secondary-container": "#2170e4",
+                      "surface": "#f7f9fb",
+                      "on-tertiary-container": "#98805d",
+                      "on-primary-fixed": "#131b2e",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed": "#fcdeb5",
+                      "on-secondary-fixed": "#001a42",
+                      "primary-fixed": "#dae2fd",
+                      "surface-container-low": "#f2f4f6",
+                      "surface-dim": "#d8dadc",
+                      "error": "#ba1a1a",
+                      "secondary-fixed": "#d8e2ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-padding": "24px",
+                      "gutter": "24px",
+                      "base": "4px",
+                      "section-gap": "40px",
+                      "input-gap": "16px",
+                      "container-margin": "32px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Manrope"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Manrope"],
+                      "mono-sm": ["JetBrains Mono"],
+                      "label-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Manrope"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface pb-32">
+<!-- Header / TopAppBar -->
+<header class="sticky top-0 z-40 bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-between px-gutter h-16 w-full shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center text-white font-black text-headline-md">G</div>
+<h1 class="font-headline-md text-headline-md font-black text-secondary">GVOS</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-outline">notifications</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-border-subtle">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate executive in a crisp white shirt, photographed against a neutral studio background with soft cinematic lighting. The image captures a sense of institutional trust and modern leadership, perfectly aligned with a high-end SaaS dashboard aesthetic using clean whites and subtle shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpGaXUlQcOWAW03xwxlJy5hIts0Hb-2MQmo2q0T3hSq2JKeWHva9BPUXHrfdcNhdUDH8IUg3z6KAS1x83wqX1KAM75NoGUq4OGbA5nwZpg9ys6b9BYmVXOi0lAwcEuL4qQ-H1C_271WI5lE-DOMdA1aEYsMwCzrWVA1vCzF6prhjPujiGAZ_6a0LJQRkmO1nQu1SjuDTNBp4y8fXzzI2YNP8cX2KU10Ho5m-JMsVh5XHxiTklFnt9r5211Yj28RyPVtjALYa-7qQ"/>
+</div>
+</div>
+</header>
+<main class="px-gutter pt-6 space-y-6">
+<!-- Welcome Section -->
+<section>
+<p class="font-label-md text-label-md text-outline mb-1 uppercase tracking-wider">Operational Overview</p>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Good Morning, Alex</h2>
+</section>
+<!-- Bento Grid: Stats -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Satisfaction Score Card -->
+<div class="col-span-1 bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between h-40">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-status-active">sentiment_very_satisfied</span>
+<span class="font-label-md text-label-md text-status-active bg-status-active/10 px-2 py-0.5 rounded-full">+2.4%</span>
+</div>
+<div>
+<div class="font-headline-lg-mobile text-headline-lg-mobile text-primary">98.2</div>
+<div class="font-label-md text-label-md text-outline">Client CSAT</div>
+</div>
+</div>
+<!-- Next Payment Card -->
+<div class="col-span-1 bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between h-40">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-status-payment-due">payments</span>
+<span class="font-label-md text-label-md text-status-payment-due bg-status-payment-due/10 px-2 py-0.5 rounded-full">Due in 3d</span>
+</div>
+<div>
+<div class="font-headline-lg-mobile text-headline-lg-mobile text-primary">$4,250</div>
+<div class="font-label-md text-label-md text-outline">Subscription</div>
+</div>
+</div>
+</div>
+<!-- Active Talents List -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-primary">Active Talents</h3>
+<button class="text-secondary font-label-md text-label-md">View All</button>
+</div>
+<div class="space-y-3">
+<!-- Talent Item 1 -->
+<div class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl border border-border-subtle">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A focused software engineer working in a modern, brightly lit office environment with soft bokeh background. The person has a professional and reliable demeanor, representing premium talent in an enterprise tech environment. The lighting is crisp and clean, emphasizing a high-productivity atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrY66f-H1M-XxqPn69ExZmpOuAR0cen4DxVkvIcfw1f8xOosLSPxTt9gJ62OpLtBAA2DKf-YbLiqTpMNp4PPX5m0UPgPfsUIv9EW2ftKfUT0Uk_yznYbwx6NWLtN1dcwsWYsQZLEtOifW7ZoYdmcTxMFlHLB-6ne3jY8O3G78h7gvs4cvKN9_cGVjZ7Qwyoc0rkq5RN3rTgYV6TK7nsWWPGzrl8TtQ8FsFcBxlt-ZHtglHtFwi9sgxwHj95DM619t2fwrUJFJoow"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-status-active border-2 border-white rounded-full"></div>
+</div>
+<div class="flex-1">
+<div class="font-label-md text-label-md text-primary">Marcus Thorne</div>
+<div class="font-body-sm text-body-sm text-outline">Senior DevOps Lead</div>
+</div>
+<span class="font-label-md text-label-md text-on-secondary-fixed-variant bg-secondary-fixed px-3 py-1 rounded-full uppercase tracking-tighter">Active</span>
+</div>
+<!-- Talent Item 2 -->
+<div class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl border border-border-subtle">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A high-performing female UI designer looking confidently at the camera, set against a minimalist architectural background. The image is bright and airy, reflecting a modern corporate aesthetic with soft shadows and high-key lighting. She represents the precision and creativity of elite design talent." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk4l3zD0-JaJSbzPu4NDyl7JeIKwaeYHhonAM_jJ1gGih4R6XebokvBPu3_pmnmf9Q5O8fR2OqKkujAZqtLbZ8oeY2twNUF5yRKZ7ahAI4McStMPrV94uWVhUle6p5Kw2iC6f266mpOKGLRgHu2mwfJNUEK8aI9SWdG2pete6YVNZbciKjY1tZGMIlHlktZZdrVyT24WnGrCRQROljBa7-tDxFvLGqHm1utgIYd0JiqydGLBnD5fFosnzJZJyikwPL5IJelLjuHQ"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-status-trial border-2 border-white rounded-full"></div>
+</div>
+<div class="flex-1">
+<div class="font-label-md text-label-md text-primary">Elena Rodriguez</div>
+<div class="font-body-sm text-body-sm text-outline">Product Designer</div>
+</div>
+<span class="font-label-md text-label-md text-white bg-status-trial px-3 py-1 rounded-full uppercase tracking-tighter">Trial</span>
+</div>
+</div>
+</section>
+<!-- Recent Activity Section -->
+<section class="space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary">Workspace Activity</h3>
+<div class="bg-surface-container-lowest rounded-xl border border-border-subtle divide-y divide-border-subtle overflow-hidden">
+<div class="p-4 flex gap-4">
+<div class="mt-1">
+<span class="material-symbols-outlined text-status-urgent" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-primary">Security Breach Attempt Blocked</div>
+<div class="font-body-sm text-body-sm text-outline mt-1">Suspicious login from unknown IP in Berlin was automatically neutralized.</div>
+<div class="font-mono-sm text-mono-sm text-outline mt-2">14:22 • SEC-092</div>
+</div>
+</div>
+<div class="p-4 flex gap-4">
+<div class="mt-1">
+<span class="material-symbols-outlined text-secondary">task_alt</span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-primary">Sprint 04 Milestone Completed</div>
+<div class="font-body-sm text-body-sm text-outline mt-1">Infrastructure deployment for Workspace V2 is now live and stable.</div>
+<div class="font-mono-sm text-mono-sm text-outline mt-2">11:05 • OPS-V2</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-secondary text-white rounded-2xl shadow-lg flex items-center justify-center transition-transform active:scale-90 z-50" id="main-fab">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle shadow-lg z-50 md:hidden">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 w-16 transition-all duration-150 scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md-mobile mt-1">Home</span>
+</a>
+<!-- Tasks -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-label-md-mobile mt-1">Tasks</span>
+</a>
+<!-- Chat -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-md text-label-md-mobile mt-1">Chat</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md-mobile mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for FAB
+        const fab = document.getElementById('main-fab');
+        fab.addEventListener('click', () => {
+            // Ripple or feedback logic could go here
+            console.log('Create Task triggered');
+        });
+
+        // Haptic feedback simulation for nav items
+        const navItems = document.querySelectorAll('nav a');
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                navItems.forEach(nav => {
+                    nav.classList.remove('bg-secondary-fixed', 'text-on-secondary-fixed-variant', 'rounded-xl', 'p-2', 'scale-95');
+                    nav.classList.add('text-on-surface-variant');
+                });
+                item.classList.remove('text-on-surface-variant');
+                item.classList.add('bg-secondary-fixed', 'text-on-secondary-fixed-variant', 'rounded-xl', 'p-2', 'scale-95');
+            });
+        });
+    </script>
+</body></html>

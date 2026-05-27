@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS - Department Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#131b2e",
+                    "on-tertiary-container": "#98805d",
+                    "on-surface": "#191c1e",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-secondary-fixed-variant": "#004395",
+                    "surface-bright": "#f7f9fb",
+                    "on-error": "#ffffff",
+                    "border-subtle": "#E2E8F0",
+                    "outline-variant": "#c6c6cd",
+                    "tertiary": "#000000",
+                    "on-background": "#191c1e",
+                    "status-blocked": "#EF4444",
+                    "on-primary": "#ffffff",
+                    "secondary": "#0058be",
+                    "primary": "#000000",
+                    "surface": "#f7f9fb",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#2d3133",
+                    "secondary-fixed": "#d8e2ff",
+                    "status-active": "#10B981",
+                    "sidebar-bg": "#0B0F19",
+                    "tertiary-fixed": "#fcdeb5",
+                    "surface-container": "#eceef0",
+                    "background": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#bec6e0",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "status-trial": "#8B5CF6",
+                    "surface-container-high": "#e6e8ea",
+                    "outline": "#76777d",
+                    "on-surface-variant": "#45464d",
+                    "status-completed": "#059669",
+                    "surface-variant": "#e0e3e5",
+                    "inverse-on-surface": "#eff1f3",
+                    "status-urgent": "#B91C1C",
+                    "status-payment-due": "#F59E0B",
+                    "on-secondary-container": "#fefcff",
+                    "inverse-primary": "#bec6e0",
+                    "tertiary-container": "#271901",
+                    "on-tertiary-fixed": "#271901",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#565e74",
+                    "surface-container-low": "#f2f4f6",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "on-secondary-fixed": "#001a42",
+                    "surface-dim": "#d8dadc",
+                    "on-primary-container": "#7c839b",
+                    "status-suspended": "#64748B",
+                    "primary-container": "#131b2e",
+                    "secondary-container": "#2170e4",
+                    "primary-fixed": "#dae2fd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "40px",
+                    "container-margin": "32px",
+                    "input-gap": "16px",
+                    "card-padding": "24px",
+                    "base": "4px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Manrope"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "headline-lg": ["Manrope"],
+                    "body-sm": ["Inter"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Manrope"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .sidebar-active-gradient {
+            background: linear-gradient(90deg, rgba(0, 88, 190, 0.1) 0%, rgba(0, 88, 190, 0) 100%);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background">
+<!-- Fixed Sidebar -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg shadow-xl flex flex-col py-6 z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">cloud_done</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white tracking-tight">GVOS</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary sidebar-active-gradient" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings_suggest</span>
+<span class="font-label-md text-label-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 pt-4 border-t border-white/10 mt-auto">
+<button class="w-full bg-secondary text-white font-label-md text-label-md py-3 rounded-xl hover:bg-secondary/90 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                New Instance
+            </button>
+<div class="mt-6 space-y-1">
+<a class="flex items-center gap-3 py-2 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 py-2 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[280px] min-h-screen">
+<!-- Top NavBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface border-b border-outline-variant z-40 px-gutter flex justify-between items-center">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-body-sm text-body-sm focus:outline-none focus:border-secondary transition-all" placeholder="Search departments, heads, or tags..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface">Alex Rivera</p>
+<p class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-wider">Admin</p>
+</div>
+<img alt="User Profile" class="w-10 h-10 rounded-full border-2 border-white shadow-sm group-hover:border-secondary transition-all" data-alt="A professional headshot of a corporate executive in a modern office environment. The lighting is soft and natural, emphasizing a high-trust, professional atmosphere. The individual is wearing a sharp, charcoal-colored blazer against a blurred architectural background of a tech office. The overall aesthetic is clean, high-contrast, and sophisticated." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0K4dodYR32h1ivbI-FvEbtXebc6f81wVepWb4YgTZMbX60A0SSfTqc_WGrGv2nZ9kLYpMeIF8QWki9fsedVN5t3Q0ojoC-bInaL3NnSASR5jQuQkofwWmd6GmOQbG1dZabMOputWlSJKcB9jg35XXgzakVE9NwuC9UkAGhGZcY_5rho5AxYFAkRaYSrVYcRU4LIU30PuGfSlCs0Jp1SYL5ZAyzvmtJOUbawBmk2pdVIaD_hnmZNngca-R6K0Bo4v_PberPH9oqw"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="pt-24 px-gutter pb-section-gap max-w-[1440px] mx-auto">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-1">Departments</h2>
+<p class="font-body-md text-on-surface-variant">Manage organizational structures, workspace allocation, and talent hierarchies.</p>
+</div>
+<button class="px-6 py-3 bg-secondary text-white rounded-xl font-label-md text-label-md flex items-center gap-2 hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-95" onclick="toggleSidebar()">
+<span class="material-symbols-outlined">corporate_fare</span>
+                    Create Department
+                </button>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Department Card: Engineering -->
+<div class="md:col-span-8 bg-surface-container-lowest border border-border-subtle rounded-xl p-card-padding shadow-sm hover:shadow-md transition-shadow group cursor-pointer" onclick="openDetail('Engineering')">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-secondary-fixed text-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">terminal</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-primary group-hover:text-secondary transition-colors">Engineering</h3>
+<div class="flex items-center gap-3 mt-1">
+<span class="px-2 py-0.5 bg-status-active/10 text-status-active rounded text-[10px] font-bold uppercase tracking-wider">High Velocity</span>
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+                                        Global / Remote
+                                    </span>
+</div>
+</div>
+</div>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="grid grid-cols-3 gap-4 mb-6">
+<div class="bg-surface p-4 rounded-lg border border-border-subtle">
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Talents</p>
+<p class="font-headline-md text-headline-md text-primary">124</p>
+</div>
+<div class="bg-surface p-4 rounded-lg border border-border-subtle">
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Workspaces</p>
+<p class="font-headline-md text-headline-md text-primary">12</p>
+</div>
+<div class="bg-surface p-4 rounded-lg border border-border-subtle">
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Budget</p>
+<p class="font-headline-md text-headline-md text-primary">$2.4M</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-border-subtle">
+<div class="flex items-center gap-3">
+<img alt="Sarah Connor" class="w-8 h-8 rounded-full border border-white shadow-sm" data-alt="A portrait of a male tech lead in a bright, modern studio. He is smiling confidently, wearing a light grey knit sweater. The background is a clean, neutral grey that complements the professional yet approachable atmosphere of an engineering department head." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBslIeo1Mn5tD-1jAEGhatRFw-7K7vhkt0UUBM-988rKG3KNkTitG_hAO8IDUz5JTet1IAHQOtneiaQwfFu5VbLwyffsVwwpyAjWu9ckRAtDaOWYeRlOgdjclQb33Aa5DRAGjvatoMgmwzmop3abvwolG1lgWNkUsrirLOcu6q5yw739LZemSogo6ZrTKRdKeiUPBBZAU8-Y5Btqqz5sIxjXjFyCiCUqD4jlR8sT15k25EJjccMKDfe3doqs9onXOFcahcYNVNndA"/>
+<div>
+<p class="font-label-md text-label-md text-on-surface leading-none">Jameson Thorne</p>
+<p class="text-[11px] text-on-surface-variant">Department Head</p>
+</div>
+</div>
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-white object-cover" data-alt="A portrait of a professional woman with a warm expression, set against a blurred office background with cool blue and grey tones. The style is modern corporate, focusing on human-centric technology leadership." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeyRvX7oQhe-69x9CmeHg4fN0jU_LHdUdcJVbyDx4Sfcec11-KhGljqtgfPFFDL_-fQNb_swn9DdEivsPuIHlC1mafKV6NRv3FIyTBy8OTksD4S0vZ7jsyHUw_vzEpPhwegGscGMEjb0rNTGfLeDs_KU8PHF9YkaokGADv22n2VNuvDlJwJKfT_A97ss1SBwzVLfKle0TPp4VaMFQ3wS3dqCmBrNfdpdwz4U9-uhE2BdIFSbnhEYr4zlP2wvwmtsD_ga00gcQknw"/>
+<img class="w-8 h-8 rounded-full border-2 border-white object-cover" data-alt="A close-up portrait of a diverse male professional in a clean, minimalist setting. He is looking directly at the camera with a friendly, expert demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCWn35xyb-rmZzj2asLVCdlXFTz3PUsn-o05QeW1rwEJPduaCL5hFjpL3Ihlv85QD5tfUaNhvTm2zW6L27ESaOonAUFf4n9HpX-btzt0QSOThXEjXXQSaqEfl_sYgUj6QKuYPlfsIq7XhawZnxpsQDJXFO6hjPMDJTxRDYYL9U3g6w1DPiaxQ2u-Dsw7317sqXp8XiAgwbIQU94YWmUFeCQDrCHrgURM94P-yBUMw9usNasiGzhGp-4ZxWxeoPV1ZIOD0QP5hjaw"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-surface-container-highest flex items-center justify-center text-[10px] font-bold text-on-surface-variant">+122</div>
+</div>
+</div>
+</div>
+<!-- Department Card: Finance -->
+<div class="md:col-span-4 bg-surface-container-lowest border border-border-subtle rounded-xl p-card-padding shadow-sm hover:shadow-md transition-shadow group cursor-pointer" onclick="openDetail('Finance')">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-10 h-10 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary group-hover:text-secondary transition-colors">Finance</h3>
+</div>
+<div class="space-y-4 mb-6">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Talents</span>
+<span class="font-headline-md text-[20px] text-primary">18</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Workspaces</span>
+<span class="font-headline-md text-[20px] text-primary">3</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-secondary h-full w-3/4 rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-3 pt-4 border-t border-border-subtle">
+<img alt="Elena Vance" class="w-8 h-8 rounded-full border border-white shadow-sm" data-alt="A portrait of a senior finance manager in a high-end corporate setting. She is wearing a professional navy blue suit, standing in a brightly lit glass-walled office that reflects the modern, data-driven identity of GVOS. The style is sleek and authoritative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZd5N2JX1h6RYaD-fH6IuxmSVhhEf80-9YmpWcMXivKWWEQvALlIihc5kPu_3n23wqNUR2c4C5r6MtTt5tahqPcEs8nWyhBGF992k07Rhd2oGPMLknoCD9uvtRBHuLpjmm1jfALQ8uPJ0e0RQIFj9FGKsyz1FlbzCes-7lUgZLSvnzHMdSqY2C42bRKOHWJVJNNElfWkVmLdnXXXX-HPbqUvlvlC_MRcdRzEUblvkGaG2ryvXNSMDoDG0T6AHkEPqZZ-tCEXVncw"/>
+<div>
+<p class="font-label-md text-label-md text-on-surface leading-none">Elena Vance</p>
+<p class="text-[11px] text-on-surface-variant">Finance Controller</p>
+</div>
+</div>
+</div>
+<!-- Department Card: Marketing -->
+<div class="md:col-span-4 bg-surface-container-lowest border border-border-subtle rounded-xl p-card-padding shadow-sm hover:shadow-md transition-shadow group cursor-pointer" onclick="openDetail('Marketing')">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-10 h-10 bg-secondary-fixed text-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">campaign</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary group-hover:text-secondary transition-colors">Marketing</h3>
+</div>
+<div class="space-y-4 mb-6">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Talents</span>
+<span class="font-headline-md text-[20px] text-primary">42</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Workspaces</span>
+<span class="font-headline-md text-[20px] text-primary">6</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-secondary h-full w-1/2 rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-3 pt-4 border-t border-border-subtle">
+<img alt="Marcus Gray" class="w-8 h-8 rounded-full border border-white shadow-sm" data-alt="A close-up portrait of a creative marketing executive with a vibrant, energetic background. The image uses a palette of soft blues and oranges, reflecting a collaborative and dynamic environment. The lighting is high-key and modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBufFBj9fwHB_0z_7OAbSYsq9obujxObWytt6LjIffZ5xZ_fd5nel0Uk2QHIKIH05dZXq4ztdeuy5IjbxScSFlUlyOL9-IY8KkW887nDm8ze_GY65-wFqUP51Pb630VIgoOjfYsLHF1elWaRMPy-fuA0vpnZOsuwbmPfm5E9jCiCTaRXx8pR1-BYyJRPZm63Eew4E1RiOQZ5wof38wEOkOaSOLlzOKWtm_zxgR9uQaE9BySKmjJ3MXfM2RrcPTJzn2qavAO_-kggQ"/>
+<div>
+<p class="font-label-md text-label-md text-on-surface leading-none">Marcus Gray</p>
+<p class="text-[11px] text-on-surface-variant">Creative Director</p>
+</div>
+</div>
+</div>
+<!-- Stats Overview Panel -->
+<div class="md:col-span-8 bg-primary-container text-white rounded-xl p-card-padding flex flex-col justify-between relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md mb-2">Operational Health</h3>
+<p class="font-body-sm text-on-primary-container max-w-md">All departments are currently operating within established throughput parameters. No security incidents reported in the last 24 hours.</p>
+</div>
+<div class="mt-8 grid grid-cols-4 gap-4 relative z-10">
+<div>
+<p class="text-[10px] uppercase font-bold text-on-primary-container tracking-widest mb-1">Uptime</p>
+<p class="font-display-lg text-[24px] text-white">99.98%</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-on-primary-container tracking-widest mb-1">Latency</p>
+<p class="font-display-lg text-[24px] text-white">12ms</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-on-primary-container tracking-widest mb-1">Active</p>
+<p class="font-display-lg text-[24px] text-white">218</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-on-primary-container tracking-widest mb-1">Incidents</p>
+<p class="font-display-lg text-[24px] text-white">0</p>
+</div>
+</div>
+<!-- Abstract Background Pattern -->
+<div class="absolute right-[-10%] top-[-10%] w-[300px] h-[300px] bg-secondary/20 blur-[80px] rounded-full"></div>
+<div class="absolute left-[-5%] bottom-[-5%] w-[200px] h-[200px] bg-white/5 blur-[50px] rounded-full"></div>
+</div>
+<!-- Add Department Placeholder -->
+<div class="md:col-span-4 border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center p-card-padding hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center mb-4 group-hover:bg-secondary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</div>
+<p class="font-headline-md text-headline-md text-outline group-hover:text-secondary">Quick Setup</p>
+<p class="font-body-sm text-outline mt-1 text-center">Use a template to spin up a new core department</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Side Detail Panel (Hidden by default) -->
+<div class="fixed inset-0 z-[60] pointer-events-none overflow-hidden" id="detailPanel">
+<div class="absolute inset-0 bg-primary/20 opacity-0 transition-opacity duration-300 pointer-events-auto" id="panelBackdrop" onclick="closeDetail()"></div>
+<div class="absolute right-0 top-0 h-screen w-full max-w-[500px] bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-in-out pointer-events-auto flex flex-col" id="panelContent">
+<div class="p-6 border-b border-border-subtle flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" id="detailIcon">terminal</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary" id="detailTitle">Engineering</h3>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors" onclick="closeDetail()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8">
+<!-- Permission Config Section -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-4">Core Permissions</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-border-subtle">
+<div>
+<p class="font-label-md text-label-md text-primary">Autonomous Instance Creation</p>
+<p class="text-[12px] text-on-surface-variant">Allow leads to deploy new environments</p>
+</div>
+<div class="w-12 h-6 bg-secondary rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-border-subtle">
+<div>
+<p class="font-label-md text-label-md text-primary">Vault Access - Tier 1</p>
+<p class="text-[12px] text-on-surface-variant">Decryption of departmental keys enabled</p>
+</div>
+<div class="w-12 h-6 bg-secondary rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-border-subtle opacity-50">
+<div>
+<p class="font-label-md text-label-md text-primary">Cross-Department Migration</p>
+<p class="text-[12px] text-on-surface-variant">Ability to move talents between silos</p>
+</div>
+<div class="w-12 h-6 bg-outline rounded-full relative cursor-pointer">
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Hierarchy Section -->
+<div>
+<div class="flex justify-between items-center mb-4">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Hierarchy</h4>
+<button class="text-secondary font-label-md text-label-md hover:underline">Edit Tree</button>
+</div>
+<div class="relative pl-4 border-l-2 border-secondary/20 space-y-6">
+<div class="relative">
+<div class="absolute -left-[21px] top-4 w-4 h-[2px] bg-secondary/20"></div>
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-border-subtle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN8Tyty2BwII4BrJIzp-bO6wGJRt9rC9bokqCl1JCiY2B3DpI6gzQKGPzRyRXZc5ZcwpZfSZB3VV3DXsrtKGiefb2KjMx6Nlywq3eNWiciVyTLaDcvQa3gRzZzsczWG2cmbUYhJI9s7AiRNuCIS4hmykL0X9EvqOpb5wZ3kpfpWoIvTOAfoYq40QwuaLTGy07RsnZeQJU7uuMDx1nyCMLa8qt90Yag90xg7_hNuJVt6uJIhlHC2lHg_VPa4utsOOr8gldOu60qcQ"/>
+<div>
+<p class="font-label-md text-label-md text-primary leading-none">Jameson Thorne</p>
+<p class="text-[11px] text-on-surface-variant">Dept Head (L6)</p>
+</div>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -left-[21px] top-4 w-4 h-[2px] bg-secondary/20"></div>
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-border-subtle" data-alt="Professional portrait of a female team lead in a high-tech workspace. Soft ambient lighting creates a focused and intelligent atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1_6kVAtwuIPeo47L4mhN2SC11iMS-e1EivHsm2Oy7hQ02wk9Ttg-D-CUXJ_OLktILDQd2guaxHoJmjesXNs7t_xZCp5bgTc1Cu4WfgbJP2oxFfktMq_Hrx3s8sc2P-vQeqoSw6nBptWZg7PP5aCys2fJ2NV4UideiKdWFqDC9Jg6KIxwHtUvpzue1LFFfsJqLTO9uRT-qqOQ8TafKtKZfuRuYxMdEOIqrRKkD7PUBZl8THOQ1UXkzwBRA53cotE0p-2SvDFR_XA"/>
+<div>
+<p class="font-label-md text-label-md text-primary leading-none">Sarah Chen</p>
+<p class="text-[11px] text-on-surface-variant">DevOps Lead (L5)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Credential Preview Section -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-4">Security Key</h4>
+<div class="bg-sidebar-bg p-4 rounded-xl relative group">
+<div class="flex items-center justify-between">
+<code class="font-mono-sm text-mono-sm text-secondary-fixed filter blur-sm group-hover:blur-none transition-all duration-300">GVOS-DEP-ENG-992-X-ALPHA</code>
+<span class="material-symbols-outlined text-white/40 cursor-pointer hover:text-white">content_copy</span>
+</div>
+<div class="absolute inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity bg-sidebar-bg/60 rounded-xl pointer-events-none">
+<span class="material-symbols-outlined text-white">visibility</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-border-subtle grid grid-cols-2 gap-4 bg-surface-container-low">
+<button class="py-3 px-4 border border-outline-variant rounded-xl font-label-md text-label-md hover:bg-white transition-colors" onclick="closeDetail()">Cancel</button>
+<button class="py-3 px-4 bg-secondary text-white rounded-xl font-label-md text-label-md shadow-md hover:shadow-lg transition-all">Save Changes</button>
+</div>
+</div>
+</div>
+<script>
+        function openDetail(deptName) {
+            const panel = document.getElementById('detailPanel');
+            const content = document.getElementById('panelContent');
+            const backdrop = document.getElementById('panelBackdrop');
+            const title = document.getElementById('detailTitle');
+            const icon = document.getElementById('detailIcon');
+
+            title.innerText = deptName;
+            
+            // Map icons based on dept
+            if(deptName === 'Finance') icon.innerText = 'account_balance';
+            else if(deptName === 'Marketing') icon.innerText = 'campaign';
+            else icon.innerText = 'terminal';
+
+            panel.classList.remove('pointer-events-none');
+            backdrop.classList.add('opacity-100');
+            content.classList.remove('translate-x-full');
+        }
+
+        function closeDetail() {
+            const panel = document.getElementById('detailPanel');
+            const content = document.getElementById('panelContent');
+            const backdrop = document.getElementById('panelBackdrop');
+
+            panel.classList.add('pointer-events-none');
+            backdrop.classList.remove('opacity-100');
+            content.classList.add('translate-x-full');
+        }
+
+        // Search bar micro-interaction
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-secondary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-secondary/20');
+        });
+    </script>
+</body></html>

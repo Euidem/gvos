@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Trial Chat - Active Lead Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#271901",
+                    "status-completed": "#059669",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-fixed": "#271901",
+                    "status-suspended": "#64748B",
+                    "secondary": "#0058be",
+                    "surface-container": "#eceef0",
+                    "on-background": "#191c1e",
+                    "sidebar-bg": "#0B0F19",
+                    "status-active": "#10B981",
+                    "outline": "#76777d",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-tint": "#565e74",
+                    "surface-bright": "#f7f9fb",
+                    "tertiary": "#000000",
+                    "on-surface-variant": "#45464d",
+                    "background": "#f7f9fb",
+                    "outline-variant": "#c6c6cd",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-variant": "#e0e3e5",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "on-secondary-container": "#fefcff",
+                    "on-secondary-fixed-variant": "#004395",
+                    "inverse-surface": "#2d3133",
+                    "primary-container": "#131b2e",
+                    "status-trial": "#8B5CF6",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-tertiary-container": "#98805d",
+                    "tertiary-fixed": "#fcdeb5",
+                    "inverse-primary": "#bec6e0",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#000000",
+                    "on-error": "#ffffff",
+                    "primary-fixed": "#dae2fd",
+                    "surface": "#f7f9fb",
+                    "on-secondary-fixed": "#001a42",
+                    "status-urgent": "#B91C1C",
+                    "surface-container-low": "#f2f4f6",
+                    "on-primary-fixed": "#131b2e",
+                    "secondary-fixed": "#d8e2ff",
+                    "on-surface": "#191c1e",
+                    "border-subtle": "#E2E8F0",
+                    "status-payment-due": "#F59E0B",
+                    "secondary-container": "#2170e4",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#7c839b",
+                    "primary-fixed-dim": "#bec6e0",
+                    "on-primary": "#ffffff",
+                    "status-blocked": "#EF4444",
+                    "surface-dim": "#d8dadc",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "card-padding": "24px",
+                    "base": "4px",
+                    "section-gap": "40px",
+                    "container-margin": "32px",
+                    "input-gap": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "display-lg": ["Manrope"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "body-sm": ["Inter"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .chat-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-scrollbar::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Desktop Navigation Shell -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg flex flex-col py-6 shadow-xl z-50">
+<div class="px-6 mb-10">
+<h1 class="font-headline-md text-headline-md font-bold text-white tracking-tight">GVOS</h1>
+<p class="font-label-md text-label-md text-on-surface-variant/60">Enterprise Ops</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Operations is Active as Chat is part of Trial Operations -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings_suggest">settings_suggest</span>
+<span class="font-label-md text-label-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="lan">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<div class="ml-[280px] h-screen flex flex-col relative">
+<!-- Top Navigation -->
+<header class="h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-gutter shrink-0">
+<div class="flex items-center gap-4">
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary">GVOS Control Plane</h2>
+<div class="h-4 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-2 px-3 py-1 bg-status-trial/10 text-status-trial rounded-full">
+<span class="material-symbols-outlined text-[18px]" data-icon="timer">timer</span>
+<span class="font-label-md text-label-md">Trial Phase: 14h 22m remaining</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-low transition-opacity cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low transition-opacity cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="history">history</span>
+</button>
+<button class="bg-secondary text-white px-6 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
+                    Deploy
+                </button>
+<img alt="User Profile" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" data-alt="A professional headshot of a corporate executive in a light-colored suit against a neutral office background. The lighting is soft and natural, emphasizing trust and competence. The image maintains a high-key, clean aesthetic consistent with a premium enterprise software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6IbvBFAgEUh7O0Fr8V2H9cGjgKn6VVRyYCCTYy-XER5L1zUH6B9DgTZ9O0dagXlyTy-XQjSabwCtBCzg_Ni14QrU6g0ECJvr6RAmpbK-sviozBVKC2GNR2d9e4ezeRVB5iwL9sQHBigQfwCUP-sEfkOO5xDwPdckUW1W_4jyPRfmCHBLe6OsSAXnCGigRXAhNrolfnAUUeWEXLIiUk8x_k8oItljFwWAinKTBXfO2WQ-hl91-ceL4bkEbmi-l_ksA6vhXiOOHVg"/>
+</div>
+</header>
+<!-- Main Workspace Area -->
+<main class="flex-1 flex overflow-hidden">
+<!-- Chat Interface -->
+<section class="flex-1 flex flex-col min-w-0 bg-white">
+<!-- Conversation Header -->
+<div class="px-gutter py-4 border-b border-outline-variant flex items-center justify-between bg-surface-bright">
+<div class="flex items-center gap-4">
+<div class="flex -space-x-3 overflow-hidden">
+<img alt="Lead" class="inline-block h-10 w-10 rounded-full ring-2 ring-white" data-alt="Close-up portrait of a female operations lead in a modern office, soft lighting, professional yet approachable, neutral gray and blue color tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEV-EcjS6JoNLIpCVrrDGMkcGgEMwj3UZmkqYLXYkAY16r-8FP2Uipug_f6MSbdtVboopRZUhR9j5uoJvbpzZfLpeF1E7LrCXP45E77JvuTyLdU64izu8cVYBAbOYGlcBO_oesppSuTOiCmyAApV0QEnEnDXm3jOg-CYhA3eWzyiQW4cKJ01avdTqpAUm7Li4m2DQFDcoAGDpUDg0U71aaPswxYI-VT0QRxE6h4UwbTOcDFwieenzca6dByl6bwSgAigrkQHinGA"/>
+<img alt="Trial Talent" class="inline-block h-10 w-10 rounded-full ring-2 ring-white" data-alt="Portrait of a young male software developer in a tech environment, focused expression, sharp lighting, corporate modern aesthetic with deep blue highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0ivIkH1Od0R8VOiJH2qAb7kL1rdiQ98iYw6UBI0Z2lg3stiH65MB9EBG_-MuDHpDAekeY4tsELQxU8cCazIy8JBFdrOIWevhQxFjKh4dlYDoPTrgiVvBL_BCefcXxCoc3ODodD0D_gbPV9zNXpd4ssHqywSUOBgAkXCWdhHT0LlLaqujGRiGBXSgQLZkk8apD5GI5aQf-FxYCQNzrgRz1l4ZPUwpUG5cXkskjdILm5r07j5gB0kGe6zG51jld6COqupZDv9g7hA"/>
+<div class="inline-block h-10 w-10 rounded-full ring-2 ring-white bg-primary flex items-center justify-center text-white font-label-md">AM</div>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] text-primary">Trial Stream: Project Alpha Deployment</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Active: Sarah (Lead), Marcus (Talent), Alex (Manager)</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+</button>
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Pay to Continue CTA Banner -->
+<div class="px-gutter py-3 bg-secondary-container flex items-center justify-between animate-pulse">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-white" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+<p class="font-label-md text-label-md text-white">Trial performance is exceeding benchmarks. Lock in this talent before the 24h window expires.</p>
+</div>
+<button class="bg-white text-secondary px-4 py-1.5 rounded-lg font-label-md text-label-md font-bold shadow-lg hover:bg-surface-container-lowest transition-colors">
+                        Pay to Continue
+                    </button>
+</div>
+<!-- Chat Area -->
+<div class="flex-1 overflow-y-auto p-gutter space-y-6 chat-scrollbar">
+<!-- Day Divider -->
+<div class="flex justify-center">
+<span class="px-3 py-1 bg-surface-container-low rounded-full font-label-md text-label-md text-on-surface-variant">Today, October 24</span>
+</div>
+<!-- Message: System -->
+<div class="flex justify-center">
+<p class="font-body-sm text-body-sm text-on-surface-variant italic">Trial Instance initialized. Shared environment access granted to Marcus D.</p>
+</div>
+<!-- Message: Talent (Left) -->
+<div class="flex gap-4 max-w-[80%]">
+<img alt="Marcus" class="h-8 w-8 rounded-full mt-1" data-alt="Portrait of a young male software developer in a tech environment, focused expression, sharp lighting, corporate modern aesthetic with deep blue highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2F77dcP3fq5NiTcKW8YBULSL5cFmwsXUuHxQI2efGfE81bt-_q8EOA4sAywNIi9FAWF2zpKVOue55k-3Hn34OdeA9zm5SQ5_Oay2yfAXeVKuRr1iv_gmSkhg3qFQYhNwhtWsqXgSt7TdVSPSH4-s4SC0Gz_Q0TLhHZg6KmHhjlzQNzteERS6q50lvbOSQC5yAdNO4TyY8RIwZ-oIPe_JdG72dSyKtuAi3UEBVdG0XUxcEjpLrLwShiKS7Om1svSpAvzLgNFcvCw"/>
+<div class="space-y-1">
+<div class="flex items-baseline gap-2">
+<span class="font-label-md text-label-md">Marcus D.</span>
+<span class="text-[10px] text-outline">09:12 AM</span>
+</div>
+<div class="p-4 bg-surface-container-low rounded-tr-xl rounded-b-xl border border-outline-variant/30 text-primary">
+<p>Hi Sarah, I've just completed the initial security audit for the Project Alpha pipeline. The report is uploaded to the shared folder. Should I proceed with the IAM policy refinements?</p>
+</div>
+</div>
+</div>
+<!-- Message: Lead (Right) -->
+<div class="flex flex-row-reverse gap-4 max-w-[80%] ml-auto text-right">
+<img alt="Sarah" class="h-8 w-8 rounded-full mt-1" data-alt="Close-up portrait of a female operations lead in a modern office, soft lighting, professional yet approachable, neutral gray and blue color tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0y19lRAByYX64U48Oi3a_4IywSvM5zIrUDGlQVH3bHwecUnWp94rrAOaXD6z7vmHqlxr0cm3ZxnQ2Ax8h6MxCOtghApn9KMxytcpToix9YTnxVLucdj4CjPPO5bbAWVhJHSpoEM9U8Y1k7GKU2tMGfndFaiXHx7fu4mfUhM6HFZWEMBEy_xTpsDwgqcEeQ1F6knVXBV9-4b5-7BcYftArCySZrZ61BiEXrdLMxGeEhkZUmUhTGn3yhtBfRfQ6teJafWr3t5jVtA"/>
+<div class="space-y-1">
+<div class="flex flex-row-reverse items-baseline gap-2">
+<span class="font-label-md text-label-md">Sarah J. (You)</span>
+<span class="text-[10px] text-outline">09:15 AM</span>
+</div>
+<div class="p-4 bg-secondary text-white rounded-tl-xl rounded-b-xl shadow-md">
+<p>Great progress, Marcus. The audit looks very thorough. Yes, please start on the IAM refinements. Focus on the production environment first.</p>
+</div>
+</div>
+</div>
+<!-- Message: Manager (Left) -->
+<div class="flex gap-4 max-w-[80%]">
+<div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white font-label-md mt-1">AM</div>
+<div class="space-y-1">
+<div class="flex items-baseline gap-2">
+<span class="font-label-md text-label-md">Alex M. (Manager)</span>
+<span class="text-[10px] text-outline">09:18 AM</span>
+</div>
+<div class="p-4 bg-surface-container-low rounded-tr-xl rounded-b-xl border border-outline-variant/30 text-primary">
+<p>Monitoring the progress. Marcus, your speed on the security sweep was impressive. Sarah, let me know if you need any budget overrides for the expansion.</p>
+</div>
+</div>
+</div>
+<!-- File Card in Chat -->
+<div class="flex gap-4 max-w-[80%]">
+<img alt="Marcus" class="h-8 w-8 rounded-full mt-1" data-alt="Portrait of a young male software developer in a tech environment, focused expression, sharp lighting, corporate modern aesthetic with deep blue highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYSb5zx6D5JKAAJm2nRTdvafcLcpiiJvca6ftT3KTyebgrR92GGWnTyIgxlHi9aj17q7quAhEhLv_U7E7_1V2Y97AXEsx3bVwHnWjQxvOgC9kRoNjFIFVuvXkzu7FK9uCKWSScKT_joyMfRp5Ez0EZx4qxXzmXMKSOzip4IrGejNTtfOP93LGeQulgypU-TwGQREqDXcjPV4rMQWW_3xGEht4giMN0oP7HtuDweGNCeOdhTcxqJm4-TTL4iz3Tx5GqYFac405trg"/>
+<div class="space-y-1">
+<div class="flex items-baseline gap-2">
+<span class="font-label-md text-label-md">Marcus D.</span>
+<span class="text-[10px] text-outline">09:20 AM</span>
+</div>
+<div class="p-3 bg-surface-container-highest/50 border border-outline-variant rounded-xl flex items-center gap-3 w-72">
+<div class="w-10 h-10 bg-white rounded flex items-center justify-center border border-outline-variant shadow-sm">
+<span class="material-symbols-outlined text-status-urgent" data-icon="description">description</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md truncate">IAM_Refinement_Draft.pdf</p>
+<p class="text-[10px] text-outline uppercase font-bold">2.4 MB • PDF Document</p>
+</div>
+<button class="p-1 hover:bg-white rounded transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-gutter pt-0 border-t border-outline-variant bg-white">
+<div class="flex items-center gap-2 mb-3 mt-4">
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors text-outline">
+<span class="material-symbols-outlined" data-icon="attach_file">attach_file</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors text-outline">
+<span class="material-symbols-outlined" data-icon="mood">mood</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors text-outline">
+<span class="material-symbols-outlined" data-icon="code">code</span>
+</button>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-surface-container-low rounded-lg transition-colors text-outline">
+<span class="material-symbols-outlined text-[18px]" data-icon="assignment">assignment</span>
+<span class="font-label-md text-label-md">Link Task</span>
+</button>
+</div>
+<div class="relative">
+<textarea class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-4 pr-16 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all resize-none font-body-md text-body-md h-[100px]" placeholder="Message Project Alpha Stream..."></textarea>
+<button class="absolute bottom-4 right-4 bg-secondary text-white p-3 rounded-xl shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="send" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Right Sidebar: Stats & Files -->
+<aside class="w-[320px] border-l border-outline-variant bg-surface-bright flex flex-col shrink-0">
+<!-- Trial Progress -->
+<div class="p-gutter border-b border-outline-variant">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase mb-4 tracking-wider">Trial Progress</h4>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="font-body-sm text-body-sm text-primary">Milestones Completed</span>
+<span class="font-mono-sm text-mono-sm text-status-completed">3/4</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-status-completed rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<ul class="space-y-4">
+<li class="flex items-start gap-3 opacity-100">
+<span class="material-symbols-outlined text-status-completed text-[18px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-md text-label-md text-primary">Initial Security Audit</p>
+<p class="text-[10px] text-outline">Completed at 08:45 AM</p>
+</div>
+</li>
+<li class="flex items-start gap-3 opacity-100">
+<span class="material-symbols-outlined text-status-completed text-[18px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-md text-label-md text-primary">CI/CD Pipeline Connectivity</p>
+<p class="text-[10px] text-outline">Completed at 09:05 AM</p>
+</div>
+</li>
+<li class="flex items-start gap-3 animate-pulse">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="pending">pending</span>
+<div>
+<p class="font-label-md text-label-md text-primary">IAM Policy Refinement</p>
+<p class="text-[10px] text-secondary font-bold uppercase">In Progress</p>
+</div>
+</li>
+<li class="flex items-start gap-3 opacity-40">
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="circle">circle</span>
+<div>
+<p class="font-label-md text-label-md text-primary">Environment Final Sign-off</p>
+<p class="text-[10px] text-outline">Awaiting dependencies</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<!-- Shared Files -->
+<div class="flex-1 p-gutter overflow-y-auto chat-scrollbar">
+<div class="flex justify-between items-center mb-4">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Shared Assets</h4>
+<button class="text-secondary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="group relative aspect-square bg-surface-container rounded-lg overflow-hidden border border-outline-variant cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="Abstract architectural rendering showing layers of blue and gray steel structures, clean lines, minimalist corporate design style with soft ambient shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC04kaeh6689Q4ZfH49qTBQ64FIsTvLx-NmeWU6kyN3wiEHM_r5rIgbuqj3MsoRmv9gAaPWS32gkttemjyVG42M1XbDjk7YshHLSO1ckffJSg9IPV9dpAbYl-M-nfMgbCXgOrtTNLgStu-BLmzEMQaq2RAhPDs5UCBBeKzVTxgAuQeI-uVwRvc7znOngAzz1-IRbEDR3zMS3a2a8wR0NQOowaLvuex9k9iPXmWcAFzBz0jxN6fO17H1oKRgQs2bzv6TAJ54n6YeKQ"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="visibility">visibility</span>
+</div>
+</div>
+<div class="group relative aspect-square bg-surface-container rounded-lg overflow-hidden border border-outline-variant cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="Digital dashboard visualization showing data charts and technical graphs, high-contrast black and white palette with vibrant blue accents, modern fintech command center aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZIKTCrhj7uOecKfasnugz1BY5fSQ9l1H2C-Yy3Bf0u7VF0chf6rBJ_3-gFY5y7Yapeuq0xNoPh1B9b5b6pKGZwGEc6QcF-fbC5wtWgfKhhNvULxnV6C0zGdAMcHTopQZ6zGThk5RFp-E8b2sNZt49jDA5Q8Ams0E6au_7jFf-A5Deq3TIPRkBDYTIi9Xc9HiqfOsKdi5M_6a3m6ZXXcHhdrrPHdoShnQhD7WKo_Oi7I8y1SPmwnBV9v8t0bhefKN1VSpymDOUrw"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="visibility">visibility</span>
+</div>
+</div>
+<div class="col-span-2 p-3 bg-white border border-outline-variant rounded-lg flex items-center gap-3 hover:bg-surface-container-low transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-status-suspended" data-icon="terminal">terminal</span>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md truncate">deployment_logs_v1.txt</p>
+<p class="text-[10px] text-outline">Updated 2m ago</p>
+</div>
+</div>
+<div class="col-span-2 p-3 bg-white border border-outline-variant rounded-lg flex items-center gap-3 hover:bg-surface-container-low transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-status-active" data-icon="task_alt">task_alt</span>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md truncate">security_checklist.xlsx</p>
+<p class="text-[10px] text-outline">Updated 1h ago</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="p-6 bg-surface border-t border-outline-variant">
+<button class="w-full bg-primary text-white py-3 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[20px]" data-icon="download_for_offline">download_for_offline</span>
+                        Download Trial Export
+                    </button>
+<p class="text-center text-[10px] text-outline mt-3">Data export available for 7 days post-trial.</p>
+</div>
+</aside>
+</main>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        // Simple countdown logic for visual flair
+        let time = 14 * 3600 + 22 * 60;
+        const timerElement = document.querySelector('.font-label-md.text-label-md');
+        
+        setInterval(() => {
+            time--;
+            const hours = Math.floor(time / 3600);
+            const minutes = Math.floor((time % 3600) / 60);
+            const seconds = time % 60;
+            if (timerElement && timerElement.textContent.includes('Trial Phase')) {
+                timerElement.textContent = `Trial Phase: ${hours}h ${minutes}m ${seconds}s remaining`;
+            }
+        }, 1000);
+
+        // Auto-scroll chat to bottom on load
+        const chatContainer = document.querySelector('.chat-scrollbar');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    </script>
+</body></html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS | Leads Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#000000",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-highest": "#e0e3e5",
+                        "inverse-surface": "#2d3133",
+                        "inverse-primary": "#bec6e0",
+                        "on-background": "#191c1e",
+                        "surface-container-high": "#e6e8ea",
+                        "outline-variant": "#c6c6cd",
+                        "secondary": "#0058be",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "on-secondary-fixed-variant": "#004395",
+                        "tertiary-fixed": "#fcdeb5",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#000000",
+                        "sidebar-bg": "#0B0F19",
+                        "outline": "#76777d",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-container": "#98805d",
+                        "on-secondary-fixed": "#001a42",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "status-active": "#10B981",
+                        "tertiary-container": "#271901",
+                        "status-completed": "#059669",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-container": "#7c839b",
+                        "surface-dim": "#d8dadc",
+                        "surface-container": "#eceef0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "border-subtle": "#E2E8F0",
+                        "primary-fixed": "#dae2fd",
+                        "status-payment-due": "#F59E0B",
+                        "on-surface-variant": "#45464d",
+                        "secondary-container": "#2170e4",
+                        "background": "#f7f9fb",
+                        "on-tertiary-fixed": "#271901",
+                        "surface-tint": "#565e74",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-secondary-container": "#fefcff",
+                        "surface-bright": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#bec6e0",
+                        "status-urgent": "#B91C1C",
+                        "status-trial": "#8B5CF6",
+                        "on-surface": "#191c1e",
+                        "status-suspended": "#64748B",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#d8e2ff",
+                        "status-blocked": "#EF4444",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-container-low": "#f2f4f6",
+                        "surface": "#f7f9fb",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "32px",
+                        "card-padding": "24px",
+                        "section-gap": "40px",
+                        "base": "4px",
+                        "input-gap": "16px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Manrope"],
+                        "mono-sm": ["JetBrains Mono"],
+                        "display-lg": ["Manrope"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Manrope"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 10px;
+        }
+        .lead-row:hover {
+            background-color: rgba(0, 88, 190, 0.02);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Side Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg flex flex-col py-6 shadow-xl z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">cloud_done</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white leading-none">GVOS</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary rounded-r-lg group" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings_suggest</span>
+<span class="font-label-md text-label-md font-bold">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 space-y-1">
+<button class="w-full flex items-center justify-center gap-2 py-3 bg-secondary text-white rounded-xl font-label-md text-label-md hover:bg-secondary/90 transition-all mb-4">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Instance
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface border-b border-outline-variant z-40 flex justify-between items-center px-gutter">
+<div class="flex items-center gap-6 flex-1">
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary">GVOS Control Plane</h2>
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-body-sm focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all" placeholder="Search leads, specialists, or instances..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<button class="px-4 py-2 bg-primary text-white rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-all">
+                Deploy
+            </button>
+<div class="flex items-center gap-3 ml-2 cursor-pointer group">
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface leading-tight">Admin Unit-7</p>
+<p class="font-body-sm text-[10px] text-on-surface-variant">Super Administrator</p>
+</div>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a corporate technology executive in a well-lit office environment. The person has a confident expression and is wearing a modern charcoal suit. The lighting is soft and directional, typical of a high-end business portrait. The background shows a blurred, high-tech glass-partitioned office space with cool blue and white tones, matching the GVOS design system aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfvc8UG92rYzX-PkYR0HTMYbPUJRRIjPjCfKbffZ1IlFpslcaDabGZ1A8BbSGX5v8r17lUWDr7KzPUYEC-E3UUIphbGkHqNSw0MPXHzpCeCiPa_PYTdaFItyqyyG5Bin9cHX9Lr3Yh6cuqJwdLE1bTCzYmo9llUuji02CfFoPhVtCxcclYvIFlJS6tUvhTtykbm3OnOO5IV-GG_Vbw1eR-pvhahnnkXgsTczN0RnHKM8NPmuly69V89QzmQLem9nXylWODd7iCiw"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-16 pl-[280px] h-screen flex flex-col">
+<!-- Header Section -->
+<div class="px-gutter pt-8 pb-6 bg-white border-b border-outline-variant shadow-sm shrink-0">
+<div class="flex justify-between items-end mb-6">
+<div>
+<nav class="flex items-center gap-2 mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant">Operations</span>
+<span class="material-symbols-outlined text-outline text-[16px]">chevron_right</span>
+<span class="font-label-md text-label-md text-secondary">Leads Management</span>
+</nav>
+<h3 class="font-headline-lg text-headline-lg text-primary tracking-tight">Prospective Clients &amp; Trials</h3>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 border border-outline-variant rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                        Status: All
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2.5 border border-outline-variant rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[20px]">source</span>
+                        Source: All
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2.5 bg-secondary text-white rounded-xl font-label-md text-label-md shadow-lg shadow-secondary/20 hover:bg-secondary/90 transition-all">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                        Register New Lead
+                    </button>
+</div>
+</div>
+<!-- Stats Bar -->
+<div class="grid grid-cols-4 gap-6">
+<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Total Active Trials</p>
+<h4 class="font-headline-md text-headline-md text-primary">142</h4>
+</div>
+<div class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">hourglass_top</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">New Leads (24h)</p>
+<h4 class="font-headline-md text-headline-md text-primary">18</h4>
+</div>
+<div class="w-12 h-12 bg-status-active/10 rounded-full flex items-center justify-center text-status-active">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fiber_new</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Conversion Risk</p>
+<h4 class="font-headline-md text-headline-md text-primary">09</h4>
+</div>
+<div class="w-12 h-12 bg-status-urgent/10 rounded-full flex items-center justify-center text-status-urgent">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Est. Pipe Value</p>
+<h4 class="font-headline-md text-headline-md text-primary">$2.4M</h4>
+</div>
+<div class="w-12 h-12 bg-primary/5 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Area -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Table Section -->
+<div class="flex-1 overflow-y-auto custom-scrollbar bg-white">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-low z-10">
+<tr>
+<th class="px-gutter py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Client Identity</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Assigned Specialist</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Trial Countdown</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Bi-Weekly Value</th>
+<th class="px-gutter py-4 font-label-md text-label-md text-outline uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Lead Row 1 -->
+<tr class="lead-row cursor-pointer transition-all border-l-4 border-transparent hover:border-secondary group active" onclick="showDetail('NexaSystems')">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary font-bold">NS</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-primary">NexaSystems Global</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cloud Infrastructure</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-status-trial/10 text-status-trial rounded-full font-label-md text-label-md border border-status-trial/20">Trial Active</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<img alt="Specialist" class="w-6 h-6 rounded-full" data-alt="A close-up portrait of a professional male account manager with a friendly and capable demeanor. He is set against a clean, minimal office background that is brightly lit, emphasizing the professional light-mode aesthetic of the application. The image style is sharp and corporate, conveying trust and expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeZAX6_EYtPzY1ym3HTFjidcFOUKpovpEhJkqNeGGY5z87bvUzmE7xtQCsXUfjwIjOGe98NmkUmMkIoTGvf0SLUfjdurXupaO4qeENjRYUOh0V4m_GGCzcXChq1dtneMhObsS7j4JhXdrWW9dDVg_KiBuivOlZMdQLxxoE_xFrVR6Nk2rRkXgeQAoAlrcdTCTglOsobYIVKgjQTzWRTNc_N4mrbXPhmNJvv8qzuw9E3xNB29mZvB_gnsZ22XHclsSL1YKyWcQGAw"/>
+<span class="font-body-sm text-body-sm">David Chen</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1.5 w-16 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[65%]"></div>
+</div>
+<span class="font-mono-sm text-mono-sm font-bold text-secondary">09 Days</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono-sm text-mono-sm text-primary">$12,450.00</td>
+<td class="px-gutter py-5 text-right">
+<button class="p-2 hover:bg-surface-container-low rounded-lg text-outline">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Lead Row 2 -->
+<tr class="lead-row cursor-pointer transition-all border-l-4 border-transparent hover:border-secondary" onclick="showDetail('AuraFin')">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary font-bold">AF</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-primary">AuraFin Securities</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Investment Banking</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-status-active/10 text-status-active rounded-full font-label-md text-label-md border border-status-active/20">New Lead</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<img alt="Specialist" class="w-6 h-6 rounded-full" data-alt="A high-resolution headshot of a female business consultant with an approachable and intelligent expression. She is in a modern office with natural light streaming through large windows, creating a bright and professional atmosphere. The composition is clean and focuses on her face, maintaining a consistent high-end corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANKBFC0pYxqCKlT0A5HLMxd5tWzyfMu7Nrw6oauy436v5J2HFqtaNle6wlVg6ssVdTeqgUHCLQIfECjl2OujxAK-SCqPqbWb6okhuUmBriCCa2hGSHTaZaxwZjsd_qrnxQFMt9pHcHn7RYHosMGHK15JXpOGfUdAjYcsEUC-sjR7I3KlSrmsToaIwBt_Z8K_8QTh5SNR4L5bcXT0yRlgmv3CTK0bvReqg8obfO4ow1wzqOcKYIVllU5FiI2s7jJND2DHKz7G4iJA"/>
+<span class="font-body-sm text-body-sm">Sarah Jenkins</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="font-mono-sm text-mono-sm text-outline">—</span>
+</td>
+<td class="px-6 py-5 font-mono-sm text-mono-sm text-primary">$45,000.00</td>
+<td class="px-gutter py-5 text-right">
+<button class="p-2 hover:bg-surface-container-low rounded-lg text-outline">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Lead Row 3 -->
+<tr class="lead-row cursor-pointer transition-all border-l-4 border-transparent hover:border-secondary" onclick="showDetail('Quantix')">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary font-bold">QX</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-primary">Quantix Research</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Genomic Data</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-status-urgent/10 text-status-urgent rounded-full font-label-md text-label-md border border-status-urgent/20">Trial Expired</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<img alt="Specialist" class="w-6 h-6 rounded-full" data-alt="A sharp, clear portrait of a male technical sales engineer. He is wearing a minimalist navy blue sweater and is positioned against a blurry server room background, suggesting technical proficiency. The lighting is crisp and modern, fitting the high-tech, high-security theme of the GVOS enterprise software dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBABP_7DDyRGMI37QiQmZFB2_FifID2aAjFBAG6jFhy-z4jdIWL-pmmZYfR925IktsTMq-o070olJkGfFX8AcyH8_pJNeiP8T71HnMX8fk8dUFzCAY1yMH9Fr4ulA56Vn0ty8vVu0NenJHqx8cVDLtodUxtP_nXWid3yLjRINLznXRetq6CqDsBO1miKj4gCdsqTFszGHRY1AwjR_fUyo-uaigcFEvNxMEAnuodESnB037v5FsGUEmjXZ8VH6IdzDtBh4eCdqi6lA"/>
+<span class="font-body-sm text-body-sm">Michael Ro</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="font-mono-sm text-mono-sm text-status-urgent font-bold">Expired</span>
+</td>
+<td class="px-6 py-5 font-mono-sm text-mono-sm text-primary">$8,900.00</td>
+<td class="px-gutter py-5 text-right">
+<button class="p-2 hover:bg-surface-container-low rounded-lg text-outline">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Lead Row 4 -->
+<tr class="lead-row cursor-pointer transition-all border-l-4 border-transparent hover:border-secondary" onclick="showDetail('ZenCore')">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary font-bold">ZC</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-primary">ZenCore Logistix</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Supply Chain AI</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-status-trial/10 text-status-trial rounded-full font-label-md text-label-md border border-status-trial/20">Trial Active</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<img alt="Specialist" class="w-6 h-6 rounded-full" data-alt="A professional portrait of a senior female executive account manager. She has a warm yet authoritative presence, styled in a minimalist business-casual outfit. The setting is a brightly lit corporate lounge with high ceilings and architectural clean lines, perfectly echoing the premium and institutional trust and visual aesthetic of the GVOS brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTuW-IM-KuyHWY9ndVmBEvQ4fTXutnVzWYJ0Zv8DpTXB96jsIo1-5HQG8d8mwjrzQV-ILfsg0MooPDDgWll6O_Q2QoyPOjBxsL5wNLBH0yXXYKTVJDmuudZ2rGNXpI2uH7Ak-tjgNuOlxRRUsobkmOrYPzEsjufULS_3RtXallG2s7_3AlTvnUVbXg0o5KniQDqwppxx42Fu4cXf4QpsBphe_NycLH_j_odWDlqIfkwWYxoVVNAyLiM3N3j0sbgpMZwsGSvwaduw"/>
+<span class="font-body-sm text-body-sm">Elena Vance</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1.5 w-16 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-status-active w-[15%]"></div>
+</div>
+<span class="font-mono-sm text-mono-sm font-bold text-status-active">02 Days</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono-sm text-mono-sm text-primary">$21,200.00</td>
+<td class="px-gutter py-5 text-right">
+<button class="p-2 hover:bg-surface-container-low rounded-lg text-outline">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Detail Side Panel (Level 2 Elevation) -->
+<div class="w-[420px] bg-white border-l border-outline-variant shadow-2xl p-6 overflow-y-auto custom-scrollbar flex flex-col transition-all duration-300 transform translate-x-0" id="detail-panel">
+<div class="flex justify-between items-start mb-6">
+<h4 class="font-headline-md text-headline-md text-primary" id="detail-title">NexaSystems Global</h4>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors text-outline">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Conversion Risk Banner -->
+<div class="mb-8 p-4 bg-status-active/5 border border-status-active/20 rounded-xl flex items-center gap-4">
+<div class="w-10 h-10 bg-status-active/10 text-status-active rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-status-active uppercase font-bold">Conversion Risk: Low</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">High task engagement. 85% likely to convert.</p>
+</div>
+</div>
+<!-- Section: Trial Tasks -->
+<div class="mb-8">
+<div class="flex justify-between items-center mb-4">
+<h5 class="font-label-md text-label-md text-outline uppercase tracking-wider">Trial Task Completion</h5>
+<span class="font-mono-sm text-mono-sm text-secondary font-bold">12/14 Tasks</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined text-status-active text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-body-sm text-primary flex-1">Database Federation Sync</span>
+<span class="font-mono-sm text-mono-sm text-outline">Feb 12</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined text-status-active text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-body-sm text-primary flex-1">SSO Provider Integration</span>
+<span class="font-mono-sm text-mono-sm text-outline">Feb 14</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg border-2 border-dashed border-outline-variant">
+<span class="material-symbols-outlined text-outline text-[20px]">radio_button_unchecked</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex-1">Data Residency Validation</span>
+<span class="font-label-md text-label-md text-secondary font-bold">In Progress</span>
+</div>
+</div>
+</div>
+<!-- Section: Insights -->
+<div class="mb-8">
+<h5 class="font-label-md text-label-md text-outline uppercase tracking-wider mb-4">Operational Insights</h5>
+<div class="p-4 bg-primary-container text-white rounded-xl">
+<p class="font-body-sm text-body-sm text-on-primary-container mb-3 leading-relaxed">Client is testing heavy load scenarios on the VPC cluster. Network latency is optimal at <span class="text-secondary-fixed-dim">12ms</span>.</p>
+<div class="flex items-center gap-4 text-[11px] font-mono-sm uppercase text-on-primary-container/60">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">speed</span> 98% Perf
+                            </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">storage</span> 4.2TB Data
+                            </div>
+</div>
+</div>
+</div>
+<!-- Lead Actions -->
+<div class="mt-auto pt-6 border-t border-outline-variant flex flex-col gap-3">
+<button class="w-full py-3 bg-secondary text-white rounded-xl font-label-md text-label-md font-bold shadow-lg shadow-secondary/20 hover:bg-secondary/90 transition-all">
+                        Convert to Contract
+                    </button>
+<div class="grid grid-cols-2 gap-3">
+<button class="py-2.5 border border-outline-variant rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-all">
+                            Extension Request
+                        </button>
+<button class="py-2.5 border border-outline-variant rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-all">
+                            Suspend Trial
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        function showDetail(clientName) {
+            const title = document.getElementById('detail-title');
+            title.innerText = clientName + (clientName.includes(' ') ? '' : ' Global');
+            
+            // Animation effect
+            const panel = document.getElementById('detail-panel');
+            panel.classList.remove('translate-x-full');
+            panel.classList.add('translate-x-0');
+            
+            // Toggle highlight in table (visual only)
+            const rows = document.querySelectorAll('.lead-row');
+            rows.forEach(r => r.classList.remove('bg-secondary/5', 'border-secondary'));
+            event.currentTarget.classList.add('bg-secondary/5', 'border-secondary');
+        }
+
+        // Initialize with first row
+        window.onload = () => {
+            const firstRow = document.querySelector('.lead-row');
+            if (firstRow) firstRow.click();
+        };
+    </script>
+</body></html>

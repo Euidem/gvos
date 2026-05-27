@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS - Manager Reports Review</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#271901",
+                    "status-completed": "#059669",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-fixed": "#271901",
+                    "status-suspended": "#64748B",
+                    "secondary": "#0058be",
+                    "surface-container": "#eceef0",
+                    "on-background": "#191c1e",
+                    "sidebar-bg": "#0B0F19",
+                    "status-active": "#10B981",
+                    "outline": "#76777d",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-tint": "#565e74",
+                    "surface-bright": "#f7f9fb",
+                    "tertiary": "#000000",
+                    "on-surface-variant": "#45464d",
+                    "background": "#f7f9fb",
+                    "outline-variant": "#c6c6cd",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-variant": "#e0e3e5",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "on-secondary-container": "#fefcff",
+                    "on-secondary-fixed-variant": "#004395",
+                    "inverse-surface": "#2d3133",
+                    "primary-container": "#131b2e",
+                    "status-trial": "#8B5CF6",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-tertiary-container": "#98805d",
+                    "tertiary-fixed": "#fcdeb5",
+                    "inverse-primary": "#bec6e0",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#000000",
+                    "on-error": "#ffffff",
+                    "primary-fixed": "#dae2fd",
+                    "surface": "#f7f9fb",
+                    "on-secondary-fixed": "#001a42",
+                    "status-urgent": "#B91C1C",
+                    "surface-container-low": "#f2f4f6",
+                    "on-primary-fixed": "#131b2e",
+                    "secondary-fixed": "#d8e2ff",
+                    "on-surface": "#191c1e",
+                    "border-subtle": "#E2E8F0",
+                    "status-payment-due": "#F59E0B",
+                    "secondary-container": "#2170e4",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#7c839b",
+                    "primary-fixed-dim": "#bec6e0",
+                    "on-primary": "#ffffff",
+                    "status-blocked": "#EF4444",
+                    "surface-dim": "#d8dadc",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "card-padding": "24px",
+                    "base": "4px",
+                    "section-gap": "40px",
+                    "container-margin": "32px",
+                    "input-gap": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "display-lg": ["Manrope"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "body-sm": ["Inter"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e0e3e5; border-radius: 10px; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .active-pill { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- Side Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg flex flex-col py-6 shadow-xl z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1">terminal</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white tracking-tight">GVOS</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined active-pill" data-icon="settings_suggest">settings_suggest</span>
+<span class="font-label-md text-label-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="lan">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 space-y-1">
+<button class="w-full mb-6 flex items-center justify-center gap-2 bg-secondary text-white py-3 rounded-xl font-label-md transition-opacity active:opacity-80">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                New Instance
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+<div class="flex items-center gap-6 flex-1">
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary">GVOS Control Plane</h2>
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-body-sm focus:ring-2 focus:ring-secondary/20" placeholder="Search reports, talents, or nodes..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg font-label-md hover:bg-opacity-90 transition-opacity">Deploy</button>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a senior technology manager in a well-lit modern corporate office. The person has a confident expression and is wearing a sleek, dark business casual outfit. The background is softly blurred, showing hints of a clean architectural workspace with glass partitions and soft, natural ambient light that aligns with a premium SaaS interface style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB85cD-GeMTRq5ybrtsWD2cARLHCh7LJZtrZDmTxbG_SX48BzDxoe8jbJdjCRfdiLlXt0p4MM6haZ5tU316krQEl4wBFdAhuRKio0SRxFzBF_qHLpkiIm0R3q8yIXf_oi7QQqzDFfG8-AZzf_8RMn9G4NTrv_N5AE-teNvfSo0S9zWE1LVfkOxTA1YlgAlh55YfDn-eHSl09vnUd2Axc6kEsBs2TK6uJxpDHJKT5r2Cd2D-RI0qg-W3iHsLLZjIDWovrboLPh18jA"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[280px] pt-16 min-h-screen">
+<div class="p-gutter max-w-[1440px] mx-auto">
+<!-- Page Header -->
+<div class="flex items-end justify-between mb-8">
+<div>
+<nav class="flex items-center gap-2 mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant">Operations</span>
+<span class="material-symbols-outlined text-[14px] text-outline-variant" data-icon="chevron_right">chevron_right</span>
+<span class="font-label-md text-label-md text-secondary">Report Review</span>
+</nav>
+<h3 class="font-headline-lg text-headline-lg text-primary">Pending Reviews</h3>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+<span class="font-label-md text-label-md">Filters</span>
+</button>
+<button class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+<span class="font-label-md text-label-md">Export All</span>
+</button>
+</div>
+</div>
+<!-- Dashboard Bento Grid -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Filters Sidebar/Rail inside content -->
+<div class="col-span-12 lg:col-span-3 space-y-6">
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-4">View Context</h4>
+<div class="space-y-3">
+<label class="block">
+<span class="font-label-md text-[11px] text-outline mb-1 block">REPORT TYPE</span>
+<select class="w-full bg-surface-container-low border-border-subtle rounded-lg text-body-sm focus:ring-secondary/20">
+<option>All Reports</option>
+<option>Daily Standups</option>
+<option>Weekly Summaries</option>
+</select>
+</label>
+<label class="block">
+<span class="font-label-md text-[11px] text-outline mb-1 block">TALENT NODE</span>
+<select class="w-full bg-surface-container-low border-border-subtle rounded-lg text-body-sm focus:ring-secondary/20">
+<option>All Assigned</option>
+<option>Engineering Team A</option>
+<option>Product Ops</option>
+<option>Design Systems</option>
+</select>
+</label>
+<label class="block">
+<span class="font-label-md text-[11px] text-outline mb-1 block">CLIENT ENTITY</span>
+<select class="w-full bg-surface-container-low border-border-subtle rounded-lg text-body-sm focus:ring-secondary/20">
+<option>All Clients</option>
+<option>NeoTech Corp</option>
+<option>Global Logistics</option>
+</select>
+</label>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Quick Stats</h4>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant">Avg Review Time</span>
+<span class="font-mono-sm text-mono-sm text-primary">12.4m</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant">Approval Rate</span>
+<span class="font-mono-sm text-mono-sm text-status-completed">94.2%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant">Critical Blockers</span>
+<span class="font-mono-sm text-mono-sm text-status-urgent">03</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Reports Queue -->
+<div class="col-span-12 lg:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Selected Report Detail (High Priority) -->
+<div class="col-span-1 md:col-span-2 bg-surface-container-lowest rounded-xl border-2 border-secondary shadow-lg overflow-hidden flex flex-col h-[600px]">
+<div class="bg-surface-container-low px-6 py-4 border-b border-border-subtle flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center font-bold text-secondary">JS</div>
+<div>
+<h4 class="font-headline-md text-body-md font-bold text-primary">Jordan Smith</h4>
+<p class="text-[12px] text-on-surface-variant">Senior Cloud Architect • Weekly Report • May 12-18</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded text-[10px] font-bold uppercase">Weekly</span>
+<span class="px-2 py-1 bg-secondary/10 text-secondary rounded text-[10px] font-bold uppercase">Pending Review</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-card-padding custom-scrollbar">
+<div class="space-y-8">
+<section>
+<h5 class="font-label-md text-label-md text-on-surface-variant mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="task_alt">task_alt</span>
+                                        CORE WORK SUMMARY
+                                    </h5>
+<div class="bg-surface-container-low p-4 rounded-lg border border-border-subtle">
+<p class="text-body-md text-on-surface leading-relaxed">
+                                            Successfully completed the migration of the secondary node cluster to the GVOS-2 infrastructure. Reduced latency by 14% across all EMEA endpoints. Mentored 2 junior talents on the new security protocols for the Vault system.
+                                        </p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-highest rounded-full text-[12px] text-primary">#infra-migration</span>
+<span class="px-3 py-1 bg-surface-container-highest rounded-full text-[12px] text-primary">#latency-opt</span>
+<span class="px-3 py-1 bg-surface-container-highest rounded-full text-[12px] text-primary">#security-training</span>
+</div>
+</div>
+</section>
+<section>
+<h5 class="font-label-md text-label-md text-on-surface-variant mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="warning">warning</span>
+                                        BLOCKERS &amp; RISKS
+                                    </h5>
+<div class="bg-error-container/20 p-4 rounded-lg border border-error/20">
+<p class="text-body-md text-on-error-container">
+                                            Pending approval for the production API keys for the third-party monitoring service. This might delay the final integration phase scheduled for next Tuesday.
+                                        </p>
+</div>
+</section>
+<section>
+<h5 class="font-label-md text-label-md text-on-surface-variant mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="notes">notes</span>
+                                        TALENT NOTES
+                                    </h5>
+<p class="text-body-md text-on-surface-variant italic">
+                                        "Feeling confident about the performance gains. Would like to discuss potential expansion of the EMEA cluster in our next 1-on-1."
+                                    </p>
+</section>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low border-t border-border-subtle flex justify-between items-center">
+<div class="flex gap-2">
+<button class="px-4 py-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg font-label-md transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="history">history</span>
+                                    View History
+                                </button>
+<button class="px-4 py-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg font-label-md transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="forum">forum</span>
+                                    Add Comment
+                                </button>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2 border border-error text-error hover:bg-error/5 rounded-lg font-label-md transition-colors">Request Revision</button>
+<button class="px-8 py-2 bg-secondary text-white hover:bg-opacity-90 rounded-lg font-label-md transition-opacity shadow-md">Approve Report</button>
+</div>
+</div>
+</div>
+<!-- Queue List -->
+<div class="col-span-1 md:col-span-2 space-y-4">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Queue: 8 Reports Remaining</h4>
+<!-- Report Item (Flagged) -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-status-urgent/30 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-status-urgent">
+<img alt="Talent" class="w-12 h-12 rounded-lg object-cover" data-alt="Close up portrait of a young male software engineer with a focused, professional demeanor, set against a blurred background of a high-tech software development office. Warm office lighting highlights his features, emphasizing a clean and precise look that matches a corporate tech environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9AGA66-IQtm4VF1UOG_wplN6aAPJJG_9obJaodjkX1m0RTskNWPe3Vje8O0hPKDnTPWWO3ID8XFNJt6fskr6vxPo2nK_Ys5V2PNof6D_ZWAmO-Um3BAHaQU9ecpsac6vx_TWdKQK-7hk1waX80OYeOokaaSCNM8imC_0WAGer97VM8WRnZDUv4btJFc84UALf2n77NsYaYXbAMBZwojCEPFXZIRIAAwhKLKq5j9UKbjHCdkkJDvg-ECP8bIXozyULWbb-3BPzTw"/>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h5 class="font-body-md font-bold text-primary">Alex Rivera</h5>
+<span class="px-2 py-0.5 bg-error-container text-on-error-container rounded text-[10px] font-bold uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="flag">flag</span>
+                                        Flagged
+                                    </span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Daily Standup • 2 hours ago</p>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-status-urgent">Critical Blocker</p>
+<p class="text-[12px] text-outline">API Timeout</p>
+</div>
+</div>
+<!-- Report Item (Pending) -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-border-subtle flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer opacity-80 hover:opacity-100">
+<img alt="Talent" class="w-12 h-12 rounded-lg object-cover" data-alt="A portrait of a confident female project manager in a bright, modern corporate setting. She is smiling professionally, wearing a high-quality tailored blazer. The background consists of a sophisticated office with soft glass reflections and minimal geometric furniture, fitting the clean GVOS design language." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoBFNJzm4S4eJZgw0ndo5GPgI5z5yxd44pFlJtibo9o-omjU3XsLDBGKxHUR3ImzG-8p_ZLsunyhFjZTC5Bg-ZBodVg6s6N_7oFmLS024GFzInN2MU-QNe2yvW9qWFCkuOw2wjyB-ywlDL46-sTRBQHTN6MYllra21R4VQN3T0AXZq3xDaFk_CtYwVt5OkQ87c1pkyv7vOopHRuv4rNKqzE75XLmUrOlM-15AW6O5kzzo_eYB8o-4Iv45Yr0FE2e1So5EOe1efJw"/>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h5 class="font-body-md font-bold text-primary">Sarah Chen</h5>
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded text-[10px] font-bold uppercase">Pending Review</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Daily Standup • 5 hours ago</p>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-secondary">Normal</p>
+<p class="text-[12px] text-outline">Frontend Sprint</p>
+</div>
+</div>
+<!-- Report Item (Pending) -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-border-subtle flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer opacity-80 hover:opacity-100">
+<img alt="Talent" class="w-12 h-12 rounded-lg object-cover" data-alt="A headshot of a middle-aged male executive consultant in a sharp dark suit. He is looking directly at the camera with a reassuring, knowledgeable expression. The setting is a luxury office lounge with soft, warm lighting and premium textures, reinforcing a sense of institutional trust and operational excellence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOH0YJyo--_Qxp75pijPniIrMs9KAE9lNzQ9UWmMGQGxpfItT9IV4p3hUDLSB5GM1_rotmrTBR4Q3w9xh6eC29E7E8JRSug4cKh5n989f9QFedWEXrGGLub3lCFo76uxsLi8wY-IyoxTVXecZp_vG8V5qADGfzkI2xtlOnod0ahgNlBXtDgJGqm4_xK76rivgqsQ6t5TfA400o6HZodCpw1pOiVV-djOod0Rf2m4uK44ZAk2OEc7eIgK3MLrbyGwnRFftIwK1vjA"/>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h5 class="font-body-md font-bold text-primary">Marcus Thorne</h5>
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded text-[10px] font-bold uppercase">Pending Review</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Weekly Summary • Yesterday</p>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-status-completed">Completed</p>
+<p class="text-[12px] text-outline">Q2 Planning</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions for the report items
+        document.querySelectorAll('.cursor-pointer').forEach(item => {
+            item.addEventListener('click', () => {
+                // Visual feedback only for demo
+                document.querySelectorAll('.cursor-pointer').forEach(i => i.classList.remove('border-secondary', 'border-2'));
+                item.classList.add('border-secondary', 'border-2');
+                
+                // Animate transition (simulated)
+                const detailView = document.querySelector('.col-span-1.md\\:col-span-2.bg-surface-container-lowest');
+                detailView.style.opacity = '0.5';
+                setTimeout(() => {
+                    detailView.style.opacity = '1';
+                }, 200);
+            });
+        });
+    </script>
+</body></html>

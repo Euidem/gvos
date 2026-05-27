@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#45464d",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed": "#d8e2ff",
+                      "sidebar-bg": "#0B0F19",
+                      "surface-container-low": "#f2f4f6",
+                      "status-completed": "#059669",
+                      "surface-container-highest": "#e0e3e5",
+                      "outline-variant": "#c6c6cd",
+                      "surface-dim": "#d8dadc",
+                      "on-background": "#191c1e",
+                      "on-primary-fixed": "#131b2e",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "primary-fixed": "#dae2fd",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "status-payment-due": "#F59E0B",
+                      "status-suspended": "#64748B",
+                      "inverse-primary": "#bec6e0",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed": "#001a42",
+                      "surface-tint": "#565e74",
+                      "border-subtle": "#E2E8F0",
+                      "on-secondary-fixed-variant": "#004395",
+                      "on-tertiary-container": "#98805d",
+                      "on-surface": "#191c1e",
+                      "status-trial": "#8B5CF6",
+                      "on-tertiary-fixed": "#271901",
+                      "primary-container": "#131b2e",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-primary-container": "#7c839b",
+                      "status-urgent": "#B91C1C",
+                      "outline": "#76777d",
+                      "primary-fixed-dim": "#bec6e0",
+                      "status-active": "#10B981",
+                      "inverse-surface": "#2d3133",
+                      "secondary-container": "#2170e4",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#271901",
+                      "surface-container-high": "#e6e8ea",
+                      "surface-variant": "#e0e3e5",
+                      "secondary": "#0058be",
+                      "surface-bright": "#f7f9fb",
+                      "tertiary": "#000000",
+                      "inverse-on-surface": "#eff1f3",
+                      "surface-container-lowest": "#ffffff",
+                      "surface": "#f7f9fb",
+                      "background": "#f7f9fb",
+                      "on-secondary": "#ffffff",
+                      "status-blocked": "#EF4444",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed": "#fcdeb5",
+                      "error": "#ba1a1a",
+                      "surface-container": "#eceef0",
+                      "on-secondary-container": "#fefcff",
+                      "on-error-container": "#93000a",
+                      "primary": "#000000"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "input-gap": "16px",
+                      "container-margin": "32px",
+                      "card-padding": "24px",
+                      "base": "4px",
+                      "section-gap": "40px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Manrope"],
+                      "body-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "display-lg": ["Manrope"],
+                      "headline-lg": ["Manrope"],
+                      "mono-sm": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .focused-input:focus-within {
+            box-shadow: 0 0 0 2px rgba(0, 88, 190, 0.15);
+        }
+        .bg-pattern {
+            background-color: #f7f9fb;
+            background-image: radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-pattern font-body-md text-on-background min-h-screen flex flex-col">
+<!-- Top Navigation (Reduced version for focus) -->
+<header class="w-full flex items-center justify-between px-gutter h-16 bg-surface-container-lowest shadow-sm z-40 sticky top-0">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-black text-secondary">GVOS</span>
+</div>
+<div class="flex items-center gap-4">
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Back to Login</a>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center p-gutter">
+<div class="max-w-[480px] w-full bg-surface-container-lowest border border-border-subtle rounded-xl shadow-lg overflow-hidden flex flex-col">
+<!-- Visual Header -->
+<div class="h-40 relative bg-sidebar-bg flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 opacity-20">
+<img class="w-full h-full object-cover" data-alt="A sophisticated macro shot of a sleek server farm with glowing blue led indicators and brushed metal surfaces. The image is captured with a shallow depth of field, emphasizing the technical precision and institutional security of an enterprise technology environment. Deep navy and obsidian tones dominate the palette, creating a sense of quiet power and operational authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlWPGRQ9OgFT2QCDTcI814QHy_sw1oqnHths2hXR_mnCFORhgRLQI7foH0l6jStjCnSBdHkt58IxAcF2jURcCiraSYAMlp1eZjDIXtmT8ERvucP-CQx5Y8RpXcPS4jVqeaqSOUL0NYUcbuXnD8Kk16vasZDB6tj1hbFu76fKH-bqIKTIaEOUOuROwherjllA_IxlZkkCMDgTngf6kdxC_5D2HgEVCuTYY3EeDCQA2VRkb2AY7pkkc6eXksslDd1--Wetduhi6D5Q"/>
+</div>
+<div class="relative z-10 bg-white/10 backdrop-blur-md rounded-full p-6 border border-white/20">
+<span class="material-symbols-outlined text-secondary-fixed text-4xl" style="font-variation-settings: 'FILL' 0;">lock_reset</span>
+</div>
+</div>
+<!-- Content Area -->
+<div class="p-card-padding flex flex-col gap-6" id="reset-container">
+<div class="text-center flex flex-col gap-2">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Forgot Password?</h1>
+<p class="font-body-md text-on-surface-variant">Enter your registered email address and we'll send you a secure link to reset your credentials.</p>
+</div>
+<!-- Step 1: Request Email -->
+<form class="flex flex-col gap-input-gap" id="request-form">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="email">Email Address</label>
+<div class="relative focused-input transition-all rounded-lg border border-border-subtle overflow-hidden">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">mail</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest outline-none font-body-sm text-on-surface focus:border-secondary" id="email" placeholder="e.g. j.doe@enterprise.com" required="" type="email"/>
+</div>
+</div>
+<button class="w-full bg-secondary text-on-secondary font-label-md text-label-md py-4 rounded-lg hover:brightness-110 active:scale-[0.98] transition-all shadow-md mt-2 flex items-center justify-center gap-2" type="submit">
+                        Send Reset Link
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</form>
+<!-- Step 2: Confirmation (Hidden by default) -->
+<div class="hidden flex flex-col gap-6 py-4 items-center text-center" id="success-state">
+<div class="w-16 h-16 rounded-full bg-status-active/10 flex items-center justify-center text-status-active">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex flex-col gap-2">
+<h2 class="font-headline-md text-headline-md text-on-surface">Check your Inbox</h2>
+<p class="font-body-sm text-on-surface-variant">We've sent an encrypted reset link to <span class="font-bold text-on-surface" id="display-email"></span>. It will expire in 15 minutes.</p>
+</div>
+<button class="font-label-md text-label-md text-secondary hover:underline" onclick="location.reload()">Didn't receive the email? Try again</button>
+</div>
+<div class="border-t border-border-subtle pt-6 flex flex-col gap-4">
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg border border-border-subtle">
+<span class="material-symbols-outlined text-outline text-lg">verified_user</span>
+<p class="font-body-sm text-on-surface-variant text-[12px]">Locked with GVOS Advanced Enterprise Security Protocols (AES-256).</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Space -->
+<footer class="p-gutter flex justify-center gap-8">
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-colors" href="#">Security Center</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-colors" href="#">Support</a>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+        document.getElementById('request-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            // Loading state
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Processing...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                document.getElementById('display-email').innerText = email;
+                document.getElementById('request-form').classList.add('hidden');
+                document.getElementById('success-state').classList.remove('hidden');
+                
+                // Animating success icon
+                const icon = document.querySelector('#success-state .material-symbols-outlined');
+                icon.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    icon.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    icon.style.transform = 'scale(1)';
+                }, 50);
+            }, 1200);
+        });
+    </script>
+</body></html>

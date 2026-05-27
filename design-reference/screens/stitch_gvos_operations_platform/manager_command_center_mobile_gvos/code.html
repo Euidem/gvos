@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#eceef0",
+                        "primary": "#000000",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed": "#dae2fd",
+                        "status-suspended": "#64748B",
+                        "border-subtle": "#E2E8F0",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "inverse-primary": "#bec6e0",
+                        "surface-variant": "#e0e3e5",
+                        "background": "#f7f9fb",
+                        "surface-dim": "#d8dadc",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-bright": "#f7f9fb",
+                        "sidebar-bg": "#0B0F19",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-on-surface": "#eff1f3",
+                        "status-active": "#10B981",
+                        "inverse-surface": "#2d3133",
+                        "on-surface-variant": "#45464d",
+                        "status-trial": "#8B5CF6",
+                        "status-urgent": "#B91C1C",
+                        "tertiary": "#000000",
+                        "status-completed": "#059669",
+                        "secondary-fixed": "#d8e2ff",
+                        "secondary": "#0058be",
+                        "primary-container": "#131b2e",
+                        "outline": "#76777d",
+                        "tertiary-fixed": "#fcdeb5",
+                        "surface": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-background": "#191c1e",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#271901",
+                        "surface-tint": "#565e74",
+                        "status-payment-due": "#F59E0B",
+                        "on-tertiary-fixed": "#271901",
+                        "secondary-container": "#2170e4",
+                        "on-surface": "#191c1e",
+                        "on-secondary-fixed": "#001a42",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#98805d",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-secondary-container": "#fefcff",
+                        "status-blocked": "#EF4444",
+                        "on-primary-container": "#7c839b",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed": "#131b2e",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "input-gap": "16px",
+                        "container-margin": "32px",
+                        "gutter": "24px",
+                        "section-gap": "40px",
+                        "base": "4px",
+                        "card-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "body-md": ["Inter"],
+                        "mono-sm": ["JetBrains Mono"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Manrope"],
+                        "headline-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            background-color: #f7f9fb;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-background">
+<!-- Mobile Top Header -->
+<header class="sticky top-0 z-40 bg-surface-container-lowest shadow-sm flex items-center justify-between px-gutter h-16 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-secondary">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate manager in a high-end office environment. The lighting is soft and natural, emphasizing a calm and authoritative presence. The background features blurred modern architecture with a palette of soft blues, whites, and metallic silvers. The style is clean, sharp, and reflects institutional trust and premium efficiency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS26jaroI_YE8PCKAZu2aXhMP15OXbiw82fhsk_y1XTmstdyZxB8_LWE3tuNiuUkcttYjCsD0CZnNV8oHOXqR3diikEOdGTrU_UVK36C3W33alVbhTj3Gq4b_qFZ-It0ozlbAkrYNzmNaLsKwFmo2XZ91mBjnai9Gj7m4kCeyjsrDikeutBXKmp3U1gX4EPrH6ZkTeQy0h08aqvj1gQWoCuGpyqd_musInMP2KuAZ53feSZBdtk7bfnjtcc2IgpfnA24AnE00_Yw"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Command Center</p>
+<h1 class="font-headline-md text-headline-md text-primary leading-tight">GVOS</h1>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-outline">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-outline">security</span>
+</button>
+</div>
+</header>
+<main class="px-4 pt-6 pb-24 space-y-6">
+<!-- Welcome Header -->
+<section>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Good morning, Alex.</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Your operational overview for today.</p>
+</section>
+<!-- Metric Cards -->
+<section class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<span class="material-symbols-outlined text-secondary mb-2" style="font-variation-settings: 'FILL' 1;">groups</span>
+<p class="font-label-md text-label-md text-on-surface-variant">Talents Online</p>
+<div class="flex items-end gap-2 mt-1">
+<span class="font-headline-md text-headline-md text-primary">42</span>
+<span class="font-label-md text-label-md text-status-active flex items-center">
+<span class="material-symbols-outlined text-sm">arrow_upward</span> 12%
+                    </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<span class="material-symbols-outlined text-secondary mb-2" style="font-variation-settings: 'FILL' 1;">workspaces</span>
+<p class="font-label-md text-label-md text-on-surface-variant">Active Workspaces</p>
+<div class="flex items-end gap-2 mt-1">
+<span class="font-headline-md text-headline-md text-primary">18</span>
+<span class="font-label-md text-label-md text-status-active flex items-center">
+<span class="material-symbols-outlined text-sm">check_circle</span> stable
+                    </span>
+</div>
+</div>
+</section>
+<!-- Priority Alerts -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="font-label-md text-label-md text-primary tracking-wider uppercase">Priority Alerts</h3>
+<span class="w-5 h-5 bg-status-urgent text-white text-[10px] flex items-center justify-center rounded-full font-bold">3</span>
+</div>
+<!-- Alert Card: Overdue Task -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border-l-4 border-status-urgent shadow-sm flex gap-4">
+<div class="w-10 h-10 bg-error-container rounded-lg flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-error">assignment_late</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<p class="font-label-md text-label-md text-primary">Overdue Task: Audit #402</p>
+<span class="font-mono-sm text-mono-sm text-error">2h late</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Compliance review for Global Logistics workspace is pending.</p>
+</div>
+</div>
+<!-- Alert Card: Complaint -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border-l-4 border-status-payment-due shadow-sm flex gap-4">
+<div class="w-10 h-10 bg-tertiary-fixed rounded-lg flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-fixed">feedback</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<p class="font-label-md text-label-md text-primary">Client Escalation</p>
+<span class="font-mono-sm text-mono-sm text-status-payment-due">Urgent</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Response required for workspace: "FinTech Pro Solutions".</p>
+</div>
+</div>
+</section>
+<!-- Assigned Talents -->
+<section class="space-y-4">
+<h3 class="font-label-md text-label-md text-primary tracking-wider uppercase">Assigned Talents</h3>
+<div class="space-y-2">
+<!-- Talent Row 1 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-border-subtle shadow-sm flex items-center gap-3 active:scale-[0.98] transition-transform">
+<div class="relative">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Sarah Chen" class="w-full h-full object-cover" data-alt="A portrait of a young female professional with a focused expression, representing a highly skilled talent in a tech environment. The image is bright and crisp, featuring a minimalist background with soft gradients of white and light grey. The lighting is professional studio quality, emphasizing clarity and corporate modern aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY_YnUb5QkqbkPt_SHd65dcwmCoUmXKKl-7M-DXfkesdywxCRn4zhPS5nBpA2SJNZMMvHXa1mvk5mBr4kiJoVJOkl_kAOklfdJtR7hEOQ_aO1R1PmzqFPSDVv35jourq5noAcgJjYFnosU7TOR0dtx-W6iw1pAkLG_onyVFetn9ETF7FivjcLwRWj4bnaHPeK0uuDJouzHgvFcDsKwWRipT0ciPUDse3fQTdxcobxw2VUs0nKlXxHkzUHn7CQZWJOOm-QchkgoaQ"/>
+</div>
+<div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-status-active border-2 border-white rounded-full"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center">
+<p class="font-label-md text-label-md text-primary">Sarah Chen</p>
+<span class="text-[10px] px-2 py-0.5 bg-surface-container-highest rounded text-on-surface-variant font-bold">85% Load</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Lead Analyst • Workspace A</p>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Talent Row 2 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-border-subtle shadow-sm flex items-center gap-3 active:scale-[0.98] transition-transform">
+<div class="relative">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Marcus Wright" class="w-full h-full object-cover" data-alt="A portrait of a male professional in a smart casual business outfit. He has a neutral, reliable expression, symbolizing institutional trust. The background is a clean, modern workspace with soft focus, maintaining a palette of corporate blues and whites. The style is professional, high-fidelity, and minimalist." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcqnERyPfki0crzKUNKvsZYEf5rhpG8hM8jmOkOmQPb81PoFhMcO6DkpZ39us47-c6kqSSOIc9ILlmGgNzmWQ-FZtnJvZ71FU072zKg8A74SBB11Fg2iKI-e1yS2-dBL3_xoSAh-Fg1WB27XWN7JPXY2VhfDRJdQtu134NtDoUB1GMTV2622FxG_H6wpyzVvHRRlP1Utjv_0LVA6KKOGFeysaQxuM3YwMiLn3TObe8f8fWa2_ud3hCWcUyKAZOrBrAGt2ttN5jfA"/>
+</div>
+<div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-status-active border-2 border-white rounded-full"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center">
+<p class="font-label-md text-label-md text-primary">Marcus Wright</p>
+<span class="text-[10px] px-2 py-0.5 bg-error-container text-error rounded font-bold">98% Load</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Security Op • Workspace B</p>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Talent Row 3 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-border-subtle shadow-sm flex items-center gap-3 opacity-75 active:scale-[0.98] transition-transform">
+<div class="relative">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Elena Rodriguez" class="w-full h-full object-cover" data-alt="A portrait of a senior female executive or talent with a confident, calm expression. The visual style is premium corporate, with high-key lighting and a palette dominated by clean whites and deep blacks. The background is an abstract architectural blur, emphasizing her role within a sophisticated, tech-driven platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNVwzujfwqdEK5u5wxgHEl1ZKPb7eYjYL56H6Fh0P0mlPAwDnILlpKHEAmK5juWbC2Tt2oU35P9s9yUJ2eb-BMIlkoS2U3iT84VvHULdOSvjpk_ws81r4f3foAMO7K2fFUB00KSE3Smdx_jT31UcaquEfTs1eKEVPFpzG8XnmsWOBagIxnPo4AJOIL5Axpy8cQu3LNjE6o2RrziQwGhWNfFdEr4RkqI5FCmvLAvXChpRqjkmnR38kD1vV9x2qw6eJx56l-gxCu5A"/>
+</div>
+<div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-status-suspended border-2 border-white rounded-full"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center">
+<p class="font-label-md text-label-md text-primary">Elena Rodriguez</p>
+<span class="text-[10px] px-2 py-0.5 bg-surface-container-highest rounded text-on-surface-variant font-bold">Offline</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">FinOps Specialist</p>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-20 right-6 w-14 h-14 bg-secondary text-on-secondary rounded-full shadow-lg flex items-center justify-center z-50 active:scale-90 duration-150">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle z-50">
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 scale-90 duration-150" href="#">
+<span class="material-symbols-outlined active-icon">home</span>
+<span class="font-label-md text-label-md-mobile">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-label-md-mobile">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-md text-label-md-mobile">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md-mobile">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for clicking talent rows
+        document.querySelectorAll('.talent-row').forEach(row => {
+            row.addEventListener('click', () => {
+                row.classList.add('bg-surface-container-low');
+                setTimeout(() => {
+                    row.classList.remove('bg-surface-container-low');
+                }, 200);
+            });
+        });
+    </script>
+</body></html>

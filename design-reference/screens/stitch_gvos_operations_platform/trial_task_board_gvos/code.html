@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Trial Task Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#271901",
+                      "status-completed": "#059669",
+                      "surface-container-high": "#e6e8ea",
+                      "on-tertiary-fixed": "#271901",
+                      "status-suspended": "#64748B",
+                      "secondary": "#0058be",
+                      "surface-container": "#eceef0",
+                      "on-background": "#191c1e",
+                      "sidebar-bg": "#0B0F19",
+                      "status-active": "#10B981",
+                      "outline": "#76777d",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "inverse-on-surface": "#eff1f3",
+                      "surface-tint": "#565e74",
+                      "surface-bright": "#f7f9fb",
+                      "tertiary": "#000000",
+                      "on-surface-variant": "#45464d",
+                      "background": "#f7f9fb",
+                      "outline-variant": "#c6c6cd",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#e0e3e5",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "on-secondary-container": "#fefcff",
+                      "on-secondary-fixed-variant": "#004395",
+                      "inverse-surface": "#2d3133",
+                      "primary-container": "#131b2e",
+                      "status-trial": "#8B5CF6",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "on-tertiary-container": "#98805d",
+                      "tertiary-fixed": "#fcdeb5",
+                      "inverse-primary": "#bec6e0",
+                      "on-tertiary": "#ffffff",
+                      "primary": "#000000",
+                      "on-error": "#ffffff",
+                      "primary-fixed": "#dae2fd",
+                      "surface": "#f7f9fb",
+                      "on-secondary-fixed": "#001a42",
+                      "status-urgent": "#B91C1C",
+                      "surface-container-low": "#f2f4f6",
+                      "on-primary-fixed": "#131b2e",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-surface": "#191c1e",
+                      "border-subtle": "#E2E8F0",
+                      "status-payment-due": "#F59E0B",
+                      "secondary-container": "#2170e4",
+                      "error": "#ba1a1a",
+                      "on-primary-container": "#7c839b",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-primary": "#ffffff",
+                      "status-blocked": "#EF4444",
+                      "surface-dim": "#d8dadc",
+                      "on-secondary": "#ffffff",
+                      "on-error-container": "#93000a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.8rem",
+                      "xl": "1rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-padding": "24px",
+                      "base": "4px",
+                      "section-gap": "40px",
+                      "container-margin": "32px",
+                      "input-gap": "16px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "display-lg": ["Manrope"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Manrope"],
+                      "headline-lg": ["Manrope"],
+                      "body-sm": ["Inter"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "mono-sm": ["JetBrains Mono"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .task-card:hover {
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        .sidebar-active-indicator {
+            background: linear-gradient(90deg, #0058be 0%, transparent 100%);
+            opacity: 0.15;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-secondary/30">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg flex flex-col py-6 shadow-xl z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="shield">shield</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white leading-tight">GVOS</h1>
+<p class="font-label-md text-label-md text-secondary tracking-wider uppercase">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 mx-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary mx-2 rounded-r-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings_suggest">settings_suggest</span>
+<span class="font-label-md text-label-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 mx-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 mx-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 mx-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="lan">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 mx-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
+<h3 class="font-label-md text-label-md text-white mb-2 uppercase tracking-tight">Trial Limits</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant/80 mb-3">Tasks restricted to active leads only.</p>
+<div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mb-2">
+<div class="bg-status-trial h-full w-[60%]"></div>
+</div>
+<span class="font-mono-sm text-mono-sm text-on-surface-variant/60">3/5 Tasks Utilized</span>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface border-b border-outline-variant z-40 px-gutter flex justify-between items-center">
+<div class="flex items-center gap-6">
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary">GVOS Control Plane</h2>
+<div class="flex items-center gap-2 bg-status-trial/10 border border-status-trial px-3 py-1.5 rounded-full text-status-trial">
+<span class="material-symbols-outlined text-[18px]" data-icon="timer">timer</span>
+<span class="font-label-md text-label-md" id="trial-countdown">Trial ends in 02d : 14h : 33m</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined p-2 text-on-surface-variant cursor-pointer hover:bg-surface-container-low transition-colors rounded-full" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-status-urgent rounded-full border-2 border-surface"></span>
+</div>
+<span class="material-symbols-outlined p-2 text-on-surface-variant cursor-pointer hover:bg-surface-container-low transition-colors rounded-full" data-icon="history">history</span>
+<button class="bg-secondary text-white px-5 py-2 rounded-lg font-label-md text-label-md hover:bg-secondary/90 transition-all shadow-md active:opacity-80">Deploy</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant ml-2">
+<img alt="User Profile" data-alt="A professional close-up headshot of a middle-aged male executive in a sleek, minimalist corporate office. He is wearing a modern charcoal grey suit against a background of soft bokeh lights from a high-tech control center. The lighting is sophisticated and cool-toned, echoing the GVOS brand identity of institutional trust and quiet power. The image feels sharp, clean, and highly professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnp9QtJrP_yh6dHiI7bzwrmcv3uJ48HbFGMbZ0b20qmJ4Iqa8b2G44U5HEj7NMos8H30NnNmh8ET01rqX0L1tOWjxZoGhvMRYGIqt9lHl_Ka58WSQqDD2YUX5B4ng2CS4LtJjCGEzGwLM37XGZBhpEoovsrwH9ok4tpJXoLdZ8zhZQkWybcFjKhWXLM9YN2ootfoVO8k-dTmldqeS9u-Vdn97NYkP8_1P7a5_ysyp-UBGoiX-bj_H8694SqTK8xL2XJ65G0zAD7A"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[280px] pt-16 min-h-screen bg-background">
+<div class="p-8">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-status-trial/20 text-status-trial font-label-md text-label-md px-2 py-0.5 rounded uppercase">Trial Access</span>
+<h1 class="font-headline-lg text-headline-lg">Trial Task Board</h1>
+</div>
+<p class="text-on-surface-variant font-body-md text-body-md">Manage and track mission-critical tasks for active leads.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-low border border-outline-variant px-4 py-2 rounded-lg font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="filter_list">filter_list</span>
+                        Filter
+                    </button>
+<button class="bg-primary text-white px-4 py-2 rounded-lg font-label-md text-label-md flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                        Create Task
+                    </button>
+</div>
+</div>
+<!-- Kanban Board Grid -->
+<div class="grid grid-cols-4 gap-6 items-start">
+<!-- Column: Pending -->
+<div class="space-y-4">
+<div class="flex items-center justify-between px-2 mb-4">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant">PENDING</span>
+<span class="bg-surface-container-highest px-2 py-0.5 rounded-full font-mono-sm text-mono-sm">02</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="more_horiz">more_horiz</span>
+</div>
+<!-- Task Card 1 -->
+<div class="task-card bg-surface-container-lowest border border-border-subtle p-card-padding rounded-xl transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-status-urgent/10 text-status-urgent font-label-md text-label-md px-2 py-0.5 rounded">High Priority</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="attach_file">attach_file</span>
+</div>
+<h4 class="font-label-md text-[15px] font-bold text-on-surface mb-2 leading-snug">Lead Identity Verification: SV-9012</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2 mb-4">Validate security clearance and financial standing for the Singapore venture lead.</p>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+<span class="font-mono-sm text-mono-sm">00:00:00</span>
+</div>
+<div class="flex -space-x-2">
+<img alt="Assignee" class="w-6 h-6 rounded-full border-2 border-surface" data-alt="Avatar of a male professional with a neutral expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGQ9HBxMDX2nIh3EaPfNB_UXtJMXZn4kXyL3ZLwZ7xLMI0fayb3ch8g7oRqdEVL481c4jFuJTxNPI80kImi50nko1w4EhZ6jKg9fuX9FiOnCqJK4-mVLPrTnOxmd2QFLKAOr42S176bLMKvK0GCjZMmSGY_oVGSOD2M7UEwDZCgjD77xregDKk3q4ZYtcV70py7u5IN2Q4WKYGC1BPHks7pDSndh1IJdbXTPnDYezA-dJRduG0iXlYOkteGxz56wKtrQHzlNDeIw"/>
+</div>
+</div>
+</div>
+<!-- Task Card 2 -->
+<div class="task-card bg-surface-container-lowest border border-border-subtle p-card-padding rounded-xl transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-status-suspended/10 text-status-suspended font-label-md text-label-md px-2 py-0.5 rounded">Low</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="description">description</span>
+</div>
+<h4 class="font-label-md text-[15px] font-bold text-on-surface mb-2 leading-snug">Asset Portfolio Sync</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2 mb-4">Reconcile current portfolio holdings for premium tier access testing.</p>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+<span class="font-mono-sm text-mono-sm">00:00:00</span>
+</div>
+<div class="flex -space-x-2">
+<img alt="Assignee" class="w-6 h-6 rounded-full border-2 border-surface" data-alt="Avatar of a female executive with a confident smile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8V4ObdBy_nBygLLkE7LcXBuJx0xUEc9AmEEU2oP66LPV4EWOPGtW9XNLcfwFBypGuhnDK1BErd60BrYtfeBor-TBBAl90QRMudauSfXrkmxpq6vIf874BOIbwcZZ-ZbR05kxkenu5jmYHMz7Fx9Snd66J9NxDhsWG1UClHsKBP8u3jxbeFw4I_Ld6gI5Kak6rwfMHXItwBoi6-7w_eKHR5rYxp396mnQLVZfLWYMNhZstwbknMjEoC6Qq0FY5XuS9VsZHhvy2JQ"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: In Progress -->
+<div class="space-y-4">
+<div class="flex items-center justify-between px-2 mb-4">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant">IN PROGRESS</span>
+<span class="bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-mono-sm text-mono-sm">01</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="more_horiz">more_horiz</span>
+</div>
+<!-- Active Task Card -->
+<div class="task-card bg-surface-container-lowest border-2 border-secondary p-card-padding rounded-xl transition-all cursor-pointer shadow-lg">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-secondary/10 text-secondary font-label-md text-label-md px-2 py-0.5 rounded">In Focus</span>
+<span class="material-symbols-outlined text-secondary animate-pulse" data-icon="fiber_manual_record" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+</div>
+<h4 class="font-label-md text-[15px] font-bold text-on-surface mb-2 leading-snug">Operational Risk Analysis</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2 mb-4">Conducting deep dive into geopolitical factors for regional leads.</p>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+<div class="flex items-center gap-2 text-secondary font-bold">
+<span class="material-symbols-outlined text-[16px]" data-icon="timer">timer</span>
+<span class="font-mono-sm text-mono-sm">04:12:45</span>
+</div>
+<div class="flex -space-x-2">
+<img alt="Assignee" class="w-6 h-6 rounded-full border-2 border-surface" data-alt="Avatar of a male professional looking thoughtful." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-LXNmomiJVn5ioWL7yWKSjuhOFoQf8-VxrZqc-EmMQk8dLj8OFRLnpQEfoCsbU_CgkcZ07-HXvPtDYyj-geIfwBdRo7AJVaDadAYvscuHVqW_mrnqYIT4QDQcoft8cfnWgigC51D-wcBPHB7rzTiyMqa2G9SVJO4o5jzJx0HPSxzmdhfI7nvCjkBtVq7S_wGc0qroUGiFFcmgG7toKZrWZfb4rRfVrokwZi0aFv4jE8VSJtZqqcPHnCNl_vIQH3wFY8ZaQFpovQ"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Submitted -->
+<div class="space-y-4">
+<div class="flex items-center justify-between px-2 mb-4">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant">SUBMITTED</span>
+<span class="bg-surface-container-highest px-2 py-0.5 rounded-full font-mono-sm text-mono-sm">00</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="more_horiz">more_horiz</span>
+</div>
+<div class="border-2 border-dashed border-outline-variant/50 rounded-xl h-32 flex flex-col items-center justify-center text-on-surface-variant/40">
+<span class="material-symbols-outlined text-[32px] mb-1" data-icon="move_to_inbox">move_to_inbox</span>
+<span class="font-label-md text-label-md">Drop tasks here</span>
+</div>
+</div>
+<!-- Column: Approved -->
+<div class="space-y-4">
+<div class="flex items-center justify-between px-2 mb-4">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant">APPROVED</span>
+<span class="bg-status-completed/10 text-status-completed px-2 py-0.5 rounded-full font-mono-sm text-mono-sm">01</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="more_horiz">more_horiz</span>
+</div>
+<!-- Completed Task Card -->
+<div class="task-card bg-surface-container-lowest border border-border-subtle p-card-padding rounded-xl transition-all opacity-80 hover:opacity-100 grayscale hover:grayscale-0">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-status-completed/10 text-status-completed font-label-md text-label-md px-2 py-0.5 rounded">Verified</span>
+<span class="material-symbols-outlined text-status-completed text-[18px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<h4 class="font-label-md text-[15px] font-bold text-on-surface mb-2 leading-snug line-through opacity-50">Trial Environment Setup</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2 mb-4">Initialization of the GVOS sandbox for lead interaction testing.</p>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="done_all">done_all</span>
+<span class="font-mono-sm text-mono-sm">12:30:10</span>
+</div>
+<div class="flex -space-x-2">
+<span class="w-6 h-6 rounded-full bg-surface-container border-2 border-surface flex items-center justify-center font-mono-sm text-[10px]">+2</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) - Contextual for Trial -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-status-trial text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform active:scale-95 group">
+<span class="material-symbols-outlined text-[28px]" data-icon="bolt">bolt</span>
+<div class="absolute right-16 bg-inverse-surface text-inverse-on-surface px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-label-md text-label-md shadow-lg">
+            Upgrade for Unlimited Tasks
+        </div>
+</button>
+<script>
+        // Micro-interaction for trial countdown
+        let seconds = 33;
+        let minutes = 33;
+        let hours = 14;
+        let days = 2;
+
+        function updateCountdown() {
+            seconds--;
+            if (seconds < 0) {
+                seconds = 59;
+                minutes--;
+                if (minutes < 0) {
+                    minutes = 59;
+                    hours--;
+                    if (hours < 0) {
+                        hours = 23;
+                        days--;
+                    }
+                }
+            }
+            
+            const display = `Trial ends in ${String(days).padStart(2, '0')}d : ${String(hours).padStart(2, '0')}h : ${String(minutes).padStart(2, '0')}m`;
+            document.getElementById('trial-countdown').innerText = display;
+        }
+
+        setInterval(updateCountdown, 1000);
+
+        // Vanilla JS for simple hover effects and interactivity
+        document.querySelectorAll('.task-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = 'var(--secondary)';
+            });
+            card.addEventListener('mouseleave', () => {
+                if (!card.classList.contains('border-2')) {
+                    card.style.borderColor = '#E2E8F0';
+                }
+            });
+        });
+    </script>
+</body></html>

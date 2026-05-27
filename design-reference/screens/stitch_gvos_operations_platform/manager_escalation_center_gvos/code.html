@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Operational Risk &amp; Escalation Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f7f9fb",
+                        "surface-container": "#eceef0",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-error-container": "#93000a",
+                        "status-active": "#10B981",
+                        "tertiary-fixed": "#fcdeb5",
+                        "sidebar-bg": "#0B0F19",
+                        "primary": "#000000",
+                        "secondary": "#0058be",
+                        "surface": "#f7f9fb",
+                        "status-blocked": "#EF4444",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2d3133",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface-bright": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#98805d",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed": "#131b2e",
+                        "on-background": "#191c1e",
+                        "outline-variant": "#c6c6cd",
+                        "border-subtle": "#E2E8F0",
+                        "tertiary": "#000000",
+                        "primary-container": "#131b2e",
+                        "status-suspended": "#64748B",
+                        "secondary-container": "#2170e4",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-container": "#7c839b",
+                        "primary-fixed": "#dae2fd",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "surface-container-low": "#f2f4f6",
+                        "status-urgent": "#B91C1C",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-variant": "#e0e3e5",
+                        "tertiary-container": "#271901",
+                        "on-tertiary-fixed": "#271901",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#bec6e0",
+                        "status-payment-due": "#F59E0B",
+                        "on-secondary-container": "#fefcff",
+                        "status-trial": "#8B5CF6",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-tertiary": "#ffffff",
+                        "status-completed": "#059669",
+                        "outline": "#76777d",
+                        "on-surface-variant": "#45464d",
+                        "surface-container-high": "#e6e8ea"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-padding": "24px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "section-gap": "40px",
+                        "container-margin": "32px",
+                        "input-gap": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "mono-sm": ["JetBrains Mono"],
+                        "headline-md": ["Manrope"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e0e3e5; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background">
+<!-- Global Alert Banner -->
+<div class="fixed top-0 left-[280px] right-0 z-50 bg-status-urgent text-white flex items-center justify-between px-gutter py-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">warning</span>
+<span class="font-label-md text-label-md">CRITICAL: Network Latency detected in Northern Europe Region (EU-N1). 14 Workspaces affected.</span>
+</div>
+<button class="font-label-md text-label-md border border-white/30 px-3 py-1 rounded hover:bg-white/10 transition-colors">Details</button>
+</div>
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg shadow-xl flex flex-col py-6 z-[60]">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 bg-secondary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[20px]">hub</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white leading-tight">GVOS</h1>
+<p class="text-on-primary-container text-[10px] font-label-md">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-grow flex flex-col gap-1 px-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary" href="#">
+<span class="material-symbols-outlined">settings_suggest</span>
+<span class="font-label-md text-label-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-2 flex flex-col gap-1">
+<button class="mx-4 mb-4 bg-secondary text-white py-3 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Instance
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation -->
+<header class="fixed top-12 right-0 w-[calc(100%-280px)] h-16 bg-surface dark:bg-inverse-surface border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+<div class="flex items-center gap-6">
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary">Operational Risk Center</h2>
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined">search</span>
+</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-sm w-80 focus:ring-2 focus:ring-secondary" placeholder="Search workspaces or incidents..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer p-2 hover:bg-surface-container-high rounded-full">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer p-2 hover:bg-surface-container-high rounded-full">history</span>
+<button class="bg-primary text-white px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors">Deploy Update</button>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a senior operations manager in a high-tech corporate environment. The man has a focused expression, wearing a sleek modern navy suit. Background is a softly blurred office with clean lines and high-end lighting, maintaining a premium light-mode aesthetic with corporate blue accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjs1UuOPnRyW0rzHl9E_qTnjP9lQsHr0APnuNOVmrYpZlPR8aWIZoVGVTxaIy2ycdtUp4Mpt1f1BULFaUOIdz2KTBVVeBvzPL0Rpa6hsw0SIwfUoIGDO7vg1UDWyOYYLx2NJwfHgl0jTfo-5vKQAclYS2nYPXuRt4JGZbxuDQQTeRcHyOLWIevgVwtni5QkfIsbIQlKfohCKJJPKao37DxJBE20rTtsPOaPR6WDIix51ZxUuh7mnHmVcOoprJ2gWS8azdlubGzUw"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[280px] pt-32 p-gutter min-h-screen">
+<div class="max-w-[1440px] mx-auto space-y-gutter">
+<!-- Top Grid: Heatmap and Quick Stats -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Satisfaction Heatmap -->
+<div class="col-span-8 bg-surface-container-lowest border border-border-subtle rounded-xl p-card-padding shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary">Global Satisfaction Heatmap</h3>
+<p class="text-on-surface-variant text-body-sm">Client sentiment across primary managed regions</p>
+</div>
+<div class="flex gap-2">
+<span class="flex items-center gap-1 font-label-md text-[10px] text-on-surface-variant"><span class="w-3 h-3 bg-status-urgent rounded-sm"></span> High Risk</span>
+<span class="flex items-center gap-1 font-label-md text-[10px] text-on-surface-variant"><span class="w-3 h-3 bg-status-active rounded-sm"></span> Optimal</span>
+</div>
+</div>
+<div class="grid grid-cols-6 grid-rows-3 gap-2 h-48">
+<!-- Simulated Bento Heatmap -->
+<div class="bg-status-active/20 border border-status-active/30 rounded-lg p-3 flex flex-col justify-end">
+<span class="font-label-md text-[10px]">NA-EAST</span>
+<span class="font-headline-md text-status-active">98%</span>
+</div>
+<div class="bg-status-active/40 border border-status-active/30 rounded-lg p-3 flex flex-col justify-end col-span-2">
+<span class="font-label-md text-[10px]">EMEA-CENTRAL</span>
+<span class="font-headline-md text-status-active">94%</span>
+</div>
+<div class="bg-status-payment-due/20 border border-status-payment-due/30 rounded-lg p-3 flex flex-col justify-end">
+<span class="font-label-md text-[10px]">APAC-S</span>
+<span class="font-headline-md text-status-payment-due">72%</span>
+</div>
+<div class="bg-status-active/10 border border-status-active/30 rounded-lg p-3 flex flex-col justify-end col-span-2">
+<span class="font-label-md text-[10px]">NA-WEST</span>
+<span class="font-headline-md text-status-active">91%</span>
+</div>
+<div class="bg-status-urgent/20 border border-status-urgent/30 rounded-lg p-3 flex flex-col justify-end col-span-3">
+<span class="font-label-md text-[10px]">EU-NORTH (Critical Latency)</span>
+<span class="font-headline-md text-status-urgent">41%</span>
+</div>
+<div class="bg-status-active/20 border border-status-active/30 rounded-lg p-3 flex flex-col justify-end col-span-3">
+<span class="font-label-md text-[10px]">LATAM-S</span>
+<span class="font-headline-md text-status-active">95%</span>
+</div>
+</div>
+</div>
+<!-- Manager Action Panel -->
+<div class="col-span-4 bg-primary text-white border border-primary rounded-xl p-card-padding shadow-xl relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md mb-2">Priority Actions</h3>
+<p class="text-on-primary-container text-body-sm mb-6">Immediate overrides for active escalations</p>
+<div class="space-y-3">
+<button class="w-full flex items-center justify-between px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary-fixed-dim">chat_paste_go</span>
+<span class="font-label-md text-label-md">Mediate Active Chat</span>
+</div>
+<span class="material-symbols-outlined text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between px-4 py-3 bg-status-blocked/20 hover:bg-status-blocked/30 border border-status-blocked/30 rounded-lg transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-status-blocked">block</span>
+<span class="font-label-md text-label-md">Suspend Workspace</span>
+</div>
+<span class="material-symbols-outlined text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between px-4 py-3 bg-secondary hover:bg-secondary-container rounded-lg transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-white">priority_high</span>
+<span class="font-label-md text-label-md">Escalate to Admin</span>
+</div>
+<span class="material-symbols-outlined text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Aesthetic Glass Overlay -->
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-secondary/20 blur-[80px] rounded-full"></div>
+</div>
+</div>
+<!-- Priority Risk Queue Table -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] overflow-hidden">
+<div class="p-card-padding border-b border-border-subtle flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-primary">Priority Risk Queue</h3>
+<div class="flex gap-2">
+<button class="text-body-sm font-label-md px-3 py-1 bg-surface-container text-on-surface rounded">All Issues</button>
+<button class="text-body-sm font-label-md px-3 py-1 hover:bg-surface-container rounded">High Severity</button>
+</div>
+</div>
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-4 font-label-md text-on-surface-variant uppercase tracking-wider">Workspace</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant uppercase tracking-wider">Risk Indicators</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant uppercase tracking-wider">Lead Manager</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant uppercase tracking-wider">Last Activity</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant uppercase tracking-wider">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center font-bold text-primary">V</div>
+<div>
+<div class="text-body-md font-semibold">Vanguard Logistics</div>
+<div class="text-body-sm text-on-surface-variant">ID: 8829-XP</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-2">
+<span class="px-2 py-0.5 bg-status-urgent/10 text-status-urgent rounded text-[10px] font-bold uppercase">High Blocker</span>
+<span class="px-2 py-0.5 bg-status-payment-due/10 text-status-payment-due rounded text-[10px] font-bold uppercase">Payment Due</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm">Sarah Jenkins</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">2 mins ago</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-2 text-status-urgent font-bold text-body-sm">
+<span class="w-2 h-2 bg-status-urgent rounded-full animate-pulse"></span> Urgent
+                                </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center font-bold text-primary">N</div>
+<div>
+<div class="text-body-md font-semibold">Nexus FinTech</div>
+<div class="text-body-sm text-on-surface-variant">ID: 1044-LT</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-2">
+<span class="px-2 py-0.5 bg-status-suspended/10 text-status-suspended rounded text-[10px] font-bold uppercase">Missing Reports</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm">Marcus Wei</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">45 mins ago</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-2 text-status-blocked font-bold text-body-sm">
+<span class="w-2 h-2 bg-status-blocked rounded-full"></span> Blocked
+                                </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center font-bold text-primary">A</div>
+<div>
+<div class="text-body-md font-semibold">Apex Global</div>
+<div class="text-body-sm text-on-surface-variant">ID: 9920-ZM</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-2">
+<span class="px-2 py-0.5 bg-status-payment-due/10 text-status-payment-due rounded text-[10px] font-bold uppercase">Payment Due</span>
+<span class="px-2 py-0.5 bg-status-suspended/10 text-status-suspended rounded text-[10px] font-bold uppercase">Compliance Lapse</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm">Elena Rodriguez</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">3 hours ago</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-2 text-status-payment-due font-bold text-body-sm">
+<span class="w-2 h-2 bg-status-payment-due rounded-full"></span> Escalated
+                                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Complaint Resolution Hub: Split Pane -->
+<div class="grid grid-cols-12 gap-gutter h-[600px]">
+<!-- Active Complaints List -->
+<div class="col-span-4 bg-surface-container-lowest border border-border-subtle rounded-xl flex flex-col shadow-[0px_4px_20px_rgba(0,0,0,0.04)] overflow-hidden">
+<div class="p-gutter border-b border-border-subtle bg-surface-container-low">
+<h3 class="font-headline-md text-headline-md text-primary">Complaint Hub</h3>
+<p class="text-on-surface-variant text-body-sm">12 Active Disputes</p>
+</div>
+<div class="flex-grow overflow-y-auto custom-scrollbar">
+<div class="p-3 space-y-2">
+<!-- Active Ticket 1 -->
+<div class="p-4 bg-secondary/5 border-l-4 border-secondary rounded-r-lg cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="font-mono-sm text-mono-sm text-secondary">#77281-DIS</span>
+<span class="font-label-md text-[10px] text-on-surface-variant">10m ago</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Billing Discrepancy: Q3 Usage</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2 italic">"The overage charges do not match our internal telemetry for October..."</p>
+<div class="mt-3 flex items-center gap-2">
+<img alt="Client Avatar" class="w-5 h-5 rounded-full" data-alt="A close-up portrait of a professional corporate client, a woman with a confident yet slightly concerned expression. She is wearing modern eyewear and a business casual blazer. The background is a minimalist, airy office space that aligns with the premium light-mode corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAubmjVOfsV_kmHXw25utGgpBPrYZYaBcYwFzYunNm7wH5APKYKzgOtFsA_cPz4jNn-kTrQFRhAzen1s6pgTZpyDqlvhsBSVIpXzceHEPLA6Zmh2x9Tv4LYqch9jeFeQVFcoKSaVhXG_Eydyuu88rRY6TB3AlULYoNDgoi0Bi9-5HlPmxgLqAZgxOCxFyntP-rL9DbAeaPSwBkivGWsOxRy3DoKBazLbhA0ojOMR7T5zUBod59zK2F9GVdVyzJC_g_QMbvn9a54Zw"/>
+<span class="text-body-sm text-on-surface">Nexus FinTech</span>
+</div>
+</div>
+<!-- Active Ticket 2 -->
+<div class="p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="font-mono-sm text-mono-sm text-on-surface-variant">#77192-API</span>
+<span class="font-label-md text-[10px] text-on-surface-variant">2h ago</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">API Integration Failure</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">"Critical production outage in the authentication module for global nodes..."</p>
+</div>
+<!-- Active Ticket 3 -->
+<div class="p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="font-mono-sm text-mono-sm text-on-surface-variant">#76990-ACC</span>
+<span class="font-label-md text-[10px] text-on-surface-variant">5h ago</span>
+</div>
+<h4 class="font-body-md font-bold mb-1">Unauthorized User Access</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">"Audit logs indicate login from unrecognized IP range in Singapore..."</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Complaint Detail Panel -->
+<div class="col-span-8 bg-surface-container-lowest border border-border-subtle rounded-xl flex flex-col shadow-[0px_4px_20px_rgba(0,0,0,0.04)] overflow-hidden">
+<div class="p-gutter border-b border-border-subtle flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-mono-sm text-mono-sm bg-surface-container-high px-2 py-1 rounded">#77281-DIS</span>
+<span class="px-2 py-0.5 bg-status-payment-due/10 text-status-payment-due rounded text-[10px] font-bold uppercase">Billing Dispute</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary">Billing Discrepancy: Q3 Usage</h3>
+</div>
+<div class="flex gap-2">
+<button class="bg-surface-container-high p-2 rounded-lg hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined">print</span>
+</button>
+<button class="bg-surface-container-high p-2 rounded-lg hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+<div class="flex-grow flex">
+<!-- Evidence and Discussion -->
+<div class="flex-grow p-gutter overflow-y-auto custom-scrollbar border-r border-border-subtle">
+<div class="space-y-6">
+<div class="flex gap-4">
+<img alt="Client" class="w-10 h-10 rounded-full flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8nYJWKFhRBvmnYnkdq70CNoAZrtoVn9reBDSNSyz8MF3sX1wiHNKxZZVslWPwpX2tzrqXHQ0uwexCOg5AdkShQuXnkNlaIUFVHycbiVfhcAfl8V7VwW4-hZ7vqf5loYeZPQqBBL--1LvCrYQ4A8N6A_HmiRjQJ_iEi5vuy9hFSsu6pvIDbV62HTLzKiwvphDyTirypE_Bmg9hlV6ZLZOmhKPxe-IHDK78lRvn8l3hFdDz5YmJPOP23oLPaSi4VN7KnFZrns4gGQ"/>
+<div class="bg-surface-container-low p-4 rounded-xl rounded-tl-none">
+<p class="text-body-md mb-2">The overage charges do not match our internal telemetry for October. We show 1.2M API calls, GVOS billed for 4.5M. Please provide a breakdown of the load balancer logs immediately as our CFO is reviewing this.</p>
+<p class="text-mono-sm text-[11px] text-on-surface-variant">Client: Jane Doe (Nexus FinTech CTO) • 10:14 AM</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-border-subtle p-4 rounded-xl">
+<h4 class="font-label-md text-label-md mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">attachment</span> Evidence Attachments
+                                    </h4>
+<div class="grid grid-cols-2 gap-3">
+<div class="flex items-center gap-3 p-3 bg-background rounded-lg border border-border-subtle cursor-pointer hover:border-secondary transition-colors">
+<span class="material-symbols-outlined text-secondary">description</span>
+<div>
+<div class="text-body-sm font-bold">usage_report_q3.csv</div>
+<div class="text-[10px] text-on-surface-variant">1.4 MB • CSV</div>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 bg-background rounded-lg border border-border-subtle cursor-pointer hover:border-secondary transition-colors">
+<span class="material-symbols-outlined text-status-urgent">analytics</span>
+<div>
+<div class="text-body-sm font-bold">telemetry_snapshot.png</div>
+<div class="text-[10px] text-on-surface-variant">450 KB • Image</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Internal Activity Log -->
+<div class="w-64 bg-surface-container-low p-gutter overflow-y-auto custom-scrollbar">
+<h4 class="font-label-md text-label-md mb-4 uppercase tracking-tighter text-on-surface-variant">Internal Activity Log</h4>
+<div class="space-y-4">
+<div class="relative pl-4 border-l border-outline-variant">
+<div class="absolute -left-[5px] top-0 w-2 h-2 bg-secondary rounded-full"></div>
+<p class="text-body-sm font-bold">Assigned to S. Jenkins</p>
+<p class="text-[10px] text-on-surface-variant">System • 09:12 AM</p>
+</div>
+<div class="relative pl-4 border-l border-outline-variant">
+<div class="absolute -left-[5px] top-0 w-2 h-2 bg-outline rounded-full"></div>
+<p class="text-body-sm">Log Analysis Started</p>
+<p class="text-[10px] text-on-surface-variant">S. Jenkins • 09:45 AM</p>
+</div>
+<div class="relative pl-4 border-l border-outline-variant">
+<div class="absolute -left-[5px] top-0 w-2 h-2 bg-status-payment-due rounded-full"></div>
+<p class="text-body-sm font-bold">Severity Escalated</p>
+<p class="text-[10px] text-on-surface-variant">Auto-Risk Engine • 10:20 AM</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-gutter border-t border-border-subtle bg-surface-container-lowest">
+<div class="flex gap-4">
+<input class="flex-grow border-border-subtle rounded-lg text-body-sm focus:ring-secondary focus:border-secondary" placeholder="Post internal note or reply to client..." type="text"/>
+<button class="bg-secondary text-white px-6 py-2 rounded-lg font-label-md text-label-md hover:bg-secondary-container transition-all">Send Reply</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions for heatmap items
+        document.querySelectorAll('.bg-status-active, .bg-status-payment-due, .bg-status-urgent').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                el.style.transform = 'scale(1.02)';
+                el.style.transition = 'transform 0.2s ease-out';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#000000",
+                    "surface-container": "#eceef0",
+                    "on-surface-variant": "#45464d",
+                    "status-suspended": "#64748B",
+                    "primary-fixed-dim": "#bec6e0",
+                    "primary": "#000000",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#271901",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#f2f4f6",
+                    "on-background": "#191c1e",
+                    "on-primary": "#ffffff",
+                    "sidebar-bg": "#0B0F19",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "status-completed": "#059669",
+                    "on-surface": "#191c1e",
+                    "on-primary-container": "#7c839b",
+                    "border-subtle": "#E2E8F0",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-tertiary-container": "#98805d",
+                    "on-secondary-container": "#fefcff",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#565e74",
+                    "primary-fixed": "#dae2fd",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "tertiary-fixed": "#fcdeb5",
+                    "on-primary-fixed": "#131b2e",
+                    "surface-variant": "#e0e3e5",
+                    "surface-container-highest": "#e0e3e5",
+                    "inverse-primary": "#bec6e0",
+                    "status-payment-due": "#F59E0B",
+                    "outline-variant": "#c6c6cd",
+                    "surface-dim": "#d8dadc",
+                    "surface-bright": "#f7f9fb",
+                    "on-tertiary": "#ffffff",
+                    "surface": "#f7f9fb",
+                    "primary-container": "#131b2e",
+                    "secondary": "#0058be",
+                    "status-urgent": "#B91C1C",
+                    "on-secondary-fixed": "#001a42",
+                    "on-tertiary-fixed": "#271901",
+                    "secondary-fixed": "#d8e2ff",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "on-secondary-fixed-variant": "#004395",
+                    "status-trial": "#8B5CF6",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#76777d",
+                    "secondary-container": "#2170e4",
+                    "status-blocked": "#EF4444",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "background": "#f7f9fb",
+                    "status-active": "#10B981",
+                    "inverse-surface": "#2d3133"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-margin": "32px",
+                    "base": "4px",
+                    "card-padding": "24px",
+                    "input-gap": "16px",
+                    "section-gap": "40px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "mono-sm": ["JetBrains Mono"],
+                    "headline-lg": ["Manrope"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md overflow-hidden h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="w-[280px] h-full fixed left-0 top-0 bg-sidebar-bg flex flex-col py-gutter px-4 z-50">
+<div class="mb-10 px-2">
+<h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed">GVOS Platform</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="workspaces">workspaces</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary-fixed-dim bg-white/10 border-l-4 border-secondary-fixed font-bold transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Talent Pool</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-white/10 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-[280px] h-full flex flex-col overflow-hidden">
+<!-- TopNavBar (Shared Component) -->
+<header class="sticky top-0 z-40 bg-surface-container-lowest flex items-center justify-between px-gutter h-16 w-full border-b border-border-subtle shadow-sm">
+<div class="flex items-center gap-4">
+<div class="relative focus-within:ring-2 focus-within:ring-secondary rounded-lg">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-sm w-64 focus:ring-0" placeholder="Search talent or issues..." type="text"/>
+</div>
+<nav class="hidden lg:flex gap-6 ml-4">
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Workspace</a>
+<a class="font-label-md text-label-md text-secondary border-b-2 border-secondary font-bold pb-1" href="#">Messages</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Files</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+</button>
+</div>
+<button class="bg-secondary text-white px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all">Clock In</button>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-border-subtle object-cover" data-alt="A professional headshot of a female executive with a confident expression, set against a blurred corporate office background. The lighting is soft and flattering, emphasizing a clean and high-end aesthetic. The colors are muted and professional, aligning with a premium enterprise software user profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7BFPORWpMBVYMly7GYYE1MWyY-ZAgTGX4162aOnI_M6r29ZCq9XK3ELS06UC6uuiTWm87BU8b8mKL3TYDV4bZB2-aJSrC2cZWx06S1eeJa0cLWnLUIdx9Zk329AVZzaWxZbq1r8AUi_UaeF-qiD5cjpzFOXU6vUGERA_Pph5A1vF079Bl3xT2YtoAYQh8I6CfzyztHdw4Z2tSif-TUa8H6KQnQ3PXgOfjedlD-OjFqzzhHidCaobnEFli01D5sh3oFzmh6njWug"/>
+</div>
+</header>
+<!-- Talent Concerns Content -->
+<div class="flex-1 overflow-y-auto p-gutter space-y-gutter scrollbar-hide">
+<!-- Page Header -->
+<div class="flex justify-between items-end max-w-[1440px] mx-auto">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Talent Concerns &amp; Complaints</h2>
+<p class="text-on-surface-variant font-body-md">A secure space to report issues and seek support. Your privacy is our priority.</p>
+</div>
+<button class="bg-secondary text-on-secondary px-6 py-3 rounded-lg font-label-md text-label-md flex items-center gap-2 shadow-lg hover:translate-y-[-1px] active:translate-y-[1px] transition-all">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                    Raise a Concern
+                </button>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6 max-w-[1440px] mx-auto">
+<!-- Left Column: Active Issues (8 cols) -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<section class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="pending_actions">pending_actions</span>
+                                Active Issues
+                            </h3>
+<button class="text-secondary font-label-md text-label-md flex items-center gap-1 hover:underline">
+                                View History <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Issue 1 -->
+<div class="group flex items-center justify-between p-4 bg-surface hover:bg-surface-container-low rounded-lg border border-transparent hover:border-border-subtle transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-on-error-container">
+<span class="material-symbols-outlined" data-icon="person_off">person_off</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-primary">Client unresponsive for 48h+</p>
+<p class="text-body-sm text-on-surface-variant">Ticket ID: #GV-8821 • Reported 4h ago</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="px-3 py-1 bg-status-trial/20 text-status-trial rounded-full text-label-md font-label-md border border-status-trial/30">Under Review</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Issue 2 -->
+<div class="group flex items-center justify-between p-4 bg-surface hover:bg-surface-container-low rounded-lg border border-transparent hover:border-border-subtle transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="monitor">monitor</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-primary">Hardware Issue: Failing RAID controller</p>
+<p class="text-body-sm text-on-surface-variant">Ticket ID: #GV-7742 • Reported Oct 12</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="px-3 py-1 bg-status-active/20 text-status-active rounded-full text-label-md font-label-md border border-status-active/30">Resolved</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Issue 3 -->
+<div class="group flex items-center justify-between p-4 bg-surface hover:bg-surface-container-low rounded-lg border border-transparent hover:border-border-subtle transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-error-container/50 flex items-center justify-center text-status-urgent">
+<span class="material-symbols-outlined" data-icon="speed">speed</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-primary">Workload Overload: Critical milestone burnout</p>
+<p class="text-body-sm text-on-surface-variant">Ticket ID: #GV-9003 • Reported 2 days ago</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="px-3 py-1 bg-status-urgent/20 text-status-urgent rounded-full text-label-md font-label-md border border-status-urgent/30">Urgent</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Secure Message Thread (Simulated Detail View) -->
+<section class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+<div class="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-bright">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-status-active"></div>
+<h3 class="font-headline-md text-[18px]">Thread: Client unresponsive (#GV-8821)</h3>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-label-md text-label-md text-outline">End-to-End Encrypted</span>
+</div>
+</div>
+<!-- Chat Canvas -->
+<div class="flex-1 p-6 space-y-6 overflow-y-auto bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-100">
+<!-- Recipient Bubble -->
+<div class="flex gap-3 max-w-[80%]">
+<img alt="Manager" class="w-8 h-8 rounded-full border border-border-subtle object-cover" data-alt="A portrait of a male business manager with a friendly and approachable look, wearing professional attire. He is positioned against a clean, brightly lit corporate setting. The photography style is sharp, with natural colors and a high-end, institutional feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfIZ4I-b8FzbnBczSxaZgZMCNp9SvAgEeVnmJuz71shokR8z9kb6q9PmRkOANxng25YpozJ8r1UqAuW74RWZCX6bG7xc0BZ5n-X7h00AR6AFpa4QKpwInftG59cNNg0vPntgR9OD2omXGNxyKPJ1Y6QwxlW3ZcS1gMV5A16BIYU5TSwxGsU4v2WHBySHl3kpMx5qICgVoIoIzgKUoFlYUlgHsJ0wmIYjb9iHJX7xRxfZBKaViKppjQGDZWYoLa4XziDj4578Qm0g"/>
+<div>
+<div class="bg-surface-container-high p-4 rounded-xl rounded-tl-none">
+<p class="text-body-sm">Hello, I've seen your report. I'm contacting the client's operations lead right now to get an update on their status. Have you attempted to reach them via their emergency Slack channel?</p>
+</div>
+<span class="font-mono-sm text-outline mt-1 block">Line Manager • 10:14 AM</span>
+</div>
+</div>
+<!-- User Bubble -->
+<div class="flex gap-3 max-w-[80%] ml-auto flex-row-reverse">
+<div class="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center text-[12px] font-bold">ME</div>
+<div class="text-right">
+<div class="bg-secondary text-white p-4 rounded-xl rounded-tr-none">
+<p class="text-body-sm">Yes, I've tried Slack and the direct project dashboard. No response since Monday morning. I'm currently blocked on the Q4 roadmap delivery.</p>
+</div>
+<span class="font-mono-sm text-outline mt-1 block">10:28 AM</span>
+</div>
+</div>
+</div>
+<!-- Chat Input -->
+<div class="p-4 bg-surface-container-lowest border-t border-border-subtle">
+<div class="relative flex items-center">
+<button class="absolute left-3 text-outline hover:text-secondary">
+<span class="material-symbols-outlined" data-icon="attach_file">attach_file</span>
+</button>
+<input class="w-full pl-12 pr-16 py-3 bg-surface-container-low border border-border-subtle rounded-xl focus:ring-2 focus:ring-secondary focus:border-transparent" placeholder="Type your update here..." type="text"/>
+<button class="absolute right-3 bg-secondary text-white p-2 rounded-lg hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="send" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Resources & Info (4 cols) -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Resource Links -->
+<section class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<h3 class="font-headline-md text-headline-md mb-6">Support Resources</h3>
+<div class="space-y-3">
+<a class="flex items-center gap-3 p-4 rounded-lg bg-surface hover:bg-surface-container-low transition-all group" href="#">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed text-on-secondary-fixed-variant flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md">Mental Health Support</p>
+<p class="text-[11px] text-on-surface-variant">Confidential 24/7 counseling access</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary" data-icon="open_in_new">open_in_new</span>
+</a>
+<a class="flex items-center gap-3 p-4 rounded-lg bg-surface hover:bg-surface-container-low transition-all group" href="#">
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md">Equipment Request</p>
+<p class="text-[11px] text-on-surface-variant">Hardware upgrades and replacements</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary" data-icon="open_in_new">open_in_new</span>
+</a>
+<a class="flex items-center gap-3 p-4 rounded-lg bg-surface hover:bg-surface-container-low transition-all group" href="#">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed text-on-primary-fixed-variant flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="policy">policy</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md">Internal Policy Handbook</p>
+<p class="text-[11px] text-on-surface-variant">Rights, compliance &amp; dispute resolution</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary" data-icon="open_in_new">open_in_new</span>
+</a>
+</div>
+</section>
+<!-- Security Info Card -->
+<section class="bg-primary-container text-white p-card-padding rounded-xl relative overflow-hidden shadow-lg">
+<div class="relative z-10">
+<span class="material-symbols-outlined text-secondary-fixed-dim text-[40px] mb-4" data-icon="shield_person">shield_person</span>
+<h4 class="font-headline-md text-[20px] mb-2">Our Privacy Promise</h4>
+<p class="text-on-primary-container text-body-sm mb-6 leading-relaxed">All concerns are encrypted and only accessible by designated Admin and your Line Manager. We maintain a zero-retaliation policy for all reported issues.</p>
+<button class="w-full py-2 border border-on-primary-container/30 rounded-lg font-label-md text-label-md hover:bg-white/5 transition-colors">
+                                Privacy Protocol Details
+                            </button>
+</div>
+<!-- Abstract Background Decoration -->
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-secondary rounded-full opacity-20 blur-3xl"></div>
+</section>
+<!-- Stats Card -->
+<section class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<p class="text-outline font-label-md text-label-md uppercase tracking-wider mb-4">Resolution Stats</p>
+<div class="flex items-center gap-4 mb-4">
+<div class="flex-1">
+<p class="text-display-lg text-[32px] font-bold text-primary">2.4 <span class="text-body-sm font-normal text-on-surface-variant">days</span></p>
+<p class="text-body-sm text-on-surface-variant">Avg. resolution time</p>
+</div>
+<div class="w-16 h-16 rounded-full border-4 border-status-active border-t-transparent flex items-center justify-center">
+<span class="text-label-md font-bold text-status-active">98%</span>
+</div>
+</div>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-status-active w-[98%]"></div>
+</div>
+<p class="text-[11px] text-outline mt-2">Historical satisfaction score from anonymous feedback</p>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Shared Component - Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle shadow-lg md:hidden z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-md text-label-md-mobile">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label-md text-label-md-mobile">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="font-label-md text-label-md-mobile">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md-mobile">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for raising a concern
+        const btn = document.querySelector('button:contains("Raise a Concern")');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                btn.classList.add('scale-95');
+                setTimeout(() => btn.classList.remove('scale-95'), 100);
+            });
+        }
+    </script>
+</body></html>

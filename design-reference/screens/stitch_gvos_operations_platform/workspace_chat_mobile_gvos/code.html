@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#000000",
+                      "status-urgent": "#B91C1C",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "surface-container-high": "#e6e8ea",
+                      "on-surface": "#191c1e",
+                      "surface-container": "#eceef0",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "on-error": "#ffffff",
+                      "on-primary-container": "#7c839b",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "outline": "#76777d",
+                      "on-secondary": "#ffffff",
+                      "border-subtle": "#E2E8F0",
+                      "on-surface-variant": "#45464d",
+                      "on-secondary-fixed-variant": "#004395",
+                      "status-active": "#10B981",
+                      "on-primary": "#ffffff",
+                      "inverse-primary": "#bec6e0",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "status-payment-due": "#F59E0B",
+                      "status-completed": "#059669",
+                      "outline-variant": "#c6c6cd",
+                      "on-tertiary-fixed": "#271901",
+                      "surface-container-highest": "#e0e3e5",
+                      "primary-fixed-dim": "#bec6e0",
+                      "inverse-on-surface": "#eff1f3",
+                      "status-blocked": "#EF4444",
+                      "surface-tint": "#565e74",
+                      "on-tertiary": "#ffffff",
+                      "on-background": "#191c1e",
+                      "primary": "#000000",
+                      "inverse-surface": "#2d3133",
+                      "on-secondary-container": "#fefcff",
+                      "surface-variant": "#e0e3e5",
+                      "status-suspended": "#64748B",
+                      "sidebar-bg": "#0B0F19",
+                      "background": "#f7f9fb",
+                      "primary-container": "#131b2e",
+                      "status-trial": "#8B5CF6",
+                      "secondary": "#0058be",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "tertiary-container": "#271901",
+                      "surface-bright": "#f7f9fb",
+                      "secondary-container": "#2170e4",
+                      "surface": "#f7f9fb",
+                      "on-tertiary-container": "#98805d",
+                      "on-primary-fixed": "#131b2e",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed": "#fcdeb5",
+                      "on-secondary-fixed": "#001a42",
+                      "primary-fixed": "#dae2fd",
+                      "surface-container-low": "#f2f4f6",
+                      "surface-dim": "#d8dadc",
+                      "error": "#ba1a1a",
+                      "secondary-fixed": "#d8e2ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-padding": "24px",
+                      "gutter": "24px",
+                      "base": "4px",
+                      "section-gap": "40px",
+                      "input-gap": "16px",
+                      "container-margin": "32px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Manrope"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Manrope"],
+                      "mono-sm": ["JetBrains Mono"],
+                      "label-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Manrope"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .chat-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .chat-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .drawer-transition {
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body-md text-on-surface h-screen overflow-hidden flex flex-col">
+<!-- Condensed Header -->
+<header class="bg-surface-container-lowest h-16 px-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+<div class="flex items-center gap-3">
+<button class="p-2 -ml-2 text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<span class="font-headline-md text-body-md leading-tight text-primary">Workspace</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<div class="flex -space-x-2">
+<img alt="Participant" class="w-5 h-5 rounded-full border border-surface-container-lowest object-cover" data-alt="A professional headshot of a creative director in a minimalist studio setting, with high-key lighting and a soft neutral background. The image reflects a clean, corporate-modern aesthetic with cool blue and crisp white tones consistent with an enterprise software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAMrFd8-YbwLDxFqiHLzacd6B6v7sbAg1kCf0Tv_tqkBOo6dqkJRIkedwlNjtsFJh0PkH4JMP4mlDM3OJtdSeD03CWziylWoQH4_YXklKWwuk5GTI5qfZeeGG5RvMi8jpnaJsGnhvA2yIcwBlTohp8FYTF-kB00QL5dnwZpLoLfaCV5BLdXOytiUPejwRNiT9HQ-2ERwWpV7OAGK2uQ_5HIt9AF1RYcqv8psQ3vQ4Tkkppa70KNI-bgciAMfo6xyxVdOxqMyNT_A"/>
+<img alt="Participant" class="w-5 h-5 rounded-full border border-surface-container-lowest object-cover" data-alt="A close-up portrait of a technology consultant looking directly into the camera with a confident expression. The lighting is sharp and professional, highlighting skin textures against a blurred office environment that uses the primary brand colors of deep blue and slate grey." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb6DWcNFnBaXW6yFbp0QmX3F0_5ymRVUysz-ZE3hs8P6Pcro8Uiv6blA07H3o9XaM-WaUDBGzW_I28Wc7lfknXKtCTM2LzjdwPdtPgfkdNocoZTcllxavxCeh0paB8cQN8ZCNntqdOKxKNtOBclhcMNrIZwYwtt4AIPPfLJBifAf1_4cDF6ZzZPsqkwRpe3ZbMXUGtgwQkBCBTDyu0tfw2RhoGQmy2dMXr4BuQ52HnVkdJEGGcV8QyNkcTZJxozRgBIYZy5oxuEg"/>
+<div class="w-5 h-5 rounded-full bg-secondary-fixed text-[10px] flex items-center justify-center font-bold text-on-secondary-fixed ring-1 ring-surface-container-lowest">+2</div>
+</div>
+<span class="font-label-md text-[10px] text-status-active flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-status-active rounded-full"></span>
+                        Active Now
+                    </span>
+</div>
+</div>
+</div>
+<button class="p-2 text-secondary active:scale-95 transition-transform" onclick="toggleDrawer()">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">info</span>
+</button>
+</header>
+<!-- Main Chat Content -->
+<main class="flex-1 overflow-y-auto chat-scroll p-4 space-y-6 pb-24">
+<!-- Date Divider -->
+<div class="flex justify-center">
+<span class="bg-surface-container text-on-surface-variant font-label-md px-3 py-1 rounded-full text-[10px]">TODAY, OCT 24</span>
+</div>
+<!-- Message: Incoming (File) -->
+<div class="flex flex-col gap-1 max-w-[85%]">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-on-surface-variant">Sarah Chen</span>
+<span class="text-[10px] text-outline">10:42 AM</span>
+</div>
+<div class="bg-white border border-border-subtle p-3 rounded-xl rounded-tl-none shadow-sm space-y-3">
+<p class="font-body-sm">I've uploaded the Q4 Financial Roadmap. Let me know if the budget allocations for the Talent Pool look correct.</p>
+<div class="flex items-center gap-3 p-2 bg-surface-container-low rounded-lg border border-border-subtle">
+<div class="w-10 h-10 bg-secondary-fixed flex items-center justify-center rounded-lg text-secondary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-on-surface truncate">Q4_Roadmap_Final.pdf</p>
+<p class="text-[10px] text-on-surface-variant">2.4 MB • PDF</p>
+</div>
+<button class="p-1 text-on-surface-variant">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Message: Outgoing -->
+<div class="flex flex-col gap-1 max-w-[85%] ml-auto items-end">
+<div class="bg-secondary text-white p-3 rounded-xl rounded-tr-none shadow-sm">
+<p class="font-body-sm">Received. Checking the allocations now. We might need to adjust the Security budget based on last week's report.</p>
+</div>
+<div class="flex items-center gap-1 mt-1">
+<span class="text-[10px] text-outline">10:45 AM</span>
+<span class="material-symbols-outlined text-secondary text-[14px]" style="font-variation-settings: 'wght' 700;">done_all</span>
+</div>
+</div>
+<!-- Message: Incoming (Voice Note) -->
+<div class="flex flex-col gap-1 max-w-[85%]">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-on-surface-variant">Marcus Reed</span>
+<span class="text-[10px] text-outline">10:48 AM</span>
+</div>
+<div class="bg-white border border-border-subtle p-3 rounded-xl rounded-tl-none shadow-sm">
+<div class="flex items-center gap-3 w-full">
+<button class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-white active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="flex-1 h-8 flex items-center gap-0.5">
+<div class="h-2 w-1 bg-secondary rounded-full"></div>
+<div class="h-4 w-1 bg-secondary rounded-full"></div>
+<div class="h-6 w-1 bg-secondary rounded-full"></div>
+<div class="h-3 w-1 bg-secondary rounded-full opacity-50"></div>
+<div class="h-5 w-1 bg-secondary rounded-full opacity-50"></div>
+<div class="h-2 w-1 bg-secondary rounded-full opacity-50"></div>
+<div class="h-4 w-1 bg-secondary rounded-full opacity-50"></div>
+<div class="h-6 w-1 bg-secondary rounded-full opacity-50"></div>
+</div>
+<span class="font-mono-sm text-on-surface-variant">0:24</span>
+</div>
+</div>
+</div>
+<!-- Message: System Alert -->
+<div class="flex justify-center">
+<span class="text-[10px] text-outline-variant font-label-md uppercase tracking-widest bg-surface-container-low px-4 py-1 rounded-full">
+                Task "Audit Security Protocol" was completed
+            </span>
+</div>
+</main>
+<!-- Message Input Area -->
+<div class="bg-surface-container-lowest border-t border-border-subtle p-4 pb-8 sticky bottom-0 z-30">
+<div class="flex items-end gap-2 bg-surface-container-low rounded-2xl p-2 border border-border-subtle focus-within:ring-2 focus-within:ring-secondary/20 focus-within:border-secondary transition-all">
+<button class="p-2 text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<textarea class="flex-1 bg-transparent border-none focus:ring-0 text-body-sm py-2 resize-none placeholder:text-outline" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'" placeholder="Message Workspace..." rows="1"></textarea>
+<div class="flex items-center gap-1">
+<button class="p-2 text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="w-10 h-10 bg-secondary text-white rounded-xl flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Workspace Info Slide-up Drawer -->
+<div class="fixed inset-0 bg-black/40 z-50 opacity-0 pointer-events-none transition-opacity duration-300" id="drawer-overlay" onclick="toggleDrawer()"></div>
+<div class="fixed bottom-0 left-0 right-0 h-[751px] bg-surface-container-lowest z-[60] rounded-t-3xl drawer-transition translate-y-full shadow-2xl flex flex-col" id="drawer">
+<!-- Handle -->
+<div class="flex justify-center p-3 cursor-pointer" onclick="toggleDrawer()">
+<div class="w-12 h-1.5 bg-outline-variant rounded-full"></div>
+</div>
+<div class="flex-1 overflow-y-auto px-gutter py-4">
+<div class="flex items-center justify-between mb-8">
+<h2 class="font-headline-lg-mobile text-primary">Workspace Info</h2>
+<button class="p-2 bg-surface-container-low rounded-full" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Shared Files Section -->
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-md uppercase text-outline tracking-wider">Shared Files</h3>
+<span class="text-secondary font-label-md">View all</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-4 group">
+<div class="w-12 h-12 bg-status-trial/10 text-status-trial rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined">table_chart</span>
+</div>
+<div class="flex-1 border-b border-border-subtle pb-3">
+<p class="font-body-md text-on-surface">Budget_Sheet_2024.xlsx</p>
+<p class="font-label-md text-on-surface-variant">Shared by Sarah • 2 hours ago</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined">image</span>
+</div>
+<div class="flex-1 border-b border-border-subtle pb-3">
+<p class="font-body-md text-on-surface">Branding_Mockup_V2.png</p>
+<p class="font-label-md text-on-surface-variant">Shared by Marcus • Yesterday</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Open Tasks Section -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-md uppercase text-outline tracking-wider">Open Tasks (3)</h3>
+<span class="text-secondary font-label-md">Add task</span>
+</div>
+<div class="space-y-3">
+<div class="bg-white border border-border-subtle p-4 rounded-xl shadow-sm">
+<div class="flex items-start justify-between mb-2">
+<span class="px-2 py-0.5 bg-status-urgent/10 text-status-urgent font-label-md text-[10px] rounded uppercase">Urgent</span>
+<span class="material-symbols-outlined text-outline text-[18px]">more_horiz</span>
+</div>
+<p class="font-body-md mb-2">Review security vulnerability report from vendor</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img alt="Assignee" class="w-6 h-6 rounded-full" data-alt="A portrait of a male software engineer with a neutral expression, wearing glasses and a minimalist dark t-shirt. The background is a dimly lit workspace with glowing blue and white monitors, embodying the 'Quiet Powerhouse' corporate brand identity of high-end SaaS environments." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6iTQtL_ODFWr7kJ4_keL4AnyraHFyQMe1pFM-Efkwhxt6-FF2A3C_sY15wbinwWJoM0dpCyLLOcQHkTz35Fh__FfuFHdh7RqcVsgMwQjwDvpYr2xFzT4ekcoz2QcUx6BJXUfHve-0tJ-Ueohxxd0AmM1oGSyQy6a5ja3-wd7TUfMEk8gf_v9ki4Z9pWmuIs5KnNWK28WvA9GOW8_PyRijxXEan7zydVqoy8ywtv8DmEWA9kDggD5y1HIhTHAnSIlzPgKUJi82iA"/>
+<span class="font-label-md text-on-surface-variant">Due Oct 26</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">chat_bubble</span>
+<span class="text-[10px] font-bold">12</span>
+</div>
+</div>
+</div>
+<div class="bg-white border border-border-subtle p-4 rounded-xl shadow-sm">
+<div class="flex items-start justify-between mb-2">
+<span class="px-2 py-0.5 bg-secondary-fixed text-on-secondary-fixed-variant font-label-md text-[10px] rounded uppercase">In Progress</span>
+<span class="material-symbols-outlined text-outline text-[18px]">more_horiz</span>
+</div>
+<p class="font-body-md mb-2">Prepare slide deck for Workspace board meeting</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-container text-[10px] flex items-center justify-center font-bold">JD</div>
+<span class="font-label-md text-on-surface-variant">Due Oct 30</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Persistent Bottom NavBar (Shared Component Logic) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle z-40 md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-[10px]">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span class="font-label-md text-[10px]">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-[10px]">Profile</span>
+</a>
+</nav>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('drawer');
+            const overlay = document.getElementById('drawer-overlay');
+            const isClosed = drawer.classList.contains('translate-y-full');
+
+            if (isClosed) {
+                drawer.classList.remove('translate-y-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                drawer.classList.add('translate-y-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        // Auto-expand textarea
+        const tx = document.getElementsByTagName('textarea');
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute('style', 'height:' + (tx[i].scrollHeight) + 'px;overflow-y:hidden;');
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        }
+
+        // Smooth scroll to bottom on load
+        window.onload = () => {
+            const main = document.querySelector('main');
+            main.scrollTop = main.scrollHeight;
+        };
+    </script>
+</body></html>
