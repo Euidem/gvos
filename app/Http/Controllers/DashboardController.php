@@ -2,45 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function superAdmin(): Response
+    public function superAdmin(): View
     {
-        return Inertia::render('Dashboard/SuperAdmin');
+        return view('dashboard.super-admin');
     }
 
-    public function operationsAdmin(): Response
+    public function operationsAdmin(): View
     {
-        return Inertia::render('Dashboard/OperationsAdmin');
+        return view('dashboard.operations-admin');
     }
 
-    public function lineManager(): Response
+    public function lineManager(): View
     {
-        return Inertia::render('Dashboard/LineManager');
+        return view('dashboard.line-manager');
     }
 
-    public function talent(): Response
+    public function talent(): View
     {
-        return Inertia::render('Dashboard/Talent');
+        return view('dashboard.talent');
     }
 
-    public function client(): Response
+    public function client(): View
     {
         $role = auth()->user()->getGvosRoleName();
 
-        return Inertia::render('Dashboard/' . match ($role) {
-            'business_client_admin' => 'BusinessClientAdmin',
-            'business_client_staff' => 'BusinessClientStaff',
-            default => 'IndividualClient',
-        });
+        return match ($role) {
+            'business_client_admin' => view('dashboard.business-client-admin'),
+            'business_client_staff' => view('dashboard.business-client-staff'),
+            default                 => view('dashboard.individual-client'),
+        };
     }
 
-    public function lead(): Response
+    public function lead(): View
     {
-        return Inertia::render('Dashboard/ActiveLead');
+        return view('dashboard.active-lead');
     }
 }
