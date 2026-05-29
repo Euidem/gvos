@@ -159,3 +159,25 @@ The "Create Trial Workspace" action creates members for active_lead, talent, and
 ### Phase 4 | Info | Workspace task board is a placeholder
 
 The workspace detail page (`/workspaces/{workspace}`) displays a "Tasks, files, and chat coming soon" placeholder panel. These features are Phase 5+.
+
+---
+
+### UI Audit | Low | Filament admin panel uses its own CSS — GVOS Stitch tokens not applied
+
+The Filament admin panel (`/admin`) compiles its own stylesheet. GVOS Stitch design tokens (sidebar-bg, secondary, status-* colors, Manrope/Inter fonts) are **not applied** to Filament views. The Filament panel has a distinct visual identity from the GVOS portal.
+
+This is intentional for Phase 0–4. Aligning Filament's visual identity requires either a Filament theme class with compiled CSS, or a full Filament panel theme. Treat this as a future improvement post-Phase 5.
+
+---
+
+### UI Audit | Info | Tailwind CDN dynamic class safeguard must not be removed
+
+The GVOS portal layout uses Tailwind CDN (JIT mode). Dynamic PHP-conditional classes — for example, the active nav state `bg-white/10 border-l-4 border-secondary-fixed` — must appear in a rendered HTML element so the JIT engine scans and generates them.
+
+A hidden safeguard `<div class="hidden ...">` was added to `resources/views/components/layouts/gvos.blade.php` containing all dynamically-rendered nav and status classes. **Do not remove this div.** Removing it will cause active nav highlighting and dynamic status badge colors to stop rendering.
+
+---
+
+### UI Audit | Low | `card-lift` class has no defined styles
+
+The workspace index view (`resources/views/workspace/index.blade.php`) applies a `card-lift` class on workspace cards for a hover-lift effect. This class is not defined in the Tailwind CDN config and currently has no visual effect. A future improvement is to add it to the `tailwind.config` `extend` block (e.g. a custom transform + shadow transition).

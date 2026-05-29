@@ -365,7 +365,93 @@ Run after `git pull && php artisan migrate && php artisan optimize:clear && php 
 - [ ] Active Lead: if no workspace yet, shows "Your workspace is being prepared" placeholder
 - [ ] All 8 dashboards: Phase 4 notice replaces Phase 3/2 notice
 
-## Phase 5 — Task Board (planned)
+## UI Fidelity Audit — Design System Alignment
+
+Run after `git pull && php artisan optimize:clear` (no migrations needed).
+
+### Typography and Fonts
+- [ ] Login page: GVOS heading rendered in Manrope (bold, wider letterforms than Inter)
+- [ ] All body text and labels use Inter font (not browser default system-ui)
+- [ ] No visible fallback to system-ui — Google Fonts CDN is reachable
+- [ ] Metric numbers on dashboards render in a consistent weight
+
+### Sidebar (Authenticated Portal Layout)
+- [ ] Sidebar width is approximately 280px (not 256px)
+- [ ] Sidebar background is very dark navy (#0B0F19) — not black, not slate-900
+- [ ] GVOS logo area: small blue filled square with hub icon + "GVOS Platform" in light blue + "Enterprise Ops" in muted blue below
+- [ ] **Active nav item:** has a left blue border, light blue text, and a semi-transparent white/blue background
+- [ ] **Inactive nav items:** muted blue-gray text; hovering reveals light blue text + faint background
+- [ ] Nav items present: Dashboard, Workspaces, My Profile — all links functional
+- [ ] User footer at bottom: user initials in a blue avatar circle, display name, role label, Sign Out link
+- [ ] Sign Out fires POST to `/logout` (not a plain anchor `href`)
+
+### Top Bar
+- [ ] Top bar is 64px tall (h-16), white/off-white background, subtle bottom border
+- [ ] Top bar sticks to the top of the viewport when page content scrolls
+- [ ] Notification bell icon visible on right side (Material Symbols: `notifications`)
+- [ ] Security/shield icon visible (Material Symbols: `security`)
+- [ ] User avatar (colored circle with initial) and display name visible
+- [ ] User avatar shows correct role label below name
+
+### Color Tokens — No Indigo Anywhere
+- [ ] No indigo (#4F46E5 or `indigo-*`) colors visible anywhere in the portal
+- [ ] Primary action buttons use GVOS blue (`#0058be`)
+- [ ] Active/success status badges are green (`#10B981`)
+- [ ] Payment-due/warning status badges are amber (`#F59E0B`)
+- [ ] Blocked/error status badges are red (`#EF4444`)
+- [ ] Trial type badge uses purple (`#8B5CF6`)
+- [ ] Page background is off-white (`#f7f9fb`), not pure white and not gray-100
+
+### Cards and Components
+- [ ] All card components: white background, rounded-xl corners, subtle border (#E2E8F0), soft drop shadow
+- [ ] No rounded-2xl corners visible (maximum is rounded-xl)
+- [ ] Input focus states show a secondary blue ring (`focus:ring-2 focus:ring-secondary/20`)
+- [ ] Input focus state changes border to secondary blue
+- [ ] Error states show red border (`border-status-blocked`)
+- [ ] Error messages render in red (`text-status-blocked`)
+
+### Icons
+- [ ] All icons are Material Symbols Outlined glyphs (outlined style, not filled)
+- [ ] No SVG `<path>` icon fallbacks rendering alongside or in place of symbol font glyphs
+- [ ] Icons align vertically with adjacent text (`vertical-align: middle`)
+- [ ] Icon sizes are consistent: 16px inline, 18–20px card headers, 24px large feature icons
+
+### Auth Pages
+- [ ] Login page: dark navy background, GVOS logo at top, blue accent line at top of card
+- [ ] Login: email icon (Material Symbols: `mail`) and lock icon (`lock`) in input prefix
+- [ ] Login: "Security Notice" box with shield icon at bottom of card
+- [ ] Forgot password page: light dot-pattern background, dark visual header panel with lock_reset icon
+- [ ] Account status page: red left-border alert banner, blue accent bar on card, correct conditional text (suspended vs inactive)
+
+### Dashboard Views
+- [ ] All 8 dashboards load without errors for their respective roles
+- [ ] Welcome heading uses Manrope-style bold weight (visually distinct from body text)
+- [ ] Metric/stat cards use GVOS card pattern (white, rounded-xl, border, shadow)
+- [ ] Icon containers use `bg-secondary/5` background with `text-secondary` icon
+- [ ] Phase notice banner uses `bg-secondary/5 border-secondary/20` styling with `info` icon
+
+### Lead Request Form
+- [ ] `/request-service` progress header: GVOS secondary blue background (not indigo)
+- [ ] Submit button: GVOS secondary blue (not indigo)
+- [ ] Focus rings on inputs: secondary blue ring (not indigo)
+- [ ] GVOS logo in form header (hub icon + "GVOS" in secondary-fixed) — no "GetVirtual" text
+
+### Workspace Views
+- [ ] `/workspaces` card grid: status badges use GVOS status-* color tokens
+- [ ] `/workspaces` type badges: trial=purple, ongoing/project=secondary blue
+- [ ] `/workspaces/{workspace}` status banners: amber for pending, green for active, green/gray for completed
+- [ ] Workspace members list: role badges use correct GVOS tokens (manager=secondary, talent=green, client=amber)
+- [ ] `divide-border-subtle` renders a visible but subtle dividing line between member rows
+
+### Profile Page
+- [ ] `/profile` inputs: border-border-subtle, secondary focus ring
+- [ ] Save Changes button: GVOS secondary blue with save icon
+- [ ] Change Password button: dark on-surface color (distinct from blue Save button)
+- [ ] Error messages: text-status-blocked (red)
+- [ ] Success banners: green bg-status-active/10 with check_circle icon
+
+---
+
 ## Phase 5 — Task Board (planned)
 ## Phase 6 — Chat and Files (planned)
 ## Phase 7 — Time Tracking and Reports (planned)

@@ -330,16 +330,62 @@ php artisan permission:cache-reset
 
 ---
 
+---
+
+## UI Fidelity Audit — Complete ✅ (2026-05-29)
+
+### Overview
+A complete audit of all implemented Blade views against the GVOS Stitch design reference was conducted. 18 files were updated to align typography, colour tokens, icon system, spacing, and component patterns with the Stitch design system. No new features, no backend changes, no database migrations.
+
+### Files Updated (18 total)
+
+| File | Change |
+|------|--------|
+| `resources/views/components/layouts/auth.blade.php` | Full rewrite — GVOS tokens, Google Fonts, Material Symbols, variant prop |
+| `resources/views/components/layouts/gvos.blade.php` | Full rewrite — 280px sidebar, GVOS tokens, nav icons, user footer, top bar |
+| `resources/views/components/layouts/public.blade.php` | Full GVOS Tailwind config, Google Fonts, Material Symbols added |
+| `resources/views/auth/login.blade.php` | Redesigned with GVOS card pattern, secondary scheme, Material Symbols |
+| `resources/views/auth/forgot-password.blade.php` | Redesigned with GVOS tokens, dark visual header |
+| `resources/views/account/status.blade.php` | Redesigned with GVOS alert/card patterns |
+| `resources/views/dashboard/super-admin.blade.php` | Full token alignment |
+| `resources/views/dashboard/operations-admin.blade.php` | Full token alignment |
+| `resources/views/dashboard/talent.blade.php` | Full token alignment |
+| `resources/views/dashboard/line-manager.blade.php` | Full token alignment |
+| `resources/views/dashboard/individual-client.blade.php` | Full token alignment |
+| `resources/views/dashboard/business-client-admin.blade.php` | Full token alignment |
+| `resources/views/dashboard/business-client-staff.blade.php` | Full token alignment |
+| `resources/views/dashboard/active-lead.blade.php` | Full token alignment |
+| `resources/views/workspace/index.blade.php` | Full token alignment |
+| `resources/views/workspace/show.blade.php` | Full token alignment |
+| `resources/views/profile/edit.blade.php` | Full token alignment |
+| `resources/views/lead/request-service.blade.php` | indigo → secondary token replacement throughout |
+
+### Design System Changes Applied
+
+- **Fonts:** All 4 layouts now load Manrope (600/700/800) + Inter (400–700) + JetBrains Mono (500) from Google Fonts
+- **Icons:** All SVG icon paths replaced with Material Symbols Outlined font
+- **Color tokens:** indigo-600 (#4F46E5) → secondary (#0058be); emerald/amber/red/violet/sky → status-* tokens
+- **Sidebar:** 256px → 280px, bg-slate-900 → bg-sidebar-bg (#0B0F19), GVOS logo with hub icon and "GVOS Platform" / "Enterprise Ops" branding
+- **Active nav state:** bg-white/10 + border-l-4 border-secondary-fixed + text-secondary-fixed font-bold
+- **Top bar:** h-16 sticky, bg-surface-container-lowest border-b border-border-subtle, notification bell + security icon + user avatar
+- **Cards:** `bg-white rounded-xl border border-border-subtle shadow-card` (0px 4px 20px rgba(0,0,0,0.04))
+- **Border radius:** rounded-2xl removed throughout; Stitch maximum is rounded-xl (0.75rem)
+- **Primary buttons:** `bg-secondary hover:brightness-110 active:scale-[0.98] text-on-secondary`
+- **Status badges:** `bg-status-*/10 text-status-* border border-status-*/20`
+- **Tailwind CDN safeguard:** Hidden `<div>` added to gvos.blade.php — ensures dynamic PHP-conditional classes always compile
+
+### Commit
+`c472ebb` — "UI Fidelity Audit: align all Blade views with Stitch GVOS design system"
+Pushed: `0480f26..c472ebb main -> main`
+
+---
+
 ## Next Steps
 
-1. cPanel: `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`
-2. Test country dropdowns: profile edit, company create/edit, lead request form
-3. Test `/admin/workspaces` loads — create a workspace manually
-4. Test "Create Workspace" action on a trial → workspace created, members added
-5. Test `/workspaces` — list page visible for members
-6. Test `/workspaces/{workspace}` — detail page with team and schedule
-7. Test non-member gets 403 on workspace show
-8. Test workspace member add/remove via RelationManager
-9. Verify all 8 dashboards show Phase 4 notice and workspace card/link
-10. Get Phase 4 sign-off
-11. Begin Phase 5: Task Board
+1. cPanel: `git pull origin main && php artisan optimize:clear` (no migrations needed for UI audit)
+2. Verify fonts load: Manrope headlines, Inter body text visible on all pages
+3. Verify Material Symbols icons render on all views
+4. Verify sidebar is dark navy with correct GVOS logo and nav states
+5. Verify all status badges use GVOS color tokens (no indigo anywhere)
+6. Get Phase 4 + UI Audit sign-off
+7. Begin Phase 5: Task Board
