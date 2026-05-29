@@ -56,6 +56,11 @@ class LeadRequest extends Model
         return $this->hasMany(Trial::class);
     }
 
+    public function workspaces(): HasMany
+    {
+        return $this->hasMany(Workspace::class);
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────
 
     public function latestEstimate(): ?PriceEstimate

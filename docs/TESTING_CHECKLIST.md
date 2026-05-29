@@ -298,7 +298,74 @@ Run after `git pull && php artisan optimize:clear` (no new migrations for UX upd
 - [ ] Counts are correct (match lead_requests table)
 - [ ] Phase 3 notice replaces Phase 2 notice on both dashboards
 
-## Phase 4 — Workspace Engine (planned)
+## Phase 4 — Workspace Engine
+
+Run after `git pull && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### Country Dropdown Cleanup
+- [ ] Profile page `/profile` — Country is a dropdown (not a text input), has ≥17 options
+- [ ] Selecting a country and saving updates `user_profiles.country`
+- [ ] Filament `/admin/companies` create form — Country is a searchable Select
+- [ ] Filament `/admin/companies` edit form — saved country pre-selects correctly
+- [ ] Lead request form `/request-service` Step 1 — Country is a dropdown (not text input)
+- [ ] Selecting a country on lead form and submitting stores value in `lead_requests.country`
+- [ ] "Other" option at bottom of country list present on all dropdowns
+
+### Workspaces — Filament Admin
+- [ ] `/admin/workspaces` loads — nav group "Workspace" visible
+- [ ] Can create a workspace manually — workspace_code auto-generated if blank
+- [ ] Status badges: pending=amber, active=green, paused=blue, completed=gray, cancelled=red
+- [ ] Type badges: trial=violet, ongoing=green, project=teal
+- [ ] Activate action: visible on pending workspaces → status changes to active
+- [ ] Pause action: visible on active workspaces → status changes to paused
+- [ ] Complete action: visible on active/paused → status changes to completed, ends_at set to now
+- [ ] No delete button present
+- [ ] Workspace creation fires `workspace.created` audit log entry
+- [ ] Workspace edit fires `workspace.updated` with before/after diff
+
+### Workspace Members — Relation Manager
+- [ ] Edit page of a workspace shows "Members" tab
+- [ ] "Add Member" action opens modal — user select, role, status
+- [ ] Adding a member creates workspace_members row, fires `workspace.member_added` audit log
+- [ ] Editing a member fires `workspace.member_updated` audit log
+- [ ] "Remove" action sets status=removed, removed_at=now, fires `workspace.member_removed`
+- [ ] Removed member no longer shows in active members list (status filter)
+
+### Create Workspace from Trial
+- [ ] TrialResource table: "Create Workspace" action visible on approved/active/completed trial with no workspace
+- [ ] "Create Workspace" action NOT visible if workspace already exists for the trial
+- [ ] Clicking: creates `workspaces` row with auto-generated code
+- [ ] Lead name used in workspace name (e.g. "Jane Smith Trial Workspace")
+- [ ] Primary manager and primary talent copied from trial
+- [ ] Active lead, talent, and manager added as workspace members with correct roles
+- [ ] Audit log: `trial.workspace_created` entry created
+- [ ] Filament notification confirms success with workspace code
+
+### Workspace Portal — Blade Pages
+- [ ] `/workspaces` loads for authenticated users
+- [ ] Shows list of workspaces where user is a member (or primary team)
+- [ ] Empty state shown when user has no workspaces
+- [ ] Workspace cards show name, code, type, status badges, team, dates
+- [ ] Clicking a workspace card navigates to `/workspaces/{workspace}`
+- [ ] `/workspaces/{workspace}` detail page loads — status banner, team card, schedule card, members list
+- [ ] Active workspace: green status banner with hours remaining (if ends_at set)
+- [ ] Pending workspace: amber banner "Workspace pending activation"
+- [ ] Completed workspace: gray banner
+- [ ] Non-member accessing workspace detail → 403 Forbidden
+
+### Dashboard Updates
+- [ ] Super Admin: workspace count card shows active/total (e.g. "2/5")
+- [ ] Operations Admin: same workspace count card
+- [ ] Talent: "My Workspaces" card links to `/workspaces`; count correct
+- [ ] Line Manager: "My Workspaces" card links to `/workspaces`; count correct
+- [ ] Individual Client: "My Workspace" card links to `/workspaces`
+- [ ] Business Client Admin: "My Workspace" card links to `/workspaces`
+- [ ] Business Client Staff: "Workspace Access" card links to `/workspaces`
+- [ ] Active Lead: if workspace exists, shows clickable workspace card linking to workspace detail
+- [ ] Active Lead: if no workspace yet, shows "Your workspace is being prepared" placeholder
+- [ ] All 8 dashboards: Phase 4 notice replaces Phase 3/2 notice
+
+## Phase 5 — Task Board (planned)
 ## Phase 5 — Task Board (planned)
 ## Phase 6 — Chat and Files (planned)
 ## Phase 7 — Time Tracking and Reports (planned)

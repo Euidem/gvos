@@ -222,4 +222,64 @@ class AuditLogger
             'lead_request_id' => $trial->lead_request_id ?? null,
         ], $extra));
     }
+
+    // ── Phase 4 — Workspace Engine ────────────────────────────────────────
+
+    public static function workspaceCreated(Model $workspace, array $extra = []): void
+    {
+        self::log('workspace.created', $workspace, array_merge([
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'name'           => $workspace->name ?? null,
+            'type'           => $workspace->type ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceUpdated(Model $workspace, array $changes = []): void
+    {
+        self::log('workspace.updated', $workspace, $changes);
+    }
+
+    public static function workspaceStatusChanged(Model $workspace, string $from, string $to): void
+    {
+        self::log('workspace.status_changed', $workspace, [
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'from'           => $from,
+            'to'             => $to,
+        ]);
+    }
+
+    public static function workspaceMemberAdded(Model $workspace, Model $member, array $extra = []): void
+    {
+        self::log('workspace.member_added', $workspace, array_merge([
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'user_id'        => $member->user_id ?? null,
+            'role'           => $member->role ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceMemberUpdated(Model $workspace, Model $member, array $extra = []): void
+    {
+        self::log('workspace.member_updated', $workspace, array_merge([
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'user_id'        => $member->user_id ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceMemberRemoved(Model $workspace, Model $member, array $extra = []): void
+    {
+        self::log('workspace.member_removed', $workspace, array_merge([
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'user_id'        => $member->user_id ?? null,
+            'removed_at'     => now()->toDateTimeString(),
+        ], $extra));
+    }
+
+    public static function trialWorkspaceCreated(Model $trial, Model $workspace, array $extra = []): void
+    {
+        self::log('trial.workspace_created', $trial, array_merge([
+            'trial_code'     => $trial->trial_code ?? null,
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'workspace_id'   => $workspace->id ?? null,
+        ], $extra));
+    }
 }

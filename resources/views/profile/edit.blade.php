@@ -105,12 +105,19 @@
                 </div>
 
                 {{-- Country + City --}}
+                @php
+                    $countries = \App\Support\CountryList::options();
+                @endphp
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Country</label>
-                        <input type="text" name="country"
-                               value="{{ old('country', $profile->country) }}"
-                               class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('country') border-red-400 @enderror">
+                        <select name="country"
+                                class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('country') border-red-400 @enderror">
+                            <option value="">— Select country —</option>
+                            @foreach ($countries as $value => $label)
+                                <option value="{{ $value }}" @selected(old('country', $profile->country) === $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
                         @error('country') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                     <div>

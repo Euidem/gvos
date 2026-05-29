@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Trial extends Model
 {
@@ -59,6 +60,12 @@ class Trial extends Model
     public function assignedManager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_manager_user_id');
+    }
+
+    /** The workspace created from this trial. */
+    public function workspace(): HasOne
+    {
+        return $this->hasOne(Workspace::class);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────

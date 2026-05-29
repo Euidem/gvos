@@ -1,7 +1,7 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-05-29
-**Current Phase:** Phase 3 — Leads and Trial Flow ✅ Complete (UX upgrade applied)
+**Current Phase:** Phase 4 — Workspace Engine ✅ Complete
 
 ---
 
@@ -256,17 +256,90 @@ php artisan permission:cache-reset
 
 ---
 
+## Phase 4 Status — Complete ✅ (2026-05-29)
+
+### PART A — Country dropdown cleanup
+- [x] `app/Support/CountryList.php` created with 21 country options
+- [x] `CompanyResource.php` — country TextInput → searchable Select
+- [x] `resources/views/profile/edit.blade.php` — country text input → select dropdown
+- [x] `resources/views/lead/request-service.blade.php` — country text input → select dropdown
+
+### PART B — `workspaces` table
+- [x] Migration: workspace_code, lead_request/trial/company/client_profile FKs, primary_manager_id, primary_talent_id
+- [x] name, description, status enum (pending/active/paused/completed/cancelled), type enum (trial/ongoing/project)
+- [x] starts_at, ends_at, task_limit, file_limit_mb, notes, soft deletes
+
+### PART C — `workspace_members` table
+- [x] Migration: workspace_id FK, user_id FK, role enum (client/talent/manager/observer)
+- [x] status enum (active/removed), joined_at, removed_at, notes
+- [x] Unique constraint on (workspace_id, user_id)
+
+### PART D — Models
+- [x] `Workspace` model: SoftDeletes, all fillable, statusLabels/typeLabels, generateCode(), isActive()
+- [x] `WorkspaceMember` model: roleLabels(), workspace/user relationships
+- [x] `User` model: workspaceMemberships(), managedWorkspaces(), talentWorkspaces()
+- [x] `Trial` model: workspace() HasOne added
+- [x] `LeadRequest` model: workspaces() HasMany added
+- [x] `Company` model: workspaces() HasMany added
+
+### PART E — WorkspaceResource (Filament)
+- [x] Nav group: "Workspace", sort 1
+- [x] Full form: identity, linked records, team assignment, dates & limits, notes
+- [x] Table with status/type badges, manager/talent columns
+- [x] 3 table actions: Activate, Pause, Complete (with audit logging)
+- [x] Pages: ListWorkspaces, CreateWorkspace (auto-generates code), EditWorkspace (before-snapshot audit)
+
+### PART F — WorkspaceMembersRelationManager
+- [x] Attached to WorkspaceResource Edit page
+- [x] Add Member action → audit log workspace.member_added
+- [x] Edit member action → audit log workspace.member_updated
+- [x] Remove action (soft, sets status=removed, removed_at=now) → audit log workspace.member_removed
+
+### PART G — "Create Workspace" action in TrialResource
+- [x] Visible on approved/active/completed trials without existing workspace
+- [x] Creates Workspace with auto-generated code, copies trial team/limits
+- [x] Auto-adds active lead, talent, manager as workspace members with correct roles
+- [x] Fires `trial.workspace_created` audit log entry
+
+### PART H — Workspace Blade pages + Controller + Routes
+- [x] `WorkspaceController` (index + show; 403 if not member or primary team)
+- [x] `workspace/index.blade.php` — card grid with status/type badges, empty state
+- [x] `workspace/show.blade.php` — status banner, team card, schedule card, members list, placeholder
+- [x] Routes: GET `/workspaces`, GET `/workspaces/{workspace}` (auth + check.status)
+
+### PART I — Dashboard updates (8 dashboards)
+- [x] Super Admin: workspace active/total count card; Phase 4 notice
+- [x] Operations Admin: workspace active/total count card; Phase 4 notice
+- [x] Talent: "My Workspaces" card with count link; Phase 4 notice
+- [x] Line Manager: "My Workspaces" card with count link; Phase 4 notice
+- [x] Individual Client: "My Workspace" card with count link; Phase 4 notice
+- [x] Business Client Admin: "My Workspace" card with count link; Phase 4 notice
+- [x] Business Client Staff: "Workspace Access" card with count link; Phase 4 notice
+- [x] Active Lead: live workspace link card (when workspace exists) or placeholder (when not)
+
+### PART J — AuditLogger (7 new wrappers)
+- [x] workspaceCreated, workspaceUpdated, workspaceStatusChanged
+- [x] workspaceMemberAdded, workspaceMemberUpdated, workspaceMemberRemoved
+- [x] trialWorkspaceCreated
+
+### PART K — Documentation
+- [x] CURRENT_STATUS.md updated
+- [x] IMPLEMENTATION_LOG.md updated
+- [x] TESTING_CHECKLIST.md updated
+- [x] KNOWN_ISSUES.md reviewed
+
+---
+
 ## Next Steps
 
-1. cPanel: `git pull origin main && php artisan optimize:clear` (no new migrations in this UX update)
-2. Test `/request-service`: multi-step form loads, progress bar visible, GVOS branding only
-3. Test step navigation: Next/Back, progress bar updates, step label updates
-4. Test step 2 toggles: Business fields visible only for Business; role Other text field appears correctly
-5. Test timezone Other: selecting Other shows custom field, submitted value stored in lead_requests.timezone
-6. Test full form submission: lead_requests row created with all fields
-7. Test `/request-service/success`: styled success page with "What happens next" card
-8. Test with intentionally blank first_name/email: front-end highlights field, does not advance step
-9. Test on mobile viewport: stacked layout, full-width buttons, no horizontal scroll
-10. Test Filament lead pipeline still works after UX update (no functional changes to back-end)
-11. Get Phase 3 (UX upgrade) sign-off
-12. Begin Phase 4: Workspace Foundation
+1. cPanel: `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`
+2. Test country dropdowns: profile edit, company create/edit, lead request form
+3. Test `/admin/workspaces` loads — create a workspace manually
+4. Test "Create Workspace" action on a trial → workspace created, members added
+5. Test `/workspaces` — list page visible for members
+6. Test `/workspaces/{workspace}` — detail page with team and schedule
+7. Test non-member gets 403 on workspace show
+8. Test workspace member add/remove via RelationManager
+9. Verify all 8 dashboards show Phase 4 notice and workspace card/link
+10. Get Phase 4 sign-off
+11. Begin Phase 5: Task Board

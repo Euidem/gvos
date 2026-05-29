@@ -39,4 +39,9 @@ class Company extends Model
     {
         return $this->hasMany(ClientProfile::class);
     }
+
+    public function workspaces(): HasMany
+    {
+        return $this->hasMany(Workspace::class);
+    }
 }

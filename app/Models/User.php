@@ -77,6 +77,24 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Trial::class, 'assigned_manager_user_id');
     }
 
+    /** All workspace memberships for this user. */
+    public function workspaceMemberships(): HasMany
+    {
+        return $this->hasMany(WorkspaceMember::class);
+    }
+
+    /** Workspaces where this user is the primary manager. */
+    public function managedWorkspaces(): HasMany
+    {
+        return $this->hasMany(Workspace::class, 'primary_manager_id');
+    }
+
+    /** Workspaces where this user is the primary talent. */
+    public function talentWorkspaces(): HasMany
+    {
+        return $this->hasMany(Workspace::class, 'primary_talent_id');
+    }
+
     // ── Status helpers ───────────────────────────────────────────────────
 
     public function isActive(): bool

@@ -6,6 +6,8 @@
     $talentCount       = \App\Models\TalentProfile::count();
     $managerCount      = \App\Models\ManagerProfile::count();
     $clientCount       = \App\Models\ClientProfile::count();
+    $workspaceCount    = \App\Models\Workspace::count();
+    $workspaceActive   = \App\Models\Workspace::where('status', 'active')->count();
 
     // Lead pipeline counts
     $leadTotal         = \App\Models\LeadRequest::count();
@@ -55,6 +57,11 @@
            class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
             <p class="text-2xl font-bold text-slate-800">{{ $clientCount }}</p>
             <p class="text-xs text-slate-500 mt-1 font-medium">Client Profiles</p>
+        </a>
+        <a href="/admin/workspaces"
+           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all sm:col-span-2 lg:col-span-1">
+            <p class="text-2xl font-bold text-slate-800">{{ $workspaceActive }}<span class="text-base font-normal text-slate-400">/{{ $workspaceCount }}</span></p>
+            <p class="text-xs text-slate-500 mt-1 font-medium">Active Workspaces</p>
         </a>
     </div>
 
@@ -143,7 +150,7 @@
         </div>
     </div>
 
-    {{-- ── Phase 3 status notice ────────────────────────────────────────── --}}
+    {{-- ── Phase 4 status notice ────────────────────────────────────────── --}}
     <div class="bg-indigo-50 border border-indigo-200 rounded-xl px-6 py-5">
         <div class="flex items-start gap-3">
             <div class="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0">
@@ -152,10 +159,10 @@
                 </svg>
             </div>
             <div>
-                <p class="text-sm font-semibold text-indigo-800">Phase 3 — Leads and Trial Flow</p>
+                <p class="text-sm font-semibold text-indigo-800">Phase 4 — Workspace Engine</p>
                 <p class="text-sm text-indigo-700 mt-0.5">
-                    Lead requests, price estimates and trial management are live.
-                    Workspaces, tasks, billing and advanced client features are coming in later phases.
+                    Workspaces can now be created from trials. Members are tracked with roles.
+                    Task boards, file sharing, chat and billing are coming in later phases.
                 </p>
             </div>
         </div>

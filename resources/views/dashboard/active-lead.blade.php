@@ -9,6 +9,9 @@
         ?? \App\Models\LeadRequest::where('email', $user->email)->latest()->first();
     $estimate    = $trial?->priceEstimate ?? $leadRequest?->latestAcceptedEstimate();
 
+    // Workspace
+    $workspace = $trial ? \App\Models\Workspace::where('trial_id', $trial->id)->first() : null;
+
     // Trial countdown
     $hoursRemaining = $trial?->hoursRemaining() ?? 0;
     $trialStatus    = $trial?->status ?? null;
@@ -214,16 +217,38 @@
             </div>
         @endif
 
-        {{-- ── Trial workspace placeholder ──────────────────────────────── --}}
-        <div class="bg-white rounded-2xl border border-dashed border-slate-300 px-8 py-10 text-center mb-6">
-            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                </svg>
+        {{-- ── Trial workspace ───────────────────────────────────────────── --}}
+        @if ($workspace)
+            <a href="{{ route('workspace.show', $workspace) }}"
+               class="block bg-white rounded-2xl border border-indigo-200 hover:border-indigo-400 hover:shadow-md px-8 py-6 mb-6 transition-all group">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">{{ $workspace->name }}</p>
+                            <p class="text-xs text-slate-500">{{ $workspace->workspace_code }} &middot; {{ ucfirst($workspace->type) }} workspace &middot; {{ ucfirst($workspace->status) }}</p>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </a>
+        @else
+            <div class="bg-white rounded-2xl border border-dashed border-slate-300 px-8 py-10 text-center mb-6">
+                <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <p class="text-sm font-semibold text-slate-600 mb-1">Trial workspace</p>
+                <p class="text-xs text-slate-400">Your workspace is being prepared by the GVOS team.</p>
             </div>
-            <p class="text-sm font-semibold text-slate-600 mb-1">Trial workspace</p>
-            <p class="text-xs text-slate-400">Trial workspace features — tasks, files, and communication tools — will be enabled in a later phase.</p>
-        </div>
+        @endif
 
     @else
         {{-- ── No trial yet ─────────────────────────────────────────────── --}}

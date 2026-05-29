@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Models\Company;
 use App\Services\AuditLogger;
+use App\Support\CountryList;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -123,9 +124,10 @@ class CompanyResource extends Resource
             Forms\Components\Section::make('Location & Timezone')
                 ->columns(3)
                 ->schema([
-                    TextInput::make('country')
+                    Select::make('country')
                         ->label('Country')
-                        ->maxLength(100)
+                        ->options(CountryList::options())
+                        ->searchable()
                         ->nullable(),
 
                     TextInput::make('city')

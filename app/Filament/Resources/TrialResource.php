@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TrialResource\Pages;
 use App\Models\Trial;
+use App\Models\Workspace;
+use App\Models\WorkspaceMember;
 use App\Services\AuditLogger;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -351,6 +353,74 @@ class TrialResource extends Resource
                             'lead_request_id' => $record->lead_request_id,
                         ]);
                         Notification::make()->title('Lead status updated to Payment Pending')->success()->send();
+                    }),
+
+                Tables\Actions\Action::make('create_workspace')
+                    ->label('Create Workspace')
+                    ->icon('heroicon-o-rectangle-stack')
+                    ->color('indigo')
+                    ->requiresConfirmation()
+                    ->modalHeading('Create Trial Workspace')
+                    ->modalDescription('This will create a workspace for the trial and add the lead, talent, and manager as members.')
+                    ->visible(fn (Trial $record): bool =>
+                        in_array($record->status, ['approved', 'active', 'completed']) &&
+                        ! $record->workspace()->exists()
+                    )
+                    ->action(function (Trial $record): void {
+                        $code = Workspace::generateCode();
+                        $leadRequest = $record->leadRequest;
+
+                        $name = $leadRequest
+                            ? trim("{$leadRequest->first_name} {$leadRequest->last_name}") . ' Trial Workspace'
+                            : "Trial {$record->trial_code} Workspace";
+
+                        $workspace = Workspace::create([
+                            'workspace_code'      => $code,
+                            'name'                => $name,
+                            'lead_request_id'     => $record->lead_request_id,
+                            'trial_id'            => $record->id,
+                            'primary_manager_id'  => $record->assigned_manager_user_id,
+                            'primary_talent_id'   => $record->assigned_talent_user_id,
+                            'status'              => $record->status === 'active' ? 'active' : 'pending',
+                            'type'                => 'trial',
+                            'starts_at'           => $record->starts_at,
+                            'ends_at'             => $record->ends_at,
+                            'task_limit'          => $record->trial_task_limit,
+                            'file_limit_mb'       => $record->trial_file_limit_mb,
+                            'notes'               => "Auto-created from trial {$record->trial_code}.",
+                        ]);
+
+                        // Add members
+                        if ($record->active_lead_user_id) {
+                            WorkspaceMember::create([
+                                'workspace_id' => $workspace->id,
+                                'user_id'      => $record->active_lead_user_id,
+                                'role'         => 'client',
+                                'status'       => 'active',
+                                'joined_at'    => now(),
+                            ]);
+                        }
+                        if ($record->assigned_talent_user_id) {
+                            WorkspaceMember::create([
+                                'workspace_id' => $workspace->id,
+                                'user_id'      => $record->assigned_talent_user_id,
+                                'role'         => 'talent',
+                                'status'       => 'active',
+                                'joined_at'    => now(),
+                            ]);
+                        }
+                        if ($record->assigned_manager_user_id) {
+                            WorkspaceMember::create([
+                                'workspace_id' => $workspace->id,
+                                'user_id'      => $record->assigned_manager_user_id,
+                                'role'         => 'manager',
+                                'status'       => 'active',
+                                'joined_at'    => now(),
+                            ]);
+                        }
+
+                        AuditLogger::trialWorkspaceCreated($record, $workspace);
+                        Notification::make()->title("Workspace {$code} created successfully")->success()->send();
                     }),
             ])
             ->bulkActions([]);

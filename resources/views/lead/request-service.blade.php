@@ -148,9 +148,13 @@
                                 <label for="country" class="block text-sm font-semibold text-slate-700 mb-1.5">
                                     Country <span class="text-xs font-normal text-slate-400">(optional)</span>
                                 </label>
-                                <input id="country" type="text" name="country"
-                                       value="{{ old('country') }}" maxlength="100" placeholder="e.g. Nigeria, United Kingdom" autocomplete="country-name"
-                                       class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+                                <select id="country" name="country"
+                                        class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-white">
+                                    <option value="">— Select country —</option>
+                                    @foreach (\App\Support\CountryList::options() as $val => $lbl)
+                                        <option value="{{ $val }}" @selected(old('country') === $val)>{{ $lbl }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div>

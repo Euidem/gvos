@@ -140,4 +140,22 @@ The "Inside GVOS" illustration panel on the `/request-service` page is built ent
 
 ### Phase 3 | Info | Trial workspace features are placeholders
 
-The active lead dashboard shows a "Trial workspace" placeholder panel. Tasks, files, and communication within the trial are Phase 4+ features. The placeholder correctly communicates this to the lead.
+The active lead dashboard now shows a live workspace link when a workspace exists, or a "being prepared" placeholder when it does not. Tasks, files, and communication within the workspace are Phase 5+ features. The placeholder correctly communicates this to the lead.
+
+---
+
+### Phase 4 | Low | Country dropdown is a fixed list (not a full ISO 3166 list)
+
+The `CountryList::options()` helper contains 21 common countries. Users whose country is not listed cannot select it — they must contact the GVOS team. Expanding to a full ISO country list is a future improvement.
+
+---
+
+### Phase 4 | Low | Workspace members are not de-duplicated on trial workspace creation
+
+The "Create Trial Workspace" action creates members for active_lead, talent, and manager. If any of these users are the same person (edge case in testing), a database unique constraint error on `(workspace_id, user_id)` will fire. This is intentional — the unique constraint is correct business logic.
+
+---
+
+### Phase 4 | Info | Workspace task board is a placeholder
+
+The workspace detail page (`/workspaces/{workspace}`) displays a "Tasks, files, and chat coming soon" placeholder panel. These features are Phase 5+.

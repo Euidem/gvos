@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadRequestController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +39,12 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/profile',  [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profile',  [ProfileController::class, 'update'])->name('profile.update');
+});
+
+// ── Workspace routes (all authenticated, active users) ────────────────────
+Route::middleware(['auth', 'check.status'])->group(function () {
+    Route::get('/workspaces',            [WorkspaceController::class, 'index'])->name('workspace.index');
+    Route::get('/workspaces/{workspace}', [WorkspaceController::class, 'show'])->name('workspace.show');
 });
 
 // ── Manager Console ──────────────────────────────────────────────────────

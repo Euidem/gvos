@@ -3,6 +3,12 @@
     $user = auth()->user();
     $profile = $user->profile;
     $managerProfile = $user->managerProfile;
+    $myWorkspaces = \App\Models\Workspace::where(function ($q) use ($user) {
+            $q->where('primary_manager_id', $user->id)
+              ->orWhereHas('members', fn ($m) => $m->where('user_id', $user->id)->where('status', 'active'));
+        })
+        ->whereIn('status', ['pending', 'active'])
+        ->count();
 @endphp
 
     <div class="flex items-start justify-between mb-8">
@@ -51,20 +57,23 @@
             <p class="text-sm font-semibold text-slate-800">My Profile</p>
             <p class="text-xs text-slate-400 mt-0.5">Update your details and password</p>
         </a>
+        <a href="{{ route('workspace.index') }}"
+           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-sky-300 hover:shadow-sm transition-all">
+            <p class="text-sm font-semibold text-slate-800">My Workspaces</p>
+            <p class="text-xs text-slate-400 mt-0.5">
+                {{ $myWorkspaces > 0 ? $myWorkspaces . ' active workspace' . ($myWorkspaces !== 1 ? 's' : '') : 'No active workspaces yet' }}
+            </p>
+        </a>
         <div class="bg-white rounded-xl border border-dashed border-slate-200 px-5 py-4 opacity-50 cursor-not-allowed">
-            <p class="text-sm font-semibold text-slate-500">My Team</p>
-            <p class="text-xs text-slate-400 mt-0.5">Coming in Phase 4</p>
-        </div>
-        <div class="bg-white rounded-xl border border-dashed border-slate-200 px-5 py-4 opacity-50 cursor-not-allowed">
-            <p class="text-sm font-semibold text-slate-500">Workspaces</p>
-            <p class="text-xs text-slate-400 mt-0.5">Coming in Phase 4</p>
+            <p class="text-sm font-semibold text-slate-500">Task Board</p>
+            <p class="text-xs text-slate-400 mt-0.5">Coming in Phase 5</p>
         </div>
     </div>
 
     <div class="bg-sky-50 border border-sky-200 rounded-xl px-6 py-5">
-        <p class="text-sm font-semibold text-sky-800">Phase 2 — People and Organization Foundation</p>
+        <p class="text-sm font-semibold text-sky-800">Phase 4 — Workspace Engine</p>
         <p class="text-sm text-sky-700 mt-0.5">
-            Your manager profile has been set up. Team oversight, workspace management and task boards are coming in later phases.
+            Your workspaces are now visible. Task board, team oversight and reporting are coming in later phases.
         </p>
     </div>
 

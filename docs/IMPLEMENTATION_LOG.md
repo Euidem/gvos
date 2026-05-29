@@ -285,3 +285,61 @@ Each entry: Date | Phase | What was done | Who / Tool
 - **Success page**: emerald gradient top stripe, double-ring checkmark icon, "What happens next" 4-step card, Sign In + Submit Another actions
 
 **Tool:** Claude Code | **Status:** UX upgrade complete — push to GitHub, test on cPanel
+
+---
+
+### 2026-05-29 | Phase 4 | Workspace Engine Foundation
+
+**PART A — Country dropdown cleanup:**
+- `app/Support/CountryList.php` — new helper class with 21 country options static method
+- `app/Filament/Resources/CompanyResource.php` — country TextInput → searchable Select using CountryList
+- `resources/views/profile/edit.blade.php` — country `<input type="text">` → `<select>` with @foreach
+- `resources/views/lead/request-service.blade.php` — Step 1 country input → `<select>` with @foreach
+
+**PART B & C — Migrations:**
+- `database/migrations/2024_01_05_000001_create_workspaces_table.php`
+- `database/migrations/2024_01_05_000002_create_workspace_members_table.php`
+
+**PART D — Models (5 created/updated):**
+- `app/Models/Workspace.php` — new model (SoftDeletes, generateCode, statusLabels, typeLabels, all relationships)
+- `app/Models/WorkspaceMember.php` — new model (roleLabels, workspace/user relationships)
+- `app/Models/User.php` — added workspaceMemberships, managedWorkspaces, talentWorkspaces HasMany
+- `app/Models/Trial.php` — added workspace() HasOne
+- `app/Models/LeadRequest.php` — added workspaces() HasMany
+- `app/Models/Company.php` — added workspaces() HasMany
+
+**PART E — WorkspaceResource (Filament):**
+- `app/Filament/Resources/WorkspaceResource.php` — full form, table, 3 actions (Activate/Pause/Complete)
+- `app/Filament/Resources/WorkspaceResource/Pages/ListWorkspaces.php`
+- `app/Filament/Resources/WorkspaceResource/Pages/CreateWorkspace.php` — auto workspace_code
+- `app/Filament/Resources/WorkspaceResource/Pages/EditWorkspace.php` — before-snapshot audit
+
+**PART F — WorkspaceMembersRelationManager:**
+- `app/Filament/Resources/WorkspaceResource/RelationManagers/WorkspaceMembersRelationManager.php`
+  — Add/Edit/Remove member actions, all audit-logged
+
+**PART G — "Create Workspace" action in TrialResource:**
+- `app/Filament/Resources/TrialResource.php` — added "Create Trial Workspace" action
+  — Creates workspace, adds up to 3 members (lead/talent/manager), fires audit log
+
+**PART H — Workspace Blade pages + Controller + Routes:**
+- `app/Http/Controllers/WorkspaceController.php` — index (member/primary filter) + show (403 guard)
+- `resources/views/workspace/index.blade.php` — card grid, empty state, status/type badges
+- `resources/views/workspace/show.blade.php` — status banner, team, schedule, members, placeholder
+- `routes/web.php` — GET /workspaces, GET /workspaces/{workspace} (auth + check.status)
+
+**PART I — Dashboard updates (8 dashboards):**
+- Super Admin + Ops Admin: workspace count card (active/total), Phase 4 notice
+- Talent + Line Manager: "My Workspaces" card with live count link, Phase 4 notice
+- Individual Client + Business Client Admin + Business Client Staff: "My Workspace" card, Phase 4 notice
+- Active Lead: live workspace link card (if workspace exists) or "being prepared" placeholder, Phase 4 notice
+
+**PART J — AuditLogger (7 new wrappers):**
+- workspaceCreated, workspaceUpdated, workspaceStatusChanged
+- workspaceMemberAdded, workspaceMemberUpdated, workspaceMemberRemoved
+- trialWorkspaceCreated
+
+**PART K — Documentation (4 files updated):**
+- CURRENT_STATUS.md, IMPLEMENTATION_LOG.md, TESTING_CHECKLIST.md, KNOWN_ISSUES.md
+
+**Tool:** Claude Code | **Status:** Phase 4 complete — push to GitHub, test on cPanel

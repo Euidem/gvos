@@ -4,6 +4,9 @@
     $profile = $user->profile;
     $clientProfile = $user->clientProfile;
     $company = $clientProfile?->company;
+    $myWorkspaces = \App\Models\Workspace::whereHas('members', fn ($m) => $m->where('user_id', $user->id)->where('status', 'active'))
+        ->whereIn('status', ['pending', 'active'])
+        ->count();
 @endphp
 
     <div class="flex items-start justify-between mb-8">
@@ -62,18 +65,21 @@
         </a>
         <div class="bg-white rounded-xl border border-dashed border-slate-200 px-5 py-4 opacity-50 cursor-not-allowed">
             <p class="text-sm font-semibold text-slate-500">Company &amp; Staff</p>
-            <p class="text-xs text-slate-400 mt-0.5">Coming in Phase 3</p>
+            <p class="text-xs text-slate-400 mt-0.5">Coming in Phase 5</p>
         </div>
-        <div class="bg-white rounded-xl border border-dashed border-slate-200 px-5 py-4 opacity-50 cursor-not-allowed">
-            <p class="text-sm font-semibold text-slate-500">Workspace</p>
-            <p class="text-xs text-slate-400 mt-0.5">Coming in Phase 4</p>
-        </div>
+        <a href="{{ route('workspace.index') }}"
+           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-violet-300 hover:shadow-sm transition-all">
+            <p class="text-sm font-semibold text-slate-800">My Workspace</p>
+            <p class="text-xs text-slate-400 mt-0.5">
+                {{ $myWorkspaces > 0 ? $myWorkspaces . ' active workspace' . ($myWorkspaces !== 1 ? 's' : '') : 'No active workspaces yet' }}
+            </p>
+        </a>
     </div>
 
     <div class="bg-violet-50 border border-violet-200 rounded-xl px-6 py-5">
-        <p class="text-sm font-semibold text-violet-800">Phase 2 — People and Organization Foundation</p>
+        <p class="text-sm font-semibold text-violet-800">Phase 4 — Workspace Engine</p>
         <p class="text-sm text-violet-700 mt-0.5">
-            Your business account is active. Company management, staff invitations and workspace features are coming in later phases.
+            Your workspace is now accessible. Staff invitations, task board and billing are coming in later phases.
         </p>
     </div>
 
