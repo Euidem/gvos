@@ -20,16 +20,16 @@
 
     <div class="flex items-start justify-between mb-8">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800">
+            <h2 class="text-2xl font-bold text-on-surface">
                 Welcome back{{ $profile?->first_name ? ', ' . $profile->first_name : '' }}
             </h2>
-            <p class="text-sm text-slate-500 mt-1">GVOS Ops Console — Operations Administrator</p>
+            <p class="text-sm text-on-surface-variant mt-1">GVOS Ops Console — Operations Administrator</p>
         </div>
         <div class="flex items-center gap-3">
-            <span class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full font-medium">
+            <span class="text-xs bg-status-active/10 text-status-active border border-status-active/20 px-3 py-1 rounded-full font-medium">
                 {{ ucfirst($user->status) }}
             </span>
-            <span class="text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full font-medium">
+            <span class="text-xs bg-secondary/5 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-medium">
                 Operations Admin
             </span>
         </div>
@@ -38,59 +38,70 @@
     {{-- ── Entity counts ────────────────────────────────────────────────── --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <a href="/admin/companies"
-           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
-            <p class="text-2xl font-bold text-slate-800">{{ $companyCount }}</p>
-            <p class="text-xs text-slate-500 mt-1 font-medium">Companies</p>
+           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">business</span>
+            </div>
+            <p class="text-2xl font-bold text-on-surface">{{ $companyCount }}</p>
+            <p class="text-xs text-on-surface-variant mt-1 font-medium">Companies</p>
         </a>
         <a href="/admin/talent-profiles"
-           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
-            <p class="text-2xl font-bold text-slate-800">{{ $talentCount }}</p>
-            <p class="text-xs text-slate-500 mt-1 font-medium">Talent Profiles</p>
+           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">badge</span>
+            </div>
+            <p class="text-2xl font-bold text-on-surface">{{ $talentCount }}</p>
+            <p class="text-xs text-on-surface-variant mt-1 font-medium">Talent Profiles</p>
         </a>
         <a href="/admin/manager-profiles"
-           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
-            <p class="text-2xl font-bold text-slate-800">{{ $managerCount }}</p>
-            <p class="text-xs text-slate-500 mt-1 font-medium">Manager Profiles</p>
+           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">manage_accounts</span>
+            </div>
+            <p class="text-2xl font-bold text-on-surface">{{ $managerCount }}</p>
+            <p class="text-xs text-on-surface-variant mt-1 font-medium">Manager Profiles</p>
         </a>
         <a href="/admin/client-profiles"
-           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
-            <p class="text-2xl font-bold text-slate-800">{{ $clientCount }}</p>
-            <p class="text-xs text-slate-500 mt-1 font-medium">Client Profiles</p>
+           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">group</span>
+            </div>
+            <p class="text-2xl font-bold text-on-surface">{{ $clientCount }}</p>
+            <p class="text-xs text-on-surface-variant mt-1 font-medium">Client Profiles</p>
         </a>
         <a href="/admin/workspaces"
-           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
-            <p class="text-2xl font-bold text-slate-800">{{ $workspaceActive }}<span class="text-base font-normal text-slate-400">/{{ $workspaceCount }}</span></p>
-            <p class="text-xs text-slate-500 mt-1 font-medium">Active Workspaces</p>
+           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">workspaces</span>
+            </div>
+            <p class="text-2xl font-bold text-on-surface">{{ $workspaceActive }}<span class="text-base font-normal text-outline">/{{ $workspaceCount }}</span></p>
+            <p class="text-xs text-on-surface-variant mt-1 font-medium">Active Workspaces</p>
         </a>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <a href="/admin/users"
-           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all group">
+           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm group">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
+                <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center group-hover:bg-secondary/10 transition-colors">
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">group</span>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-slate-800">View Users</p>
-                    <p class="text-xs text-slate-400">Browse all platform users</p>
+                    <p class="text-sm font-semibold text-on-surface">View Users</p>
+                    <p class="text-xs text-outline">Browse all platform users</p>
                 </div>
             </div>
         </a>
 
         <a href="{{ route('profile.show') }}"
-           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all group">
+           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm group">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-slate-50 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
+                <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center group-hover:bg-secondary/5 transition-colors">
+                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">person</span>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-slate-800">My Profile</p>
-                    <p class="text-xs text-slate-400">Update your details and password</p>
+                    <p class="text-sm font-semibold text-on-surface">My Profile</p>
+                    <p class="text-xs text-outline">Update your details and password</p>
                 </div>
             </div>
         </a>
@@ -98,47 +109,50 @@
 
     {{-- ── Lead pipeline ───────────────────────────────────────────────── --}}
     <div class="mb-8">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wide">Lead Pipeline</h3>
+        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Lead Pipeline</h3>
         <div class="grid grid-cols-2 lg:grid-cols-6 gap-3">
             <a href="/admin/lead-requests"
-               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-indigo-300 hover:shadow-sm transition-all">
-                <p class="text-2xl font-bold text-slate-800">{{ $leadTotal }}</p>
-                <p class="text-xs text-slate-500 mt-1 font-medium">Total Leads</p>
+               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-on-surface">{{ $leadTotal }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Total Leads</p>
             </a>
             <a href="/admin/lead-requests?tableFilters[status][value]=new"
-               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-amber-300 hover:shadow-sm transition-all">
-                <p class="text-2xl font-bold text-amber-600">{{ $leadNew }}</p>
-                <p class="text-xs text-slate-500 mt-1 font-medium">New</p>
+               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-payment-due/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-status-payment-due">{{ $leadNew }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">New</p>
             </a>
             <a href="/admin/lead-requests?tableFilters[status][value]=under_review"
-               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-indigo-300 hover:shadow-sm transition-all">
-                <p class="text-2xl font-bold text-slate-800">{{ $leadUnderReview }}</p>
-                <p class="text-xs text-slate-500 mt-1 font-medium">Under Review</p>
+               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-on-surface">{{ $leadUnderReview }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Under Review</p>
             </a>
             <a href="/admin/lead-requests?tableFilters[status][value]=trial_approved"
-               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-emerald-300 hover:shadow-sm transition-all">
-                <p class="text-2xl font-bold text-emerald-600">{{ $leadTrialApproved }}</p>
-                <p class="text-xs text-slate-500 mt-1 font-medium">Trial Approved</p>
+               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-active/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-status-active">{{ $leadTrialApproved }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Trial Approved</p>
             </a>
             <a href="/admin/lead-requests?tableFilters[status][value]=trial_active"
-               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-emerald-300 hover:shadow-sm transition-all">
-                <p class="text-2xl font-bold text-emerald-700">{{ $leadTrialActive }}</p>
-                <p class="text-xs text-slate-500 mt-1 font-medium">Trial Active</p>
+               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-completed/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-status-completed">{{ $leadTrialActive }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Trial Active</p>
             </a>
             <a href="/admin/lead-requests?tableFilters[status][value]=payment_pending"
-               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-amber-300 hover:shadow-sm transition-all">
-                <p class="text-2xl font-bold text-amber-700">{{ $leadPaymentPending }}</p>
-                <p class="text-xs text-slate-500 mt-1 font-medium">Payment Pending</p>
+               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-payment-due/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-status-payment-due">{{ $leadPaymentPending }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Payment Pending</p>
             </a>
         </div>
     </div>
 
-    <div class="bg-indigo-50 border border-indigo-200 rounded-xl px-6 py-5">
-        <p class="text-sm font-semibold text-indigo-800">Phase 4 — Workspace Engine</p>
-        <p class="text-sm text-indigo-700 mt-0.5">
-            Workspaces can now be created from trials. Members are tracked with roles.
-            Task boards, file sharing, chat and billing are coming in later phases.
-        </p>
+    <div class="bg-secondary/5 border border-secondary/20 rounded-xl px-6 py-5 flex items-start gap-3">
+        <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size: 18px;">info</span>
+        <div>
+            <p class="text-sm font-semibold text-secondary">Phase 4 — Workspace Engine</p>
+            <p class="text-sm text-on-surface-variant mt-0.5">
+                Workspaces can now be created from trials. Members are tracked with roles.
+                Task boards, file sharing, chat and billing are coming in later phases.
+            </p>
+        </div>
     </div>
 
 </x-layouts.gvos>

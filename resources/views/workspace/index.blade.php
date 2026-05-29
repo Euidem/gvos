@@ -5,22 +5,19 @@
         {{-- ── Page header ──────────────────────────────────────────────── --}}
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-2xl font-bold text-slate-800">My Workspaces</h2>
-                <p class="text-sm text-slate-500 mt-1">All workspaces you are assigned to.</p>
+                <h2 class="text-2xl font-bold text-on-surface">My Workspaces</h2>
+                <p class="text-sm text-on-surface-variant mt-1">All workspaces you are assigned to.</p>
             </div>
         </div>
 
         {{-- ── Empty state ──────────────────────────────────────────────── --}}
         @if ($workspaces->isEmpty())
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-8 py-12 text-center">
-                <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                    </svg>
+            <div class="bg-white rounded-xl border border-border-subtle shadow-card px-8 py-12 text-center">
+                <div class="w-14 h-14 bg-surface-container-low rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-outline" style="font-size: 28px;">workspaces</span>
                 </div>
-                <h3 class="text-base font-semibold text-slate-700 mb-1">No workspaces yet</h3>
-                <p class="text-sm text-slate-500">Workspaces are created by the GVOS team when your service begins.</p>
+                <h3 class="text-base font-semibold text-on-surface mb-1">No workspaces yet</h3>
+                <p class="text-sm text-on-surface-variant">Workspaces are created by the GVOS team when your service begins.</p>
             </div>
 
         {{-- ── Workspace cards ──────────────────────────────────────────── --}}
@@ -29,29 +26,26 @@
                 @foreach ($workspaces as $workspace)
                 @php
                     $statusColors = [
-                        'active'    => 'bg-emerald-100 text-emerald-700',
-                        'pending'   => 'bg-amber-100 text-amber-700',
-                        'paused'    => 'bg-blue-100 text-blue-700',
-                        'completed' => 'bg-slate-100 text-slate-600',
-                        'cancelled' => 'bg-red-100 text-red-700',
+                        'active'    => 'bg-status-active/10 text-status-active border border-status-active/20',
+                        'pending'   => 'bg-status-payment-due/10 text-status-payment-due border border-status-payment-due/20',
+                        'paused'    => 'bg-secondary/5 text-secondary border border-secondary/20',
+                        'completed' => 'bg-status-completed/10 text-status-completed border border-status-completed/20',
+                        'cancelled' => 'bg-status-blocked/10 text-status-blocked border border-status-blocked/20',
                     ];
                     $typeColors = [
-                        'trial'   => 'bg-violet-100 text-violet-700',
-                        'ongoing' => 'bg-indigo-100 text-indigo-700',
-                        'project' => 'bg-teal-100 text-teal-700',
+                        'trial'   => 'bg-status-trial/10 text-status-trial border border-status-trial/20',
+                        'ongoing' => 'bg-secondary/5 text-secondary border border-secondary/20',
+                        'project' => 'bg-secondary/5 text-secondary border border-secondary/20',
                     ];
-                    $statusCls = $statusColors[$workspace->status] ?? 'bg-slate-100 text-slate-600';
-                    $typeCls   = $typeColors[$workspace->type] ?? 'bg-slate-100 text-slate-600';
+                    $statusCls = $statusColors[$workspace->status] ?? 'bg-surface-container-low text-on-surface-variant border border-border-subtle';
+                    $typeCls   = $typeColors[$workspace->type]   ?? 'bg-surface-container-low text-on-surface-variant border border-border-subtle';
                 @endphp
                 <a href="{{ route('workspace.show', $workspace) }}"
-                   class="block bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all p-6 group">
+                   class="block bg-white rounded-xl border border-border-subtle shadow-sm hover:border-secondary/30 hover:shadow-card transition-all p-6 group card-lift">
 
                     <div class="flex items-start justify-between mb-4">
-                        <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                            </svg>
+                        <div class="w-10 h-10 bg-secondary/5 rounded-xl flex items-center justify-center group-hover:bg-secondary/10 transition-colors">
+                            <span class="material-symbols-outlined text-secondary" style="font-size: 20px;">workspaces</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $typeCls }}">
@@ -63,14 +57,14 @@
                         </div>
                     </div>
 
-                    <h3 class="font-bold text-slate-800 text-base leading-snug mb-1">{{ $workspace->name }}</h3>
-                    <p class="text-xs text-slate-400 mb-4">{{ $workspace->workspace_code }}</p>
+                    <h3 class="font-bold text-on-surface text-base leading-snug mb-1">{{ $workspace->name }}</h3>
+                    <p class="text-xs text-outline mb-4">{{ $workspace->workspace_code }}</p>
 
                     @if ($workspace->description)
-                        <p class="text-sm text-slate-500 mb-4 line-clamp-2">{{ $workspace->description }}</p>
+                        <p class="text-sm text-on-surface-variant mb-4 line-clamp-2">{{ $workspace->description }}</p>
                     @endif
 
-                    <div class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 pt-3 mt-2">
+                    <div class="flex items-center justify-between text-xs text-outline border-t border-border-subtle pt-3 mt-2">
                         <span>
                             @if ($workspace->primaryManager)
                                 Manager: {{ $workspace->primaryManager->name }}
@@ -96,8 +90,9 @@
         {{-- ── Back link ─────────────────────────────────────────────────── --}}
         <div class="text-center pb-4">
             <a href="{{ auth()->user()->getDashboardRoute() }}"
-               class="text-sm text-indigo-600 hover:text-indigo-500">
-                ← Back to Dashboard
+               class="text-sm text-secondary hover:brightness-110 transition-all flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                Back to Dashboard
             </a>
         </div>
 
