@@ -11,37 +11,58 @@ class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
 
-    /** Stores the role slug extracted before save. */
-    private string $roleToAssign = '';
+    // Fields extracted from form data before User::create() is called
+    private string  $roleToAssign = '';
+    private ?string $firstName    = null;
+    private ?string $lastName     = null;
 
     /**
-     * Strip 'role' from the data array so it isn't passed to User::create().
-     * We'll handle role assignment in afterCreate().
+     * Strip non-User-model fields from data before the record is created.
+     * Store them as properties so afterCreate() can use them.
      */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $this->roleToAssign = $data['role'] ?? '';
-        unset($data['role']);
+        $this->roleToAssign = $data['role']       ?? '';
+        $this->firstName    = $data['first_name'] ?? null;
+        $this->lastName     = $data['last_name']  ?? null;
+
+        unset($data['role'], $data['first_name'], $data['last_name']);
+
+        // Auto-generate display name from first + last if the admin left it blank
+        if (empty(trim($data['name'] ?? '')) && ($this->firstName || $this->lastName)) {
+            $data['name'] = trim("{$this->firstName} {$this->lastName}");
+        }
+
+        // Ensure name is never empty
+        if (empty(trim($data['name'] ?? ''))) {
+            $data['name'] = $data['email'];
+        }
+
         return $data;
-    }
-
-    protected function handleRecordCreation(array $data): Model
-    {
-        $record = parent::handleRecordCreation($data);
-
-        // Ensure a profile row exists for every created user
-        $record->profile()->firstOrCreate(['user_id' => $record->id]);
-
-        return $record;
     }
 
     protected function afterCreate(): void
     {
+        // 1. Assign role
         if ($this->roleToAssign) {
             $this->record->syncRoles([$this->roleToAssign]);
         }
 
-        AuditLogger::userCreated($this->record, ['role' => $this->roleToAssign]);
+        // 2. Create / update the profile with first & last name
+        $this->record->profile()->updateOrCreate(
+            ['user_id' => $this->record->id],
+            [
+                'first_name' => $this->firstName,
+                'last_name'  => $this->lastName,
+            ]
+        );
+
+        // 3. Audit log
+        AuditLogger::userCreated($this->record, [
+            'first_name' => $this->firstName,
+            'last_name'  => $this->lastName,
+            'role'       => $this->roleToAssign,
+        ]);
     }
 
     protected function getRedirectUrl(): string

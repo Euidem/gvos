@@ -1,80 +1,58 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-05-29
-**Current Phase:** Phase 1 — Identity and Access Foundation ✅ Complete
+**Current Phase:** Phase 1 — Identity and Access Foundation ✅ Complete (v2 patch applied)
 
 ---
 
 ## Phase 0 Status — Complete ✅
 
-All Phase 0 objectives confirmed working on cPanel staging:
-- GitHub repo → working
-- cPanel deployment → working
-- Laravel loads → working
-- Login → working
-- Filament admin login → working
-- Migrations → working
-- Seeders → working
-- Roles seeded → working
-- Super Admin `/admin` access → working
-- Blade fallback pages → working (no Node required)
+All Phase 0 objectives confirmed working on cPanel staging.
 
 ---
 
-## Phase 1 Status — Complete ✅
+## Phase 1 Status — Complete ✅ (patch applied 2026-05-29)
 
-### Implemented
+### Phase 1 Core (initial release)
+- [x] user_profiles table — extended profile data
+- [x] audit_logs table — immutable event trail
+- [x] UserProfile and AuditLog models
+- [x] AuditLogger service
+- [x] CheckAccountStatus middleware
+- [x] ProfileController (show + update)
+- [x] PasswordController (change password + audit log)
+- [x] Filament UserResource (view, create, edit, filters)
+- [x] Profile editing page at /profile
+- [x] Account status holding page
+- [x] All 8 dashboards improved
 
-#### Database
-- [x] `pending` status added to users.status ENUM
-- [x] `user_profiles` table — extended profile data per user
-- [x] `audit_logs` table — immutable event audit trail
+### Phase 1 Patch — Fixes and UX improvements
 
-#### Models
-- [x] `UserProfile` model with `belongsTo(User)` relationship
-- [x] `AuditLog` model — immutable, blocks updates/deletes at app level
-- [x] `User` model — added `profile()` hasOne, status helpers, `isAccessBlocked()`
+#### PART A — Critical Bug Fix: Spatie Role Middleware
+- [x] **Root cause:** In Laravel 11, Spatie middleware aliases (`role`, `permission`, `role_or_permission`) are NOT auto-registered. Visiting `/talent/dashboard` as a Talent user threw `Target class [role] does not exist`.
+- [x] **Fix:** Registered all three Spatie middleware aliases in `bootstrap/app.php` using `$middleware->alias([...])`.
 
-#### Services
-- [x] `AuditLogger` service — convenience methods for all Phase 1 events
-  - `userCreated`, `userUpdated`, `roleChanged`, `statusChanged`
-  - `passwordChanged`, `profileUpdated`, `login`
+#### PART B — User Management: First & Last Name
+- [x] Filament user create/edit form now includes `first_name` and `last_name` fields.
+- [x] Display name (`users.name`) is auto-generated from first + last if left blank.
+- [x] Edit form pre-fills first_name / last_name from `user_profiles` via `mutateFormDataBeforeFill()`.
+- [x] `CreateUser` and `EditUser` pages save first/last name to `user_profiles` table in `afterCreate()` / `afterSave()`.
 
-#### Middleware
-- [x] `CheckAccountStatus` — blocks suspended/inactive users from dashboards
-- [x] Registered as `check.status` alias in `bootstrap/app.php`
+#### PART C — Friendly Role Labels
+- [x] Internal role slugs (`line_manager`, `business_client_admin`) are replaced with human-readable labels in all Filament UI (form dropdown, table column, role filter).
+- [x] Label mapping in `UserResource::roleLabels()` static method.
+- [x] Database role slugs are unchanged.
 
-#### Filament — GVOS Ops Console
-- [x] `UserResource` — User management panel
-  - View all users (super_admin + operations_admin)
-  - Create users with name, email, password, role, status (super_admin only)
-  - Edit user details, role and status (super_admin only)
-  - Deletion disabled — use status changes instead
-  - Search by name / email
-  - Filter by role and status
-  - Status badges with colour coding
-  - Audit log entries on create and edit
+#### PART D — Timezone Dropdown
+- [x] Filament user form: timezone is now a searchable Select with 11 practical options.
+- [x] Profile edit Blade page: timezone is now a `<select>` with the same 11 options.
+- [x] Default timezone: `Africa/Lagos` (GetVirtual primary market).
+- [x] ProfileController validates timezone against the allowed list (`Rule::in`).
 
-#### Controllers
-- [x] `ProfileController` — show and update profile + extended profile
-- [x] `PasswordController` — change password with current_password validation + audit log
-- [x] `AuthenticatedSessionController` — login audit log added
-
-#### Routes
-- [x] `GET/PUT /profile` — profile editing (all authenticated roles)
-- [x] `GET /account/status` — suspended / inactive holding page
-- [x] All dashboards now use `check.status` middleware
-- [x] `role:` middleware on all portal routes
-
-#### Blade Views (Phase 0 Blade fallback maintained)
-- [x] `profile/edit.blade.php` — full profile + password change form
-- [x] `account/status.blade.php` — suspended / inactive holding page
-- [x] All 8 role dashboards improved:
-  - Personalised welcome (uses first_name from profile)
-  - Status badge + role badge
-  - Working quick-action links (profile, admin panel)
-  - Dashed placeholder cards for coming modules
-  - Phase 1 coloured notice banner
+#### PART E — Improved Audit Logging
+- [x] `EditUser` now snapshots User fields **before** save (since `getDirty()` is empty after save).
+- [x] Audit context includes from/to values for changed fields.
+- [x] First/last name changes included in audit context.
 
 ---
 
@@ -91,7 +69,7 @@ All Phase 0 objectives confirmed working on cPanel staging:
 
 ---
 
-## cPanel Deployment — Commands to Run After Each Pull
+## cPanel — Commands to Run After Each Pull
 
 ```bash
 git pull origin main
@@ -104,21 +82,22 @@ php artisan permission:cache-reset
 
 ## Architecture Notes
 
+- **Role middleware:** `role:X` aliases now correctly registered via `bootstrap/app.php`
 - **Auth guard:** `web` (session)
-- **Blade CDN:** Tailwind CDN via `<script src="https://cdn.tailwindcss.com">` — Phase 0/1 staging only
-- **Node/npm:** Not required for Phase 1. Phase 2+ will introduce Vite React builds.
-- **Filament panel:** `/admin` — protected by `canAccessPanel()` on User model
-- **Role middleware:** Spatie `role:` middleware on all portal prefixes
-- **Status middleware:** `check.status` alias blocks suspended/inactive users
+- **Blade CDN:** Tailwind CDN — Phase 0/1 staging only
+- **Node/npm:** Not required for Phase 0/1
+- **Filament panel:** `/admin` — `canAccessPanel()` restricts to super_admin + operations_admin
+- **Status middleware:** `check.status` blocks suspended/inactive users from dashboards
+- **Timezones:** 11-option dropdown list, default `Africa/Lagos`
+- **Role labels:** Friendly labels in UI; slug values stored in DB
 
 ---
 
 ## Next Steps
 
-1. cPanel: run `php artisan migrate` and `php artisan optimize:clear`
-2. Test Filament Users resource at `/admin/users`
-3. Test profile editing at `/profile`
-4. Test password change
-5. Test account suspension blocking access
-6. Get Phase 1 approval
-7. Begin Phase 2: People and Organizations (companies, departments, talent profiles, manager profiles)
+1. cPanel: run `git pull && php artisan optimize:clear && php artisan permission:cache-reset`
+2. Test: create a Talent user in Filament, log in, confirm `/talent/dashboard` loads
+3. Test: profile editing, password change, account suspension flow
+4. Test: role badges show friendly names in Filament user list
+5. Get Phase 1 approval
+6. Begin Phase 2: People and Organizations

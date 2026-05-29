@@ -79,10 +79,25 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Timezone</label>
+                        @php
+                            $timezones = [
+                                'Africa/Lagos'        => 'Africa/Lagos (WAT)',
+                                'UTC'                 => 'UTC',
+                                'Europe/London'       => 'Europe/London (GMT/BST)',
+                                'Europe/Paris'        => 'Europe/Paris (CET/CEST)',
+                                'Europe/Berlin'       => 'Europe/Berlin (CET/CEST)',
+                                'America/New_York'    => 'America/New_York (EST/EDT)',
+                                'America/Chicago'     => 'America/Chicago (CST/CDT)',
+                                'America/Denver'      => 'America/Denver (MST/MDT)',
+                                'America/Los_Angeles' => 'America/Los_Angeles (PST/PDT)',
+                                'America/Toronto'     => 'America/Toronto (EST/EDT)',
+                                'America/Vancouver'   => 'America/Vancouver (PST/PDT)',
+                            ];
+                        @endphp
                         <select name="timezone"
                                 class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('timezone') border-red-400 @enderror">
-                            @foreach (timezone_identifiers_list() as $tz)
-                                <option value="{{ $tz }}" @selected(old('timezone', $user->timezone) === $tz)>{{ $tz }}</option>
+                            @foreach ($timezones as $tz => $label)
+                                <option value="{{ $tz }}" @selected(old('timezone', $user->timezone) === $tz)>{{ $label }}</option>
                             @endforeach
                         </select>
                         @error('timezone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror

@@ -21,23 +21,23 @@ Severity levels: Critical | High | Medium | Low | Info
 
 **Resolution:** All source files were written by hand. cPanel used as the execution environment. Node/npm not required for Phase 0/1 (Blade + Tailwind CDN).
 
-**Status:** Resolved — Blade fallback deployed to cPanel successfully.
+**Status:** Resolved.
 
 ---
 
 ### 2026-05-27 | Phase 0 | High | Missing auth controllers caused composer install failure
 
-**Description:** `routes/auth.php` referenced 9 auth controllers that did not exist as files. Laravel validates invokable controllers during `package:discover`, causing cPanel `composer install` to crash with `Invalid route action`.
+**Description:** `routes/auth.php` referenced 9 auth controllers that did not exist. Laravel validates invokable controllers at `package:discover`, causing cPanel install to crash with `Invalid route action`.
 
-**Resolution:** Created all 9 auth controllers as hand-written source files. Commit `54112db`.
+**Resolution:** Created all 9 auth controllers as source files. Commit `54112db`.
 
 **Status:** Resolved.
 
 ---
 
-### 2026-05-27 | Phase 0 | High | Empty migrations directory caused seeder to fail
+### 2026-05-27 | Phase 0 | High | Empty migrations directory caused seeder failure
 
-**Description:** `database/migrations/` was completely empty. `php artisan db:seed` failed with `Table 'roles' doesn't exist`. Also `config/permission.php` was missing.
+**Description:** `database/migrations/` was completely empty. Seeder failed with `Table 'roles' doesn't exist`. `config/permission.php` was also missing.
 
 **Resolution:** Created 4 migration files and `config/permission.php`. Commit `299dd7a`.
 
@@ -49,7 +49,7 @@ Severity levels: Critical | High | Medium | Low | Info
 
 **Description:** `php artisan view:cache` failed with "Unable to locate component [layouts.auth]". Files were in `resources/views/layouts/` but `<x-layouts.auth>` resolves to `resources/views/components/layouts/`.
 
-**Resolution:** Created component files at correct location with `@props` declarations. Commit `afd12c7`.
+**Resolution:** Created component files at correct location. Commit `afd12c7`.
 
 **Status:** Resolved.
 
@@ -57,7 +57,7 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ### 2026-05-28 | Phase 0 | High | Filament 403 after login
 
-**Description:** After successful login, `/admin` returned 403. User model did not implement `FilamentUser` contract. Filament v3 denies all users without this interface.
+**Description:** After successful login, `/admin` returned 403. User model did not implement `FilamentUser` contract.
 
 **Resolution:** Added `implements FilamentUser` and `canAccessPanel()` to User model. Commit `a476da2`.
 
@@ -65,18 +65,37 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+### 2026-05-29 | Phase 1 | Critical | Target class [role] does not exist
+
+**Description:**
+Logging in as a non-admin user (e.g. Talent) and visiting `/talent/dashboard` threw:
+
+```
+Illuminate\Contracts\Container\BindingResolutionException
+Target class [role] does not exist.
+```
+
+**Root cause:** In Laravel 11, `app/Http/Kernel.php` no longer exists. Spatie Laravel Permission v6 middleware aliases (`role`, `permission`, `role_or_permission`) are **not auto-registered** in Laravel 11 — they must be declared explicitly in `bootstrap/app.php` using `$middleware->alias([...])`. The Phase 1 implementation only registered `check.status` and forgot the Spatie aliases.
+
+**Resolution:** Added all three Spatie middleware aliases to `bootstrap/app.php`:
+```php
+'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
+'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+```
+
+**Status:** Resolved — commit `[Fix Phase 1 role middleware and user form UX]`.
+
+---
+
 ## Warnings / Notes
 
 ### Phase 1 | Low | Tailwind CDN in production
 
-Using `https://cdn.tailwindcss.com` in production is acceptable for Phase 0/1 staging but should be replaced with a compiled Vite build in Phase 2+. The CDN version is larger and generates styles at runtime.
-
-**Planned resolution:** Phase 2 — set up Node/npm on local machine or CI, run `npm run build`, commit `public/build/`.
+Using `https://cdn.tailwindcss.com` is acceptable for Phase 0/1 staging. Should be replaced with a compiled Vite build in Phase 2+.
 
 ---
 
-### Phase 1 | Low | Inertia middleware active but no React pages used
+### Phase 1 | Low | Inertia middleware active but no React pages
 
-`HandleInertiaRequests` middleware is registered in `bootstrap/app.php` and executes on every web request. Currently harmless (Blade-only responses are passed through). When React pages are introduced in Phase 2+, the middleware will handle shared data injection.
-
-**No action needed** until React migration begins.
+`HandleInertiaRequests` runs on every web request as a no-op (Blade-only responses pass through). Harmless until React pages are introduced in Phase 2+.

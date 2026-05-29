@@ -11,12 +11,28 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Register route middleware aliases
+        //
+        // ── Route middleware aliases ───────────────────────────────────────
+        //
+        // IMPORTANT: In Laravel 11, app/Http/Kernel.php no longer exists.
+        // All middleware aliases must be registered here.
+        //
+        // Spatie Laravel Permission v6 middleware aliases are NOT auto-registered
+        // in Laravel 11 — they must be declared explicitly.
+        //
         $middleware->alias([
-            'check.status' => \App\Http\Middleware\CheckAccountStatus::class,
+            // Spatie Permission — role and permission guards
+            'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+
+            // GVOS — account status gate (blocks suspended / inactive users)
+            'check.status'       => \App\Http\Middleware\CheckAccountStatus::class,
         ]);
 
-        // Append Inertia middleware to web group (kept for Phase 1+ React migration)
+        // Inertia middleware appended to web group.
+        // Currently a pass-through (Blade-only in Phase 0/1).
+        // Will inject shared props when React pages are introduced in Phase 2+.
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);

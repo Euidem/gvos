@@ -11,6 +11,24 @@ use Illuminate\Validation\Rule;
 class ProfileController extends Controller
 {
     /**
+     * Allowed timezone values — kept in sync with the Blade dropdown
+     * and UserResource::timezoneOptions().
+     */
+    public const TIMEZONES = [
+        'Africa/Lagos',
+        'UTC',
+        'Europe/London',
+        'Europe/Paris',
+        'Europe/Berlin',
+        'America/New_York',
+        'America/Chicago',
+        'America/Denver',
+        'America/Los_Angeles',
+        'America/Toronto',
+        'America/Vancouver',
+    ];
+
+    /**
      * Show the profile editing page.
      * Ensures a UserProfile record exists for the user.
      */
@@ -36,10 +54,9 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'name'      => ['required', 'string', 'max:255'],
-            'email'     => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'timezone'  => ['required', 'string', 'timezone'],
-            // Extended profile fields
+            'name'       => ['required', 'string', 'max:255'],
+            'email'      => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'timezone'   => ['required', 'string', Rule::in(self::TIMEZONES)],
             'first_name' => ['nullable', 'string', 'max:100'],
             'last_name'  => ['nullable', 'string', 'max:100'],
             'phone'      => ['nullable', 'string', 'max:30'],
@@ -48,7 +65,7 @@ class ProfileController extends Controller
             'bio'        => ['nullable', 'string', 'max:500'],
         ]);
 
-        // Track changes for the audit log
+        // Snapshot for audit log
         $changes = [];
         foreach (['name', 'email', 'timezone'] as $field) {
             if (isset($validated[$field]) && $user->$field !== $validated[$field]) {
@@ -74,7 +91,7 @@ class ProfileController extends Controller
 
         $profile = $user->profile()->firstOrCreate(['user_id' => $user->id]);
 
-        // Mark onboarding complete once profile is filled in
+        // Mark onboarding complete once first + last name are filled in
         $isProfileFilled = filled($validated['first_name']) && filled($validated['last_name']);
         if ($isProfileFilled && $profile->onboarding_status === 'pending') {
             $profileData['onboarding_status'] = 'complete';
