@@ -1,7 +1,7 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-05-29
-**Current Phase:** Phase 2 — People and Organization Foundation ✅ Complete
+**Current Phase:** Phase 3 — Leads and Trial Flow ✅ Complete
 
 ---
 
@@ -112,6 +112,93 @@ All Phase 0 objectives confirmed working on cPanel staging.
 
 ---
 
+## Phase 3 Status — Complete ✅ (2026-05-29)
+
+### PART A — `lead_requests` table
+- [x] Migration: id, lead_code, first/last name, email, phone, country, city, timezone
+- [x] client_type enum (individual/business), company fields, role_needed enum, role_needed_other
+- [x] estimated_hours_per_week, preferred_start_date, preferred_work_schedule
+- [x] required_skills (text), work_description (longText), budget_range, source
+- [x] status enum (11 values: new→converted/lost/disqualified), admin_notes, soft deletes
+
+### PART B — `price_estimates` table
+- [x] Migration: lead_request_id FK, currency enum (USD/GBP/EUR/NGN), estimated_amount decimal
+- [x] billing_cycle enum (bi_weekly/monthly), estimated_hours_per_week, role_needed
+- [x] status enum (draft/sent/accepted/rejected/expired), accepted_at, expires_at, notes
+
+### PART C — `trials` table
+- [x] Migration: trial_code, lead_request_id FK, three separate user FKs (active_lead/talent/manager)
+- [x] price_estimate_id FK, status enum (pending/approved/active/completed/expired/cancelled/converted)
+- [x] starts_at, ends_at, trial_duration_hours (default 24), trial_task_limit (default 3)
+- [x] trial_file_limit_mb (default 100), notes
+
+### PART D — Public Lead Form
+- [x] `LeadRequestController` with TIMEZONES, ROLES, BUDGET_RANGES constants
+- [x] GET/POST `/request-service` routes (no auth required)
+- [x] GET `/request-service/success` route
+- [x] `resources/views/lead/request-service.blade.php` — 20-field form, 4 sections
+- [x] `resources/views/lead/request-service-success.blade.php` — GVOS-branded success page
+- [x] `resources/views/components/layouts/public.blade.php` — scrollable public layout
+
+### PART E — `LeadRequestResource` (Filament)
+- [x] Navigation group: "Leads & Trials", sort 1
+- [x] Navigation badge: count of 'new' leads (warning color)
+- [x] Global search: first_name, last_name, email, company_name
+- [x] Full form (4 sections) + table with status badges and filters
+- [x] 7 table actions: Edit, Under Review, Price Estimated, Price Accepted, Approve Trial, Lost, Disqualify
+- [x] Approve Trial: creates/finds user, assigns active_lead role, creates ClientProfile stub, creates Trial record
+- [x] Pages: ListLeadRequests, CreateLeadRequest, EditLeadRequest (with before-snapshot audit)
+
+### PART F — `PriceEstimateResource` (Filament)
+- [x] Navigation group: "Leads & Trials", sort 2
+- [x] Form + table with status badges and filters
+- [x] 4 table actions: Mark Sent, Mark Accepted (updates lead to price_accepted), Mark Rejected, Mark Expired
+- [x] Creating an estimate auto-advances lead from new/under_review → price_estimated
+- [x] Pages: ListPriceEstimates, CreatePriceEstimate, EditPriceEstimate
+
+### PART G — `TrialResource` (Filament)
+- [x] Navigation group: "Leads & Trials", sort 3
+- [x] Full form + table with status badges
+- [x] 5 table actions: Start Trial (sets starts_at/ends_at, lead→trial_active), Complete, Expire, Cancel, Payment Pending
+- [x] Pages: ListTrials, CreateTrial, EditTrial
+
+### PART H — Active Lead Dashboard
+- [x] Shows lead request summary (role, hours, status)
+- [x] Trial status card with countdown (hours remaining) for active trials
+- [x] Approved/completed/expired/cancelled trial state messages
+- [x] Team card: assigned talent and manager names
+- [x] Price estimate card (amount, currency, billing cycle)
+- [x] Payment pending CTA when trial complete or payment_pending
+- [x] Trial workspace placeholder for future phases
+- [x] Graceful fallback when no trial exists
+
+### PART I — Super Admin + Ops Admin Dashboards
+- [x] Lead pipeline section: Total, New, Under Review, Trial Approved, Trial Active, Payment Pending
+- [x] Each card links to filtered admin lead list
+- [x] Phase 2 notice updated to Phase 3 notice
+
+### PART J — AuditLogger Wrappers (12 new)
+- [x] leadRequestCreated, leadRequestUpdated, leadRequestStatusChanged
+- [x] priceEstimateCreated, priceEstimateUpdated, priceEstimateAccepted
+- [x] trialCreated, trialUpdated, trialStarted, trialCompleted, trialCancelled, trialPaymentPending
+
+### PART K — Model Relationships
+- [x] LeadRequest: hasMany priceEstimates, hasMany trials; helper methods
+- [x] PriceEstimate: belongsTo leadRequest; formattedAmount()
+- [x] Trial: belongsTo leadRequest/priceEstimate/activeLeadUser/assignedTalent/assignedManager
+- [x] Trial: isActive(), hoursRemaining() helpers
+- [x] User: hasMany activeLeadTrials, assignedTalentTrials, assignedManagerTrials
+
+### PART L — Documentation
+- [x] CURRENT_STATUS.md updated
+- [x] IMPLEMENTATION_LOG.md updated
+- [x] DATABASE_SCHEMA.md updated (3 new Phase 3 tables, planned tables updated)
+- [x] PERMISSION_MATRIX.md updated
+- [x] TESTING_CHECKLIST.md updated
+- [x] KNOWN_ISSUES.md reviewed
+
+---
+
 ## Admin Credentials (Staging Only)
 
 > ⚠️ Change these before any production use.
@@ -140,25 +227,29 @@ php artisan permission:cache-reset
 
 - **Role middleware:** `role:X` aliases registered via `bootstrap/app.php`
 - **Auth guard:** `web` (session)
-- **Blade CDN:** Tailwind CDN — Phase 0/1/2 staging only
-- **Node/npm:** Not required for Phase 0/1/2
+- **Blade CDN:** Tailwind CDN — Phase 0/1/2/3 staging only
+- **Node/npm:** Not required for Phase 0/1/2/3
 - **Filament panel:** `/admin` — `canAccessPanel()` restricts to super_admin + operations_admin
 - **Status middleware:** `check.status` blocks suspended/inactive users from dashboards
 - **Timezones:** 11-option dropdown list, default `Africa/Lagos`
 - **Role labels:** Friendly labels in UI; slug values stored in DB
-- **Filament nav groups:** "User Management" (Users), "People & Organizations" (Companies, Departments, Profiles)
+- **Filament nav groups:** "User Management" (Users), "People & Organizations" (Companies, Departments, Profiles), "Leads & Trials" (Lead Requests, Price Estimates, Trials)
 - **Stub profiles:** Creating a user via Filament auto-creates a stub profile row for talent/manager/client roles
 - **GetVirtual:** Removed from all visible app UI (Blade views, layouts, dashboards). Internal docs only.
+- **Public form:** `/request-service` — no auth, CSRF protected, GVOS branding only
+- **Active lead user creation:** Approve Trial action creates user with random password; they must use password reset to log in
 
 ---
 
 ## Next Steps
 
 1. cPanel: run `git pull && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`
-2. Test: create a Company and Department in Filament
-3. Test: create a Talent user — confirm TalentProfile stub created automatically
-4. Test: talent dashboard shows talent profile status card
-5. Test: all dashboards show Phase 2 notice
-6. Test: no "GetVirtual" text visible in app UI
-7. Get Phase 2 approval
-8. Begin Phase 3: Leads and Trial Flow
+2. Test: submit `/request-service` form — confirm lead_request row created
+3. Test: confirm lead appears in Filament Leads & Trials > Lead Requests
+4. Test: create a Price Estimate from Filament — confirm lead status auto-advances to price_estimated
+5. Test: Mark estimate as Accepted — confirm lead status → price_accepted
+6. Test: Approve Trial action — confirm user created/updated, trial created, lead status → trial_approved
+7. Test: Start Trial — confirm lead status → trial_active, countdown visible on active-lead dashboard
+8. Test: Complete Trial → Payment Pending flow
+9. Get Phase 3 approval
+10. Begin Phase 4: Workspace Foundation

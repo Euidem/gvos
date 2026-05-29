@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LeadRequestController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -74,6 +75,11 @@ Route::middleware(['auth', 'check.status', 'role:active_lead'])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'lead'])->name('dashboard');
     });
+
+// ── Public lead request form (no auth required) ──────────────────────────
+Route::get('/request-service', [LeadRequestController::class, 'show'])->name('lead.request-service');
+Route::post('/request-service', [LeadRequestController::class, 'store'])->name('lead.request-service.store');
+Route::get('/request-service/success', fn () => view('lead.request-service-success'))->name('lead.request-service.success');
 
 // ── Auth routes ──────────────────────────────────────────────────────────
 require __DIR__ . '/auth.php';

@@ -162,12 +162,76 @@ Run after `git pull && php artisan migrate && php artisan optimize:clear && php 
 
 ---
 
-## Phase 3 — Leads and Trial Flow (planned)
+## Phase 3 — Leads and Trial Flow
+
+Run after `git pull && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### Public Lead Form
+- [ ] `GET /request-service` loads — shows GVOS branding, 4-section form
+- [ ] "Business" radio selection toggles company fields visible
+- [ ] "Other" role selection shows free-text role field
+- [ ] All required fields validated (first_name, last_name, email, client_type)
+- [ ] Valid form submission creates a `lead_requests` row with status = 'new'
+- [ ] Redirects to `/request-service/success` — shows GVOS branded confirmation
+- [ ] `audit_logs` has `lead_request.created` entry with actor_id = null
+- [ ] Non-authenticated users can access the form (no login required)
+
+### Lead Request Filament Resource
+- [ ] `/admin/lead-requests` loads — "Leads & Trials" navigation group visible
+- [ ] Navigation badge shows count of 'new' leads in amber
+- [ ] Table shows lead name + email + company description column, status badge, type badge
+- [ ] Status badges show correct colors (gray=new, warning=under_review, success=trial_approved etc.)
+- [ ] Filters work: status, client_type, role_needed
+- [ ] Search works: by name, email, company
+- [ ] "Under Review" action advances lead status
+- [ ] "Price Estimated" action advances status
+- [ ] "Mark Lost" and "Disqualify" actions work
+- [ ] Creating a lead request in Filament fires `lead_request.created` audit log
+- [ ] Editing a lead fires `lead_request.updated` with before/after diff
+
+### Price Estimates
+- [ ] `/admin/price-estimates` loads
+- [ ] Can create a price estimate linked to a lead — lead status advances to 'price_estimated' (if new/under_review)
+- [ ] Mark Sent action changes status to 'sent'
+- [ ] Mark Accepted action: status → accepted, accepted_at set, lead status → price_accepted
+- [ ] Mark Rejected and Mark Expired actions work
+- [ ] Audit entries fire for each status change
+
+### Approve Trial Action
+- [ ] "Approve Trial" modal opens with talent/manager select, price estimate select, date/time, duration, notes
+- [ ] Submitting with a new email: creates user with active_lead role, creates user_profile, creates client_profile stub, creates trial
+- [ ] Submitting with an existing email: updates role to active_lead, creates trial
+- [ ] Lead status updates to 'trial_approved'
+- [ ] Trial record exists in `trials` table with correct fields
+- [ ] Filament notification shows correct message (new vs existing user)
+- [ ] Two audit entries: `trial.created` + `lead_request.status_changed`
+
+### Trial Resource
+- [ ] `/admin/trials` loads — shows trial code, lead email, active lead user, talent, status, dates
+- [ ] "Start Trial" action: sets starts_at = now(), ends_at = now() + duration, status → active, lead → trial_active
+- [ ] "Complete" action: status → completed, lead → trial_completed
+- [ ] "Expire" and "Cancel" actions work
+- [ ] "Payment Pending" action (on completed trial): lead status → payment_pending
+- [ ] All actions fire correct audit log entries
+
+### Active Lead Dashboard
+- [ ] Active lead with no trial sees "Onboarding in progress" message
+- [ ] Active lead with approved trial sees trial status card and approval message
+- [ ] Active lead with active trial sees countdown (hours remaining), ends_at date
+- [ ] Active lead with assigned talent/manager sees team card
+- [ ] Active lead with accepted price estimate sees estimate card (currency, amount, billing cycle)
+- [ ] Active lead with completed/payment_pending status sees "Ready to continue?" CTA
+- [ ] Trial workspace placeholder shown for active leads
+
+### Admin Dashboard Lead Pipeline
+- [ ] Super Admin dashboard shows Lead Pipeline section with 6 metric cards
+- [ ] Operations Admin dashboard shows same section
+- [ ] Counts are correct (match lead_requests table)
+- [ ] Phase 3 notice replaces Phase 2 notice on both dashboards
+
 ## Phase 4 — Workspace Engine (planned)
 ## Phase 5 — Task Board (planned)
 ## Phase 6 — Chat and Files (planned)
 ## Phase 7 — Time Tracking and Reports (planned)
 ## Phase 8 — Billing (planned)
 ## Phase 12 — Launch Readiness (planned)
-
-*(See previous checklist versions for full Phase 3–12 detail)*

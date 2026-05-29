@@ -6,6 +6,14 @@
     $talentCount       = \App\Models\TalentProfile::count();
     $managerCount      = \App\Models\ManagerProfile::count();
     $clientCount       = \App\Models\ClientProfile::count();
+
+    // Lead pipeline counts
+    $leadTotal         = \App\Models\LeadRequest::count();
+    $leadNew           = \App\Models\LeadRequest::where('status', 'new')->count();
+    $leadUnderReview   = \App\Models\LeadRequest::where('status', 'under_review')->count();
+    $leadTrialApproved = \App\Models\LeadRequest::where('status', 'trial_approved')->count();
+    $leadTrialActive   = \App\Models\LeadRequest::where('status', 'trial_active')->count();
+    $leadPaymentPending = \App\Models\LeadRequest::where('status', 'payment_pending')->count();
 @endphp
 
     {{-- ── Welcome header ──────────────────────────────────────────────── --}}
@@ -98,7 +106,44 @@
         </a>
     </div>
 
-    {{-- ── Phase 2 status notice ────────────────────────────────────────── --}}
+    {{-- ── Lead pipeline ───────────────────────────────────────────────── --}}
+    <div class="mb-8">
+        <h3 class="text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wide">Lead Pipeline</h3>
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-3">
+            <a href="/admin/lead-requests"
+               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-indigo-300 hover:shadow-sm transition-all">
+                <p class="text-2xl font-bold text-slate-800">{{ $leadTotal }}</p>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Total Leads</p>
+            </a>
+            <a href="/admin/lead-requests?tableFilters[status][value]=new"
+               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-amber-300 hover:shadow-sm transition-all">
+                <p class="text-2xl font-bold text-amber-600">{{ $leadNew }}</p>
+                <p class="text-xs text-slate-500 mt-1 font-medium">New</p>
+            </a>
+            <a href="/admin/lead-requests?tableFilters[status][value]=under_review"
+               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-indigo-300 hover:shadow-sm transition-all">
+                <p class="text-2xl font-bold text-slate-800">{{ $leadUnderReview }}</p>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Under Review</p>
+            </a>
+            <a href="/admin/lead-requests?tableFilters[status][value]=trial_approved"
+               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-emerald-300 hover:shadow-sm transition-all">
+                <p class="text-2xl font-bold text-emerald-600">{{ $leadTrialApproved }}</p>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Trial Approved</p>
+            </a>
+            <a href="/admin/lead-requests?tableFilters[status][value]=trial_active"
+               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-emerald-300 hover:shadow-sm transition-all">
+                <p class="text-2xl font-bold text-emerald-700">{{ $leadTrialActive }}</p>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Trial Active</p>
+            </a>
+            <a href="/admin/lead-requests?tableFilters[status][value]=payment_pending"
+               class="bg-white rounded-xl border border-slate-200 px-4 py-3 hover:border-amber-300 hover:shadow-sm transition-all">
+                <p class="text-2xl font-bold text-amber-700">{{ $leadPaymentPending }}</p>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Payment Pending</p>
+            </a>
+        </div>
+    </div>
+
+    {{-- ── Phase 3 status notice ────────────────────────────────────────── --}}
     <div class="bg-indigo-50 border border-indigo-200 rounded-xl px-6 py-5">
         <div class="flex items-start gap-3">
             <div class="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0">
@@ -107,10 +152,10 @@
                 </svg>
             </div>
             <div>
-                <p class="text-sm font-semibold text-indigo-800">Phase 2 — People and Organization Foundation</p>
+                <p class="text-sm font-semibold text-indigo-800">Phase 3 — Leads and Trial Flow</p>
                 <p class="text-sm text-indigo-700 mt-0.5">
-                    Companies, departments, talent profiles, manager profiles and client profiles are live.
-                    Workspaces, tasks, billing and other modules are coming in later phases.
+                    Lead requests, price estimates and trial management are live.
+                    Workspaces, tasks, billing and advanced client features are coming in later phases.
                 </p>
             </div>
         </div>

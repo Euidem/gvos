@@ -138,4 +138,88 @@ class AuditLogger
     {
         self::log('manager_profile.updated', $managerProfile, $changes);
     }
+
+    // ── Phase 3 — Leads & Trial Flow ─────────────────────────────────────
+
+    public static function leadRequestCreated(Model $leadRequest, array $extra = []): void
+    {
+        self::log('lead_request.created', $leadRequest, array_merge([
+            'email'       => $leadRequest->email ?? null,
+            'client_type' => $leadRequest->client_type ?? null,
+        ], $extra));
+    }
+
+    public static function leadRequestUpdated(Model $leadRequest, array $changes = []): void
+    {
+        self::log('lead_request.updated', $leadRequest, $changes);
+    }
+
+    public static function leadRequestStatusChanged(Model $leadRequest, string $from, string $to): void
+    {
+        self::log('lead_request.status_changed', $leadRequest, ['from' => $from, 'to' => $to]);
+    }
+
+    public static function priceEstimateCreated(Model $estimate, array $extra = []): void
+    {
+        self::log('price_estimate.created', $estimate, array_merge([
+            'lead_request_id' => $estimate->lead_request_id ?? null,
+            'currency'        => $estimate->currency ?? null,
+            'amount'          => $estimate->estimated_amount ?? null,
+        ], $extra));
+    }
+
+    public static function priceEstimateUpdated(Model $estimate, array $changes = []): void
+    {
+        self::log('price_estimate.updated', $estimate, $changes);
+    }
+
+    public static function priceEstimateAccepted(Model $estimate, array $extra = []): void
+    {
+        self::log('price_estimate.accepted', $estimate, array_merge([
+            'lead_request_id' => $estimate->lead_request_id ?? null,
+            'accepted_at'     => now()->toDateTimeString(),
+        ], $extra));
+    }
+
+    public static function trialCreated(Model $trial, array $extra = []): void
+    {
+        self::log('trial.created', $trial, array_merge([
+            'lead_request_id' => $trial->lead_request_id ?? null,
+            'status'          => $trial->status ?? null,
+        ], $extra));
+    }
+
+    public static function trialUpdated(Model $trial, array $changes = []): void
+    {
+        self::log('trial.updated', $trial, $changes);
+    }
+
+    public static function trialStarted(Model $trial, array $extra = []): void
+    {
+        self::log('trial.started', $trial, array_merge([
+            'starts_at' => $trial->starts_at ?? null,
+            'ends_at'   => $trial->ends_at ?? null,
+        ], $extra));
+    }
+
+    public static function trialCompleted(Model $trial, array $extra = []): void
+    {
+        self::log('trial.completed', $trial, array_merge([
+            'completed_at' => now()->toDateTimeString(),
+        ], $extra));
+    }
+
+    public static function trialCancelled(Model $trial, array $extra = []): void
+    {
+        self::log('trial.cancelled', $trial, array_merge([
+            'cancelled_at' => now()->toDateTimeString(),
+        ], $extra));
+    }
+
+    public static function trialPaymentPending(Model $trial, array $extra = []): void
+    {
+        self::log('trial.payment_pending', $trial, array_merge([
+            'lead_request_id' => $trial->lead_request_id ?? null,
+        ], $extra));
+    }
 }

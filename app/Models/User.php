@@ -5,6 +5,7 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -56,6 +57,24 @@ class User extends Authenticatable implements FilamentUser
     public function managerProfile(): HasOne
     {
         return $this->hasOne(ManagerProfile::class);
+    }
+
+    /** Trials where this user is the active lead. */
+    public function activeLeadTrials(): HasMany
+    {
+        return $this->hasMany(Trial::class, 'active_lead_user_id');
+    }
+
+    /** Trials where this user is the assigned talent. */
+    public function assignedTalentTrials(): HasMany
+    {
+        return $this->hasMany(Trial::class, 'assigned_talent_user_id');
+    }
+
+    /** Trials where this user is the assigned manager. */
+    public function assignedManagerTrials(): HasMany
+    {
+        return $this->hasMany(Trial::class, 'assigned_manager_user_id');
     }
 
     // ── Status helpers ───────────────────────────────────────────────────

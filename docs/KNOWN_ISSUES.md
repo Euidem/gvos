@@ -92,10 +92,34 @@ Target class [role] does not exist.
 
 ### Phase 1 | Low | Tailwind CDN in production
 
-Using `https://cdn.tailwindcss.com` is acceptable for Phase 0/1 staging. Should be replaced with a compiled Vite build in Phase 2+.
+Using `https://cdn.tailwindcss.com` is acceptable for Phase 0/1/2/3 staging. Should be replaced with a compiled Vite build before production launch.
 
 ---
 
 ### Phase 1 | Low | Inertia middleware active but no React pages
 
-`HandleInertiaRequests` runs on every web request as a no-op (Blade-only responses pass through). Harmless until React pages are introduced in Phase 2+.
+`HandleInertiaRequests` runs on every web request as a no-op (Blade-only responses pass through). Harmless until React pages are introduced in a later phase.
+
+---
+
+### Phase 3 | Medium | Active lead password reset required after trial approval
+
+When "Approve Trial" creates a new user for the lead, the account is created with a random 20-char password. The lead cannot log in until they complete a password reset via the "Forgot Password" flow. The admin notification message in Filament advises this. A future improvement could be to send an automated welcome/reset email on trial approval.
+
+---
+
+### Phase 3 | Low | Trial countdown does not auto-refresh
+
+The trial countdown displayed on the active-lead dashboard (`/lead/dashboard`) is rendered at page load time and does not update in real time. The user must refresh the page to see the updated hours remaining. A JavaScript countdown timer should be added in a future phase for a better UX.
+
+---
+
+### Phase 3 | Low | Price estimate currency display on active-lead dashboard
+
+The price estimate card on the active lead dashboard shows the latest accepted estimate. If no estimate is accepted, it falls back to `latestAcceptedEstimate()` from the lead request. If neither exists, no estimate card is shown. This is intentional but worth noting for UX.
+
+---
+
+### Phase 3 | Info | Trial workspace features are placeholders
+
+The active lead dashboard shows a "Trial workspace" placeholder panel. Tasks, files, and communication within the trial are Phase 4+ features. The placeholder correctly communicates this to the lead.

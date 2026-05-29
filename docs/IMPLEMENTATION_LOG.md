@@ -170,3 +170,66 @@ Each entry: Date | Phase | What was done | Who / Tool
 - 5 docs updated: CURRENT_STATUS, IMPLEMENTATION_LOG, DATABASE_SCHEMA, PERMISSION_MATRIX, TESTING_CHECKLIST
 
 **Tool:** Claude Code | **Status:** Phase 2 complete — push to GitHub, test on cPanel
+
+---
+
+### 2026-05-29 | Phase 3 | Leads and Trial Flow Foundation
+
+**PART A–C — New migrations (3) and models (3):**
+- `2024_01_04_000001_create_lead_requests_table.php` (SoftDeletes, 11-status enum)
+- `2024_01_04_000002_create_price_estimates_table.php`
+- `2024_01_04_000003_create_trials_table.php` (3 separate FKs to users table)
+- `app/Models/LeadRequest.php` (SoftDeletes, helpers, roleLabels/statusLabels)
+- `app/Models/PriceEstimate.php` (formattedAmount helper)
+- `app/Models/Trial.php` (isActive, hoursRemaining helpers)
+
+**PART D — Public lead form:**
+- `app/Http/Controllers/LeadRequestController.php` (show + store, TIMEZONES/ROLES/BUDGET_RANGES constants)
+- `resources/views/lead/request-service.blade.php` (20-field form, 4 sections, JS toggles)
+- `resources/views/lead/request-service-success.blade.php` (GVOS branded success page)
+- `resources/views/components/layouts/public.blade.php` (scrollable public layout)
+- `routes/web.php` — 3 public routes added (GET/POST /request-service, GET /request-service/success)
+
+**PART E — LeadRequestResource:**
+- `app/Filament/Resources/LeadRequestResource.php`
+  - Nav group "Leads & Trials", sort 1, badge showing new lead count
+  - 7 table actions including complex Approve Trial (creates user, assigns role, creates trial)
+- `app/Filament/Resources/LeadRequestResource/Pages/ListLeadRequests.php`
+- `app/Filament/Resources/LeadRequestResource/Pages/CreateLeadRequest.php`
+- `app/Filament/Resources/LeadRequestResource/Pages/EditLeadRequest.php` (before-snapshot audit)
+
+**PART F — PriceEstimateResource:**
+- `app/Filament/Resources/PriceEstimateResource.php`
+  - Mark Sent, Mark Accepted (auto-advances lead status), Mark Rejected, Mark Expired
+  - Creating estimate auto-advances lead from new/under_review → price_estimated
+- `app/Filament/Resources/PriceEstimateResource/Pages/ListPriceEstimates.php`
+- `app/Filament/Resources/PriceEstimateResource/Pages/CreatePriceEstimate.php`
+- `app/Filament/Resources/PriceEstimateResource/Pages/EditPriceEstimate.php`
+
+**PART G — TrialResource:**
+- `app/Filament/Resources/TrialResource.php`
+  - Start Trial (sets starts_at/ends_at), Complete, Expire, Cancel, Payment Pending
+  - Start Trial auto-advances lead status to trial_active
+- `app/Filament/Resources/TrialResource/Pages/ListTrials.php`
+- `app/Filament/Resources/TrialResource/Pages/CreateTrial.php`
+- `app/Filament/Resources/TrialResource/Pages/EditTrial.php`
+
+**PART H — Active lead dashboard (`resources/views/dashboard/active-lead.blade.php`):**
+- Full rewrite: trial status card, countdown, team assignment, price estimate, payment CTA, workspace placeholder
+
+**PART I — Super admin + ops admin dashboards:**
+- Both updated with lead pipeline section (6 metric cards, each linking to filtered admin view)
+- Phase 2 notice replaced with Phase 3 notice
+
+**PART J — AuditLogger:**
+- 12 new convenience wrappers: leadRequest* (3), priceEstimate* (3), trial* (6)
+- `app/Services/AuditLogger.php` updated
+
+**PART K — User model:**
+- Added `activeLeadTrials()`, `assignedTalentTrials()`, `assignedManagerTrials()` HasMany relationships
+
+**PART L — Documentation (6 files updated):**
+- CURRENT_STATUS.md, IMPLEMENTATION_LOG.md, DATABASE_SCHEMA.md
+- PERMISSION_MATRIX.md, TESTING_CHECKLIST.md, KNOWN_ISSUES.md
+
+**Tool:** Claude Code | **Status:** Phase 3 complete — push to GitHub, test on cPanel

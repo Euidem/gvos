@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 2 migrations created and active
+## Status: Phase 3 migrations created and active
 
 ---
 
@@ -180,28 +180,92 @@ Profile record for Line Manager role users.
 
 ---
 
-## Phase 3+ Tables (planned)
+Phase 3 actions: `lead_request.created`, `lead_request.updated`, `lead_request.status_changed`, `price_estimate.created`, `price_estimate.updated`, `price_estimate.accepted`, `trial.created`, `trial.updated`, `trial.started`, `trial.completed`, `trial.cancelled`, `trial.payment_pending`
 
-### leads
+---
+
+## Phase 3 Tables (live)
+
+### lead_requests
+Inbound service requests from prospective clients via the public form or admin entry.
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | bigint PK | |
-| name | string | |
-| email | string | |
-| phone | string nullable | |
-| company_name | string nullable | |
-| inquiry_details | text | |
-| status | enum | new, contacted, quoted, trial_approved, converted, lost |
-| price_estimate | decimal(10,2) nullable | |
-| assigned_admin_id | FK users | |
-| trial_starts_at | timestamp nullable | |
-| trial_ends_at | timestamp nullable | |
-| converted_at | timestamp nullable | |
+| lead_code | string(50) unique nullable | internal reference e.g. GVL-001 |
+| first_name | string(100) | |
+| last_name | string(100) | |
+| email | string(255) | |
+| phone | string(50) nullable | |
+| country | string(100) nullable | |
+| city | string(100) nullable | |
+| timezone | string nullable | |
+| client_type | enum | individual, business |
+| company_name | string(255) nullable | |
+| company_website | string(255) nullable | |
+| company_email_domain | string(255) nullable | |
+| role_needed | enum nullable | virtual_assistant, executive_assistant, social_media_manager, video_editor, developer, designer, motion_graphics, other |
+| role_needed_other | string(255) nullable | free text when role_needed = 'other' |
+| estimated_hours_per_week | integer nullable | 1–168 |
+| preferred_start_date | date nullable | |
+| preferred_work_schedule | string(255) nullable | |
+| required_skills | text nullable | |
+| work_description | longtext nullable | |
+| budget_range | string nullable | enum key from controller constants |
+| source | string(255) nullable | referral source |
+| status | enum indexed | **new, price_estimated, price_accepted, under_review, trial_approved, trial_active, trial_completed, payment_pending, converted, lost, disqualified** |
+| admin_notes | longtext nullable | internal only |
+| created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | soft deletes |
+
+---
+
+### price_estimates
+Cost proposals created by admins for a specific lead request.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| lead_request_id | FK lead_requests | cascadeOnDelete |
+| currency | enum | USD, GBP, EUR, NGN |
+| estimated_amount | decimal(10,2) | |
+| billing_cycle | enum | bi_weekly, monthly |
+| estimated_hours_per_week | integer nullable | |
+| role_needed | string nullable | |
+| notes | text nullable | |
+| status | enum | draft, sent, accepted, rejected, expired |
+| accepted_at | timestamp nullable | set when accepted |
+| expires_at | timestamp nullable | optional expiry |
 | created_at / updated_at | timestamps | |
 
 ---
 
-### workspaces (Phase 4)
+### trials
+Trial records linking a lead request to an active lead user and assigned team.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| trial_code | string(50) unique nullable | internal reference e.g. TRL-001 |
+| lead_request_id | FK lead_requests nullable | nullOnDelete |
+| active_lead_user_id | FK users nullable | nullOnDelete |
+| assigned_talent_user_id | FK users nullable | nullOnDelete |
+| assigned_manager_user_id | FK users nullable | nullOnDelete |
+| price_estimate_id | FK price_estimates nullable | nullOnDelete |
+| status | enum | pending, approved, active, completed, expired, cancelled, converted |
+| starts_at | timestamp nullable | |
+| ends_at | timestamp nullable | computed from starts_at + trial_duration_hours |
+| trial_duration_hours | integer unsigned | default: 24 |
+| trial_task_limit | integer unsigned | default: 3 |
+| trial_file_limit_mb | integer unsigned | default: 100 |
+| notes | text nullable | |
+| created_at / updated_at | timestamps | |
+
+---
+
+## Phase 4+ Tables (planned)
+
+### workspaces (Phase 4+)
 | Column | Type | Notes |
 |--------|------|-------|
 | id | bigint PK | |
@@ -261,7 +325,13 @@ See billing schema in `BILLING_RULES.md`
 - `users` → many `audit_logs` as actor
 - `companies` → many `departments` (Phase 2)
 - `companies` → many `client_profiles` (Phase 2)
-- `workspaces` → many `workspace_members` → many `users` (Phase 4)
+- `lead_requests` → many `price_estimates` (Phase 3)
+- `lead_requests` → many `trials` (Phase 3)
+- `trials` → one `price_estimate` (Phase 3)
+- `trials` → one `active_lead_user` (via FK to users) (Phase 3)
+- `trials` → one `assigned_talent_user` (via FK to users) (Phase 3)
+- `trials` → one `assigned_manager_user` (via FK to users) (Phase 3)
+- `workspaces` → many `workspace_members` → many `users` (Phase 4+)
 - `workspaces` → many `tasks`, `messages`, `files`, `time_logs` (Phase 5+)
 - `workspaces` → one active `subscription` → many `invoices` (Phase 8)
 

@@ -119,11 +119,54 @@ Legend: ✅ Full | 👁 View only | ✏️ Own records | ❌ No access | 🔒 En
 
 ---
 
+## Phase 3 — Leads & Trials Access Control
+
+| Resource | super_admin | operations_admin | active_lead | All others |
+|----------|------------|-----------------|-------------|------------|
+| Lead Requests | ✅ CRUD | ✅ CRUD | ❌ (view own via dashboard) | ❌ |
+| Price Estimates | ✅ CRUD (incl. delete) | ✅ CRUD (incl. delete) | ❌ (view via dashboard) | ❌ |
+| Trials | ✅ view/edit | ✅ view/edit | ❌ (view own via dashboard) | ❌ |
+| Public form `/request-service` | ✅ (any) | ✅ (any) | ✅ (any) | ✅ (public) |
+
+### Approve Trial Action (LeadRequestResource)
+- Creates or finds a user by email from the lead request
+- Assigns `active_lead` role via `syncRoles(['active_lead'])`
+- Creates ClientProfile stub if missing
+- Creates Trial record and links to user
+- New users get a random password — must use password reset to log in
+
+### Status Flow (Lead Request)
+```
+new → price_estimated → price_accepted → under_review → trial_approved
+    → trial_active → trial_completed → payment_pending → converted
+                                                        → lost / disqualified
+```
+
+### Status Flow (Trial)
+```
+pending → approved → active → completed → (payment_pending on lead)
+                    → expired
+                    → cancelled
+```
+
+---
+
+## Public Routes (no auth required)
+
+| Route | Method | Controller | Purpose |
+|-------|--------|-----------|---------|
+| `/request-service` | GET | LeadRequestController@show | Display lead form |
+| `/request-service` | POST | LeadRequestController@store | Submit lead form |
+| `/request-service/success` | GET | Closure | Success confirmation page |
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
 - Phase 2 Filament navigation group: "People & Organizations" (sort positions 1–5).
-- When React/Inertia pages are active (Phase 3+), role will also be in shared props.
+- Phase 3 Filament navigation group: "Leads & Trials" (sort positions 1–3).
 - Always enforce on server — never rely on front-end hiding alone.
-- Business client staff permissions are per-user, managed by Business Client Admin (Phase 3+).
+- Business client staff permissions are per-user, managed by Business Client Admin (Phase 4+).
 - GetVirtual brand name must not appear in any visible app UI (screens, panels, dashboards, notices). Internal documentation only.
+- Active leads can only see their own trial data via `/lead/dashboard` — they cannot access Filament.
