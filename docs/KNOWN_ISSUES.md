@@ -178,6 +178,16 @@ A hidden safeguard `<div class="hidden ...">` was added to `resources/views/comp
 
 ---
 
+### UI Audit v2 — Resolved | Tailwind CDN config loaded after CDN script (root cause of no visible UI change)
+
+**Description:** After the first UI Fidelity Audit commit (`c472ebb`), the live app showed no visible change. The root cause was that `tailwind.config = {...}` was declared in a `<script>` block that appeared **after** `<script src="https://cdn.tailwindcss.com">` in all three component layout files. Per Tailwind CDN documentation, the config must be defined before the CDN script executes. The CDN was compiling with default settings only, so all custom GVOS tokens were never generated.
+
+**Resolution:** Moved `tailwind.config` script block before the CDN `<script>` tag in all three component layouts. Added a comprehensive CSS fallback `<style>` block as a secondary safety net. Remaining indigo/slate/violet classes in 6 auth/lead views were also removed.
+
+**Status:** Resolved — commit [Fix GVOS UI token rendering and visible styling].
+
+---
+
 ### UI Audit | Low | `card-lift` class has no defined styles
 
 The workspace index view (`resources/views/workspace/index.blade.php`) applies a `card-lift` class on workspace cards for a hover-lift effect. This class is not defined in the Tailwind CDN config and currently has no visual effect. A future improvement is to add it to the `tailwind.config` `extend` block (e.g. a custom transform + shadow transition).

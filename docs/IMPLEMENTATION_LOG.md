@@ -393,3 +393,35 @@ Each entry: Date | Phase | What was done | Who / Tool
 Commit: `c472ebb`
 
 **Tool:** Claude Code | **Status:** UI Fidelity Audit complete — pushed to GitHub ✅
+
+---
+
+### 2026-05-29 | UI Fidelity Audit v2 | Fix token rendering — CDN config order + CSS fallback + remaining indigo removal
+
+**Root cause:** `tailwind.config` was defined AFTER the CDN `<script>` tag in all three component layouts. The CDN executes at load time and reads the config at that moment — defining it afterwards has no effect. All custom GVOS tokens were silently falling back to defaults or zero output.
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `resources/views/components/layouts/gvos.blade.php` | Config before CDN; CSS fallback block; HTML marker |
+| `resources/views/components/layouts/auth.blade.php` | Config before CDN; CSS fallback block; HTML marker |
+| `resources/views/components/layouts/public.blade.php` | Config before CDN; CSS fallback block; HTML marker |
+| `resources/views/layouts/gvos.blade.php` | Replaced with component redirect wrapper |
+| `resources/views/layouts/auth.blade.php` | Replaced with component redirect wrapper |
+| `resources/views/auth/confirm-password.blade.php` | Full rewrite — GVOS tokens |
+| `resources/views/auth/reset-password.blade.php` | Full rewrite — GVOS tokens |
+| `resources/views/auth/verify-email.blade.php` | Full rewrite — GVOS tokens |
+| `resources/views/auth/register.blade.php` | Full rewrite — GVOS tokens |
+| `resources/views/lead/request-service-success.blade.php` | Full rewrite — GVOS tokens |
+| `resources/views/lead/request-service.blade.php` | All remaining indigo/violet replaced (PHP + JS) |
+| `docs/CURRENT_STATUS.md` | UI Fidelity v2 section added |
+| `docs/KNOWN_ISSUES.md` | Root cause documented as resolved |
+
+**CSS fallback block covers:** all GVOS color tokens, opacity variants, shadow-card, focus/hover/active utilities.
+
+**Verification:** `View Source` any rendered page and search for `GVOS UI Fidelity v2 active`.
+
+**No backend changes. No database changes.**
+
+**Tool:** Claude Code | **Status:** UI Fidelity v2 complete — pushed to GitHub ✅

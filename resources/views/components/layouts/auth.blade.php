@@ -8,7 +8,7 @@
     <title>{{ $title }} — GVOS</title>
 
     {{-- Tailwind CSS CDN — staging only. Replace with compiled Vite build before production. --}}
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    {{-- CRITICAL: tailwind.config MUST be defined BEFORE the CDN <script> loads. --}}
     <script>
         tailwind.config = {
             theme: {
@@ -66,6 +66,7 @@
             }
         }
     </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     {{-- Google Fonts: Manrope (headlines) · Inter (body) · JetBrains Mono (mono) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,9 +90,50 @@
         .focused-input:focus-within {
             box-shadow: 0 0 0 2px rgba(0, 88, 190, 0.15);
         }
+        /* ── GVOS Design Token CSS Fallback ────────────────────────────────────
+           Ensures GVOS custom Tailwind tokens render even if the CDN JIT misses
+           them. These rules are intentional and permanent. Do NOT remove.
+           ──────────────────────────────────────────────────────────────────── */
+        .bg-sidebar-bg{background-color:#0B0F19}
+        .text-secondary-fixed{color:#d8e2ff}
+        .text-on-primary-container{color:#7c839b}
+        .bg-secondary-container{background-color:#2170e4}
+        .bg-secondary{background-color:#0058be}
+        .text-secondary{color:#0058be}
+        .border-secondary{border-color:#0058be}
+        .border-secondary-fixed{border-color:#d8e2ff}
+        .text-on-secondary{color:#ffffff}
+        .bg-surface,.bg-background{background-color:#f7f9fb}
+        .bg-surface-container-low{background-color:#f2f4f6}
+        .bg-surface-container-lowest{background-color:#ffffff}
+        .bg-primary-container{background-color:#131b2e}
+        .text-on-surface{color:#191c1e}
+        .text-on-surface-variant{color:#45464d}
+        .text-outline{color:#76777d}
+        .border-border-subtle{border-color:#E2E8F0}
+        .shadow-card{box-shadow:0px 4px 20px rgba(0,0,0,.04)}
+        .bg-status-active{background-color:#10B981}.text-status-active{color:#10B981}
+        .bg-status-completed{background-color:#059669}.text-status-completed{color:#059669}
+        .bg-status-payment-due{background-color:#F59E0B}.text-status-payment-due{color:#F59E0B}
+        .bg-status-blocked{background-color:#EF4444}.text-status-blocked{color:#EF4444}
+        .bg-status-trial{background-color:#8B5CF6}.text-status-trial{color:#8B5CF6}
+        .bg-secondary\/5{background-color:rgba(0,88,190,.05)}
+        .bg-secondary\/10{background-color:rgba(0,88,190,.1)}
+        .border-secondary\/20{border-color:rgba(0,88,190,.2)}
+        .bg-status-active\/10{background-color:rgba(16,185,129,.1)}
+        .border-status-active\/20{border-color:rgba(16,185,129,.2)}
+        .bg-status-active\/20{background-color:rgba(16,185,129,.2)}
+        .bg-status-blocked\/10{background-color:rgba(239,68,68,.1)}
+        .border-status-blocked\/20{border-color:rgba(239,68,68,.2)}
+        .text-secondary-fixed\/70{color:rgba(216,226,255,.7)}
+        .focus\:ring-secondary\/20:focus{box-shadow:0 0 0 2px rgba(0,88,190,.2)}
+        .focus\:border-secondary:focus{border-color:#0058be}
+        .hover\:brightness-110:hover{filter:brightness(1.1)}
+        .active\:scale-\[0\.98\]:active{transform:scale(.98)}
     </style>
 </head>
 <body class="h-full font-sans antialiased flex items-center justify-center min-h-screen px-4 {{ $variant === 'light' ? 'bg-dot-pattern' : 'bg-sidebar-bg' }}">
+    <!-- GVOS UI Fidelity v2 active -->
     {{ $slot }}
 </body>
 </html>

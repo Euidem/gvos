@@ -8,7 +8,7 @@
     <title>{{ $title }} — GVOS</title>
 
     {{-- Tailwind CSS CDN — staging only. Replace with compiled Vite build before production. --}}
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    {{-- CRITICAL: tailwind.config MUST be defined BEFORE the CDN <script> loads. --}}
     <script>
         tailwind.config = {
             theme: {
@@ -89,6 +89,7 @@
             }
         }
     </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     {{-- Google Fonts: Manrope (headlines) · Inter (body) · JetBrains Mono (mono) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -112,9 +113,74 @@
             transform: translateY(-2px);
             box-shadow: 0px 8px 24px rgba(0,0,0,0.08);
         }
+        /* ── GVOS Design Token CSS Fallback ────────────────────────────────────
+           Ensures GVOS custom Tailwind tokens render even if the CDN JIT misses
+           them. These rules are intentional and permanent. Do NOT remove.
+           ──────────────────────────────────────────────────────────────────── */
+        .bg-sidebar-bg{background-color:#0B0F19}
+        .text-secondary-fixed{color:#d8e2ff}
+        .text-on-primary-container{color:#7c839b}
+        .bg-secondary-container{background-color:#2170e4}
+        .text-on-secondary-container{color:#fefcff}
+        .bg-secondary{background-color:#0058be}
+        .text-secondary{color:#0058be}
+        .border-secondary{border-color:#0058be}
+        .border-secondary-fixed{border-color:#d8e2ff}
+        .text-on-secondary{color:#ffffff}
+        .bg-surface,.bg-background{background-color:#f7f9fb}
+        .bg-surface-container{background-color:#eceef0}
+        .bg-surface-container-low{background-color:#f2f4f6}
+        .bg-surface-container-lowest{background-color:#ffffff}
+        .bg-primary-container{background-color:#131b2e}
+        .text-on-surface{color:#191c1e}
+        .text-on-surface-variant{color:#45464d}
+        .text-outline{color:#76777d}
+        .text-outline-variant{color:#c6c6cd}
+        .border-border-subtle{border-color:#E2E8F0}
+        .shadow-card{box-shadow:0px 4px 20px rgba(0,0,0,.04)}
+        .shadow-subtle{box-shadow:0px 4px 20px rgba(0,0,0,.04)}
+        .bg-status-active{background-color:#10B981}.text-status-active{color:#10B981}.border-status-active{border-color:#10B981}
+        .bg-status-completed{background-color:#059669}.text-status-completed{color:#059669}.border-status-completed{border-color:#059669}
+        .bg-status-payment-due{background-color:#F59E0B}.text-status-payment-due{color:#F59E0B}.border-status-payment-due{border-color:#F59E0B}
+        .bg-status-blocked{background-color:#EF4444}.text-status-blocked{color:#EF4444}.border-status-blocked{border-color:#EF4444}
+        .bg-status-trial{background-color:#8B5CF6}.text-status-trial{color:#8B5CF6}.border-status-trial{border-color:#8B5CF6}
+        .bg-status-suspended{background-color:#64748B}.text-status-suspended{color:#64748B}
+        .bg-status-urgent{background-color:#B91C1C}.text-status-urgent{color:#B91C1C}
+        .bg-secondary\/5{background-color:rgba(0,88,190,.05)}
+        .bg-secondary\/10{background-color:rgba(0,88,190,.1)}
+        .bg-secondary\/20{background-color:rgba(0,88,190,.2)}
+        .border-secondary\/20{border-color:rgba(0,88,190,.2)}
+        .border-secondary\/30{border-color:rgba(0,88,190,.3)}
+        .text-secondary\/80{color:rgba(0,88,190,.8)}
+        .bg-white\/5{background-color:rgba(255,255,255,.05)}
+        .bg-white\/10{background-color:rgba(255,255,255,.1)}
+        .bg-white\/15{background-color:rgba(255,255,255,.15)}
+        .bg-white\/20{background-color:rgba(255,255,255,.2)}
+        .border-white\/10{border-color:rgba(255,255,255,.1)}
+        .border-white\/15{border-color:rgba(255,255,255,.15)}
+        .bg-status-active\/10{background-color:rgba(16,185,129,.1)}
+        .border-status-active\/20{border-color:rgba(16,185,129,.2)}
+        .bg-status-completed\/10{background-color:rgba(5,150,105,.1)}
+        .border-status-completed\/20{border-color:rgba(5,150,105,.2)}
+        .bg-status-payment-due\/10{background-color:rgba(245,158,11,.1)}
+        .border-status-payment-due\/20{border-color:rgba(245,158,11,.2)}
+        .bg-status-blocked\/10{background-color:rgba(239,68,68,.1)}
+        .border-status-blocked\/20{border-color:rgba(239,68,68,.2)}
+        .bg-status-trial\/10{background-color:rgba(139,92,246,.1)}
+        .border-status-trial\/20{border-color:rgba(139,92,246,.2)}
+        .bg-status-suspended\/10{background-color:rgba(100,116,139,.1)}
+        .text-secondary-fixed\/70{color:rgba(216,226,255,.7)}
+        .border-secondary-fixed\/30{border-color:rgba(216,226,255,.3)}
+        .border-secondary-fixed\/40{border-color:rgba(216,226,255,.4)}
+        .focus\:ring-secondary\/20:focus{box-shadow:0 0 0 2px rgba(0,88,190,.2)}
+        .focus\:border-secondary:focus{border-color:#0058be}
+        .hover\:brightness-110:hover{filter:brightness(1.1)}
+        .active\:scale-\[0\.98\]:active{transform:scale(.98)}
+        .hover\:bg-secondary\/10:hover{background-color:rgba(0,88,190,.1)}
     </style>
 </head>
 <body class="h-full bg-background font-sans antialiased">
+<!-- GVOS UI Fidelity v2 active -->
 
 {{-- Hidden div: ensure Tailwind CDN generates all dynamic nav classes --}}
 <div class="hidden bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed text-on-primary-container hover:text-secondary-fixed hover:bg-white/5 hover:brightness-110 shadow-card shadow-subtle bg-secondary text-on-secondary bg-surface-container-lowest border-border-subtle"></div>

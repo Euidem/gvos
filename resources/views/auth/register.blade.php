@@ -1,24 +1,38 @@
 <x-layouts.auth title="Register">
+<!-- GVOS UI Fidelity v2 active -->
 <div class="w-full max-w-sm">
-    <div class="text-center mb-8">
-        <span class="text-3xl font-bold text-white tracking-tight">GVOS</span>
-        <p class="text-slate-400 text-sm mt-1">Operations Management Platform</p>
-    </div>
-    <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
-        <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-            </svg>
+
+    {{-- GVOS Logo --}}
+    <div class="flex items-center justify-center gap-3 mb-8">
+        <div class="w-10 h-10 bg-secondary-container rounded-xl flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-on-secondary" style="font-variation-settings:'FILL' 1;font-size:20px;">hub</span>
         </div>
-        <h2 class="text-lg font-semibold text-slate-800 mb-2">Registration is not available</h2>
-        <p class="text-sm text-slate-500 mb-6">
-            GVOS accounts are created by administrators only.
-            If you have been invited, please check your email for a sign-in link.
-        </p>
-        <a href="{{ route('login') }}"
-           class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors">
-            Go to sign in
-        </a>
+        <div>
+            <span class="text-xl font-bold text-secondary-fixed tracking-tight block">GVOS</span>
+            <span class="text-xs text-on-primary-container">Operations Management Platform</span>
+        </div>
     </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-border-subtle">
+        {{-- Blue accent bar --}}
+        <div class="h-1 w-full bg-secondary"></div>
+
+        <div class="px-8 py-8 text-center">
+            <div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-outline" style="font-size:24px;">person_off</span>
+            </div>
+            <h2 class="text-base font-semibold text-on-surface mb-2">Registration is not available</h2>
+            <p class="text-sm text-on-surface-variant mb-6">
+                GVOS accounts are created by administrators only.
+                If you have been invited, please check your email for a sign-in link.
+            </p>
+            <a href="{{ route('login') }}"
+               class="inline-flex items-center gap-2 bg-secondary hover:brightness-110 active:scale-[0.98] text-on-secondary text-sm font-semibold px-6 py-2.5 rounded-lg transition-all shadow-sm">
+                <span class="material-symbols-outlined" style="font-size:16px;">login</span>
+                Go to Sign In
+            </a>
+        </div>
+    </div>
+
 </div>
 </x-layouts.auth>

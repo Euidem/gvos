@@ -222,8 +222,8 @@
                                            {{ old('client_type', 'individual') === 'individual' ? 'checked' : '' }}
                                            class="sr-only" onchange="handleClientType(this)">
                                     <div class="client-type-card border-2 rounded-xl p-5 transition-all
-                                                {{ old('client_type', 'individual') === 'individual' ? 'border-indigo-500 bg-indigo-50' : 'border-border-subtle hover:border-border-subtle' }}">
-                                        <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center mb-3">
+                                                {{ old('client_type', 'individual') === 'individual' ? 'border-secondary bg-secondary/5' : 'border-border-subtle hover:border-border-subtle' }}">
+                                        <div class="w-10 h-10 bg-secondary/10 rounded-xl flex items-center justify-center mb-3">
                                             <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                             </svg>
@@ -238,9 +238,9 @@
                                            {{ old('client_type') === 'business' ? 'checked' : '' }}
                                            class="sr-only" onchange="handleClientType(this)">
                                     <div class="client-type-card border-2 rounded-xl p-5 transition-all
-                                                {{ old('client_type') === 'business' ? 'border-indigo-500 bg-indigo-50' : 'border-border-subtle hover:border-border-subtle' }}">
-                                        <div class="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center mb-3">
-                                            <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                {{ old('client_type') === 'business' ? 'border-secondary bg-secondary/5' : 'border-border-subtle hover:border-border-subtle' }}">
+                                        <div class="w-10 h-10 bg-secondary/10 rounded-xl flex items-center justify-center mb-3">
+                                            <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                                             </svg>
                                         </div>
@@ -285,8 +285,8 @@
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                 @php
                                     $roleData = [
-                                        'virtual_assistant'    => ['d' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',                            'bg' => 'bg-indigo-50',   'ic' => 'text-secondary',  'bsel' => 'border-indigo-500 bg-indigo-50'],
-                                        'executive_assistant'  => ['d' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'bg' => 'bg-violet-50',   'ic' => 'text-violet-600',  'bsel' => 'border-violet-500 bg-violet-50'],
+                                        'virtual_assistant'    => ['d' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',                            'bg' => 'bg-secondary/5',     'ic' => 'text-secondary',      'bsel' => 'border-secondary bg-secondary/5'],
+                                        'executive_assistant'  => ['d' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'bg' => 'bg-status-trial/10', 'ic' => 'text-status-trial',   'bsel' => 'border-status-trial bg-status-trial/10'],
                                         'social_media_manager' => ['d' => 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z',                         'bg' => 'bg-pink-50',     'ic' => 'text-pink-600',    'bsel' => 'border-pink-500 bg-pink-50'],
                                         'video_editor'         => ['d' => 'M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z', 'bg' => 'bg-red-50', 'ic' => 'text-status-blocked', 'bsel' => 'border-red-500 bg-red-50'],
                                         'developer'            => ['d' => 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4',                                                                                 'bg' => 'bg-emerald-50',  'ic' => 'text-status-active', 'bsel' => 'border-emerald-500 bg-emerald-50'],
@@ -429,7 +429,7 @@
                                                    {{ $bSel ? 'checked' : '' }}
                                                    class="sr-only budget-radio">
                                             <div class="budget-card border-2 rounded-xl px-4 py-3.5 transition-all hover:shadow-sm
-                                                        {{ $bSel ? 'border-indigo-500 bg-indigo-50' : 'border-border-subtle hover:border-border-subtle' }}">
+                                                        {{ $bSel ? 'border-secondary bg-secondary/5' : 'border-border-subtle hover:border-border-subtle' }}">
                                                 <p class="text-sm font-semibold text-on-surface">{{ $bd['label'] }}</p>
                                                 @if($bd['sub'])<p class="text-xs text-on-surface-variant mt-0.5">{{ $bd['sub'] }}</p>@endif
                                             </div>
@@ -465,7 +465,7 @@
 
                             {{-- Submit --}}
                             <button type="submit"
-                                    class="w-full bg-secondary hover:brightness-110 active:bg-indigo-800 text-white font-bold text-sm py-4 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
+                                    class="w-full bg-secondary hover:brightness-110 active:brightness-90 text-white font-bold text-sm py-4 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
                                 <span>Submit My Request</span>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -485,7 +485,7 @@
                         </button>
                         <span id="back-placeholder"></span>
                         <button type="button" id="btn-next"
-                                class="flex items-center gap-1.5 px-6 py-2.5 text-sm font-semibold text-white bg-secondary hover:brightness-110 active:bg-indigo-800 rounded-xl transition-colors">
+                                class="flex items-center gap-1.5 px-6 py-2.5 text-sm font-semibold text-white bg-secondary hover:brightness-110 active:brightness-90 rounded-xl transition-colors">
                             Next
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -498,7 +498,7 @@
 
             <p class="text-center text-xs text-on-surface-variant mt-5">
                 Already have an account?
-                <a href="{{ route('login') }}" class="text-indigo-400 hover:text-indigo-300 underline">Sign in here</a>
+                <a href="{{ route('login') }}" class="text-secondary-fixed hover:text-white underline transition-colors">Sign in here</a>
             </p>
         </div>
 
@@ -545,7 +545,7 @@
                         ['step' => '4', 'title' => 'We approve a one-day trial',    'sub' => 'No commitment until you\'re satisfied', 'active' => false],
                     ] as $s)
                     <div class="flex items-start gap-4">
-                        <div class="w-7 h-7 {{ $s['active'] ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-on-surface-variant' }} text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">
+                        <div class="w-7 h-7 {{ $s['active'] ? 'bg-secondary text-on-secondary' : 'bg-white/10 text-secondary-fixed/70' }} text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">
                             {{ $s['step'] }}
                         </div>
                         <div>
@@ -558,12 +558,12 @@
             </div>
 
             {{-- CSS illustration panel --}}
-            <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-violet-950 rounded-xl p-5 overflow-hidden relative select-none">
+            <div class="bg-primary-container rounded-xl p-5 overflow-hidden relative select-none" style="background:linear-gradient(135deg,#0B0F19 0%,#131b2e 60%,#0d1a36 100%)">
                 {{-- Decorative blobs --}}
-                <div class="absolute top-0 right-0 w-28 h-28 bg-indigo-500 opacity-10 rounded-full -translate-y-10 translate-x-10 pointer-events-none"></div>
-                <div class="absolute bottom-0 left-0 w-20 h-20 bg-violet-500 opacity-10 rounded-full translate-y-8 -translate-x-6 pointer-events-none"></div>
+                <div class="absolute top-0 right-0 w-28 h-28 bg-secondary opacity-10 rounded-full -translate-y-10 translate-x-10 pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 w-20 h-20 bg-secondary-container opacity-10 rounded-full translate-y-8 -translate-x-6 pointer-events-none"></div>
 
-                <p class="text-xs font-semibold text-indigo-300 uppercase tracking-wider mb-4">Inside GVOS</p>
+                <p class="text-xs font-semibold text-secondary-fixed uppercase tracking-wider mb-4">Inside GVOS</p>
 
                 {{-- Client card --}}
                 <div class="bg-white/10 border border-white/15 rounded-xl p-3 mb-2.5 flex items-center gap-3">
@@ -578,8 +578,8 @@
                 {{-- Connector --}}
                 <div class="flex justify-center my-1.5">
                     <div class="flex flex-col items-center gap-0.5">
-                        <div class="w-px h-2 bg-indigo-400/40"></div>
-                        <svg class="w-3.5 h-3.5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-px h-2 bg-secondary-fixed/40"></div>
+                        <svg class="w-3.5 h-3.5 text-secondary-fixed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
@@ -599,7 +599,7 @@
                 <div class="bg-white/10 border border-white/15 rounded-xl p-3 mb-2.5">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-xs font-semibold text-white">Trial In Progress</p>
-                        <span class="text-xs bg-indigo-400 text-white font-semibold px-2 py-0.5 rounded-full">Trial</span>
+                        <span class="text-xs bg-secondary text-on-secondary font-semibold px-2 py-0.5 rounded-full">Trial</span>
                     </div>
                     <div class="space-y-1.5">
                         <div class="flex items-center gap-2">
@@ -610,7 +610,7 @@
                             <div class="w-3.5 h-3.5 bg-emerald-400 rounded flex-shrink-0 flex items-center justify-center">
                                 <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             </div>
-                            <p class="text-xs text-indigo-300 line-through opacity-70">Calendar setup done</p>
+                            <p class="text-xs text-secondary-fixed/70 line-through">Calendar setup done</p>
                         </div>
                     </div>
                 </div>
@@ -618,7 +618,7 @@
                 {{-- Chat bubble --}}
                 <div class="bg-white/10 border border-white/15 rounded-xl p-3">
                     <div class="flex items-start gap-2 mb-2">
-                        <div class="w-6 h-6 bg-violet-400 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">M</div>
+                        <div class="w-6 h-6 bg-secondary-container rounded-full flex-shrink-0 flex items-center justify-center text-on-secondary text-xs font-bold">M</div>
                         <div class="bg-white/10 rounded-lg rounded-tl-none px-3 py-2 flex-1">
                             <p class="text-xs text-white">All tasks completed on time ✓</p>
                         </div>
@@ -659,9 +659,9 @@
         document.querySelectorAll('.step-nav-label').forEach(function(el) {
             var s = parseInt(el.dataset.step);
             el.className = 'step-nav-label';
-            if (s < n)       el.classList.add('text-indigo-300');
+            if (s < n)       el.classList.add('text-secondary-fixed');
             else if (s === n) el.classList.add('font-semibold', 'text-white');
-            else              el.classList.add('text-indigo-300', 'opacity-50');
+            else              el.classList.add('text-secondary-fixed', 'opacity-50');
         });
 
         // Back/next buttons
@@ -783,13 +783,13 @@
 
     window.handleClientType = function(radio) {
         document.querySelectorAll('.client-type-card').forEach(function(c) {
-            c.classList.remove('border-indigo-500', 'bg-indigo-50');
+            c.classList.remove('border-secondary', 'bg-secondary/5');
             c.classList.add('border-border-subtle');
         });
         var card = radio.closest('label').querySelector('.client-type-card');
         if (card) {
             card.classList.remove('border-border-subtle');
-            card.classList.add('border-indigo-500', 'bg-indigo-50');
+            card.classList.add('border-secondary', 'bg-secondary/5');
         }
         var bf = document.getElementById('business-fields');
         if (bf) bf.classList.toggle('hidden', radio.value !== 'business');
@@ -799,14 +799,14 @@
 
     window.handleRoleChange = function(radio) {
         document.querySelectorAll('.role-card').forEach(function(c) {
-            var bsel = c.dataset.bsel || 'border-indigo-500 bg-indigo-50';
+            var bsel = c.dataset.bsel || 'border-secondary bg-secondary/5';
             bsel.split(' ').forEach(function(cls) { c.classList.remove(cls); });
             c.classList.add('border-border-subtle');
         });
         var card = radio.closest('label').querySelector('.role-card');
         if (card) {
             card.classList.remove('border-border-subtle');
-            var bsel = card.dataset.bsel || 'border-indigo-500 bg-indigo-50';
+            var bsel = card.dataset.bsel || 'border-secondary bg-secondary/5';
             bsel.split(' ').forEach(function(cls) { card.classList.add(cls); });
         }
         var wrap = document.getElementById('other-role-wrap');
@@ -818,13 +818,13 @@
     document.querySelectorAll('.budget-radio').forEach(function(radio) {
         radio.addEventListener('change', function() {
             document.querySelectorAll('.budget-card').forEach(function(c) {
-                c.classList.remove('border-indigo-500', 'bg-indigo-50');
+                c.classList.remove('border-secondary', 'bg-secondary/5');
                 c.classList.add('border-border-subtle');
             });
             var card = radio.closest('label').querySelector('.budget-card');
             if (card) {
                 card.classList.remove('border-border-subtle');
-                card.classList.add('border-indigo-500', 'bg-indigo-50');
+                card.classList.add('border-secondary', 'bg-secondary/5');
             }
         });
     });
@@ -847,7 +847,7 @@
             var card = r.closest('label').querySelector('.budget-card');
             if (card) {
                 card.classList.remove('border-border-subtle');
-                card.classList.add('border-indigo-500', 'bg-indigo-50');
+                card.classList.add('border-secondary', 'bg-secondary/5');
             }
         });
 

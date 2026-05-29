@@ -380,6 +380,43 @@ Pushed: `0480f26..c472ebb main -> main`
 
 ---
 
+## UI Fidelity Audit v2 — Complete ✅ (2026-05-29)
+
+### Root Cause Identified and Fixed
+The Tailwind CDN script was loading **before** `tailwind.config` was defined in all three component layout files. Per Tailwind CDN documentation, the config must be set **before** the CDN `<script>` tag loads. As a result, all custom GVOS tokens (`bg-sidebar-bg`, `text-secondary`, `border-border-subtle`, `shadow-card`, etc.) were not generated — the CDN compiled with default settings only.
+
+### What Changed
+
+| Area | Fix |
+|------|-----|
+| All 3 component layouts | `tailwind.config` moved to BEFORE `<script src="cdn.tailwindcss.com">` |
+| All 3 component layouts | Comprehensive GVOS CSS token fallback block added to `<style>` |
+| All 3 component layouts | `<!-- GVOS UI Fidelity v2 active -->` HTML comment added |
+| `layouts/gvos.blade.php` (legacy) | Replaced with component redirect wrapper |
+| `layouts/auth.blade.php` (legacy) | Replaced with component redirect wrapper |
+| `auth/confirm-password.blade.php` | Full rewrite — indigo/slate removed, GVOS tokens applied |
+| `auth/reset-password.blade.php` | Full rewrite — indigo removed, GVOS tokens applied |
+| `auth/verify-email.blade.php` | Full rewrite — indigo removed, GVOS tokens applied |
+| `auth/register.blade.php` | Full rewrite — indigo removed, GVOS tokens applied |
+| `lead/request-service-success.blade.php` | Full rewrite — indigo/slate/emerald removed, GVOS tokens applied |
+| `lead/request-service.blade.php` | All remaining indigo/violet replaced with GVOS tokens (PHP + JS) |
+
+### CSS Fallback Coverage
+Added hardcoded CSS rules (`.bg-sidebar-bg { ... }` etc.) as a safety net to all 3 layouts. Covers all GVOS custom tokens including opacity variants (`bg-secondary/5`, `bg-status-active/10`, etc.), hover/focus/active utilities, and border/shadow tokens.
+
+### How to Verify from Browser Source
+`View Source` any page and search for `GVOS UI Fidelity v2 active` — if found, the updated layout is rendering.
+
+### cPanel Commands
+```bash
+git pull origin main
+php artisan optimize:clear
+php artisan view:clear
+```
+No migrations needed.
+
+---
+
 ## Next Steps
 
 1. cPanel: `git pull origin main && php artisan optimize:clear` (no migrations needed for UI audit)
