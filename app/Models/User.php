@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, HasRoles, Notifiable;
 
@@ -46,6 +48,15 @@ class User extends Authenticatable
     public function getGvosRoleName(): string
     {
         return $this->getRoleNames()->first() ?? 'unknown';
+    }
+
+    /**
+     * Filament v3 — gate for panel access.
+     * Only super_admin and operations_admin may enter the GVOS Ops Console.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->hasAnyRole(['super_admin', 'operations_admin']);
     }
 
     public function getDashboardRoute(): string
