@@ -1,27 +1,43 @@
 <x-layouts.gvos title="Manager Dashboard">
+@php $user = auth()->user(); $profile = $user->profile; @endphp
 
-    <div class="mb-6">
-        <h2 class="text-2xl font-bold text-slate-800">Manager Dashboard</h2>
-        <p class="text-sm text-slate-500 mt-1">Line Manager — team oversight</p>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-        @foreach ([
-            ['label' => 'My Talent',         'value' => '—'],
-            ['label' => 'Active Tasks',      'value' => '—'],
-            ['label' => 'Pending Reviews',   'value' => '—'],
-        ] as $stat)
-        <div class="bg-white rounded-xl border border-slate-200 px-6 py-5">
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">{{ $stat['label'] }}</p>
-            <p class="mt-2 text-3xl font-bold text-slate-800">{{ $stat['value'] }}</p>
+    <div class="flex items-start justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800">
+                Welcome back{{ $profile?->first_name ? ', ' . $profile->first_name : '' }}
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">GVOS Manager Console</p>
         </div>
-        @endforeach
+        <div class="flex items-center gap-3">
+            <span class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full font-medium">
+                {{ ucfirst($user->status) }}
+            </span>
+            <span class="text-xs bg-sky-50 text-sky-700 border border-sky-200 px-3 py-1 rounded-full font-medium">
+                Line Manager
+            </span>
+        </div>
     </div>
 
-    <div class="bg-indigo-50 border border-indigo-200 rounded-xl px-6 py-5 text-sm text-indigo-700">
-        <strong class="font-semibold">Phase 0 — Foundation</strong>
-        <p class="mt-1 text-indigo-600">
-            Manager Console is active. Team management, task oversight, and reporting features are planned for Phase 1.
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <a href="{{ route('profile.show') }}"
+           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
+            <p class="text-sm font-semibold text-slate-800">My Profile</p>
+            <p class="text-xs text-slate-400 mt-0.5">Update your details and password</p>
+        </a>
+        <div class="bg-white rounded-xl border border-dashed border-slate-200 px-5 py-4 opacity-50 cursor-not-allowed">
+            <p class="text-sm font-semibold text-slate-500">My Team</p>
+            <p class="text-xs text-slate-400 mt-0.5">Coming in Phase 2</p>
+        </div>
+        <div class="bg-white rounded-xl border border-dashed border-slate-200 px-5 py-4 opacity-50 cursor-not-allowed">
+            <p class="text-sm font-semibold text-slate-500">Workspaces</p>
+            <p class="text-xs text-slate-400 mt-0.5">Coming in Phase 4</p>
+        </div>
+    </div>
+
+    <div class="bg-sky-50 border border-sky-200 rounded-xl px-6 py-5">
+        <p class="text-sm font-semibold text-sky-800">Phase 1 — Identity and Access Foundation</p>
+        <p class="text-sm text-sky-700 mt-0.5">
+            Your account is active and role-protected. Team oversight, workspace management and task boards are coming in later phases.
         </p>
     </div>
 

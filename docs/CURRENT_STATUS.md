@@ -1,124 +1,124 @@
 # GVOS — Current Status
 
-**Last Updated:** 2026-05-27
-**Current Phase:** Phase 0 — Documentation and Project Setup
+**Last Updated:** 2026-05-29
+**Current Phase:** Phase 1 — Identity and Access Foundation ✅ Complete
 
 ---
 
-## Phase 0 Status
+## Phase 0 Status — Complete ✅
 
-### Completed
-- [x] Project directory created
-- [x] /docs folder created with 16 documentation files
-- [x] /design-reference folder created with Stitch UI screens
-- [x] .gitignore created
-- [x] composer.json created (dependencies declared)
-- [x] package.json created (JS dependencies declared)
-- [x] .env.example created
-- [x] Custom Laravel source files created:
-  - app/Models/User.php
-  - database/seeders/RoleSeeder.php
-  - database/seeders/AdminUserSeeder.php
-  - database/seeders/DatabaseSeeder.php
-  - routes/web.php
-  - app/Http/Controllers/DashboardController.php
-  - resources/js/Pages/Dashboard/* (8 role dashboards)
-  - resources/js/app.jsx
-  - resources/js/Layouts/AppLayout.jsx
-- [x] setup-gvos.ps1 created (full installation script)
-- [x] Git initialized
-- [x] First commit made
-
-### Pending (requires PHP/Composer/Node.js on this machine)
-- [ ] `composer install` — installs Laravel framework and all PHP dependencies
-- [ ] `npm install` — installs React, Inertia, Tailwind and JS dependencies
-- [ ] `php artisan key:generate`
-- [ ] `php artisan migrate`
-- [ ] `php artisan db:seed`
-- [ ] `npm run build` or `npm run dev`
-- [ ] Confirm Filament admin panel accessible
-- [ ] Confirm seeded admin can login
+All Phase 0 objectives confirmed working on cPanel staging:
+- GitHub repo → working
+- cPanel deployment → working
+- Laravel loads → working
+- Login → working
+- Filament admin login → working
+- Migrations → working
+- Seeders → working
+- Roles seeded → working
+- Super Admin `/admin` access → working
+- Blade fallback pages → working (no Node required)
 
 ---
 
-## Setup Prerequisites
+## Phase 1 Status — Complete ✅
 
-Before running the project, install the following on your machine:
+### Implemented
 
-| Tool | Version | Download |
-|------|---------|----------|
-| PHP | 8.2 or 8.3 | https://windows.php.net/ or via Laragon/Herd |
-| Composer | Latest | https://getcomposer.org/ |
-| Node.js | 18 LTS or 20 LTS | https://nodejs.org/ |
-| MySQL or PostgreSQL | 8.0+ / 15+ | Via Laragon or XAMPP |
+#### Database
+- [x] `pending` status added to users.status ENUM
+- [x] `user_profiles` table — extended profile data per user
+- [x] `audit_logs` table — immutable event audit trail
 
-**Recommended:** Use [Laragon](https://laragon.org/) on Windows — it bundles PHP, MySQL, and provides a clean dev environment.
+#### Models
+- [x] `UserProfile` model with `belongsTo(User)` relationship
+- [x] `AuditLog` model — immutable, blocks updates/deletes at app level
+- [x] `User` model — added `profile()` hasOne, status helpers, `isAccessBlocked()`
+
+#### Services
+- [x] `AuditLogger` service — convenience methods for all Phase 1 events
+  - `userCreated`, `userUpdated`, `roleChanged`, `statusChanged`
+  - `passwordChanged`, `profileUpdated`, `login`
+
+#### Middleware
+- [x] `CheckAccountStatus` — blocks suspended/inactive users from dashboards
+- [x] Registered as `check.status` alias in `bootstrap/app.php`
+
+#### Filament — GVOS Ops Console
+- [x] `UserResource` — User management panel
+  - View all users (super_admin + operations_admin)
+  - Create users with name, email, password, role, status (super_admin only)
+  - Edit user details, role and status (super_admin only)
+  - Deletion disabled — use status changes instead
+  - Search by name / email
+  - Filter by role and status
+  - Status badges with colour coding
+  - Audit log entries on create and edit
+
+#### Controllers
+- [x] `ProfileController` — show and update profile + extended profile
+- [x] `PasswordController` — change password with current_password validation + audit log
+- [x] `AuthenticatedSessionController` — login audit log added
+
+#### Routes
+- [x] `GET/PUT /profile` — profile editing (all authenticated roles)
+- [x] `GET /account/status` — suspended / inactive holding page
+- [x] All dashboards now use `check.status` middleware
+- [x] `role:` middleware on all portal routes
+
+#### Blade Views (Phase 0 Blade fallback maintained)
+- [x] `profile/edit.blade.php` — full profile + password change form
+- [x] `account/status.blade.php` — suspended / inactive holding page
+- [x] All 8 role dashboards improved:
+  - Personalised welcome (uses first_name from profile)
+  - Status badge + role badge
+  - Working quick-action links (profile, admin panel)
+  - Dashed placeholder cards for coming modules
+  - Phase 1 coloured notice banner
 
 ---
 
-## Admin Credentials (Local Testing Only)
+## Admin Credentials (Staging Only)
 
-> ⚠️ These are placeholder credentials for local development only. Never use these in production.
+> ⚠️ Change these before any production use.
 
 | Field | Value |
 |-------|-------|
 | Email | admin@gvos.local |
 | Password | password |
 | Role | super_admin |
-| Portal | GVOS Ops Console (Filament) at /admin |
+| Portal | /admin (Filament Ops Console) |
 
 ---
 
-## How to Run Phase 0
+## cPanel Deployment — Commands to Run After Each Pull
 
-After installing PHP, Composer, and Node.js:
-
-```powershell
-# Option A: Run the full setup script
-.\setup-gvos.ps1
-
-# Option B: Manual steps
-composer install
-cp .env.example .env
-php artisan key:generate
-# Edit .env to set your DB credentials
+```bash
+git pull origin main
 php artisan migrate
-php artisan db:seed
-npm install
-npm run dev
+php artisan optimize:clear
+php artisan permission:cache-reset
 ```
 
-Then visit:
-- http://localhost:8000 — Laravel app
-- http://localhost:8000/admin — Filament Ops Console
-- http://localhost:5173 — Vite dev server (when using npm run dev)
-
 ---
 
-## Environment Notes
+## Architecture Notes
 
-- Database: Configure DB_CONNECTION, DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD in `.env`
-- Recommended local DB name: `gvos`
-- Local URL: http://localhost:8000 (or configured Laragon domain)
+- **Auth guard:** `web` (session)
+- **Blade CDN:** Tailwind CDN via `<script src="https://cdn.tailwindcss.com">` — Phase 0/1 staging only
+- **Node/npm:** Not required for Phase 1. Phase 2+ will introduce Vite React builds.
+- **Filament panel:** `/admin` — protected by `canAccessPanel()` on User model
+- **Role middleware:** Spatie `role:` middleware on all portal prefixes
+- **Status middleware:** `check.status` alias blocks suspended/inactive users
 
 ---
 
 ## Next Steps
 
-1. Install PHP 8.2+, Composer, Node.js 18+ on development machine
-2. Install and configure MySQL (or PostgreSQL)
-3. Run `.\setup-gvos.ps1` or follow manual steps above
-4. Verify admin login works at /admin
-5. Verify all 8 role dashboard placeholders exist
-6. Get Phase 0 approved by product owner
-7. Begin Phase 1: Identity and Access Foundation
-
----
-
-## Team Notes
-
-- Project owner: GetVirtual
-- Build tool: Claude Code
-- Product architect: ChatGPT (planning, QA guide, build moderator)
-- UI design: Stitch
-- Do not use Antigravity or Codex in this project
+1. cPanel: run `php artisan migrate` and `php artisan optimize:clear`
+2. Test Filament Users resource at `/admin/users`
+3. Test profile editing at `/profile`
+4. Test password change
+5. Test account suspension blocking access
+6. Get Phase 1 approval
+7. Begin Phase 2: People and Organizations (companies, departments, talent profiles, manager profiles)

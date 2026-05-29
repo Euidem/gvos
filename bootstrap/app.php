@@ -11,6 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Register route middleware aliases
+        $middleware->alias([
+            'check.status' => \App\Http\Middleware\CheckAccountStatus::class,
+        ]);
+
+        // Append Inertia middleware to web group (kept for Phase 1+ React migration)
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);

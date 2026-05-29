@@ -1,103 +1,101 @@
 # GVOS — Permission Matrix
 
 ## Overview
-This document defines what each role can do within GVOS. It is used to configure Spatie Laravel Permission and Laravel Policies.
+Defines what each role can do. Authorization is enforced at:
+1. **Route level** — Spatie `role:` middleware in `routes/web.php`
+2. **Panel level** — `canAccessPanel()` on User model (Filament)
+3. **Resource level** — `canViewAny()`, `canCreate()`, `canEdit()`, `canDelete()` on Filament resources
+4. **Policy level** — Laravel Policies (Phase 2+)
 
-**Authorization stack:**
-- Role assignment: Spatie Laravel Permission (roles stored in DB)
-- Per-resource access: Laravel Policies
-- Middleware: Role-based route guards using `role:` middleware
-
-**Key Principle:** Default is DENY. Access must be explicitly granted.
+**Default rule: DENY. Access must be explicitly granted.**
 
 ---
 
-## Permission Matrix
+## Role Definitions
 
-Legend:
-- ✅ Full access
-- 👁 View only
-- ✏️ Create / Edit own
-- ❌ No access
-- 🔒 Encrypted / special handling
+| Role | Slug | Portal |
+|------|------|--------|
+| Super Administrator | `super_admin` | Filament `/admin` |
+| Operations Administrator | `operations_admin` | Filament `/admin` |
+| Line Manager | `line_manager` | `/manager/dashboard` |
+| Talent | `talent` | `/talent/dashboard` |
+| Individual Client | `individual_client` | `/client/dashboard` |
+| Business Client Admin | `business_client_admin` | `/client/dashboard` |
+| Business Client Staff | `business_client_staff` | `/client/dashboard` |
+| Active Lead | `active_lead` | `/lead/dashboard` |
+
+---
+
+## Phase 1 — Implemented Access Control
+
+### Filament Panel (`/admin`)
+
+| Action | super_admin | operations_admin | All other roles |
+|--------|------------|-----------------|-----------------|
+| Access `/admin` | ✅ | ✅ | ❌ (403) |
+| View Users list | ✅ | ✅ | ❌ |
+| Create User | ✅ | ❌ | ❌ |
+| Edit User (name, email, status, role) | ✅ | ❌ | ❌ |
+| Delete User | ❌ (disabled) | ❌ | ❌ |
+
+### Route Middleware Protection
+
+| Route | Middleware | Access |
+|-------|-----------|--------|
+| `/manager/dashboard` | `auth, check.status, role:line_manager` | line_manager only |
+| `/talent/dashboard` | `auth, check.status, role:talent` | talent only |
+| `/client/dashboard` | `auth, check.status, role:individual_client\|business_client_admin\|business_client_staff` | client roles only |
+| `/lead/dashboard` | `auth, check.status, role:active_lead` | active_lead only |
+| `/profile` | `auth, check.status` | all authenticated, non-blocked users |
+| `/account/status` | `auth` | any authenticated user |
+
+### Account Status Gate
+
+| Status | Dashboard access | Profile access | Filament access |
+|--------|-----------------|----------------|-----------------|
+| active | ✅ | ✅ | Per role |
+| pending | ✅ | ✅ | Per role |
+| inactive | ❌ → `/account/status` | ❌ | ❌ |
+| suspended | ❌ → `/account/status` | ❌ | ❌ |
+
+---
+
+## Full Permission Matrix (all phases)
+
+Legend: ✅ Full | 👁 View only | ✏️ Own records | ❌ No access | 🔒 Encrypted
 
 | Resource | super_admin | ops_admin | line_manager | talent | ind_client | biz_admin | biz_staff | active_lead |
 |----------|------------|-----------|-------------|--------|------------|-----------|-----------|-------------|
 | **Platform Settings** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Role Management** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **User Management** | ✅ | 👁 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Audit Logs** | ✅ | 👁 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Leads** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 👁 (own) |
-| **Client Accounts** | ✅ | ✅ | ❌ | ❌ | 👁 (own) | 👁 (own) | ❌ | ❌ |
-| **Company Accounts** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ (own) | ❌ | ❌ |
-| **Staff Invitations** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ (own co.) | ❌ | ❌ |
-| **Talent Profiles** | ✅ | ✅ | 👁 (assigned) | 👁 (own) | ❌ | ❌ | ❌ | ❌ |
-| **Manager Profiles** | ✅ | ✅ | 👁 (own) | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Workspaces** | ✅ | ✅ | 👁 (assigned) | 👁 (assigned) | 👁 (own) | 👁 (own) | 👁 (granted) | 👁 (trial) |
-| **Workspace Settings** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Task Board** | ✅ | ✅ | ✅ (assigned) | ✏️ (assigned) | 👁 + approve | 👁 + approve | 👁 (if granted) | 👁 (trial) |
-| **Chat** | ✅ | ✅ | 👁 monitor | ✅ (own ws.) | ✅ (own ws.) | ✅ (own ws.) | limited | ❌ |
-| **File Library** | ✅ | ✅ | 👁 | ✅ (own ws.) | ✅ (own ws.) | ✅ (own ws.) | limited | ❌ |
-| **Exact Time Logs** | ✅ | ✅ | ✅ (assigned) | 👁 (own) | ❌ | ❌ | ❌ | ❌ |
-| **Weekly Summaries** | ✅ | ✅ | ✅ | ✅ (submit) | 👁 | 👁 | 👁 (if granted) | ❌ |
-| **Daily Reports** | ✅ | ✅ | ✅ (review) | ✏️ (submit) | ❌ | ❌ | ❌ | ❌ |
-| **Billing (Admin)** | ✅ | ✏️ record | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Billing (Client view)** | ✅ | ✅ | ❌ | ❌ | 👁 (own) | 👁 (own) | ❌ | ❌ |
+| **User Profiles** | ✅ | ✅ | ✏️ own | ✏️ own | ✏️ own | ✏️ own | ✏️ own | ✏️ own |
+| **Leads** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 👁 own |
+| **Client Accounts** | ✅ | ✅ | ❌ | ❌ | 👁 own | 👁 own | ❌ | ❌ |
+| **Company Accounts** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ own | ❌ | ❌ |
+| **Staff Invitations** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ own co. | ❌ | ❌ |
+| **Talent Profiles** | ✅ | ✅ | 👁 assigned | 👁 own | ❌ | ❌ | ❌ | ❌ |
+| **Manager Profiles** | ✅ | ✅ | 👁 own | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Workspaces** | ✅ | ✅ | 👁 assigned | 👁 assigned | 👁 own | 👁 own | 👁 granted | 👁 trial |
+| **Task Board** | ✅ | ✅ | ✅ assigned | ✏️ assigned | 👁 + approve | 👁 + approve | 👁 granted | 👁 trial |
+| **Chat** | ✅ | ✅ | 👁 monitor | ✅ own ws | ✅ own ws | ✅ own ws | limited | ❌ |
+| **File Library** | ✅ | ✅ | 👁 | ✅ own ws | ✅ own ws | ✅ own ws | limited | ❌ |
+| **Exact Time Logs** | ✅ | ✅ | ✅ assigned | 👁 own | ❌ | ❌ | ❌ | ❌ |
+| **Daily Reports** | ✅ | ✅ | ✅ review | ✏️ submit | ❌ | ❌ | ❌ | ❌ |
+| **Billing (admin)** | ✅ | ✏️ record | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Billing (client view)** | ✅ | ✅ | ❌ | ❌ | 👁 own | 👁 own | ❌ | ❌ |
 | **Complaints (raise)** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Complaints (manage)** | ✅ | ✅ | ✅ (assigned) | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Password Vault** | ✅ | ✅ | 👁 audit | 🔒 (granted) | 🔒 (own) | 🔒 (own) | ❌ | ❌ |
-| **Asset Tracking** | ✅ | ✅ | 👁 | 👁 (own) | ❌ | ❌ | ❌ | ❌ |
-| **Satisfaction Surveys** | ✅ | 👁 | 👁 | respond | respond | respond | respond | ❌ |
+| **Complaints (manage)** | ✅ | ✅ | ✅ assigned | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Password Vault** | ✅ | ✅ | 👁 audit | 🔒 granted | 🔒 own | 🔒 own | ❌ | ❌ |
+| **Asset Tracking** | ✅ | ✅ | 👁 | 👁 own | ❌ | ❌ | ❌ | ❌ |
 
 ---
 
-## Spatie Permission Setup
+## Implementation Notes
 
-### Roles (seeded in Phase 0)
-```
-super_admin
-operations_admin
-line_manager
-talent
-individual_client
-business_client_admin
-business_client_staff
-active_lead
-```
-
-### Key Permissions to Seed (Phase 1)
-These will be expanded per phase. Starter set:
-```
-view-dashboard
-manage-users
-manage-leads
-manage-workspaces
-manage-companies
-manage-billing
-view-audit-logs
-manage-time-logs
-view-reports
-submit-reports
-manage-complaints
-manage-vault
-manage-assets
-manage-platform-settings
-```
-
-### Middleware Usage
-```php
-// In routes/web.php
-Route::middleware(['auth', 'role:super_admin|operations_admin'])->group(...);
-Route::middleware(['auth', 'role:line_manager'])->group(...);
-Route::middleware(['auth', 'role:talent'])->group(...);
-Route::middleware(['auth', 'role:individual_client|business_client_admin|business_client_staff'])->group(...);
-Route::middleware(['auth', 'role:active_lead'])->group(...);
-```
-
----
-
-## Notes for Implementation
-- Filament panels are protected at panel level and resource level.
-- Inertia pages are protected via route middleware AND Inertia shared data (user role in page props).
-- Policies are defined in `app/Policies/` and registered in `AuthServiceProvider`.
-- Never rely solely on front-end hiding — always enforce on the server side.
-- Business client staff permissions are stored per-user, managed by their Business Client Admin.
+- Filament panels are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
+- Blade pages enforce role at route middleware level.
+- When React/Inertia pages are active (Phase 2+), roles will also be in Inertia shared props so the frontend can adapt UI.
+- Never rely solely on front-end hiding — always enforce on the server.
+- Business client staff permissions are per-user, managed by their Business Client Admin (Phase 2+).

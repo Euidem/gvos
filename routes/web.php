@@ -1,26 +1,24 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
 | GVOS Web Routes
 |--------------------------------------------------------------------------
 |
-| All portal routes. Filament handles /admin routes separately.
-| Routes are guarded by Spatie role middleware.
-|
 | Middleware used:
-|   auth       — user must be logged in
-|   role:X     — user must have the specified role(s)
-|   verified   — email must be verified (Phase 1+)
+|   auth          — user must be logged in
+|   check.status  — block suspended / inactive users from dashboards
+|   role:X        — user must hold the specified Spatie role(s)
+|
+| Filament handles all /admin routes separately via AdminPanelProvider.
 |
 */
 
-// Root: redirect authenticated users to their role dashboard
+// ── Root redirect ────────────────────────────────────────────────────────
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect(auth()->user()->getDashboardRoute());
@@ -28,38 +26,54 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// -----------------------------------------------------------------------
-// Manager Console Routes
-// -----------------------------------------------------------------------
-Route::middleware(['auth', 'role:line_manager'])->prefix('manager')->name('manager.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'lineManager'])->name('dashboard');
+// ── Account status page (suspended / inactive users land here) ───────────
+Route::middleware('auth')->group(function () {
+    Route::get('/account/status', function () {
+        return view('account.status');
+    })->name('account.status');
 });
 
-// -----------------------------------------------------------------------
-// Talent Portal Routes
-// -----------------------------------------------------------------------
-Route::middleware(['auth', 'role:talent'])->prefix('talent')->name('talent.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'talent'])->name('dashboard');
+// ── Profile routes (all authenticated users) ─────────────────────────────
+Route::middleware(['auth', 'check.status'])->group(function () {
+    Route::get('/profile',  [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile',  [ProfileController::class, 'update'])->name('profile.update');
 });
 
-// -----------------------------------------------------------------------
-// Client Portal Routes
-// -----------------------------------------------------------------------
-Route::middleware(['auth', 'role:individual_client|business_client_admin|business_client_staff'])
+// ── Manager Console ──────────────────────────────────────────────────────
+Route::middleware(['auth', 'check.status', 'role:line_manager'])
+    ->prefix('manager')
+    ->name('manager.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'lineManager'])->name('dashboard');
+    });
+
+// ── Talent Portal ────────────────────────────────────────────────────────
+Route::middleware(['auth', 'check.status', 'role:talent'])
+    ->prefix('talent')
+    ->name('talent.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'talent'])->name('dashboard');
+    });
+
+// ── Client Portal (individual + business roles) ──────────────────────────
+Route::middleware([
+    'auth',
+    'check.status',
+    'role:individual_client|business_client_admin|business_client_staff',
+])
     ->prefix('client')
     ->name('client.')
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');
     });
 
-// -----------------------------------------------------------------------
-// Active Lead Routes
-// -----------------------------------------------------------------------
-Route::middleware(['auth', 'role:active_lead'])->prefix('lead')->name('lead.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'lead'])->name('dashboard');
-});
+// ── Active Lead Portal ───────────────────────────────────────────────────
+Route::middleware(['auth', 'check.status', 'role:active_lead'])
+    ->prefix('lead')
+    ->name('lead.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'lead'])->name('dashboard');
+    });
 
-// -----------------------------------------------------------------------
-// Auth Routes (provided by Laravel Breeze)
-// -----------------------------------------------------------------------
+// ── Auth routes ──────────────────────────────────────────────────────────
 require __DIR__ . '/auth.php';
