@@ -65,7 +65,7 @@ class LeadRequestController extends Controller
             'phone'                    => ['nullable', 'string', 'max:50'],
             'country'                  => ['nullable', 'string', 'max:100'],
             'city'                     => ['nullable', 'string', 'max:100'],
-            'timezone'                 => ['nullable', 'in:' . implode(',', array_keys(self::TIMEZONES))],
+            'timezone'                 => ['nullable', 'string', 'max:100'],
             'client_type'              => ['required', 'in:individual,business'],
             'company_name'             => ['nullable', 'string', 'max:255'],
             'company_website'          => ['nullable', 'url', 'max:255'],

@@ -120,6 +120,24 @@ The price estimate card on the active lead dashboard shows the latest accepted e
 
 ---
 
+### Phase 3 UX | Low | Multi-step form does not preserve step position on browser back-button
+
+If the user navigates away and then presses the browser's back button, the page reloads and returns to Step 1 (or the last Laravel-restored step). This is expected behaviour for a server-rendered form. A future improvement could use `sessionStorage` to persist the current step across soft navigations.
+
+---
+
+### Phase 3 UX | Low | Timezone "Other" value is stored as free text
+
+When a user selects "Other" and types a custom timezone (e.g. `Asia/Kolkata`), that string is stored verbatim in `lead_requests.timezone`. The GVOS admin will see this in the Filament Lead Requests edit form. There is no validation that the value is a real IANA timezone. This is intentional for flexibility — a low-stakes field at the lead stage.
+
+---
+
+### Phase 3 UX | Info | Side panel illustration is CSS-only
+
+The "Inside GVOS" illustration panel on the `/request-service` page is built entirely with HTML/CSS and Tailwind classes. No external images or SVG files are used. It represents a simplified preview of the GVOS workflow. Replace with real brand imagery when assets are available.
+
+---
+
 ### Phase 3 | Info | Trial workspace features are placeholders
 
 The active lead dashboard shows a "Trial workspace" placeholder panel. Tasks, files, and communication within the trial are Phase 4+ features. The placeholder correctly communicates this to the lead.

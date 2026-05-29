@@ -166,15 +166,84 @@ Run after `git pull && php artisan migrate && php artisan optimize:clear && php 
 
 Run after `git pull && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
 
-### Public Lead Form
-- [ ] `GET /request-service` loads — shows GVOS branding, 4-section form
-- [ ] "Business" radio selection toggles company fields visible
-- [ ] "Other" role selection shows free-text role field
-- [ ] All required fields validated (first_name, last_name, email, client_type)
+### Public Lead Form (UX upgrade — multi-step)
+
+Run after `git pull && php artisan optimize:clear` (no new migrations for UX update).
+
+#### Load and Branding
+- [ ] `GET /request-service` loads — GVOS header, gradient progress bar, step 1 visible
+- [ ] No "GetVirtual" text visible anywhere on the page
+- [ ] Page is scrollable; side panel visible on desktop (≥1024px), stacked on mobile
+- [ ] "No payment required" badge visible in header on desktop
+
+#### Step Navigation
+- [ ] Step 1 shows "Your details" — Back button hidden, Next button visible
+- [ ] Clicking Next with blank required fields: first_name, last_name, or email highlighted in red — does NOT advance
+- [ ] Filling required fields and clicking Next advances to Step 2
+- [ ] Progress bar fills to 50% on Step 2, 75% on Step 3, 100% on Step 4
+- [ ] Step labels update: completed steps dim, current step bold white
+- [ ] Back button appears from Step 2 onward
+- [ ] Back correctly returns to previous step without losing entered data
+- [ ] Submit button appears only on Step 4 — not on Steps 1–3
+
+#### Step 1 — Your Details
+- [ ] First name, last name, email fields present and required
+- [ ] Phone, country, city marked optional — form advances without them
+- [ ] Timezone dropdown has 11 options + "Other (specify below)"
+- [ ] Selecting "Other" reveals the custom timezone free-text field
+- [ ] Selecting a named timezone hides the custom field
+- [ ] Entering a custom timezone and submitting: `lead_requests.timezone` stores the custom value
+
+#### Step 2 — Support Needed
+- [ ] Individual card selected by default (border highlighted)
+- [ ] Clicking Business card highlights it and shows company fields (name, website, email domain)
+- [ ] Clicking Individual hides company fields again
+- [ ] 8 role icon cards visible: Virtual Assistant, Executive Assistant, Social Media Manager, Video Editor, Developer, Designer, Motion Graphics, Other
+- [ ] Clicking a role card highlights it (coloured border)
+- [ ] Clicking "Other (please specify)" shows free-text role field
+- [ ] Clicking a different role hides the other field
+
+#### Step 3 — Work Details
+- [ ] Hours per week, start date, schedule, skills, description all present
+- [ ] All fields optional — form advances without them
+- [ ] textarea for work description is resizable
+- [ ] Start date in the past shows Laravel validation error on submit
+
+#### Step 4 — Final Details
+- [ ] 6 budget range radio cards with sub-labels visible
+- [ ] Clicking a budget card highlights it
+- [ ] Source field present
+- [ ] Privacy note visible ("Your information is only used...")
+- [ ] "No payment required at this stage" text present
+- [ ] Submit button present with arrow icon
+
+#### Form Submission
 - [ ] Valid form submission creates a `lead_requests` row with status = 'new'
-- [ ] Redirects to `/request-service/success` — shows GVOS branded confirmation
-- [ ] `audit_logs` has `lead_request.created` entry with actor_id = null
+- [ ] Redirects to `/request-service/success`
+- [ ] `audit_logs` has `lead_request.created` entry with `actor_id = null`
 - [ ] Non-authenticated users can access the form (no login required)
+- [ ] Client type defaults to 'individual' even if user didn't interact with Step 2
+
+#### Validation Errors (server-side)
+- [ ] Submitting with invalid start date: Laravel returns error, form restores to Step 3 with error displayed
+- [ ] Error message box visible with red border at top of the form
+- [ ] All previously entered values restored via `old()` across all steps
+
+#### Success Page
+- [ ] `/request-service/success` shows emerald accent stripe and double-ring checkmark icon
+- [ ] Heading "We've got your request!" visible
+- [ ] 4-step "What happens next" card visible with correct copy
+- [ ] "Sign In to GVOS" button links to login
+- [ ] "Submit Another Request" links back to `/request-service`
+- [ ] No "GetVirtual" text anywhere
+
+#### Mobile Layout
+- [ ] On mobile (< 1024px): form card appears above side panel
+- [ ] Progress bar and step counter visible on mobile
+- [ ] Step labels ("Your details" etc.) hidden on xs — step inline label visible instead
+- [ ] Buttons are full-width or tap-friendly
+- [ ] No horizontal scroll at 375px viewport width
+- [ ] Role cards and budget cards wrap correctly on small screens
 
 ### Lead Request Filament Resource
 - [ ] `/admin/lead-requests` loads — "Leads & Trials" navigation group visible

@@ -1,7 +1,7 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-05-29
-**Current Phase:** Phase 3 — Leads and Trial Flow ✅ Complete
+**Current Phase:** Phase 3 — Leads and Trial Flow ✅ Complete (UX upgrade applied)
 
 ---
 
@@ -132,12 +132,27 @@ All Phase 0 objectives confirmed working on cPanel staging.
 - [x] starts_at, ends_at, trial_duration_hours (default 24), trial_task_limit (default 3)
 - [x] trial_file_limit_mb (default 100), notes
 
-### PART D — Public Lead Form
+### PART D — Public Lead Form (UX-upgraded 2026-05-29)
 - [x] `LeadRequestController` with TIMEZONES, ROLES, BUDGET_RANGES constants
+- [x] Timezone validation updated: `nullable, string, max:100` (accepts custom / "Other" values)
 - [x] GET/POST `/request-service` routes (no auth required)
 - [x] GET `/request-service/success` route
-- [x] `resources/views/lead/request-service.blade.php` — 20-field form, 4 sections
-- [x] `resources/views/lead/request-service-success.blade.php` — GVOS-branded success page
+- [x] `resources/views/lead/request-service.blade.php` — 4-step guided multi-step form
+  - Step 1: Your Details (name, email, phone, country, city, timezone with Other option)
+  - Step 2: Support Needed (client type cards, business fields, role cards with icons)
+  - Step 3: Work Details (hours, start date, schedule, skills, description)
+  - Step 4: Final Details (budget cards with sub-labels, source, privacy note, submit)
+  - Progress bar and step indicator in gradient header
+  - Trust side panel with hero copy, benefit bullets, "What happens next"
+  - CSS-only illustration panel (client → talent → trial → tracked flow)
+  - Vanilla JS multi-step logic, client-side validation on required fields
+  - "Other" timezone: shows free-text input, JS copies value to hidden field on submit
+  - Mobile responsive: two-column desktop, stacked mobile (side panel below form)
+  - Server-side Laravel errors trigger correct step restoration on reload
+- [x] `resources/views/lead/request-service-success.blade.php` — improved success page
+  - Emerald accent stripe, double-ring success icon
+  - "What happens next" 4-step card
+  - Sign In + Submit Another actions
 - [x] `resources/views/components/layouts/public.blade.php` — scrollable public layout
 
 ### PART E — `LeadRequestResource` (Filament)
@@ -231,7 +246,7 @@ php artisan permission:cache-reset
 - **Node/npm:** Not required for Phase 0/1/2/3
 - **Filament panel:** `/admin` — `canAccessPanel()` restricts to super_admin + operations_admin
 - **Status middleware:** `check.status` blocks suspended/inactive users from dashboards
-- **Timezones:** 11-option dropdown list, default `Africa/Lagos`
+- **Timezones:** 11-option dropdown + "Other" free-text on public form; any string accepted via controller; Filament user form still uses the 11-option list
 - **Role labels:** Friendly labels in UI; slug values stored in DB
 - **Filament nav groups:** "User Management" (Users), "People & Organizations" (Companies, Departments, Profiles), "Leads & Trials" (Lead Requests, Price Estimates, Trials)
 - **Stub profiles:** Creating a user via Filament auto-creates a stub profile row for talent/manager/client roles
@@ -243,13 +258,15 @@ php artisan permission:cache-reset
 
 ## Next Steps
 
-1. cPanel: run `git pull && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`
-2. Test: submit `/request-service` form — confirm lead_request row created
-3. Test: confirm lead appears in Filament Leads & Trials > Lead Requests
-4. Test: create a Price Estimate from Filament — confirm lead status auto-advances to price_estimated
-5. Test: Mark estimate as Accepted — confirm lead status → price_accepted
-6. Test: Approve Trial action — confirm user created/updated, trial created, lead status → trial_approved
-7. Test: Start Trial — confirm lead status → trial_active, countdown visible on active-lead dashboard
-8. Test: Complete Trial → Payment Pending flow
-9. Get Phase 3 approval
-10. Begin Phase 4: Workspace Foundation
+1. cPanel: `git pull origin main && php artisan optimize:clear` (no new migrations in this UX update)
+2. Test `/request-service`: multi-step form loads, progress bar visible, GVOS branding only
+3. Test step navigation: Next/Back, progress bar updates, step label updates
+4. Test step 2 toggles: Business fields visible only for Business; role Other text field appears correctly
+5. Test timezone Other: selecting Other shows custom field, submitted value stored in lead_requests.timezone
+6. Test full form submission: lead_requests row created with all fields
+7. Test `/request-service/success`: styled success page with "What happens next" card
+8. Test with intentionally blank first_name/email: front-end highlights field, does not advance step
+9. Test on mobile viewport: stacked layout, full-width buttons, no horizontal scroll
+10. Test Filament lead pipeline still works after UX update (no functional changes to back-end)
+11. Get Phase 3 (UX upgrade) sign-off
+12. Begin Phase 4: Workspace Foundation

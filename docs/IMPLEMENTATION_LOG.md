@@ -233,3 +233,55 @@ Each entry: Date | Phase | What was done | Who / Tool
 - PERMISSION_MATRIX.md, TESTING_CHECKLIST.md, KNOWN_ISSUES.md
 
 **Tool:** Claude Code | **Status:** Phase 3 complete — push to GitHub, test on cPanel
+
+---
+
+### 2026-05-29 | Phase 3 UX | Public Lead Form UX Upgrade
+
+**Goal:** Transform the single-page lead request form into a premium, guided, conversion-focused multi-step experience.
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `resources/views/lead/request-service.blade.php` | Full rewrite — 4-step multi-step form |
+| `resources/views/lead/request-service-success.blade.php` | Full rewrite — improved success page |
+| `app/Http/Controllers/LeadRequestController.php` | Timezone validation changed from `in:` list to `nullable, string, max:100` |
+
+**No database changes made.**
+
+**What was built:**
+
+- **4-step multi-step form** with gradient progress header, animated progress bar, and step labels
+  - Step 1: Your Details (name, email, phone, country, city, timezone with Other option)
+  - Step 2: Support Needed (client type cards with icons, business detail panel, role icon grid)
+  - Step 3: Work Details (hours, start date, schedule, skills, description)
+  - Step 4: Final Details (budget cards with descriptions, source, privacy note, submit)
+
+- **Vanilla JS multi-step logic** (no Node, no npm, no build step)
+  - Shows one step at a time; progress bar and labels update on each transition
+  - Client-side required-field validation on Step 1 (first name, last name, valid email) before advancing
+  - Server-side Laravel errors restore the form to the correct step automatically (Blade `$restoreStep`)
+  - Back button navigates backward through steps; Submit only visible on Step 4
+
+- **Timezone "Other" mechanism**
+  - Select has 11 standard options + "Other (specify below)"
+  - Selecting Other reveals a free-text input
+  - JS injects the custom value into a hidden `name="timezone"` field before submit and on step transition
+  - Controller validation changed to `nullable, string, max:100` — accepts any value
+  - Old() round-trip handled: Blade detects if old timezone is not in the known list, pre-selects Other and pre-fills the custom input
+
+- **Trust-focused right panel (desktop)**
+  - Hero headline + subheadline
+  - 4 benefit bullet points (emerald checkmarks)
+  - "What happens next" 4-step timeline
+  - CSS illustration panel: client card → talent match → trial task list → tracked chat bubble
+
+- **Client type cards** — Individual and Business with icons; click highlights card
+- **Role icon grid** — 8 role cards with coloured icons (indigo/violet/pink/red/emerald/amber/orange/slate)
+- **Budget radio cards** — 6 options with sub-labels explaining each tier
+- **Mobile responsive**: `flex-col-reverse lg:flex-row` — on mobile, form appears first, side panel below
+
+- **Success page**: emerald gradient top stripe, double-ring checkmark icon, "What happens next" 4-step card, Sign In + Submit Another actions
+
+**Tool:** Claude Code | **Status:** UX upgrade complete — push to GitHub, test on cPanel
