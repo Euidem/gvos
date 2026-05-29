@@ -2,7 +2,7 @@
 <div class="w-full max-w-sm">
     <div class="text-center mb-8">
         <span class="text-3xl font-bold text-white tracking-tight">GVOS</span>
-        <p class="text-slate-400 text-sm mt-1">GetVirtual Operations System</p>
+        <p class="text-slate-400 text-sm mt-1">Operations Management Platform</p>
     </div>
     <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
         <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4

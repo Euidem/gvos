@@ -32,7 +32,7 @@
         {{-- Logo --}}
         <div class="px-6 py-5 border-b border-slate-700/60">
             <span class="text-xl font-bold tracking-tight text-white">GVOS</span>
-            <span class="block text-xs text-slate-400 mt-0.5">GetVirtual Operations</span>
+            <span class="block text-xs text-slate-400 mt-0.5">Managed Operations</span>
         </div>
 
         {{-- Navigation --}}

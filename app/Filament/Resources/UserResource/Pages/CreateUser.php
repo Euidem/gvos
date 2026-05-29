@@ -3,6 +3,9 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
+use App\Models\ClientProfile;
+use App\Models\ManagerProfile;
+use App\Models\TalentProfile;
 use App\Services\AuditLogger;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -57,7 +60,31 @@ class CreateUser extends CreateRecord
             ]
         );
 
-        // 3. Audit log
+        // 3. Create stub profile record for role-specific profiles
+        match ($this->roleToAssign) {
+            'talent' => TalentProfile::firstOrCreate(
+                ['user_id' => $this->record->id],
+                ['status' => 'pending', 'training_status' => 'not_started', 'equipment_status' => 'not_assigned']
+            ),
+            'line_manager' => ManagerProfile::firstOrCreate(
+                ['user_id' => $this->record->id],
+                ['status' => 'pending', 'capacity_limit' => 10, 'current_load' => 0]
+            ),
+            'individual_client', 'business_client_admin', 'business_client_staff' => ClientProfile::firstOrCreate(
+                ['user_id' => $this->record->id],
+                [
+                    'client_type' => match ($this->roleToAssign) {
+                        'business_client_admin'  => 'business_admin',
+                        'business_client_staff'  => 'business_staff',
+                        default                  => 'individual',
+                    },
+                    'status' => 'pending',
+                ]
+            ),
+            default => null,
+        };
+
+        // 4. Audit log
         AuditLogger::userCreated($this->record, [
             'first_name' => $this->firstName,
             'last_name'  => $this->lastName,

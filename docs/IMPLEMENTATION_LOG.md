@@ -117,3 +117,56 @@ Each entry: Date | Phase | What was done | Who / Tool
 - Audit log captures before/after field changes correctly
 
 **Tool:** Claude Code | **Status:** Phase 1 patch complete — push to GitHub, test on cPanel
+
+---
+
+### 2026-05-29 | Phase 2 | People and Organization Foundation
+
+**PART A — GetVirtual removed from visible UI:**
+- `resources/views/auth/login.blade.php` — subtitle + monitoring notice updated
+- `resources/views/auth/forgot-password.blade.php` — subtitle updated
+- `resources/views/auth/register.blade.php` — subtitle + admin copy updated
+- `resources/views/account/status.blade.php` — subtitle updated
+- `resources/views/components/layouts/gvos.blade.php` — sidebar tagline updated
+- `resources/views/layouts/gvos.blade.php` — sidebar tagline updated
+- `resources/views/dashboard/active-lead.blade.php` — GetVirtual email removed
+- `app/Filament/Resources/UserResource.php` — internal comment updated
+
+**PART B–F — New migrations (5) and models (5):**
+- `2024_01_03_000001_create_companies_table.php`
+- `2024_01_03_000002_create_departments_table.php`
+- `2024_01_03_000003_create_client_profiles_table.php`
+- `2024_01_03_000004_create_talent_profiles_table.php`
+- `2024_01_03_000005_create_manager_profiles_table.php`
+- `app/Models/Company.php` (SoftDeletes)
+- `app/Models/Department.php`
+- `app/Models/ClientProfile.php`
+- `app/Models/TalentProfile.php`
+- `app/Models/ManagerProfile.php`
+
+**PART G — User model relationships:**
+- Added `clientProfile()`, `talentProfile()`, `managerProfile()` hasOne relationships
+
+**PART H — Filament resources (5 new):**
+- `CompanyResource` + 3 page classes
+- `DepartmentResource` + 3 page classes
+- `ClientProfileResource` + 3 page classes
+- `TalentProfileResource` + 3 page classes
+- `ManagerProfileResource` + 3 page classes
+- Navigation group: "People & Organizations"; all use before-snapshot audit pattern
+
+**PART I — UserResource CreateUser stub profiles:**
+- Auto-creates TalentProfile / ManagerProfile / ClientProfile stub on user creation
+
+**PART J — Dashboard updates:**
+- super-admin + operations-admin: entity count cards
+- talent, line-manager, client dashboards: role profile status cards
+- All 8 dashboards: Phase 1 notice → Phase 2 notice
+
+**PART K — AuditLogger:**
+- 10 new convenience wrappers for Phase 2 entities
+
+**PART L — Documentation:**
+- 5 docs updated: CURRENT_STATUS, IMPLEMENTATION_LOG, DATABASE_SCHEMA, PERMISSION_MATRIX, TESTING_CHECKLIST
+
+**Tool:** Claude Code | **Status:** Phase 2 complete — push to GitHub, test on cPanel

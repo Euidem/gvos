@@ -4,7 +4,7 @@
     {{-- Logo --}}
     <div class="text-center mb-8">
         <span class="text-3xl font-bold text-white tracking-tight">GVOS</span>
-        <p class="text-slate-400 text-sm mt-1">GetVirtual Operations System</p>
+        <p class="text-slate-400 text-sm mt-1">Operations Management Platform</p>
     </div>
 
     {{-- Card --}}
@@ -80,7 +80,7 @@
     {{-- Monitoring notice --}}
     <p class="text-center text-xs text-slate-500 mt-6 px-4 leading-relaxed">
         By signing in, you acknowledge that your activity on this platform
-        is tracked and monitored by GetVirtual.
+        is tracked and monitored for quality and compliance purposes.
     </p>
 </div>
 </x-layouts.auth>

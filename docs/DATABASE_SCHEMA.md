@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 1 migrations created and active
+## Status: Phase 2 migrations created and active
 
 ---
 
@@ -61,7 +61,9 @@ Immutable system audit trail. No `updated_at` column. App-level boot() blocks up
 | user_agent | text nullable | |
 | created_at | timestamp | useCurrent default |
 
-Phase 1 actions logged: `user.login`, `user.created`, `user.updated`, `user.role_changed`, `user.status_changed`, `user.password_changed`, `user.profile_updated`
+Phase 1 actions: `user.login`, `user.created`, `user.updated`, `user.role_changed`, `user.status_changed`, `user.password_changed`, `user.profile_updated`
+
+Phase 2 actions: `company.created`, `company.updated`, `department.created`, `department.updated`, `client_profile.created`, `client_profile.updated`, `talent_profile.created`, `talent_profile.updated`, `manager_profile.created`, `manager_profile.updated`
 
 ---
 
@@ -77,7 +79,108 @@ Phase 1 actions logged: `user.login`, `user.created`, `user.updated`, `user.role
 
 ---
 
-## Phase 2+ Tables (planned — not yet created)
+## Phase 2 Tables (live)
+
+### companies
+Client-company accounts (individual or business).
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| name | string | Company display name |
+| legal_name | string nullable | |
+| type | enum | individual, business |
+| industry | string nullable | |
+| website | string nullable | |
+| country | string nullable | |
+| city | string nullable | |
+| timezone | string | default: Africa/Lagos |
+| company_email_domain | string nullable | used for staff invite matching |
+| primary_contact_name | string nullable | |
+| primary_contact_email | string nullable | |
+| primary_contact_phone | string nullable | |
+| status | enum | active, pending, inactive, suspended |
+| notes | text nullable | internal only |
+| created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | soft deletes |
+
+---
+
+### departments
+Sub-units within a company.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| company_id | FK companies | cascadeOnDelete |
+| name | string | |
+| description | text nullable | |
+| manager_name | string nullable | |
+| manager_email | string nullable | |
+| status | enum | active, inactive |
+| created_at / updated_at | timestamps | |
+
+---
+
+### client_profiles
+Profile record for all client-role users (individual, business_admin, business_staff).
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| user_id | FK users | cascadeOnDelete |
+| company_id | FK companies nullable | nullOnDelete |
+| client_type | enum | individual, business_admin, business_staff |
+| job_title | string nullable | |
+| department_id | FK departments nullable | nullOnDelete |
+| preferred_contact_window | string nullable | e.g. "Mon–Fri 9am–5pm WAT" |
+| service_interest | string nullable | |
+| status | enum | active, pending, inactive, suspended |
+| notes | text nullable | internal only |
+| created_at / updated_at | timestamps | |
+
+---
+
+### talent_profiles
+Profile record for Talent role users.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| user_id | FK users | cascadeOnDelete |
+| talent_code | string unique nullable | e.g. GVT-001 |
+| role_type | string nullable | job title / category |
+| skill_summary | text nullable | |
+| availability_type | enum | fixed, flexible, hybrid |
+| weekly_capacity_hours | smallint unsigned | default: 40 |
+| work_timezone | string | default: Africa/Lagos |
+| training_status | enum | not_started, in_training, prequalified, active, paused, suspended |
+| equipment_status | enum | not_assigned, assigned, returned, damaged, maintenance |
+| internal_notes | text nullable | |
+| status | enum | active, pending, inactive, suspended |
+| created_at / updated_at | timestamps | |
+
+---
+
+### manager_profiles
+Profile record for Line Manager role users.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| user_id | FK users | cascadeOnDelete |
+| manager_code | string unique nullable | e.g. GVM-001 |
+| department | string nullable | department or speciality area |
+| capacity_limit | smallint unsigned | default: 10 |
+| current_load | smallint unsigned | default: 0 |
+| specialization | string nullable | |
+| status | enum | active, pending, inactive, suspended |
+| internal_notes | text nullable | |
+| created_at / updated_at | timestamps | |
+
+---
+
+## Phase 3+ Tables (planned)
 
 ### leads
 | Column | Type | Notes |
@@ -94,54 +197,6 @@ Phase 1 actions logged: `user.login`, `user.created`, `user.updated`, `user.role
 | trial_starts_at | timestamp nullable | |
 | trial_ends_at | timestamp nullable | |
 | converted_at | timestamp nullable | |
-| created_at / updated_at | timestamps | |
-
----
-
-### companies
-| Column | Type | Notes |
-|--------|------|-------|
-| id | bigint PK | |
-| name | string | |
-| email_domain | string | for staff invitation validation |
-| address | text nullable | |
-| industry | string nullable | |
-| admin_user_id | FK users | Business Client Admin |
-| status | enum | active, suspended, inactive |
-| created_at / updated_at | timestamps | |
-
----
-
-### departments
-| Column | Type | Notes |
-|--------|------|-------|
-| id | bigint PK | |
-| company_id | FK companies | |
-| name | string | |
-| created_at | timestamp | |
-
----
-
-### talent_profiles
-| Column | Type | Notes |
-|--------|------|-------|
-| id | bigint PK | |
-| user_id | FK users | |
-| skills | json | |
-| shift_type | enum | fixed, flexible, hybrid |
-| default_timezone | string | |
-| phone | string nullable | |
-| status | enum | active, inactive, on_leave |
-| created_at / updated_at | timestamps | |
-
----
-
-### manager_profiles
-| Column | Type | Notes |
-|--------|------|-------|
-| id | bigint PK | |
-| user_id | FK users | |
-| phone | string nullable | |
 | created_at / updated_at | timestamps | |
 
 ---
@@ -200,8 +255,12 @@ See billing schema in `BILLING_RULES.md`
 
 - `users` → many roles (via Spatie model_has_roles)
 - `users` → one `user_profile` (Phase 1)
+- `users` → one `talent_profile` (Phase 2, talent role)
+- `users` → one `manager_profile` (Phase 2, line_manager role)
+- `users` → one `client_profile` (Phase 2, client roles)
 - `users` → many `audit_logs` as actor
-- `users` → one `talent_profile` or `manager_profile` (Phase 2)
+- `companies` → many `departments` (Phase 2)
+- `companies` → many `client_profiles` (Phase 2)
 - `workspaces` → many `workspace_members` → many `users` (Phase 4)
 - `workspaces` → many `tasks`, `messages`, `files`, `time_logs` (Phase 5+)
 - `workspaces` → one active `subscription` → many `invoices` (Phase 8)
@@ -213,4 +272,5 @@ See billing schema in `BILLING_RULES.md`
 - All monetary values use `decimal(10,2)`.
 - All timestamps store UTC; display in user's `timezone` field.
 - `audit_logs` has no `updated_at` and model boot() blocks updates/deletes.
+- `companies` uses soft deletes (`deleted_at`).
 - Encrypted columns (vault) use Laravel's `encrypt()`/`decrypt()` helpers (Phase 10).

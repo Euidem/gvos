@@ -1,5 +1,12 @@
 <x-layouts.gvos title="Ops Console">
-@php $user = auth()->user(); $profile = $user->profile; @endphp
+@php
+    $user = auth()->user();
+    $profile = $user->profile;
+    $companyCount      = \App\Models\Company::count();
+    $talentCount       = \App\Models\TalentProfile::count();
+    $managerCount      = \App\Models\ManagerProfile::count();
+    $clientCount       = \App\Models\ClientProfile::count();
+@endphp
 
     {{-- ── Welcome header ──────────────────────────────────────────────── --}}
     <div class="flex items-start justify-between mb-8">
@@ -19,6 +26,30 @@
         </div>
     </div>
 
+    {{-- ── Entity counts ────────────────────────────────────────────────── --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <a href="/admin/companies"
+           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
+            <p class="text-2xl font-bold text-slate-800">{{ $companyCount }}</p>
+            <p class="text-xs text-slate-500 mt-1 font-medium">Companies</p>
+        </a>
+        <a href="/admin/talent-profiles"
+           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
+            <p class="text-2xl font-bold text-slate-800">{{ $talentCount }}</p>
+            <p class="text-xs text-slate-500 mt-1 font-medium">Talent Profiles</p>
+        </a>
+        <a href="/admin/manager-profiles"
+           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
+            <p class="text-2xl font-bold text-slate-800">{{ $managerCount }}</p>
+            <p class="text-xs text-slate-500 mt-1 font-medium">Manager Profiles</p>
+        </a>
+        <a href="/admin/client-profiles"
+           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all">
+            <p class="text-2xl font-bold text-slate-800">{{ $clientCount }}</p>
+            <p class="text-xs text-slate-500 mt-1 font-medium">Client Profiles</p>
+        </a>
+    </div>
+
     {{-- ── Quick-action links ───────────────────────────────────────────── --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <a href="/admin/users"
@@ -32,6 +63,21 @@
                 <div>
                     <p class="text-sm font-semibold text-slate-800">Manage Users</p>
                     <p class="text-xs text-slate-400">View, create and manage all users</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="/admin/companies"
+           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all group">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-slate-800">Companies</p>
+                    <p class="text-xs text-slate-400">Manage client companies</p>
                 </div>
             </div>
         </a>
@@ -50,24 +96,9 @@
                 </div>
             </div>
         </a>
-
-        <a href="/admin"
-           class="bg-white rounded-xl border border-slate-200 px-5 py-4 hover:border-indigo-300 hover:shadow-sm transition-all group">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-slate-50 rounded-lg flex items-center justify-center group-hover:bg-slate-100 transition-colors">
-                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-slate-800">Filament Console</p>
-                    <p class="text-xs text-slate-400">Full admin panel</p>
-                </div>
-            </div>
-        </a>
     </div>
 
-    {{-- ── Phase 1 status notice ────────────────────────────────────────── --}}
+    {{-- ── Phase 2 status notice ────────────────────────────────────────── --}}
     <div class="bg-indigo-50 border border-indigo-200 rounded-xl px-6 py-5">
         <div class="flex items-start gap-3">
             <div class="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0">
@@ -76,9 +107,9 @@
                 </svg>
             </div>
             <div>
-                <p class="text-sm font-semibold text-indigo-800">Phase 1 — Identity and Access Foundation</p>
+                <p class="text-sm font-semibold text-indigo-800">Phase 2 — People and Organization Foundation</p>
                 <p class="text-sm text-indigo-700 mt-0.5">
-                    User management, profiles, role-based access and audit logging are live.
+                    Companies, departments, talent profiles, manager profiles and client profiles are live.
                     Workspaces, tasks, billing and other modules are coming in later phases.
                 </p>
             </div>

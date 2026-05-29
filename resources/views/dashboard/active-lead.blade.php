@@ -30,8 +30,7 @@
     </div>
 
     <p class="text-xs text-slate-400 text-center">
-        Questions? Contact us at
-        <a href="mailto:hello@getvirtual.co" class="text-indigo-600 hover:underline">hello@getvirtual.co</a>
+        Questions? Contact the GVOS support team via your onboarding email.
     </p>
 
 </x-layouts.gvos>

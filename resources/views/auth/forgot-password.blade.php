@@ -3,7 +3,7 @@
 
     <div class="text-center mb-8">
         <span class="text-3xl font-bold text-white tracking-tight">GVOS</span>
-        <p class="text-slate-400 text-sm mt-1">GetVirtual Operations System</p>
+        <p class="text-slate-400 text-sm mt-1">Operations Management Platform</p>
     </div>
 
     <div class="bg-white rounded-2xl shadow-xl p-8">

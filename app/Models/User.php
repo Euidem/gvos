@@ -43,6 +43,21 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(UserProfile::class);
     }
 
+    public function clientProfile(): HasOne
+    {
+        return $this->hasOne(ClientProfile::class);
+    }
+
+    public function talentProfile(): HasOne
+    {
+        return $this->hasOne(TalentProfile::class);
+    }
+
+    public function managerProfile(): HasOne
+    {
+        return $this->hasOne(ManagerProfile::class);
+    }
+
     // ── Status helpers ───────────────────────────────────────────────────
 
     public function isActive(): bool

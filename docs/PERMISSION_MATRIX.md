@@ -105,9 +105,25 @@ Legend: ✅ Full | 👁 View only | ✏️ Own records | ❌ No access | 🔒 En
 
 ---
 
+## Phase 2 — People & Organizations Access Control
+
+| Resource | super_admin | operations_admin | All others |
+|----------|------------|-----------------|------------|
+| Companies | ✅ CRUD | ✅ CRUD | ❌ |
+| Departments | ✅ CRUD | ✅ CRUD | ❌ |
+| Client Profiles | ✅ CRUD | ✅ CRUD | ❌ |
+| Talent Profiles | ✅ CRUD | ✅ CRUD | ❌ |
+| Manager Profiles | ✅ CRUD | ✅ CRUD | ❌ |
+
+> No hard delete on any Phase 2 resource. Use status changes (inactive/suspended) instead.
+
+---
+
 ## Implementation Notes
 
-- Filament resources are protected at panel level (`canAccessPanel`) AND resource level.
-- When React/Inertia pages are active (Phase 2+), role will also be in shared props.
+- Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
+- Phase 2 Filament navigation group: "People & Organizations" (sort positions 1–5).
+- When React/Inertia pages are active (Phase 3+), role will also be in shared props.
 - Always enforce on server — never rely on front-end hiding alone.
-- Business client staff permissions are per-user, managed by Business Client Admin (Phase 2+).
+- Business client staff permissions are per-user, managed by Business Client Admin (Phase 3+).
+- GetVirtual brand name must not appear in any visible app UI (screens, panels, dashboards, notices). Internal documentation only.

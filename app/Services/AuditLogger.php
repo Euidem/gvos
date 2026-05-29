@@ -86,4 +86,56 @@ class AuditLogger
     {
         self::log('user.login', $user, ['email' => $user->email ?? null]);
     }
+
+    // ── Phase 2 — People & Organizations ─────────────────────────────────
+
+    public static function companyCreated(Model $company, array $extra = []): void
+    {
+        self::log('company.created', $company, array_merge(['name' => $company->name ?? null], $extra));
+    }
+
+    public static function companyUpdated(Model $company, array $changes = []): void
+    {
+        self::log('company.updated', $company, $changes);
+    }
+
+    public static function departmentCreated(Model $department, array $extra = []): void
+    {
+        self::log('department.created', $department, array_merge(['name' => $department->name ?? null], $extra));
+    }
+
+    public static function departmentUpdated(Model $department, array $changes = []): void
+    {
+        self::log('department.updated', $department, $changes);
+    }
+
+    public static function clientProfileCreated(Model $clientProfile, array $extra = []): void
+    {
+        self::log('client_profile.created', $clientProfile, array_merge(['user_id' => $clientProfile->user_id ?? null], $extra));
+    }
+
+    public static function clientProfileUpdated(Model $clientProfile, array $changes = []): void
+    {
+        self::log('client_profile.updated', $clientProfile, $changes);
+    }
+
+    public static function talentProfileCreated(Model $talentProfile, array $extra = []): void
+    {
+        self::log('talent_profile.created', $talentProfile, array_merge(['user_id' => $talentProfile->user_id ?? null], $extra));
+    }
+
+    public static function talentProfileUpdated(Model $talentProfile, array $changes = []): void
+    {
+        self::log('talent_profile.updated', $talentProfile, $changes);
+    }
+
+    public static function managerProfileCreated(Model $managerProfile, array $extra = []): void
+    {
+        self::log('manager_profile.created', $managerProfile, array_merge(['user_id' => $managerProfile->user_id ?? null], $extra));
+    }
+
+    public static function managerProfileUpdated(Model $managerProfile, array $changes = []): void
+    {
+        self::log('manager_profile.updated', $managerProfile, $changes);
+    }
 }

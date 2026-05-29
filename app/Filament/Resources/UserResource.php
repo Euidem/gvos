@@ -60,7 +60,7 @@ class UserResource extends Resource
 
     /**
      * Practical timezone list for GVOS users.
-     * Default is Africa/Lagos (GetVirtual primary market).
+     * Default is Africa/Lagos (GVOS primary market).
      */
     public static function timezoneOptions(): array
     {

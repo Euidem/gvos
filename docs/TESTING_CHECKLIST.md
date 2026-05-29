@@ -96,13 +96,69 @@ Run after `git pull && php artisan migrate && php artisan optimize:clear && php 
 
 ---
 
-## Phase 2 — People and Organizations (planned)
+## Phase 2 — People and Organizations
 
-- [ ] Admin can create a company with email domain
-- [ ] Admin can create departments
-- [ ] Business admin can invite staff with matching email domain
-- [ ] Talent profile linked to user
-- [ ] Manager profile linked to user
+Run after `git pull && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### GetVirtual UI Removal
+- [ ] Login page subtitle shows "Operations Management Platform" (not "GetVirtual Operations System")
+- [ ] Forgot password page subtitle updated
+- [ ] Register page: no "GetVirtual" text visible
+- [ ] Account status page: subtitle updated
+- [ ] Sidebar "Managed Operations" (not "GetVirtual Operations")
+- [ ] Active lead dashboard: no GetVirtual email link
+
+### Companies
+- [ ] `/admin/companies` loads — shows name, type, country, primary contact, status
+- [ ] Super Admin can create a company — all fields save correctly
+- [ ] Status badge colors: active=green, pending=amber, inactive=gray, suspended=red
+- [ ] Type filter works (individual / business)
+- [ ] No delete button present
+- [ ] Company creation fires `company.created` audit log entry
+
+### Departments
+- [ ] `/admin/departments` loads — shows name, company, manager, status
+- [ ] Can create a department linked to a company
+- [ ] Company relationship shown in list
+- [ ] Company filter works
+- [ ] Department creation fires `department.created` audit log entry
+
+### Client Profiles
+- [ ] `/admin/client-profiles` loads — shows user email, company, client type, status
+- [ ] Can create a client profile linked to a user
+- [ ] Client type options: Individual, Business Admin, Business Staff
+- [ ] Status filter works
+- [ ] Client profile creation fires `client_profile.created` audit log entry
+
+### Talent Profiles
+- [ ] `/admin/talent-profiles` loads — shows user email, talent code, training status, equipment status, status
+- [ ] Can create a talent profile linked to a user
+- [ ] Training status badge colors correct
+- [ ] Equipment status badge colors correct
+- [ ] Talent profile creation fires `talent_profile.created` audit log entry
+
+### Manager Profiles
+- [ ] `/admin/manager-profiles` loads — shows user email, manager code, load / capacity, status
+- [ ] Can create a manager profile linked to a user
+- [ ] current_load / capacity_limit shown as description under load count
+- [ ] Manager profile creation fires `manager_profile.created` audit log entry
+
+### UserResource — Stub Profile Auto-Creation
+- [ ] Create a Talent user in Filament → `talent_profiles` row created (status: pending, training_status: not_started)
+- [ ] Create a Line Manager user → `manager_profiles` row created (status: pending)
+- [ ] Create an Individual Client user → `client_profiles` row created (status: pending, client_type: individual)
+- [ ] Create a Business Client Admin → `client_profiles` row created (client_type: business_admin)
+- [ ] Create a Business Client Staff → `client_profiles` row created (client_type: business_staff)
+
+### Dashboard Updates
+- [ ] Super Admin dashboard: shows count cards for Companies, Talent Profiles, Manager Profiles, Client Profiles
+- [ ] Operations Admin dashboard: shows same count cards
+- [ ] Talent dashboard: shows talent profile status card with training + equipment status
+- [ ] Line Manager dashboard: shows manager profile card with capacity
+- [ ] Individual Client dashboard: shows client profile status card
+- [ ] Business Client Admin dashboard: shows company card (name, status, country)
+- [ ] Business Client Staff dashboard: shows staff profile card
+- [ ] All 8 dashboards: notice updated from "Phase 1" to "Phase 2"
 
 ---
 
