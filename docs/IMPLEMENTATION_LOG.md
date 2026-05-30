@@ -7,6 +7,28 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-30 | Phase 5 Fix 4 | Workspace Role Expansion
+
+**What was done:** Expanded workspace role model from 4 values to 7, fixing `workspace_admin`, `client_admin`, and `client_staff` not being recognised anywhere in the permission stack. Added DB migration, updated models, controller, Filament relation manager, and Kanban view.
+
+**Files changed:**
+
+| File | Change |
+|------|--------|
+| `database/migrations/2026_05_30_000001_expand_workspace_members_role_enum.php` | New migration — ALTER TABLE expands `workspace_members.role` ENUM from 4 to 7 values |
+| `app/Models/WorkspaceMember.php` | `roleLabels()` includes all 7 roles; `roleLabel()` improved fallback |
+| `app/Models/Workspace.php` | `resolveUserWorkspaceRole()` rewritten with 7-tier resolution; helper methods updated for `workspace_admin`; legacy `client` maps to `client_admin` |
+| `app/Models/WorkspaceTask.php` | `allowedTransitions()` handles `workspace_admin`, `client_admin`; `client_staff`/`observer` → no transitions |
+| `app/Http/Controllers/WorkspaceTaskController.php` | `isAdminOrManager()`, `transitionRole()`, `updateStatus()` Step 3, `index()`, `show()` all updated for new roles |
+| `resources/views/workspace/tasks/index.blade.php` | `$draggableRoles` expanded; `showDragHandle` match updated; `CAN_DRAG` uses `$draggableRoles`; debug role line added |
+| `app/Filament/Resources/WorkspaceResource/RelationManagers/WorkspaceMembersRelationManager.php` | Default role `client` → `talent`; badge colours for new roles added |
+
+**Commit:** "Fix workspace member roles and task movement permissions"
+
+**Tool:** Claude Code | **Status:** Fix complete
+
+---
+
 ### 2026-05-30 | Phase 5 Fix 3 | Talent Kanban Drag-Drop Permission Fix
 
 **Root cause:** `updateStatus()` relied solely on `resolveUserWorkspaceRole()` for role determination. In edge cases (primary talent with no synced member row, or `resolveUserWorkspaceRole()` returning `'assigned_user'`), the single-signal check could deny access or produce a wrong effective role. Additionally, the Kanban view's `CAN_DRAG` check used `in_array($role, ['admin','manager','talent','client'])` which excluded `'assigned_user'` — so users in the assigned_user tier saw no drag handles and had SortableJS disabled despite having talent-level drag rights. No server-side logging existed at drag-attempt time, making diagnosis difficult.

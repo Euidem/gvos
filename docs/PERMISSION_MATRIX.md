@@ -195,34 +195,50 @@ All task routes require `auth` + `check.status` middleware. No additional `role:
 
 Centralised method on the `Workspace` model. Called by both `WorkspaceController` and `WorkspaceTaskController`. Uses `(int)` casts on both sides to avoid the Eloquent string/integer strict-comparison mismatch.
 
+**Updated (Fix 4 — 2026-05-30): 7-tier resolution**
+
 | Priority | Condition | Role returned |
 |----------|-----------|---------------|
 | 1 | `super_admin` or `operations_admin` system role | `admin` |
-| 2 | `primary_manager_id` matches user (int-cast) | `manager` |
-| 3 | `primary_talent_id` matches user (int-cast) | `talent` |
-| 4a | Active member row with `role=manager` | `manager` |
-| 4b | Active member row with `role=talent` | `talent` |
-| 4c | Active member row with `role=client` | `client` |
-| 4d | Active member row with `role=observer` | `observer` |
-| 5 | Assigned to any task in this workspace | `assigned_user` |
+| 2 | Active member row with `role=workspace_admin` | `workspace_admin` |
+| 3 | `primary_manager_id` matches user (int-cast) | `manager` |
+| 4 | Active member row with `role=manager` | `manager` |
+| 5 | `primary_talent_id` matches user (int-cast) | `talent` |
+| 6a | Active member row with `role=talent` | `talent` |
+| 6b | Active member row with `role=client_admin` | `client_admin` |
+| 6c | Active member row with `role=client_staff` | `client_staff` |
+| 6d | Active member row with `role=client` (legacy) | `client_admin` |
+| 6e | Active member row with `role=observer` | `observer` |
+| 7 | Assigned to any task in this workspace | `assigned_user` |
 | — | None of the above | `none` → 403 |
 
 `assigned_user` is mapped to `talent` via `transitionRole()` before passing to `allowedTransitions()`.
+Legacy `client` member row is mapped to `client_admin` via `transitionRole()`.
 
 For task `show()`, a user with role `none` may still view a specific task if they are the `assigned_to_user_id` for that task — they receive effective role `talent` for display purposes only.
 
 ### Task Status Allowed Transitions
 
-| From Status | admin/manager | talent | client |
-|------------|-------------|--------|--------|
-| pending | any | in_progress | — |
-| in_progress | any | blocked, submitted | — |
-| blocked | any | in_progress | — |
-| submitted | any | — | revision_requested, approved |
-| revision_requested | any | in_progress | — |
-| approved | any | — | closed |
-| closed | any | — | — |
-| cancelled | any | — | — |
+| From Status | admin/workspace_admin/manager | talent/assigned_user | client_admin | client_staff/observer |
+|------------|-------------------------------|----------------------|--------------|-----------------------|
+| pending | in_progress, cancelled | in_progress | — | — |
+| in_progress | blocked, submitted, pending, cancelled | blocked, submitted | — | — |
+| blocked | in_progress, cancelled | in_progress | — | — |
+| submitted | approved, revision_requested, in_progress | — | approved, revision_requested | — |
+| revision_requested | in_progress, cancelled | in_progress | — | — |
+| approved | closed | — | closed | — |
+| closed | — | — | — | — |
+| cancelled | — | — | — | — |
+
+### Drag Handle Visibility (Kanban Board)
+
+| Workspace Role | Drag Handle Shown On |
+|----------------|----------------------|
+| admin / workspace_admin / manager | All tasks |
+| talent | Tasks assigned to self OR unassigned tasks |
+| assigned_user | Only their explicitly assigned task |
+| client_admin / client | Only on submitted or approved tasks |
+| client_staff / observer | Never |
 
 ### Task Board Filament (WorkspaceTaskResource)
 

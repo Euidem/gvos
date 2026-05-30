@@ -19,8 +19,9 @@
     // Roles that can drag at all (enforces SortableJS init).
     // 'assigned_user' = user assigned to a task but with no explicit member row;
     // they get talent-level drag rights (server enforces the per-task restriction).
-    // Per-card drag handle visibility adds a second layer for talent / assigned_user.
-    $draggableRoles = ['admin', 'manager', 'talent', 'assigned_user', 'client'];
+    // Per-card drag handle visibility adds a second layer per role.
+    // 'client_admin' / 'client' can drag only on submitted/approved columns (handled below).
+    $draggableRoles = ['admin', 'workspace_admin', 'manager', 'talent', 'assigned_user', 'client_admin', 'client'];
 @endphp
 
     {{-- ── Kanban-specific styles ─────────────────────────────────────────── --}}
@@ -118,6 +119,12 @@
                     &middot; <span style="color:#0058be;">Drag cards between columns to change status</span>
                 @endif
             </p>
+            {{-- PART I: debug role line — visible only for admin / workspace_admin / manager --}}
+            @if (!empty($showDebugRole))
+                <p class="text-xs mt-1" style="color:#9CA3AF;">
+                    Task role: <span style="font-weight:600; color:#6B7280;">{{ $effectiveRole ?? $role }}</span>
+                </p>
+            @endif
         </div>
         <div class="flex items-center gap-3">
             @if ($canCreate)
@@ -185,18 +192,20 @@
                         $dateColor = $task->isOverdue() ? '#DC2626' : ($task->isDueSoon() ? '#D97706' : '#9CA3AF');
 
                         // Drag handle visibility rules:
-                        //   admin/manager:  always show
-                        //   talent:         show on tasks assigned to this user OR unassigned tasks
-                        //   assigned_user:  show only on tasks explicitly assigned to this user
-                        //   client:         always show (backend enforces valid transitions)
-                        //   others:         never show
+                        //   admin/workspace_admin/manager: always show (full board control)
+                        //   talent:         show on tasks assigned to this user OR unassigned
+                        //   assigned_user:  show only on their explicitly assigned task
+                        //   client_admin/client: show only where they can act (submitted/approved)
+                        //   client_staff/observer/others: never show
                         $taskAssigneeId = (int) ($task->assigned_to_user_id ?? 0);
                         $showDragHandle = match ($role) {
-                            'admin', 'manager' => true,
-                            'talent'           => $taskAssigneeId === 0 || $taskAssigneeId === $currentUserId,
-                            'assigned_user'    => $taskAssigneeId === $currentUserId,
-                            'client'           => true,
-                            default            => false,
+                            'admin', 'workspace_admin', 'manager'
+                                            => true,
+                            'talent'        => $taskAssigneeId === 0 || $taskAssigneeId === $currentUserId,
+                            'assigned_user' => $taskAssigneeId === $currentUserId,
+                            'client_admin', 'client'
+                                            => in_array($task->status, ['submitted', 'approved']),
+                            default         => false,
                         };
                     @endphp
                     <div class="kanban-card bg-white rounded-xl p-4"
@@ -303,7 +312,7 @@
 
         // ── Config ──────────────────────────────────────────────────────────
         var WORKSPACE_ID = {{ (int) $workspace->id }};
-        var CAN_DRAG     = {{ in_array($role, ['admin', 'manager', 'talent', 'assigned_user', 'client']) ? 'true' : 'false' }};
+        var CAN_DRAG     = {{ in_array($role, $draggableRoles) ? 'true' : 'false' }};
         var CSRF         = '{{ csrf_token() }}';
 
         if (!CAN_DRAG || typeof Sortable === 'undefined') return;

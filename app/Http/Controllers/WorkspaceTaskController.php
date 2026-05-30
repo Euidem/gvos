@@ -33,16 +33,19 @@ class WorkspaceTaskController extends Controller
     }
 
     /**
-     * Map the 'assigned_user' tier to 'talent' for status-transition checks.
-     * All other roles pass through unchanged.
+     * Normalise resolved workspace roles for status-transition checks.
      *
-     * 'assigned_user' is returned by resolveUserWorkspaceRole() when the user is
-     * assigned to a task but has no workspace member row. For transition purposes
-     * they have the same permissions as a talent.
+     * 'assigned_user' → 'talent'  (assigned to a task, no member row; same transition rights)
+     * 'client'        → 'client_admin'  (legacy DB value; same review rights as client_admin)
+     * All other roles pass through unchanged.
      */
     private function transitionRole(string $role): string
     {
-        return $role === 'assigned_user' ? 'talent' : $role;
+        return match ($role) {
+            'assigned_user' => 'talent',
+            'client'        => 'client_admin',
+            default         => $role,
+        };
     }
 
     /**
@@ -73,7 +76,7 @@ class WorkspaceTaskController extends Controller
 
     private function isAdminOrManager(string $role): bool
     {
-        return in_array($role, ['admin', 'manager'], true);
+        return in_array($role, ['admin', 'workspace_admin', 'manager'], true);
     }
 
     // ── Controller actions ────────────────────────────────────────────────
@@ -85,6 +88,9 @@ class WorkspaceTaskController extends Controller
      * Drag permissions and drag-handle visibility are controlled by $role
      * passed to the view. The view also receives $currentUserId so that
      * talent users only see drag handles on their own assigned tasks.
+     *
+     * $debugRole is passed to show a non-intrusive role indicator in the
+     * board header for admin/manager/workspace_admin users (PART I).
      */
     public function index(Request $request, Workspace $workspace)
     {
@@ -100,8 +106,15 @@ class WorkspaceTaskController extends Controller
         $canCreate     = $workspace->userCanCreateTasks($user);
         $currentUserId = (int) $user->id;
 
+        // Normalised role passed to view (e.g. 'assigned_user'/'client' unified)
+        $effectiveRole = $this->transitionRole($role);
+
+        // Debug role shown only to admin/workspace_admin/manager in board header
+        $showDebugRole = in_array($role, ['admin', 'workspace_admin', 'manager'], true);
+
         return view('workspace.tasks.index', compact(
-            'workspace', 'tasks', 'tasksByStatus', 'role', 'canCreate', 'currentUserId'
+            'workspace', 'tasks', 'tasksByStatus', 'role', 'effectiveRole',
+            'canCreate', 'currentUserId', 'showDebugRole'
         ));
     }
 
@@ -175,7 +188,7 @@ class WorkspaceTaskController extends Controller
      *
      * Special case: a user with role 'none' at the workspace level may still
      * view a specific task if they are the assigned user for that task.
-     * In that case they receive 'talent' access for display purposes.
+     * In that case they receive 'talent' effective access for that specific page.
      */
     public function show(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
@@ -187,31 +200,34 @@ class WorkspaceTaskController extends Controller
         // Task-assigned fallback: no workspace access but assigned to this task
         if ($role === 'none') {
             if ($task->assigned_to_user_id !== null && (int) $task->assigned_to_user_id === (int) $user->id) {
-                $role = 'talent'; // Effective role for this specific task page
+                $role = 'talent';
             } else {
                 abort(403, 'You do not have access to this task.');
             }
         }
 
+        // transitionRole normalises: assigned_user→talent, client→client_admin
         $effectiveRole    = $this->transitionRole($role);
-        $isAdminOrManager = $this->isAdminOrManager($effectiveRole);
+        $isAdminOrManager = $this->isAdminOrManager($effectiveRole); // includes workspace_admin
 
         $task->load(['createdBy', 'assignedTo', 'workspace']);
 
-        // Clients and talent only see public comments; admins and managers see all.
+        // admin/workspace_admin/manager see all comments; others see public only
         $comments = $isAdminOrManager
             ? $task->comments()->with('user')->get()
             : $task->comments()->where('visibility', 'public')->with('user')->get();
 
         $allowedTransitions = WorkspaceTask::allowedTransitions($task->status, $effectiveRole);
 
-        // For talent: further restrict allowed transitions to only their own assigned tasks.
-        // If this task is assigned to someone else, talent cannot change its status.
+        // Talent: can only change status on their own assigned task.
+        // If task is assigned to someone else, clear the allowed transitions.
         if ($effectiveRole === 'talent' && $task->assigned_to_user_id !== null
             && (int) $task->assigned_to_user_id !== (int) $user->id) {
             $allowedTransitions = [];
         }
 
+        // canEdit: admin/workspace_admin/manager can always edit;
+        // task creator can edit while task is still pending.
         $canEdit = $isAdminOrManager
             || ($task->created_by_user_id !== null
                 && (int) $task->created_by_user_id === (int) $user->id
@@ -220,7 +236,7 @@ class WorkspaceTaskController extends Controller
         $members = $workspace->activeMembers()->with('user')->get();
 
         return view('workspace.tasks.show', compact(
-            'workspace', 'task', 'comments', 'role', 'isAdminOrManager',
+            'workspace', 'task', 'comments', 'role', 'effectiveRole', 'isAdminOrManager',
             'allowedTransitions', 'canEdit', 'members'
         ));
     }
@@ -387,19 +403,28 @@ class WorkspaceTaskController extends Controller
         $isPrimaryManager = $workspace->primary_manager_id !== null
                             && (int) $workspace->primary_manager_id === (int) $user->id;
 
-        // ── Step 3: Determine effective role (priority: admin > manager > talent > client) ──
+        // ── Step 3: Determine effective role for transition checks ────────────
+        // Priority: admin > workspace_admin > manager > talent > client_admin
+        // client_staff / observer / none → 403 (no transition rights)
         if ($workspaceRole === 'admin') {
             $effectiveRole = 'admin';
+        } elseif ($workspaceRole === 'workspace_admin') {
+            $effectiveRole = 'workspace_admin';
         } elseif ($isPrimaryManager || $workspaceRole === 'manager') {
             $effectiveRole = 'manager';
         } elseif ($isTaskAssignee || $isPrimaryTalent || in_array($workspaceRole, ['talent', 'assigned_user'], true)) {
             $effectiveRole = 'talent';
-        } elseif ($workspaceRole === 'client') {
-            $effectiveRole = 'client';
+        } elseif (in_array($workspaceRole, ['client_admin', 'client'], true)) {
+            $effectiveRole = 'client_admin';
         } else {
-            // No access path — log and block
+            // client_staff, observer, none — view-only; cannot move tasks
+            $denyMessage = match ($workspaceRole) {
+                'client_staff' => 'Client staff members cannot move task cards.',
+                'observer'     => 'Observers cannot move task cards.',
+                default        => 'You do not have permission to update tasks in this workspace.',
+            };
             Log::info('workspace_task.status_update_denied', [
-                'reason'             => 'no_workspace_access',
+                'reason'             => 'no_task_permission',
                 'user_id'            => $user->id,
                 'user_email'         => $user->email,
                 'user_roles'         => $user->getRoleNames()->toArray(),
@@ -412,12 +437,9 @@ class WorkspaceTaskController extends Controller
                 'is_primary_manager' => $isPrimaryManager,
             ]);
             if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You do not have permission to update tasks in this workspace.',
-                ], 403);
+                return response()->json(['success' => false, 'message' => $denyMessage], 403);
             }
-            abort(403, 'You do not have access to this workspace.');
+            abort(403, $denyMessage);
         }
 
         // ── Step 4: Validate the requested new status ──────────────────────

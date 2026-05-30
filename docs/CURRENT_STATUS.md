@@ -681,15 +681,66 @@ else                                                                      → 40
 
 ---
 
+## Phase 5 Fix 4 — Workspace Role Expansion ✅ (2026-05-30)
+
+### What Changed
+
+Expanded the workspace role model from 4 values (client/talent/manager/observer) to a full 7-role hierarchy matching the GVOS product spec. Added `workspace_admin`, `client_admin`, and `client_staff` throughout the stack — DB enum, models, controller, Filament relation manager, Kanban view.
+
+| File | Change |
+|------|--------|
+| `database/migrations/2026_05_30_000001_expand_workspace_members_role_enum.php` | ALTER TABLE to expand `workspace_members.role` ENUM: adds `workspace_admin`, `client_admin`, `client_staff`. Legacy `client`, `manager`, `talent`, `observer` preserved. |
+| `app/Models/WorkspaceMember.php` | `roleLabels()` expanded with all 7 roles + labels. `roleLabel()` uses `str_replace` fallback for unrecognised values. |
+| `app/Models/Workspace.php` | `resolveUserWorkspaceRole()` rewritten: 7-tier resolution — admin > workspace_admin > primary_manager > member_manager > primary_talent > member_talent/client_admin/client_staff/observer > assigned_user > none. Legacy `client` member row maps to `client_admin`. `userCanCreateTasks()`, `userCanManageTasks()`, `userCanViewInternalTaskNotes()` updated to include `workspace_admin`. |
+| `app/Models/WorkspaceTask.php` | `allowedTransitions()` updated: `workspace_admin` gets same broad transitions as admin/manager. `client_admin` (and legacy `client`) can approve/request revision/close. `client_staff`/`observer`/unrecognised → no transitions. |
+| `app/Http/Controllers/WorkspaceTaskController.php` | `isAdminOrManager()` includes `workspace_admin`. `transitionRole()` maps `assigned_user`→`talent` and `client`→`client_admin`. `updateStatus()` Step 3 handles all new roles: `workspace_admin`→`workspace_admin` effective; `client_admin`/`client`→`client_admin` effective; `client_staff`/`observer`→403 with specific messages. `index()` passes `$effectiveRole` and `$showDebugRole` to view. `show()` passes `$effectiveRole`. |
+| `resources/views/workspace/tasks/index.blade.php` | `$draggableRoles` expanded to include `workspace_admin` and `client_admin`. `showDragHandle` match updated: `workspace_admin` always shows handle; `client_admin`/`client` shows only on submitted/approved tasks; `client_staff`/`observer` never show. `CAN_DRAG` JS expression uses `$draggableRoles`. Debug role line added under board heading for admin/workspace_admin/manager. |
+| `app/Filament/Resources/WorkspaceResource/RelationManagers/WorkspaceMembersRelationManager.php` | Role Select default changed from `client` to `talent`. Badge colors added for `workspace_admin` (danger), `client_admin` (warning), `client_staff` (warning). |
+
+### Role Resolution Priority (updated)
+
+| Priority | Condition | Role returned |
+|----------|-----------|---------------|
+| 1 | User has `super_admin` or `operations_admin` system role | `admin` |
+| 2 | Active member row with `role=workspace_admin` | `workspace_admin` |
+| 3 | `primary_manager_id` matches user (int-cast) | `manager` |
+| 4 | Active member row with `role=manager` | `manager` |
+| 5 | `primary_talent_id` matches user (int-cast) | `talent` |
+| 6a | Active member row with `role=talent` | `talent` |
+| 6b | Active member row with `role=client_admin` | `client_admin` |
+| 6c | Active member row with `role=client_staff` | `client_staff` |
+| 6d | Active member row with `role=client` (legacy) | `client_admin` |
+| 6e | Active member row with `role=observer` | `observer` |
+| 7 | Assigned to a task in this workspace | `assigned_user` |
+| — | None of the above | `none` → 403 |
+
+### Transition Rights (updated)
+
+| Effective Role | Allowed Moves |
+|----------------|---------------|
+| admin / workspace_admin / manager | Any operationally-sensible move + cancel |
+| talent / assigned_user | pending→in_progress, in_progress→blocked/submitted, blocked→in_progress, revision_requested→in_progress |
+| client_admin / client (legacy) | submitted→approved/revision_requested, approved→closed |
+| client_staff / observer | None |
+
+### Drag Handle Visibility
+
+| Role | When drag handle shows |
+|------|------------------------|
+| admin / workspace_admin / manager | Always (all tasks) |
+| talent | Tasks assigned to self OR unassigned tasks |
+| assigned_user | Only their explicitly assigned task |
+| client_admin / client | Only on submitted or approved tasks |
+| client_staff / observer | Never |
+
+---
+
 ## Next Steps
 
-1. cPanel: `git pull origin main && php artisan optimize:clear && php artisan view:clear` (no new migrations)
-2. Verify talent can drag their own assigned tasks (pending→in_progress)
-3. Verify talent can submit (in_progress→submitted)
-4. Verify talent cannot approve (submitted→approved) — red toast with clear message
-5. Verify primary talent can move unassigned tasks
-6. Verify manager can drag any task in the workspace
-7. Verify client can move submitted → approved / revision_requested
-8. Check Laravel logs: every drag attempt must produce a `workspace_task.status_update_attempt` log entry
-9. Check browser console: failed drags must show `[GVOS Kanban] Drag rejected` with full context
-10. Get Phase 5 sign-off, then begin Phase 6 (if approved)
+1. cPanel: `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan view:clear`
+2. Verify workspace_admin role can be assigned in Filament → member sees full drag on all tasks
+3. Verify client_admin can drag submitted→approved and approved→closed; cannot drag elsewhere
+4. Verify client_staff sees no drag handles and gets 403 if they attempt a status update
+5. Verify talent drag still works (pending→in_progress on their own tasks)
+6. Verify debug role line visible for admin/manager/workspace_admin users under board heading
+7. Test legacy `client` member row still works (should behave as client_admin)

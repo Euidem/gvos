@@ -786,6 +786,74 @@ Run after `git pull && php artisan optimize:clear && php artisan view:clear` (no
 
 ---
 
+## Phase 5 Fix 4 — Workspace Role Expansion
+
+Run after `git pull && php artisan migrate && php artisan optimize:clear && php artisan view:clear`.
+
+### Scenario 1: workspace_admin role
+
+- [ ] In Filament, open a workspace and add a user as `workspace_admin` in the Members relation manager
+- [ ] Log in as that user → Kanban board loads
+- [ ] Drag handles visible on ALL task cards
+- [ ] Drag Submitted → Approved → succeeds
+- [ ] Drag Pending → Cancelled → succeeds
+- [ ] Drag In Progress → Blocked → succeeds
+- [ ] Debug role line under "Kanban Board" heading shows: `Task role: workspace_admin`
+
+### Scenario 2: client_admin role
+
+- [ ] Add a user as `client_admin` in workspace members
+- [ ] Log in as that user → Kanban board loads
+- [ ] Drag handles visible ONLY on cards in the Submitted and Approved columns
+- [ ] No drag handles on Pending, In Progress, Blocked, Revision Req., Closed cards
+- [ ] Drag Submitted → Approved → succeeds, green toast
+- [ ] Drag Submitted → Revision Requested → succeeds, green toast
+- [ ] Drag Approved → Closed → succeeds, green toast
+- [ ] Drag Pending → In Progress → card reverts, red toast with 403/permission message
+- [ ] Debug role line NOT shown (only shows for admin/workspace_admin/manager)
+
+### Scenario 3: client_staff role
+
+- [ ] Add a user as `client_staff` in workspace members
+- [ ] Log in as that user → Kanban board loads
+- [ ] NO drag handles visible on any card
+- [ ] `CAN_DRAG` is false — SortableJS NOT initialized for this user
+- [ ] Attempting status update via API (dev tools) → 403 "Client staff members cannot move task cards."
+
+### Scenario 4: Legacy `client` member row still works
+
+- [ ] A workspace member with old `role=client` (legacy) can still access the board
+- [ ] They see drag handles on submitted/approved tasks (same as client_admin)
+- [ ] Drag Submitted → Approved → succeeds
+- [ ] Drag Pending → In Progress → fails with 403
+
+### Scenario 5: Filament role dropdown default
+
+- [ ] Open Filament → Workspace → edit page → Members relation manager
+- [ ] Click "Add Member" → Role dropdown defaults to `Talent` (not `Client`)
+- [ ] All 7 role options visible: Workspace Admin, Manager, Talent, Client Admin, Client Staff, Client, Observer
+- [ ] workspace_admin badge shows in red/danger color
+- [ ] client_admin and client_staff badges show in warning/amber color
+- [ ] manager badge shows in info/blue color
+- [ ] talent badge shows in success/green color
+
+### Scenario 6: Role expansion migration
+
+- [ ] `php artisan migrate` runs without error on a clean DB
+- [ ] `workspace_members` table accepts `workspace_admin`, `client_admin`, `client_staff` values
+- [ ] Existing rows with old role values (client/talent/manager/observer) are unaffected
+
+### Scenario 7: Debug role line visibility
+
+- [ ] Login as admin → board shows `Task role: admin` under heading
+- [ ] Login as workspace_admin → shows `Task role: workspace_admin`
+- [ ] Login as manager → shows `Task role: manager`
+- [ ] Login as talent → NO debug line shown
+- [ ] Login as client_admin → NO debug line shown
+- [ ] Login as observer → NO debug line shown
+
+---
+
 ## Phase 6 — Chat and Files (planned)
 ## Phase 7 — Time Tracking and Reports (planned)
 ## Phase 8 — Billing (planned)

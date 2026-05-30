@@ -80,18 +80,19 @@ class Workspace extends Model
     /**
      * Resolve the effective role this user holds in the workspace.
      *
-     * Priority order:
-     *   admin         – super_admin or operations_admin system role
-     *   manager       – primary_manager_id match OR active member with role=manager
-     *   talent        – primary_talent_id match OR active member with role=talent
-     *   client        – active member with role=client
-     *   observer      – active member with role=observer
-     *   assigned_user – assigned to at least one task (no member row required)
-     *   none          – no access
+     * Priority / tier order:
+     *   admin          – super_admin or operations_admin system role
+     *   workspace_admin– active member with role=workspace_admin (highest workspace power)
+     *   manager        – primary_manager_id match OR active member with role=manager
+     *   talent         – primary_talent_id match OR active member with role=talent
+     *   client_admin   – active member with role=client_admin (or legacy role=client)
+     *   client_staff   – active member with role=client_staff
+     *   observer       – active member with role=observer
+     *   assigned_user  – assigned to at least one task in this workspace (no member row)
+     *   none           – no access
      *
-     * Note: primary_manager_id / primary_talent_id are stored as integers in the
-     * DB but Eloquent returns them as strings when no cast is defined. Both sides
-     * are explicitly cast to int to avoid strict === mismatches.
+     * Note: primary_manager_id / primary_talent_id are stored without model casts.
+     * Both sides are explicitly cast to int to avoid Eloquent string/integer mismatch.
      */
     public function resolveUserWorkspaceRole(User $user): string
     {
@@ -100,33 +101,47 @@ class Workspace extends Model
             return 'admin';
         }
 
-        // Tier 2 – primary manager (cast both to int; DB column has no cast)
-        if ($this->primary_manager_id !== null && (int) $this->primary_manager_id === (int) $user->id) {
-            return 'manager';
-        }
-
-        // Tier 3 – primary talent
-        if ($this->primary_talent_id !== null && (int) $this->primary_talent_id === (int) $user->id) {
-            return 'talent';
-        }
-
-        // Tier 4 – active member row (role from the member record)
+        // Load active member row once for this user (avoids repeated queries below)
         $member = $this->members()
             ->where('user_id', $user->id)
             ->where('status', 'active')
             ->first();
 
+        // Tier 2 – workspace_admin member (designated workspace-level administrator)
+        if ($member && $member->role === 'workspace_admin') {
+            return 'workspace_admin';
+        }
+
+        // Tier 3 – primary manager (int cast to avoid Eloquent string/int mismatch)
+        if ($this->primary_manager_id !== null
+            && (int) $this->primary_manager_id === (int) $user->id) {
+            return 'manager';
+        }
+
+        // Tier 4 – active member with manager role
+        if ($member && $member->role === 'manager') {
+            return 'manager';
+        }
+
+        // Tier 5 – primary talent
+        if ($this->primary_talent_id !== null
+            && (int) $this->primary_talent_id === (int) $user->id) {
+            return 'talent';
+        }
+
+        // Tier 6 – active member with talent / client / observer roles
         if ($member) {
             return match ($member->role) {
-                'manager'  => 'manager',
-                'talent'   => 'talent',
-                'client'   => 'client',
-                'observer' => 'observer',
-                default    => 'observer',
+                'talent'       => 'talent',
+                'client_admin' => 'client_admin',
+                'client_staff' => 'client_staff',
+                'client'       => 'client_admin', // legacy: treat as client_admin
+                'observer'     => 'observer',
+                default        => 'observer',
             };
         }
 
-        // Tier 5 – assigned to a task in this workspace (no member row needed)
+        // Tier 7 – assigned to a task in this workspace (no member row required)
         if ($this->tasks()->where('assigned_to_user_id', $user->id)->exists()) {
             return 'assigned_user';
         }
@@ -144,29 +159,32 @@ class Workspace extends Model
 
     /**
      * Returns true if the user may create tasks in this workspace.
-     * Admins, managers, and talents can create tasks.
+     * Admins, workspace_admins, managers, and talent can create tasks.
      */
     public function userCanCreateTasks(User $user): bool
     {
-        return in_array($this->resolveUserWorkspaceRole($user), ['admin', 'manager', 'talent'], true);
+        return in_array($this->resolveUserWorkspaceRole($user),
+            ['admin', 'workspace_admin', 'manager', 'talent', 'assigned_user'], true);
     }
 
     /**
-     * Returns true if the user may manage (edit/delete) tasks in this workspace.
-     * Only admins and managers can manage tasks.
+     * Returns true if the user may manage (edit/delete/assign) tasks in this workspace.
+     * Admins, workspace_admins, and managers can manage tasks.
      */
     public function userCanManageTasks(User $user): bool
     {
-        return in_array($this->resolveUserWorkspaceRole($user), ['admin', 'manager'], true);
+        return in_array($this->resolveUserWorkspaceRole($user),
+            ['admin', 'workspace_admin', 'manager'], true);
     }
 
     /**
      * Returns true if the user may view internal notes and internal comments.
-     * Only admins and managers see internal content.
+     * Only admins, workspace_admins, and managers see internal content.
      */
     public function userCanViewInternalTaskNotes(User $user): bool
     {
-        return in_array($this->resolveUserWorkspaceRole($user), ['admin', 'manager'], true);
+        return in_array($this->resolveUserWorkspaceRole($user),
+            ['admin', 'workspace_admin', 'manager'], true);
     }
 
     // ── Primary-team sync ─────────────────────────────────────────────────

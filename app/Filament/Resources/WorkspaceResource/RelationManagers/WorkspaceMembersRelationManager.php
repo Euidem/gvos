@@ -33,7 +33,7 @@ class WorkspaceMembersRelationManager extends RelationManager
             Select::make('role')
                 ->label('Workspace Role')
                 ->options(WorkspaceMember::roleLabels())
-                ->default('client')
+                ->default('talent')
                 ->required(),
 
             Select::make('status')
@@ -73,11 +73,14 @@ class WorkspaceMembersRelationManager extends RelationManager
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => WorkspaceMember::roleLabels()[$state] ?? ucfirst($state))
                     ->color(fn (string $state): string => match ($state) {
-                        'manager'  => 'info',
-                        'talent'   => 'success',
-                        'client'   => 'warning',
-                        'observer' => 'gray',
-                        default    => 'gray',
+                        'workspace_admin' => 'danger',
+                        'manager'         => 'info',
+                        'talent'          => 'success',
+                        'client_admin'    => 'warning',
+                        'client_staff'    => 'warning',
+                        'client'          => 'warning',  // legacy
+                        'observer'        => 'gray',
+                        default           => 'gray',
                     }),
 
                 TextColumn::make('status')

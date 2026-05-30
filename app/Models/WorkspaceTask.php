@@ -83,52 +83,49 @@ class WorkspaceTask extends Model
     // ── Status flow ───────────────────────────────────────────────────────
 
     /**
-     * Returns the allowed next statuses for a given current status and role.
+     * Returns the allowed next statuses for a given current status and effective role.
      *
-     * Roles accepted: 'admin' | 'manager' | 'talent' | 'client' | 'observer'
+     * Roles accepted:
+     *   'admin'          – super_admin / operations_admin system role
+     *   'workspace_admin'– designated workspace-level admin
+     *   'manager'        – GVOS line manager
+     *   'talent'         – talent / contractor (also covers assigned_user mapped here)
+     *   'client_admin'   – individual client or business client admin (review / approve)
+     *   'client_staff'   – business client staff (view only — no transitions)
+     *   'observer'       – read-only — no transitions
      *
-     * Note: 'assigned_user' is mapped to 'talent' before this method is called
-     * via WorkspaceTaskController::transitionRole().
+     * Admin / workspace_admin / manager:
+     *   Broad operational control including cancel on any in-flight status.
      *
-     * Admin / Manager:  broad operational control — can move tasks in any
-     *                   operationally-sensible direction, plus cancel anything
-     *                   that is still in-flight.
+     * Talent:
+     *   Can self-advance their assigned work and submit for review.
+     *   Cannot approve, close, or cancel (enforced server-side + frontend).
+     *   Assignee restriction (only move your own task) enforced in controller.
      *
-     * Talent:           can self-advance work they are doing and submit for
-     *                   review. Can only update tasks assigned to themselves
-     *                   (enforced in WorkspaceTaskController::updateStatus).
+     * Client Admin:
+     *   Review-only: approve submitted work, request revision, or close approved.
      *
-     * Client:           review-only — can approve or request revision on
-     *                   submitted work, and close approved work.
-     *
-     * Observer / none:  read-only — no transitions allowed.
+     * Client Staff / Observer / unrecognised:
+     *   Read-only — no transitions permitted.
      */
     public static function allowedTransitions(string $fromStatus, string $role): array
     {
-        // ── Admin / Manager ───────────────────────────────────────────────
-        if (in_array($role, ['admin', 'manager'], true)) {
+        // ── Admin / Workspace Admin / Manager ─────────────────────────────
+        if (in_array($role, ['admin', 'workspace_admin', 'manager'], true)) {
             return match ($fromStatus) {
-                // Start work or cancel
                 'pending'            => ['in_progress', 'cancelled'],
-                // Advance, block, revert to pending, submit, or cancel
                 'in_progress'        => ['blocked', 'submitted', 'pending', 'cancelled'],
-                // Unblock or cancel
                 'blocked'            => ['in_progress', 'cancelled'],
-                // Review outcome: approve, request revision, or push back to in-progress
                 'submitted'          => ['approved', 'revision_requested', 'in_progress'],
-                // Send back to work or cancel
                 'revision_requested' => ['in_progress', 'cancelled'],
-                // Close approved work
                 'approved'           => ['closed'],
-                // Terminal states — nothing further
                 'closed'             => [],
                 'cancelled'          => [],
                 default              => [],
             };
         }
 
-        // ── Talent ────────────────────────────────────────────────────────
-        // Can self-advance their own assigned work. Cannot approve or close.
+        // ── Talent (including assigned_user mapped to talent) ─────────────
         if ($role === 'talent') {
             return match ($fromStatus) {
                 'pending'            => ['in_progress'],
@@ -139,8 +136,19 @@ class WorkspaceTask extends Model
             };
         }
 
-        // ── Client ────────────────────────────────────────────────────────
-        // Review-only: can approve submitted work, request revision, or close approved.
+        // ── Client Admin ──────────────────────────────────────────────────
+        // Can review submitted work and close approved work.
+        // Cannot move tasks in operational statuses (pending/in_progress etc.).
+        if ($role === 'client_admin') {
+            return match ($fromStatus) {
+                'submitted' => ['approved', 'revision_requested'],
+                'approved'  => ['closed'],
+                default     => [],
+            };
+        }
+
+        // ── Client (legacy) ───────────────────────────────────────────────
+        // Retained for DB rows that still have role='client'. Same as client_admin.
         if ($role === 'client') {
             return match ($fromStatus) {
                 'submitted' => ['approved', 'revision_requested'],
@@ -149,7 +157,7 @@ class WorkspaceTask extends Model
             };
         }
 
-        // ── Observer / unrecognised role ──────────────────────────────────
+        // ── Client Staff / Observer / unrecognised ────────────────────────
         return [];
     }
 
