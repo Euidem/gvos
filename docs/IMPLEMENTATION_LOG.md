@@ -7,6 +7,52 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-30 | Phase 6 | Workspace Chat & Files Foundation
+
+**What was done:** Full Phase 6 implementation — workspace chat (messages) and file sharing foundation. Includes two new DB migrations, two new models, two new controllers, two new Blade views, two new Filament resources, task file attachment integration, audit logging, and dashboard updates across all 8 dashboards.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_05_30_000002_create_workspace_messages_table.php` | workspace_messages table with parent thread support, visibility, message_type |
+| `database/migrations/2026_05_30_000003_create_workspace_files_table.php` | workspace_files table with task FK, visibility, category, download count |
+| `app/Models/WorkspaceMessage.php` | SoftDeletes, helpers: isInternal/isPublic/isSystemMessage/isReply, relationships |
+| `app/Models/WorkspaceFile.php` | SoftDeletes, static: categoryLabels/allowedMimes/typeIcon, formattedSize, relationships |
+| `app/Http/Controllers/WorkspaceMessageController.php` | index/store/destroy; role-gated visibility; last 100 messages |
+| `app/Http/Controllers/WorkspaceFileController.php` | index/store/storeForTask/download/destroy; UUID stored filename; access-verified downloads |
+| `resources/views/workspace/chat/index.blade.php` | Chat UI with message list, post form, Internal toggle, observer notice |
+| `resources/views/workspace/files/index.blade.php` | File management UI with upload form, file list, download/delete actions |
+| `app/Filament/Resources/WorkspaceFileResource.php` | Read-only admin resource for files; archive action |
+| `app/Filament/Resources/WorkspaceFileResource/Pages/ListWorkspaceFiles.php` | List page |
+| `app/Filament/Resources/WorkspaceMessageResource.php` | Read-only admin resource for messages; moderate/remove action |
+| `app/Filament/Resources/WorkspaceMessageResource/Pages/ListWorkspaceMessages.php` | List page |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `app/Models/Workspace.php` | Added messages() and files() HasMany relationships |
+| `app/Models/WorkspaceTask.php` | Added files() HasMany relationship |
+| `app/Models/User.php` | Added workspaceMessages() and workspaceFiles() HasMany relationships |
+| `app/Services/AuditLogger.php` | 6 new wrappers: workspaceMessage* (created/updated/deleted) and workspaceFile* (uploaded/downloaded/deleted) |
+| `routes/web.php` | Chat routes (3), file routes (4), task-file route (1) — all under auth + check.status |
+| `resources/views/workspace/show.blade.php` | Chat card, Files card, placeholder cards (Time Tracking, Billing, Password Vault) |
+| `resources/views/workspace/tasks/show.blade.php` | Task files section in sidebar: list + upload form |
+| `resources/views/dashboard/super-admin.blade.php` | messageTotal/fileTotal counts; Phase 6 notice |
+| `resources/views/dashboard/operations-admin.blade.php` | messageTotal/fileTotal counts; Phase 6 notice |
+| `resources/views/dashboard/talent.blade.php` | Chat & Files communication link; Phase 6 notice |
+| `resources/views/dashboard/line-manager.blade.php` | Chat & Files communication link; Phase 6 notice |
+| `resources/views/dashboard/individual-client.blade.php` | Workspace Chat + Files link cards; Phase 6 notice |
+| `resources/views/dashboard/business-client-admin.blade.php` | Workspace Chat + Files link cards; Phase 6 notice |
+| `resources/views/dashboard/business-client-staff.blade.php` | Workspace Chat + Files link cards; Phase 6 notice |
+
+**Commit:** "Phase 6: Workspace chat and files foundation"
+
+**Tool:** Claude Code | **Status:** Complete
+
+---
+
 ### 2026-05-30 | Phase 5 Fix 4 | Workspace Role Expansion
 
 **What was done:** Expanded workspace role model from 4 values to 7, fixing `workspace_admin`, `client_admin`, and `client_staff` not being recognised anywhere in the permission stack. Added DB migration, updated models, controller, Filament relation manager, and Kanban view.

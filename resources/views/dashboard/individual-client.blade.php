@@ -116,12 +116,41 @@
     </div>
     @endif
 
+    {{-- ── Workspace communication ──────────────────────────────────────── --}}
+    @if ($myWorkspaces > 0)
+    <div class="mb-8">
+        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Communication</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <a href="{{ route('workspace.index') }}"
+               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm flex items-center gap-3">
+                <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">chat</span>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-on-surface">Workspace Chat</p>
+                    <p class="text-xs text-outline mt-0.5">Message your team in your workspace</p>
+                </div>
+            </a>
+            <a href="{{ route('workspace.index') }}"
+               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm flex items-center gap-3">
+                <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">folder_open</span>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-on-surface">Workspace Files</p>
+                    <p class="text-xs text-outline mt-0.5">Access and download shared documents</p>
+                </div>
+            </a>
+        </div>
+    </div>
+    @endif
+
     <div class="bg-secondary/5 border border-secondary/20 rounded-xl px-6 py-5 flex items-start gap-3">
         <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size: 18px;">info</span>
         <div>
-            <p class="text-sm font-semibold text-secondary">Phase 5 — Task Board</p>
+            <p class="text-sm font-semibold text-secondary">Phase 6 — Chat &amp; Files</p>
             <p class="text-sm text-on-surface-variant mt-0.5">
-                Task boards are now live in your workspace. Create tasks, review submitted work and approve deliverables.
+                Workspace chat and file sharing are now live. Open your workspace to send messages, review deliverables and access shared files.
             </p>
         </div>
     </div>

@@ -854,7 +854,152 @@ Run after `git pull && php artisan migrate && php artisan optimize:clear && php 
 
 ---
 
-## Phase 6 — Chat and Files (planned)
+---
+
+## Phase 6 — Workspace Chat & Files
+
+Run after `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan view:clear`.
+
+### Migrations
+- [ ] `php artisan migrate` runs without error
+- [ ] `workspace_messages` table exists with all expected columns
+- [ ] `workspace_files` table exists with all expected columns
+- [ ] `php artisan route:list` shows chat routes (workspace.chat.index, workspace.chat.store, workspace.chat.destroy)
+- [ ] `php artisan route:list` shows file routes (workspace.files.index, workspace.files.store, workspace.files.download, workspace.files.destroy)
+- [ ] `php artisan route:list` shows task file route (workspace.tasks.files.store)
+
+### Workspace Chat — Manager/Admin (full access)
+
+- [ ] Login as admin or manager. Navigate to a workspace → click "Chat" card
+- [ ] `/workspaces/{workspace}/chat` loads without error
+- [ ] Breadcrumb shows workspace code + "Chat"
+- [ ] Nav links to "Files" and "Task Board" present
+- [ ] Empty state shown when no messages exist
+- [ ] Post a public message — appears in list with correct name, timestamp, "you" indicator
+- [ ] Post an internal message (check "Internal" checkbox) — appears with "Internal" badge
+- [ ] Internal badge is visible to admin/manager
+- [ ] Delete button appears on own message — clicking soft-deletes it; message removed from view
+- [ ] `workspace_message.created` audit log entry fires
+- [ ] `workspace_message.deleted` audit log entry fires on delete
+
+### Workspace Chat — Talent (public only)
+
+- [ ] Login as talent assigned to workspace. Navigate to chat page
+- [ ] Chat page loads
+- [ ] Only public messages shown — no internal messages visible
+- [ ] "Internal" checkbox NOT shown on post form
+- [ ] Post a message → saved as public (no internal option)
+- [ ] Delete button shown only on own messages
+- [ ] Cannot delete another user's message
+
+### Workspace Chat — Client (public only)
+
+- [ ] Login as client member. Navigate to chat page
+- [ ] Only public messages shown
+- [ ] Can post public messages
+- [ ] No internal checkbox visible
+
+### Workspace Chat — Observer
+
+- [ ] Login as observer. Navigate to chat page
+- [ ] Can view public messages (read-only)
+- [ ] Post form IS shown but submitting → 403
+- [ ] Or: "Your role allows viewing messages only" notice visible (view-only notice)
+
+### Workspace Files — Manager/Admin (full access)
+
+- [ ] Navigate to `/workspaces/{workspace}/files`
+- [ ] Page loads with upload form (left) and file list (right)
+- [ ] Upload a PDF file — appears in list with correct filename, category badge, size, uploaded-by
+- [ ] Upload with `visibility=internal` — appears with "Internal" visibility badge
+- [ ] Download a file — browser prompts file download (not a redirect to a public URL)
+- [ ] File is served by the app (URL is `/workspaces/{workspace}/files/{file}/download`)
+- [ ] `workspace_file.uploaded` audit log entry fires
+- [ ] `workspace_file.downloaded` audit log entry fires; `downloads_count` increments in DB
+- [ ] Delete button deletes the file record (soft delete); file disappears from list
+- [ ] `workspace_file.deleted` audit log entry fires
+- [ ] Physical file remains on disk after soft delete
+
+### Workspace Files — Talent / Client (public files only)
+
+- [ ] Login as talent or client. Navigate to files page
+- [ ] Only public files visible — internal files NOT shown
+- [ ] Can upload a file (saved as public even if user tries to set internal via POST manipulation)
+- [ ] Can download public files
+- [ ] Cannot see the "Internal" checkbox on the upload form
+- [ ] Can delete own uploads; cannot delete others' files
+
+### Workspace Files — Observer
+
+- [ ] Login as observer. Navigate to files page
+- [ ] Can view public file list
+- [ ] Upload form NOT visible (or shows 403 on submit)
+
+### Task File Attachments
+
+- [ ] Navigate to a task detail page (`/workspaces/{ws}/tasks/{task}`)
+- [ ] Sidebar shows "Task Files" section
+- [ ] Upload a file from the task page — file appears in sidebar list with type icon, size, date
+- [ ] File is linked to the task (stored with `workspace_task_id`)
+- [ ] Download link for task attachment works
+- [ ] Admin/manager sees "Internal" checkbox on task attachment upload form
+- [ ] Talent/client do not see the Internal checkbox on task attachment upload
+
+### Filament — WorkspaceFileResource
+
+- [ ] `/admin/workspace-files` loads — nav group "Workspace", item "Files" visible (sort 4)
+- [ ] Table shows workspace code, filename, title, category, visibility badge, uploaded by, size, downloads count, created at
+- [ ] Visibility filter works (Public / Internal)
+- [ ] Category filter works
+- [ ] Archive action (soft delete) visible — clicking confirms and removes record from list
+- [ ] No "New file" / Create button visible (canCreate = false)
+- [ ] No edit link on rows (canEdit = false)
+
+### Filament — WorkspaceMessageResource
+
+- [ ] `/admin/workspace-messages` loads — nav group "Workspace", item "Messages" visible (sort 5)
+- [ ] Table shows workspace code, author name, message (truncated to 60 chars), visibility badge, message type, created at
+- [ ] Visibility filter works
+- [ ] Type filter works (Text / System)
+- [ ] Remove/Moderate action soft-deletes the message
+- [ ] No create button visible
+
+### Workspace Show — Chat & Files Cards
+
+- [ ] Navigate to `/workspaces/{workspace}`
+- [ ] "Chat" card visible with message count and link to chat page
+- [ ] "Files" card visible with file count and link to files page
+- [ ] "Time Tracking", "Billing", "Password Vault" placeholder cards visible with dashed border and opacity-50
+
+### Admin Dashboard
+
+- [ ] Super Admin dashboard: "Chat & Files" section shows Total Messages and Total Files count cards
+- [ ] Total Messages card links to `/admin/workspace-messages`
+- [ ] Total Files card links to `/admin/workspace-files`
+- [ ] Phase notice updated to "Phase 6 — Chat & Files"
+- [ ] Operations Admin dashboard: same section and notice
+
+### Other Dashboards
+
+- [ ] Talent dashboard: "Communication" section shows "Chat & Files" link (only if workspaces > 0)
+- [ ] Line Manager dashboard: "Communication" section shows "Chat & Files" link (only if managed workspaces exist)
+- [ ] Individual Client dashboard: "Workspace Chat" and "Workspace Files" links shown (only if workspaces > 0)
+- [ ] Business Client Admin: same chat/files links
+- [ ] Business Client Staff: same chat/files links
+- [ ] All dashboards: Phase notice updated to "Phase 6"
+
+### Access Control — Edge Cases
+
+- [ ] Non-member accessing `/workspaces/{workspace}/chat` → 403
+- [ ] Non-member accessing `/workspaces/{workspace}/files` → 403
+- [ ] Downloading an internal file as client → 403
+- [ ] Downloading a file for a workspace you're not a member of → 403
+- [ ] Uploading a file exceeding 10 MB → validation error shown on form
+- [ ] Uploading an unsupported file type (e.g. `.exe`) → validation error shown on form
+- [ ] `workspace_file.downloaded` audit fires with correct file and user context
+
+---
+
 ## Phase 7 — Time Tracking and Reports (planned)
 ## Phase 8 — Billing (planned)
 ## Phase 12 — Launch Readiness (planned)

@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 5 migrations created and active
+## Status: Phase 6 migrations created and active
 
 ---
 
@@ -375,6 +375,70 @@ Comments on workspace tasks. Supports public and internal (admin/manager-only) v
 | created_at / updated_at | timestamps | |
 | deleted_at | timestamp nullable | soft deletes |
 | INDEX | (workspace_task_id, visibility) | |
+
+---
+
+---
+
+## Phase 6 Tables (live)
+
+### workspace_messages
+Chat messages within a workspace. Supports public and internal visibility, thread replies, and system messages.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| user_id | FK users | cascadeOnDelete |
+| parent_id | FK workspace_messages nullable | self-referential for thread replies |
+| message | longtext | max 5000 chars at UI layer |
+| visibility | enum | public, internal |
+| message_type | enum | text, system |
+| edited_at | timestamp nullable | future edit support |
+| created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | soft deletes |
+| INDEX | (workspace_id, visibility) | |
+| INDEX | parent_id | |
+
+#### Access Rules
+- `visibility=internal` messages are only shown to admin, workspace_admin, manager roles
+- Clients and talent only see `visibility=public` messages
+- Observers can view but cannot post
+- Authors and admin/manager can delete (soft delete)
+
+---
+
+### workspace_files
+Files attached to a workspace. Supports task attachment, visibility control, and download tracking.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| uploaded_by_user_id | FK users | |
+| workspace_task_id | FK workspace_tasks nullable | task attachment |
+| title | string nullable | user-provided label |
+| original_filename | string | original upload filename |
+| stored_filename | string | UUID-based stored filename |
+| storage_path | string | relative path on local disk |
+| mime_type | string nullable | |
+| file_size | unsignedBigInteger nullable | bytes |
+| visibility | enum | public, internal |
+| category | string nullable | general, task_attachment, brief, deliverable, invoice_support, other |
+| description | text nullable | |
+| downloads_count | unsignedInteger | default: 0; incremented on each download |
+| created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | soft deletes; physical file preserved |
+| INDEX | (workspace_id, visibility) | |
+| INDEX | workspace_task_id | |
+| INDEX | uploaded_by_user_id | |
+
+#### Storage
+Files are stored at `storage/app/workspaces/{workspace_id}/{uuid}.{ext}` via `Storage::disk('local')`.
+They are NOT publicly accessible via URL. Downloads are served through `WorkspaceFileController@download` which verifies access before streaming.
+
+#### Allowed MIME Types
+PDF, JPEG, PNG, GIF, WebP, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, CSV, ZIP — max 10 MB.
 
 ---
 

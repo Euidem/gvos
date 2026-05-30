@@ -13,6 +13,46 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 6 Warnings / Notes
+
+### Phase 6 | Info | Chat has no real-time updates — page reload required
+
+Workspace chat uses Blade + standard form submission only. Messages do not appear in real-time; the user must reload the page to see new messages posted by others. Real-time chat (WebSockets / Pusher / Laravel Reverb) is explicitly deferred to a later phase.
+
+---
+
+### Phase 6 | Info | Files stored in local disk — not publicly accessible
+
+All uploaded workspace files are stored at `storage/app/workspaces/{workspace_id}/{uuid}.{ext}` via `Storage::disk('local')`. They are NOT accessible via a public URL. Downloads are streamed through `WorkspaceFileController@download` which verifies access before serving. This means files are not accessible even if someone guesses the storage path.
+
+---
+
+### Phase 6 | Low | Physical files are NOT deleted on soft delete
+
+When a workspace file is soft-deleted, the DB record is marked with `deleted_at` but the physical file on disk is preserved. This is intentional — soft deletes allow restoration. A future maintenance command (`php artisan gvos:cleanup-orphaned-files`) should be written to purge physical files whose DB records have been soft-deleted beyond a retention window.
+
+---
+
+### Phase 6 | Low | File download route increments downloads_count regardless of file size
+
+`WorkspaceFileController@download` calls `$file->increment('downloads_count')` before streaming. If the user cancels the download mid-stream, the count is still incremented. This is an accepted limitation for Phase 6 — accurate download completion tracking would require a more complex streaming approach.
+
+---
+
+### Phase 6 | Info | Chat messages limited to 5000 characters at UI layer (not DB layer)
+
+The `message` column is `longText` (no DB constraint). The 5000-character limit is enforced in the `WorkspaceMessageController@store` validation rule (`max:5000`). If messages are inserted directly into the DB, there is no length constraint at the DB level. This is intentional for operational flexibility.
+
+---
+
+### Phase 6 | Low | Upload form visible to all authorized roles even when workspace file limit is not enforced
+
+`WorkspaceFile::allowedMimes()` and `max:10240` validation enforce per-file limits. The `workspaces.file_limit_mb` column exists but is NOT currently enforced in Phase 6. A workspace can accumulate files beyond its configured limit. File quota enforcement is a future improvement.
+
+---
+
+---
+
 ## Resolved Issues
 
 ### 2026-05-27 | Phase 0 | Info | PHP/Composer/Node.js not installed on build machine

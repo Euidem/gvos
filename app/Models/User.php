@@ -113,6 +113,18 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(WorkspaceTaskComment::class);
     }
 
+    /** Workspace chat messages posted by this user. */
+    public function workspaceMessages(): HasMany
+    {
+        return $this->hasMany(WorkspaceMessage::class);
+    }
+
+    /** Workspace files uploaded by this user. */
+    public function workspaceFiles(): HasMany
+    {
+        return $this->hasMany(WorkspaceFile::class, 'uploaded_by_user_id');
+    }
+
     // ── Status helpers ───────────────────────────────────────────────────
 
     public function isActive(): bool

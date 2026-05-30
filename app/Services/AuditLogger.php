@@ -354,4 +354,60 @@ class AuditLogger
             'title'        => $task->title ?? null,
         ], $extra));
     }
+
+    // ── Phase 6 — Workspace Chat & Files ─────────────────────────────────
+
+    public static function workspaceMessageCreated(Model $message, array $extra = []): void
+    {
+        self::log('workspace_message.created', $message, array_merge([
+            'workspace_id' => $message->workspace_id ?? null,
+            'visibility'   => $message->visibility ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceMessageUpdated(Model $message, array $extra = []): void
+    {
+        self::log('workspace_message.updated', $message, array_merge([
+            'workspace_id' => $message->workspace_id ?? null,
+            'visibility'   => $message->visibility ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceMessageDeleted(Model $message, array $extra = []): void
+    {
+        self::log('workspace_message.deleted', $message, array_merge([
+            'workspace_id' => $message->workspace_id ?? null,
+            'visibility'   => $message->visibility ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceFileUploaded(Model $file, array $extra = []): void
+    {
+        self::log('workspace_file.uploaded', $file, array_merge([
+            'workspace_id'        => $file->workspace_id ?? null,
+            'original_filename'   => $file->original_filename ?? null,
+            'visibility'          => $file->visibility ?? null,
+            'category'            => $file->category ?? null,
+            'workspace_task_id'   => $file->workspace_task_id ?? null,
+            'uploaded_by_user_id' => $file->uploaded_by_user_id ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceFileDownloaded(Model $file, array $extra = []): void
+    {
+        self::log('workspace_file.downloaded', $file, array_merge([
+            'workspace_id'      => $file->workspace_id ?? null,
+            'original_filename' => $file->original_filename ?? null,
+            'visibility'        => $file->visibility ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceFileDeleted(Model $file, array $extra = []): void
+    {
+        self::log('workspace_file.deleted', $file, array_merge([
+            'workspace_id'      => $file->workspace_id ?? null,
+            'original_filename' => $file->original_filename ?? null,
+            'visibility'        => $file->visibility ?? null,
+        ], $extra));
+    }
 }

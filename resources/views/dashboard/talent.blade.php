@@ -109,6 +109,24 @@
         </div>
     </div>
 
+    {{-- ── Workspace communication ──────────────────────────────────────── --}}
+    @if ($myWorkspaces > 0)
+    <div class="mb-8">
+        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Workspace Communication</h3>
+        <p class="text-xs text-on-surface-variant mb-3">Open a workspace to access chat and files.</p>
+        <a href="{{ route('workspace.index') }}"
+           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm flex items-center gap-3">
+            <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">forum</span>
+            </div>
+            <div>
+                <p class="text-sm font-semibold text-on-surface">Chat &amp; Files</p>
+                <p class="text-xs text-outline mt-0.5">View messages and shared files in your workspaces</p>
+            </div>
+        </a>
+    </div>
+    @endif
+
     {{-- ── My Tasks (Phase 5) ───────────────────────────────────────────── --}}
     @if ($myAssignedTasks > 0 || $myBlockedTasks > 0)
     <div class="mb-8">
@@ -140,9 +158,9 @@
     <div class="bg-secondary/5 border border-secondary/20 rounded-xl px-6 py-5 flex items-start gap-3">
         <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size: 18px;">info</span>
         <div>
-            <p class="text-sm font-semibold text-secondary">Phase 5 — Task Board</p>
+            <p class="text-sm font-semibold text-secondary">Phase 6 — Chat &amp; Files</p>
             <p class="text-sm text-on-surface-variant mt-0.5">
-                Workspace task boards are now live. Open your workspace to view and update your assigned tasks.
+                Workspace chat and file sharing are now live. Open your workspace to view messages, share files and access task attachments.
             </p>
         </div>
     </div>

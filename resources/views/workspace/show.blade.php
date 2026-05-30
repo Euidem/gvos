@@ -326,6 +326,106 @@
             @endif
         </div>
 
+        {{-- ── Communication & Files section ─────────────────────────────── --}}
+        @php
+            $msgCount  = $workspace->messages()->where('visibility', 'public')->count();
+            $fileCount = $workspace->files()->where('visibility', 'public')->count();
+            if ($canCreateTask) {
+                // admin/manager/workspace_admin/talent also see internal counts
+                if (in_array($effectiveRole, ['admin', 'manager', 'workspace_admin'], true)) {
+                    $msgCount  = $workspace->messages()->count();
+                    $fileCount = $workspace->files()->count();
+                }
+            }
+        @endphp
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+            {{-- Chat card --}}
+            <a href="{{ route('workspace.chat.index', $workspace) }}"
+               class="bg-white rounded-xl border border-border-subtle shadow-card p-6 hover:border-secondary/30 hover:shadow-card transition-all group">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform"
+                             style="background-color:rgba(0,88,190,.06);">
+                            <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">forum</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-on-surface">Workspace Chat</h3>
+                    </div>
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                          style="background:rgba(0,88,190,.06);color:#0058be;">
+                        {{ $msgCount }} {{ Str::plural('message', $msgCount) }}
+                    </span>
+                </div>
+                <p class="text-xs text-outline leading-relaxed">
+                    Post messages, share updates, and communicate with the workspace team.
+                </p>
+                <p class="text-xs font-semibold mt-3 group-hover:underline transition-all" style="color:#0058be;">
+                    Open Chat →
+                </p>
+            </a>
+
+            {{-- Files card --}}
+            <a href="{{ route('workspace.files.index', $workspace) }}"
+               class="bg-white rounded-xl border border-border-subtle shadow-card p-6 hover:border-secondary/30 hover:shadow-card transition-all group">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform"
+                             style="background-color:rgba(0,88,190,.06);">
+                            <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">folder_open</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-on-surface">File Library</h3>
+                    </div>
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                          style="background:rgba(0,88,190,.06);color:#0058be;">
+                        {{ $fileCount }} {{ Str::plural('file', $fileCount) }}
+                    </span>
+                </div>
+                <p class="text-xs text-outline leading-relaxed">
+                    Upload and access shared files, briefs, deliverables and task attachments.
+                </p>
+                <p class="text-xs font-semibold mt-3 group-hover:underline transition-all" style="color:#0058be;">
+                    Open Files →
+                </p>
+            </a>
+        </div>
+
+        {{-- ── Future sections (placeholders) ────────────────────────────── --}}
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white rounded-xl border border-dashed border-border-subtle p-5 opacity-50 cursor-not-allowed">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-outline" style="font-size: 18px;">timer</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-on-surface-variant">Time Tracking</p>
+                        <p class="text-xs text-outline mt-0.5">Coming in a later phase</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border border-dashed border-border-subtle p-5 opacity-50 cursor-not-allowed">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-outline" style="font-size: 18px;">receipt</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-on-surface-variant">Billing</p>
+                        <p class="text-xs text-outline mt-0.5">Coming in a later phase</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border border-dashed border-border-subtle p-5 opacity-50 cursor-not-allowed">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-outline" style="font-size: 18px;">lock</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-on-surface-variant">Password Vault</p>
+                        <p class="text-xs text-outline mt-0.5">Coming in a later phase</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- ── Back link ─────────────────────────────────────────────────── --}}
         <div class="text-center pb-4">
             <a href="{{ route('workspace.index') }}"

@@ -298,4 +298,16 @@ class Workspace extends Model
         return $this->hasMany(WorkspaceTask::class)
             ->whereIn('status', ['pending', 'in_progress', 'blocked', 'submitted', 'revision_requested']);
     }
+
+    // ── Phase 6 relationships ─────────────────────────────────────────────
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(WorkspaceMessage::class)->orderBy('created_at');
+    }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(WorkspaceFile::class)->orderByDesc('created_at');
+    }
 }

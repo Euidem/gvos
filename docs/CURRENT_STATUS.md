@@ -1,7 +1,7 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-05-30
-**Current Phase:** Phase 5 — Task Board Foundation + Kanban Drag & Drop ✅ Complete
+**Current Phase:** Phase 6 — Workspace Chat & Files ✅ Complete
 
 ---
 
@@ -735,12 +735,100 @@ Expanded the workspace role model from 4 values (client/talent/manager/observer)
 
 ---
 
+---
+
+## Phase 6 Status — Complete ✅ (2026-05-30)
+
+### PART A — `workspace_messages` table
+- [x] Migration: id, workspace_id FK, user_id FK, parent_id nullable self-FK, message longText, visibility enum(public/internal), message_type enum(text/system), edited_at nullable, soft deletes, timestamps
+- [x] Indexes: (workspace_id, visibility), parent_id
+
+### PART B — `workspace_files` table
+- [x] Migration: id, workspace_id FK, uploaded_by_user_id FK, workspace_task_id nullable FK, title nullable, original_filename, stored_filename, storage_path, mime_type nullable, file_size, visibility enum(public/internal), category nullable, description nullable, downloads_count, soft deletes, timestamps
+- [x] Indexes: (workspace_id, visibility), workspace_task_id, uploaded_by_user_id
+
+### PART C — Models (2 new, 3 updated)
+- [x] `app/Models/WorkspaceMessage.php` — SoftDeletes; isInternal(), isPublic(), isSystemMessage(), isReply(); relationships: workspace, user, parent, replies
+- [x] `app/Models/WorkspaceFile.php` — SoftDeletes; categoryLabels(), allowedMimes(), typeIcon(), formattedSize(), isInternal(), isPublic(); relationships: workspace, uploadedBy (FK: uploaded_by_user_id), task (FK: workspace_task_id)
+- [x] `app/Models/Workspace.php` — added messages() and files() HasMany relationships (Phase 6 section)
+- [x] `app/Models/WorkspaceTask.php` — added files() HasMany relationship (workspace_task_id FK)
+- [x] `app/Models/User.php` — added workspaceMessages() and workspaceFiles() HasMany relationships
+
+### PART D — Access Rules
+- [x] `canViewInternal()` → admin, workspace_admin, manager roles only
+- [x] `canPost()` → any role except observer/none
+- [x] `canUpload()` → any role except observer/none
+- [x] `canDelete()` → uploader OR manager/admin tier
+- [x] File download: always verifies workspace membership + visibility access before streaming
+
+### PART E & F — Routes and Controllers
+- [x] 3 chat routes under `workspaces/{workspace}/chat` (index, store, destroy)
+- [x] 4 file routes under `workspaces/{workspace}/files` (index, store, download, destroy)
+- [x] 1 task-file route under `workspaces/{workspace}/tasks/{task}/files` (store)
+- [x] `app/Http/Controllers/WorkspaceMessageController.php` — index, store, destroy; loads last 100 messages oldest-first; visibility-filtered
+- [x] `app/Http/Controllers/WorkspaceFileController.php` — index, store, storeForTask, download, destroy; UUID stored filename; local disk storage; access-verified downloads; increment downloads_count
+
+### PART G — Blade Views (2 new)
+- [x] `resources/views/workspace/chat/index.blade.php` — breadcrumb, message list (avatar, name, Internal badge, timestamp, delete button), empty state, post form, observer notice
+- [x] `resources/views/workspace/files/index.blade.php` — breadcrumb, upload form (left), file list (right), category/visibility badges, download/delete buttons, empty state
+
+### PART H — workspace/show.blade.php updated
+- [x] Chat card with message count (links to workspace.chat.index)
+- [x] Files card with file count (links to workspace.files.index)
+- [x] Three placeholder cards (Time Tracking, Billing, Password Vault) with dashed borders
+
+### PART I — Task file attachments
+- [x] Task show page sidebar: file list with typeIcon, title/filename, size, date, internal badge, download/delete buttons
+- [x] Upload form with file input, optional internal checkbox (admin/manager only)
+
+### PART J — Filament Resources (2 new)
+- [x] `WorkspaceFileResource` — nav group "Workspace", sort 4; read-only (no create/edit); archive action; filters: visibility, category
+- [x] `WorkspaceMessageResource` — nav group "Workspace", sort 5; read-only; moderate/remove action; filters: visibility, message_type
+- [x] `ListWorkspaceFiles` and `ListWorkspaceMessages` pages — no header actions
+
+### PART K — AuditLogger (6 new wrappers)
+- [x] workspaceMessageCreated, workspaceMessageUpdated, workspaceMessageDeleted
+- [x] workspaceFileUploaded (logs original_filename, category, workspace_task_id, uploaded_by_user_id), workspaceFileDownloaded, workspaceFileDeleted
+
+### PART L — Dashboard Updates (all 8 dashboards)
+- [x] Super Admin: messageTotal + fileTotal count cards; Phase 6 notice
+- [x] Operations Admin: messageTotal + fileTotal count cards; Phase 6 notice
+- [x] Talent: "Chat & Files" communication link card (when workspaces > 0); Phase 6 notice
+- [x] Line Manager: "Chat & Files" communication link (when managed workspaces exist); Phase 6 notice
+- [x] Individual Client: Workspace Chat + Workspace Files link cards (when workspaces > 0); Phase 6 notice
+- [x] Business Client Admin: Workspace Chat + Workspace Files link cards; Phase 6 notice
+- [x] Business Client Staff: Workspace Chat + Workspace Files link cards; Phase 6 notice
+- [x] Active Lead: not updated (lead not yet converted to client/workspace member in Phase 6 scope)
+
+### PART M — Documentation
+- [x] CURRENT_STATUS.md updated
+- [x] IMPLEMENTATION_LOG.md updated
+- [x] DATABASE_SCHEMA.md updated (Phase 6 tables documented)
+- [x] PERMISSION_MATRIX.md updated
+- [x] TESTING_CHECKLIST.md updated
+- [x] KNOWN_ISSUES.md updated
+
+---
+
+## Architecture Notes (Phase 6 additions)
+
+- **File storage:** `Storage::disk('local')` — files stored at `storage/app/workspaces/{workspace_id}/{uuid}.{ext}`. NOT publicly accessible via URL.
+- **File downloads:** All downloads route through `WorkspaceFileController@download` which verifies workspace access + visibility before streaming via `Storage::disk('local')->download()`.
+- **Soft delete (files):** Physical file on disk preserved; DB record soft-deleted. Future maintenance command can clean orphaned files.
+- **Chat architecture:** Blade form submission only — no AJAX, no WebSockets. Last 100 messages loaded oldest-first.
+- **MIME validation:** `WorkspaceFile::allowedMimes()` returns PDF, image (jpg/jpeg/png/gif/webp), Office (doc/docx/xls/xlsx/ppt/pptx), text/csv, zip — max 10 MB.
+- **Message visibility:** `canViewInternal()` is true for admin/workspace_admin/manager roles only; clients/talent/observer see public messages only.
+- **Task file attachments:** `workspace_task_id` nullable FK on workspace_files; storeForTask() verifies the task belongs to the workspace using int-cast comparison.
+
+---
+
 ## Next Steps
 
 1. cPanel: `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan view:clear`
-2. Verify workspace_admin role can be assigned in Filament → member sees full drag on all tasks
-3. Verify client_admin can drag submitted→approved and approved→closed; cannot drag elsewhere
-4. Verify client_staff sees no drag handles and gets 403 if they attempt a status update
-5. Verify talent drag still works (pending→in_progress on their own tasks)
-6. Verify debug role line visible for admin/manager/workspace_admin users under board heading
-7. Test legacy `client` member row still works (should behave as client_admin)
+2. Verify workspace chat: post a message, verify Internal visibility toggle (admin/manager only), verify delete works for own messages and for admin on others
+3. Verify file upload: try each category, try internal toggle, verify download streams correctly (not a redirect to a public URL)
+4. Verify observer cannot post messages or upload files (form hidden, route returns 403)
+5. Verify internal files are hidden from client/talent views
+6. Verify task file attachment upload from task show page
+7. Filament: check Messages and Files resources appear under Workspace nav group; verify archive/remove actions work
+8. Phase 7 is NOT yet started — do not proceed without explicit instruction

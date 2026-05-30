@@ -22,6 +22,10 @@
     $taskOpen      = \App\Models\WorkspaceTask::whereIn('status', ['pending', 'in_progress', 'revision_requested'])->count();
     $taskBlocked   = \App\Models\WorkspaceTask::where('status', 'blocked')->count();
     $taskSubmitted = \App\Models\WorkspaceTask::where('status', 'submitted')->count();
+
+    // Chat & Files counts (Phase 6)
+    $messageTotal = \App\Models\WorkspaceMessage::count();
+    $fileTotal    = \App\Models\WorkspaceFile::count();
 @endphp
 
     {{-- ── Welcome header ──────────────────────────────────────────────── --}}
@@ -192,14 +196,37 @@
         </div>
     </div>
 
-    {{-- ── Phase 5 status notice ────────────────────────────────────────── --}}
+    {{-- ── Chat & Files summary ────────────────────────────────────────── --}}
+    <div class="mb-8">
+        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Chat &amp; Files</h3>
+        <div class="grid grid-cols-2 gap-3">
+            <a href="/admin/workspace-messages"
+               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-outline" style="font-size: 16px;">chat</span>
+                </div>
+                <p class="text-2xl font-bold text-on-surface">{{ $messageTotal }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Total Messages</p>
+            </a>
+            <a href="/admin/workspace-files"
+               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-outline" style="font-size: 16px;">folder_open</span>
+                </div>
+                <p class="text-2xl font-bold text-on-surface">{{ $fileTotal }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Total Files</p>
+            </a>
+        </div>
+    </div>
+
+    {{-- ── Phase 6 status notice ────────────────────────────────────────── --}}
     <div class="bg-secondary/5 border border-secondary/20 rounded-xl px-6 py-5 flex items-start gap-3">
         <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size: 18px;">info</span>
         <div>
-            <p class="text-sm font-semibold text-secondary">Phase 5 — Task Board</p>
+            <p class="text-sm font-semibold text-secondary">Phase 6 — Chat &amp; Files</p>
             <p class="text-sm text-on-surface-variant mt-0.5">
-                Workspace tasks are now live. Create, assign and track tasks per workspace.
-                File sharing, chat and billing are coming in later phases.
+                Workspace chat and file sharing are now live. Messages and files are managed via the portal.
+                Billing, reporting and advanced features are coming in later phases.
             </p>
         </div>
     </div>

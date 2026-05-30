@@ -4,6 +4,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadRequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkspaceController;
+use App\Http\Controllers\WorkspaceFileController;
+use App\Http\Controllers\WorkspaceMessageController;
 use App\Http\Controllers\WorkspaceTaskController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +59,22 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::put('/{task}',                    [WorkspaceTaskController::class, 'update'])->name('update');
         Route::post('/{task}/comments',          [WorkspaceTaskController::class, 'storeComment'])->name('comments.store');
         Route::post('/{task}/status',            [WorkspaceTaskController::class, 'updateStatus'])->name('status.update');
+        Route::post('/{task}/files',             [WorkspaceFileController::class, 'storeForTask'])->name('files.store');
+    });
+
+    // ── Workspace chat routes (Phase 6) ───────────────────────────────────
+    Route::prefix('workspaces/{workspace}/chat')->name('workspace.chat.')->group(function () {
+        Route::get('/',              [WorkspaceMessageController::class, 'index'])->name('index');
+        Route::post('/',             [WorkspaceMessageController::class, 'store'])->name('store');
+        Route::delete('/{message}',  [WorkspaceMessageController::class, 'destroy'])->name('destroy');
+    });
+
+    // ── Workspace file routes (Phase 6) ───────────────────────────────────
+    Route::prefix('workspaces/{workspace}/files')->name('workspace.files.')->group(function () {
+        Route::get('/',                      [WorkspaceFileController::class, 'index'])->name('index');
+        Route::post('/',                     [WorkspaceFileController::class, 'store'])->name('store');
+        Route::get('/{file}/download',       [WorkspaceFileController::class, 'download'])->name('download');
+        Route::delete('/{file}',             [WorkspaceFileController::class, 'destroy'])->name('destroy');
     });
 });
 

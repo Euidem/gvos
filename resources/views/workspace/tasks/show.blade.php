@@ -284,6 +284,109 @@
                 </dl>
             </div>
 
+            {{-- ── Task Files (Phase 6) ──────────────────────────────────── --}}
+            @php
+                $taskFiles = $task->files()
+                    ->with('uploadedBy')
+                    ->when(! $isAdminOrManager, fn ($q) => $q->where('visibility', 'public'))
+                    ->get();
+
+                $canUploadFile = ! in_array($role, ['observer', 'none'], true);
+                $currentUserIdForFiles = (int) auth()->id();
+            @endphp
+            <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-5">
+                <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 15px;">attach_file</span>
+                    Attachments
+                    @if ($taskFiles->count() > 0)
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                              style="background:rgba(0,88,190,.08);color:#0058be;">
+                            {{ $taskFiles->count() }}
+                        </span>
+                    @endif
+                </h3>
+
+                {{-- Existing attachments --}}
+                @forelse ($taskFiles as $tf)
+                @php
+                    $tfCanDelete = $isAdminOrManager || (int) $tf->uploaded_by_user_id === $currentUserIdForFiles;
+                @endphp
+                <div class="flex items-center justify-between gap-2 mb-2 p-2 rounded-lg"
+                     style="background:#F8FAFC; border:1px solid #F1F5F9;">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="material-symbols-outlined flex-shrink-0" style="font-size:15px; color:#0058be;">{{ $tf->typeIcon() }}</span>
+                        <div class="min-w-0">
+                            <p class="text-xs font-medium truncate" style="color:#1E293B;">
+                                {{ $tf->title ?: $tf->original_filename }}
+                            </p>
+                            <p class="text-[10px]" style="color:#9CA3AF;">
+                                {{ $tf->formattedSize() }} · {{ $tf->created_at->format('d M') }}
+                                @if ($tf->isInternal())
+                                    · <span style="color:#0058be;">Internal</span>
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <a href="{{ route('workspace.files.download', [$workspace, $tf]) }}"
+                           class="inline-flex items-center px-2 py-1 rounded text-[10px] font-semibold text-white"
+                           style="background-color:#0058be;">
+                            <span class="material-symbols-outlined" style="font-size: 11px;">download</span>
+                        </a>
+                        @if ($tfCanDelete)
+                            <form method="POST"
+                                  action="{{ route('workspace.files.destroy', [$workspace, $tf]) }}"
+                                  onsubmit="return confirm('Remove this attachment?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        class="inline-flex items-center px-2 py-1 rounded text-[10px]"
+                                        style="color:#DC2626;background:#FFF5F5;border:1px solid #FECACA;">
+                                    <span class="material-symbols-outlined" style="font-size: 11px;">delete</span>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+                @empty
+                    <p class="text-xs italic text-outline mb-3">No attachments yet.</p>
+                @endforelse
+
+                {{-- Upload attachment form --}}
+                @if ($canUploadFile)
+                <form method="POST"
+                      action="{{ route('workspace.tasks.files.store', [$workspace, $task]) }}"
+                      enctype="multipart/form-data"
+                      class="border-t border-[#F1F5F9] pt-3 mt-3 space-y-2">
+                    @csrf
+                    <input type="hidden" name="category" value="task_attachment">
+                    <div class="flex items-center gap-2">
+                        <input type="file"
+                               name="file"
+                               required
+                               accept="{{ implode(',', array_map(fn($m) => '.' . $m, \App\Models\WorkspaceFile::allowedMimes())) }}"
+                               class="flex-1 text-xs rounded border px-2 py-1.5 min-w-0"
+                               style="border-color:#CBD5E1; color:#374151; background:#fff;">
+                        <button type="submit"
+                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded text-xs font-semibold text-white flex-shrink-0"
+                                style="background-color:#0058be;">
+                            <span class="material-symbols-outlined" style="font-size: 12px;">upload</span>
+                            Attach
+                        </button>
+                    </div>
+                    @if ($isAdminOrManager)
+                        <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                            <input type="checkbox" name="visibility" value="internal" class="rounded border-border-subtle">
+                            <span class="text-[10px]" style="color:#64748B;">Internal attachment</span>
+                        </label>
+                    @else
+                        <input type="hidden" name="visibility" value="public">
+                    @endif
+                    <p class="text-[10px]" style="color:#9CA3AF;">Max 10 MB</p>
+                </form>
+                @endif
+            </div>
+
             {{-- Back links --}}
             <div class="space-y-2">
                 <a href="{{ route('workspace.tasks.index', $workspace) }}"

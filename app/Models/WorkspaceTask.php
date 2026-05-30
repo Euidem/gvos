@@ -209,4 +209,9 @@ class WorkspaceTask extends Model
     {
         return $this->hasMany(WorkspaceTaskComment::class)->orderBy('created_at');
     }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(WorkspaceFile::class, 'workspace_task_id')->orderByDesc('created_at');
+    }
 }
