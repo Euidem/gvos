@@ -26,7 +26,7 @@
     <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-lg overflow-hidden">
         <div class="h-1 w-full bg-secondary"></div>
 
-        <div class="p-card-padding">
+        <div class="p-8">
             <div class="flex items-center gap-4 mb-6">
                 <div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center flex-shrink-0">
                     <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">lock_person</span>
@@ -82,7 +82,7 @@
         </div>
 
         {{-- Footer note --}}
-        <div class="px-card-padding pb-card-padding">
+        <div class="px-8 pb-8">
             <div class="flex items-center gap-2 text-on-surface-variant/60 text-[11px] pt-4 border-t border-border-subtle">
                 <span class="material-symbols-outlined" style="font-size: 14px;">info</span>
                 Data retention is guaranteed for 30 days from deactivation. Contact GVOS support for assistance.

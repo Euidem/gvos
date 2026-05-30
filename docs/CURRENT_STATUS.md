@@ -1,6 +1,6 @@
 # GVOS — Current Status
 
-**Last Updated:** 2026-05-29
+**Last Updated:** 2026-05-30
 **Current Phase:** Phase 4 — Workspace Engine ✅ Complete
 
 ---
@@ -417,12 +417,48 @@ No migrations needed.
 
 ---
 
+---
+
+## UI Visual Repair v3 — Complete ✅ (2026-05-30)
+
+### Root Cause Identified and Fixed
+After v2 made tokens visible, the login page still looked broken: heading touching the card edge, cramped form fields, sidebar color gone. Root cause: custom Tailwind **spacing tokens** (`p-card-padding`, `space-y-input-gap`, `px-card-padding`, etc.) and **color tokens** (`bg-sidebar-bg`, `bg-background`) on critical layout elements were failing to render despite the CDN config and CSS fallback. The CDN JIT can miss spacing tokens; CSS fallback rules can lose to Tailwind's specificity. Inline styles and standard Tailwind utilities are the only 100% reliable approach.
+
+### What Changed
+
+| File | Fix |
+|------|-----|
+| `components/layouts/auth.blade.php` | Body: `bg-sidebar-bg` → `style="background-color:#0B0F19"` on dark variant; version marker → v3 |
+| `components/layouts/gvos.blade.php` | Body: `bg-background` → `style="background-color:#f7f9fb"`; Sidebar: `bg-sidebar-bg` → `style="background-color:#0B0F19"`; Main: `bg-background` → `style="background-color:#F8FAFC"`; version marker → v3 |
+| `components/layouts/public.blade.php` | Body: `bg-sidebar-bg` → `style="background-color:#0B0F19"`; version marker → v3 |
+| `auth/login.blade.php` | `p-card-padding` → `p-8`; `space-y-input-gap` → `space-y-5`; `px-card-padding pb-card-padding` → `px-8 pb-8` |
+| `auth/forgot-password.blade.php` | `bg-sidebar-bg` on visual header → `style="background-color:#0B0F19"`; `p-card-padding` → `p-8`; `gap-input-gap` → `gap-5` |
+| `account/status.blade.php` | `p-card-padding` → `p-8`; `px-card-padding pb-card-padding` → `px-8 pb-8` |
+
+### Key Rule Going Forward
+- Use `style="background-color:..."` or `bg-[#hex]` for all critical page/sidebar/section backgrounds — never `bg-{custom-token}` alone on structural elements
+- Use standard Tailwind spacing utilities (`p-8`, `space-y-5`, `gap-5`) for card padding and form spacing — never custom spacing tokens on structural elements
+- Custom tokens (via `tailwind.config` or CSS fallback) are fine for non-structural visual accents (badges, status pills, text colours)
+
+### How to Verify from Browser Source
+`View Source` any page and search for `GVOS UI Visual Repair v3 active` — if found, the updated layout is rendering. Sidebar and page background should be visibly dark navy (#0B0F19) on all auth and lead form pages.
+
+### cPanel Commands
+```bash
+git pull origin main
+php artisan optimize:clear
+php artisan view:clear
+```
+No migrations needed.
+
+---
+
 ## Next Steps
 
-1. cPanel: `git pull origin main && php artisan optimize:clear` (no migrations needed for UI audit)
-2. Verify fonts load: Manrope headlines, Inter body text visible on all pages
-3. Verify Material Symbols icons render on all views
-4. Verify sidebar is dark navy with correct GVOS logo and nav states
-5. Verify all status badges use GVOS color tokens (no indigo anywhere)
-6. Get Phase 4 + UI Audit sign-off
+1. cPanel: `git pull origin main && php artisan optimize:clear && php artisan view:clear` (no migrations needed)
+2. Verify login page: dark navy background, card has clear internal padding, form fields well-spaced
+3. Verify forgot-password page: dark navy visual header, card padded correctly
+4. Verify portal sidebar: visibly dark navy (#0B0F19), not white or transparent
+5. Verify active nav state: highlighted with border-l-4 and light text
+6. Get Phase 4 + UI Audit v3 sign-off
 7. Begin Phase 5: Task Board

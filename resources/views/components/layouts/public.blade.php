@@ -130,8 +130,8 @@
         .active\:brightness-90:active{filter:brightness(.9)}
     </style>
 </head>
-<body class="bg-sidebar-bg font-sans antialiased min-h-screen">
-<!-- GVOS UI Fidelity v2 active -->
+<body class="font-sans antialiased min-h-screen" style="background-color:#0B0F19">
+<!-- GVOS UI Visual Repair v3 active -->
     <div class="py-10 px-4">
         {{ $slot }}
     </div>

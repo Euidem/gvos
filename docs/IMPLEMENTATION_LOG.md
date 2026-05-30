@@ -425,3 +425,30 @@ Commit: `c472ebb`
 **No backend changes. No database changes.**
 
 **Tool:** Claude Code | **Status:** UI Fidelity v2 complete — pushed to GitHub ✅
+
+---
+
+### 2026-05-30 | UI Visual Repair v3 | Fix broken layout — inline styles for critical backgrounds, stable spacing utilities
+
+**Root cause:** Even with the CDN config in the correct order (v2 fix) and the CSS fallback block present, certain custom tokens were still not applying reliably:
+1. **Spacing tokens** (`p-card-padding`, `space-y-input-gap`, `gap-input-gap`) — Tailwind CDN JIT does not reliably generate custom spacing utilities when they appear only in class attributes scanned at runtime. Zero spacing resulted in headings touching the card border, cramped form fields.
+2. **Color tokens on critical structural elements** (`bg-sidebar-bg` on `<body>` and `<aside>`, `bg-background` on `<main>`) — CSS fallback rules can lose specificity battles with Tailwind's generated reset or `@base` layer. Inline styles cannot be overridden by any stylesheet.
+
+**Files modified:**
+
+| File | Change |
+|------|---------|
+| `components/layouts/auth.blade.php` | Body bg: `bg-sidebar-bg` → `style="background-color:#0B0F19"` on dark variant; marker → v3 |
+| `components/layouts/gvos.blade.php` | Body: `bg-background` → `style="background-color:#f7f9fb"`; Sidebar: `bg-sidebar-bg` → `style="background-color:#0B0F19"`; Main: `bg-background` → `style="background-color:#F8FAFC"`; marker → v3 |
+| `components/layouts/public.blade.php` | Body: `bg-sidebar-bg` → `style="background-color:#0B0F19"`; marker → v3 |
+| `auth/login.blade.php` | `p-card-padding` → `p-8`; `space-y-input-gap` → `space-y-5`; `px-card-padding pb-card-padding` → `px-8 pb-8` |
+| `auth/forgot-password.blade.php` | Visual header: `bg-sidebar-bg` → `style="background-color:#0B0F19"`; `p-card-padding` → `p-8`; `gap-input-gap` → `gap-5` |
+| `account/status.blade.php` | `p-card-padding` → `p-8`; `px-card-padding pb-card-padding` → `px-8 pb-8` |
+
+**Grep verification:** `indigo-`, `violet-`, `purple-` — 0 matches in all view files after fix.
+
+**Rule established:** Structural element backgrounds (page body, sidebar, main content area) must use inline `style="background-color:..."`. Card padding must use standard Tailwind utilities (`p-8`, `space-y-5`). Custom tokens remain in config and CSS fallback for badges, text colours, and non-structural accents.
+
+**No backend changes. No database changes.**
+
+**Tool:** Claude Code | **Status:** UI Visual Repair v3 complete — pushed to GitHub ✅

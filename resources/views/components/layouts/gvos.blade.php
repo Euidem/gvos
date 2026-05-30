@@ -179,8 +179,8 @@
         .hover\:bg-secondary\/10:hover{background-color:rgba(0,88,190,.1)}
     </style>
 </head>
-<body class="h-full bg-background font-sans antialiased">
-<!-- GVOS UI Fidelity v2 active -->
+<body class="h-full font-sans antialiased" style="background-color:#f7f9fb">
+<!-- GVOS UI Visual Repair v3 active -->
 
 {{-- Hidden div: ensure Tailwind CDN generates all dynamic nav classes --}}
 <div class="hidden bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed text-on-primary-container hover:text-secondary-fixed hover:bg-white/5 hover:brightness-110 shadow-card shadow-subtle bg-secondary text-on-secondary bg-surface-container-lowest border-border-subtle"></div>
@@ -188,7 +188,7 @@
 <div class="min-h-screen flex">
 
     {{-- ── Sidebar ──────────────────────────────────────────────────────── --}}
-    <aside class="w-[280px] bg-sidebar-bg text-white flex flex-col flex-shrink-0 min-h-screen">
+    <aside class="w-[280px] text-white flex flex-col flex-shrink-0 min-h-screen" style="background-color:#0B0F19">
 
         {{-- Logo --}}
         <div class="px-6 pt-6 pb-4 border-b border-white/10">
@@ -308,7 +308,7 @@
         </header>
 
         {{-- Page content --}}
-        <main class="flex-1 p-8 bg-background">
+        <main class="flex-1 p-8" style="background-color:#F8FAFC">
             {{ $slot }}
         </main>
     </div>

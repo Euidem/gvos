@@ -18,7 +18,7 @@
         {{-- Card header accent --}}
         <div class="h-1 w-full bg-secondary"></div>
 
-        <div class="p-card-padding">
+        <div class="p-8">
             <h2 class="text-lg font-semibold text-on-surface mb-6">Sign in to your account</h2>
 
             {{-- Status (e.g. password reset success) --}}
@@ -28,7 +28,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-input-gap">
+            <form method="POST" action="{{ route('login') }}" class="space-y-5">
                 @csrf
 
                 {{-- Email --}}
@@ -95,7 +95,7 @@
         </div>
 
         {{-- Security note --}}
-        <div class="px-card-padding pb-card-padding">
+        <div class="px-8 pb-8">
             <div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg border border-border-subtle">
                 <span class="material-symbols-outlined text-outline flex-shrink-0" style="font-size: 18px;">verified_user</span>
                 <p class="text-[11px] text-on-surface-variant leading-relaxed">

@@ -132,8 +132,9 @@
         .active\:scale-\[0\.98\]:active{transform:scale(.98)}
     </style>
 </head>
-<body class="h-full font-sans antialiased flex items-center justify-center min-h-screen px-4 {{ $variant === 'light' ? 'bg-dot-pattern' : 'bg-sidebar-bg' }}">
-    <!-- GVOS UI Fidelity v2 active -->
+<body class="h-full font-sans antialiased flex items-center justify-center min-h-screen px-4 {{ $variant === 'light' ? 'bg-dot-pattern' : '' }}"
+      @if($variant !== 'light') style="background-color:#0B0F19" @endif>
+    <!-- GVOS UI Visual Repair v3 active -->
     {{ $slot }}
 </body>
 </html>

@@ -5,13 +5,13 @@
     <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-lg overflow-hidden">
 
         {{-- Visual header --}}
-        <div class="h-40 relative bg-sidebar-bg flex items-center justify-center overflow-hidden">
+        <div class="h-40 relative flex items-center justify-center overflow-hidden" style="background-color:#0B0F19">
             <div class="relative z-10 bg-white/10 backdrop-blur-md rounded-full p-6 border border-white/20">
                 <span class="material-symbols-outlined text-secondary-fixed" style="font-size: 36px; font-variation-settings: 'FILL' 0;">lock_reset</span>
             </div>
         </div>
 
-        <div class="p-card-padding flex flex-col gap-6">
+        <div class="p-8 flex flex-col gap-6">
             <div class="text-center flex flex-col gap-2">
                 <h1 class="text-xl font-semibold text-on-surface">Forgot Password?</h1>
                 <p class="text-sm text-on-surface-variant">
@@ -25,7 +25,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('password.email') }}" class="flex flex-col gap-input-gap">
+            <form method="POST" action="{{ route('password.email') }}" class="flex flex-col gap-5">
                 @csrf
                 <div class="flex flex-col gap-2">
                     <label for="email" class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
