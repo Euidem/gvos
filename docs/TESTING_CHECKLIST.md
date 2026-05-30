@@ -642,6 +642,83 @@ Run after `git pull && php artisan optimize:clear && php artisan view:clear` (no
 
 ---
 
+## Phase 5 Fix 2 — Task Detail and Kanban Drag-Drop
+
+Run after `git pull && php artisan optimize:clear && php artisan view:clear` (no new migrations).
+
+### Scenario 1: Task detail route (core fix)
+
+- [ ] Login as talent assigned to workspace (primary talent or active member)
+- [ ] Kanban board loads: `/workspaces/{id}/tasks`
+- [ ] Click any task card
+- [ ] Task detail page loads — no 404
+- [ ] URL is `/workspaces/{id}/tasks/{task_id}` (integer IDs, not codes)
+
+### Scenario 2: Talent — allowed drag move
+
+- [ ] Login as talent assigned to a task (task assigned to their user account)
+- [ ] Drag handle (⋮⋮) is visible on their assigned task cards
+- [ ] Drag task from Pending → In Progress
+- [ ] Card moves to In Progress column
+- [ ] Toast shows "Task moved to "In Progress"."
+- [ ] Audit log `workspace_task.status_changed` fires
+
+### Scenario 3: Talent — submit
+
+- [ ] Task in In Progress, assigned to talent
+- [ ] Drag from In Progress → Submitted
+- [ ] Move succeeds
+- [ ] Toast shows success message
+
+### Scenario 4: Talent — invalid move (not allowed transition)
+
+- [ ] Task in Submitted status
+- [ ] Talent tries to drag to Approved (not allowed for talent)
+- [ ] No drag handle on Approved column drop attempt (JS blocks, or server blocks)
+- [ ] Card reverts to Submitted column
+- [ ] Toast shows: "This task cannot be moved from "Submitted" to "Approved". Allowed next statuses: ..."
+
+### Scenario 5: Talent — cannot move someone else's task
+
+- [ ] Talent logs in — task on board is assigned to a DIFFERENT user
+- [ ] Drag handle is NOT visible on that other user's task card
+- [ ] If somehow dragged (via dev tools), backend returns 403: "You can only update tasks assigned to you."
+- [ ] Card reverts
+
+### Scenario 6: Manager — broad moves
+
+- [ ] Login as manager (primary manager or member manager)
+- [ ] Drag handle visible on ALL task cards
+- [ ] Drag Submitted → Approved → success
+- [ ] Drag Submitted → Revision Requested → success
+- [ ] Drag In Progress → Cancelled → success
+
+### Scenario 7: Client — review flow
+
+- [ ] Login as client member
+- [ ] Drag Submitted → Approved → success
+- [ ] Drag Submitted → Revision Requested → success
+- [ ] Drag Pending → In Progress → fails (not allowed for client)
+- [ ] Toast shows descriptive error for invalid move
+
+### Scenario 8: Non-member access
+
+- [ ] Login as user with no workspace access
+- [ ] Directly visit `/workspaces/{id}/tasks/{id}` → 403 (not 404)
+- [ ] Directly visit `/workspaces/{id}/tasks` → 403
+
+### Scenario 9: Network/non-JSON error handling
+
+- [ ] If server returns non-JSON response (e.g. Cloudflare HTML error), card reverts
+- [ ] Toast shows: "The server returned an unexpected response. Please refresh the page and try again."
+
+### Audit Log Verification
+
+- [ ] `workspace_task.status_changed` fires for every successful drag move (check Laravel log / Filament audit)
+- [ ] Failed moves log `workspace_task.status_update_denied` in Laravel log with user_id, task_id, reason
+
+---
+
 ## Phase 6 — Chat and Files (planned)
 ## Phase 7 — Time Tracking and Reports (planned)
 ## Phase 8 — Billing (planned)

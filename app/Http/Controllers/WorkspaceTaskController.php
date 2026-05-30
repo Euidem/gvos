@@ -8,6 +8,7 @@ use App\Models\WorkspaceTask;
 use App\Models\WorkspaceTaskComment;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class WorkspaceTaskController extends Controller
 {
@@ -45,12 +46,28 @@ class WorkspaceTaskController extends Controller
     }
 
     /**
-     * Ensure the task belongs to the given workspace or abort 404.
+     * Ensure the task belongs to the given workspace, or abort with clear messages.
+     *
+     * Uses explicit (int) casts in addition to the model casts defined on
+     * WorkspaceTask to guard against any environment where PDO returns integers
+     * as strings (the default with ATTR_EMULATE_PREPARES = true).
+     *
+     * Returns a JSON error for expectsJson() requests so the Kanban board
+     * can surface the real reason rather than a generic fallback.
      */
-    private function authorizeTaskBelongsToWorkspace(Workspace $workspace, WorkspaceTask $task): void
-    {
-        if ($task->workspace_id !== $workspace->id) {
-            abort(404);
+    private function authorizeTaskBelongsToWorkspace(
+        Workspace     $workspace,
+        WorkspaceTask $task,
+        Request       $request = null
+    ): void {
+        if ((int) $task->workspace_id !== (int) $workspace->id) {
+            if ($request && $request->expectsJson()) {
+                abort(response()->json([
+                    'success' => false,
+                    'message' => 'This task does not belong to this workspace.',
+                ], 404));
+            }
+            abort(404, 'Task not found in this workspace.');
         }
     }
 
@@ -65,8 +82,9 @@ class WorkspaceTaskController extends Controller
      * Task board (Kanban) — tasks grouped by status.
      *
      * Accessible to any user with workspace access.
-     * Drag-and-drop on the frontend is restricted by the $role variable passed
-     * to the view (observers and assigned_users cannot drag).
+     * Drag permissions and drag-handle visibility are controlled by $role
+     * passed to the view. The view also receives $currentUserId so that
+     * talent users only see drag handles on their own assigned tasks.
      */
     public function index(Request $request, Workspace $workspace)
     {
@@ -79,12 +97,11 @@ class WorkspaceTaskController extends Controller
             ->get();
 
         $tasksByStatus = $tasks->groupBy('status');
-
-        // 'assigned_user' and 'observer' cannot create tasks
-        $canCreate = $workspace->userCanCreateTasks($user);
+        $canCreate     = $workspace->userCanCreateTasks($user);
+        $currentUserId = (int) $user->id;
 
         return view('workspace.tasks.index', compact(
-            'workspace', 'tasks', 'tasksByStatus', 'role', 'canCreate'
+            'workspace', 'tasks', 'tasksByStatus', 'role', 'canCreate', 'currentUserId'
         ));
     }
 
@@ -100,7 +117,7 @@ class WorkspaceTaskController extends Controller
             abort(403, 'You cannot create tasks in this workspace.');
         }
 
-        $members = $workspace->activeMembers()->with('user')->get();
+        $members          = $workspace->activeMembers()->with('user')->get();
         $isAdminOrManager = $this->isAdminOrManager($this->transitionRole($role));
 
         return view('workspace.tasks.create', compact(
@@ -162,7 +179,7 @@ class WorkspaceTaskController extends Controller
      */
     public function show(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
-        $this->authorizeTaskBelongsToWorkspace($workspace, $task);
+        $this->authorizeTaskBelongsToWorkspace($workspace, $task, $request);
 
         $user = $request->user();
         $role = $workspace->resolveUserWorkspaceRole($user);
@@ -188,8 +205,17 @@ class WorkspaceTaskController extends Controller
 
         $allowedTransitions = WorkspaceTask::allowedTransitions($task->status, $effectiveRole);
 
+        // For talent: further restrict allowed transitions to only their own assigned tasks.
+        // If this task is assigned to someone else, talent cannot change its status.
+        if ($effectiveRole === 'talent' && $task->assigned_to_user_id !== null
+            && (int) $task->assigned_to_user_id !== (int) $user->id) {
+            $allowedTransitions = [];
+        }
+
         $canEdit = $isAdminOrManager
-            || ($task->created_by_user_id === $user->id && $task->status === 'pending');
+            || ($task->created_by_user_id !== null
+                && (int) $task->created_by_user_id === (int) $user->id
+                && $task->status === 'pending');
 
         $members = $workspace->activeMembers()->with('user')->get();
 
@@ -204,7 +230,7 @@ class WorkspaceTaskController extends Controller
      */
     public function edit(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
-        $this->authorizeTaskBelongsToWorkspace($workspace, $task);
+        $this->authorizeTaskBelongsToWorkspace($workspace, $task, $request);
 
         $user             = $request->user();
         $role             = $this->requireWorkspaceAccess($user, $workspace);
@@ -212,7 +238,9 @@ class WorkspaceTaskController extends Controller
         $isAdminOrManager = $this->isAdminOrManager($effectiveRole);
 
         $canEdit = $isAdminOrManager
-            || ($task->created_by_user_id === $user->id && $task->status === 'pending');
+            || ($task->created_by_user_id !== null
+                && (int) $task->created_by_user_id === (int) $user->id
+                && $task->status === 'pending');
 
         if (! $canEdit) {
             abort(403, 'You cannot edit this task.');
@@ -230,7 +258,7 @@ class WorkspaceTaskController extends Controller
      */
     public function update(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
-        $this->authorizeTaskBelongsToWorkspace($workspace, $task);
+        $this->authorizeTaskBelongsToWorkspace($workspace, $task, $request);
 
         $user             = $request->user();
         $role             = $this->requireWorkspaceAccess($user, $workspace);
@@ -238,7 +266,9 @@ class WorkspaceTaskController extends Controller
         $isAdminOrManager = $this->isAdminOrManager($effectiveRole);
 
         $canEdit = $isAdminOrManager
-            || ($task->created_by_user_id === $user->id && $task->status === 'pending');
+            || ($task->created_by_user_id !== null
+                && (int) $task->created_by_user_id === (int) $user->id
+                && $task->status === 'pending');
 
         if (! $canEdit) {
             abort(403);
@@ -283,7 +313,7 @@ class WorkspaceTaskController extends Controller
      */
     public function storeComment(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
-        $this->authorizeTaskBelongsToWorkspace($workspace, $task);
+        $this->authorizeTaskBelongsToWorkspace($workspace, $task, $request);
 
         $user             = $request->user();
         $role             = $this->requireWorkspaceAccess($user, $workspace);
@@ -330,35 +360,109 @@ class WorkspaceTaskController extends Controller
      *
      * JSON success: 200 { success: true, status, message }
      * JSON permission denied: 403 { success: false, message }
+     * JSON invalid transition: 422 { success: false, message }
+     * JSON wrong workspace: 404 { success: false, message }
+     *
+     * All JSON error messages are human-readable so the Kanban toast can
+     * display them directly without a generic fallback.
      */
     public function updateStatus(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
-        $this->authorizeTaskBelongsToWorkspace($workspace, $task);
+        // ── Workspace / task membership check ─────────────────────────────
+        $this->authorizeTaskBelongsToWorkspace($workspace, $task, $request);
 
         $user          = $request->user();
-        $role          = $this->requireWorkspaceAccess($user, $workspace);
+        $role          = $workspace->resolveUserWorkspaceRole($user);
         $effectiveRole = $this->transitionRole($role);
 
+        // Abort 403 if user has no workspace access at all
+        if ($role === 'none') {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You do not have permission to update tasks in this workspace.',
+                ], 403);
+            }
+            abort(403, 'You do not have access to this workspace.');
+        }
+
+        // ── Validate the requested new status ─────────────────────────────
         $validated = $request->validate([
             'status' => 'required|in:pending,in_progress,blocked,submitted,revision_requested,approved,closed,cancelled',
         ]);
 
-        $newStatus = $validated['status'];
-        $allowed   = WorkspaceTask::allowedTransitions($task->status, $effectiveRole);
+        $newStatus  = $validated['status'];
+        $fromStatus = $task->status;
+
+        // ── Talent assignee restriction ────────────────────────────────────
+        // Talent (including assigned_user mapped to talent) may only update
+        // tasks that are explicitly assigned to themselves.  Tasks assigned
+        // to another user are blocked; unassigned tasks are allowed.
+        if ($effectiveRole === 'talent') {
+            $taskAssigneeId = (int) ($task->assigned_to_user_id ?? 0);
+            if ($taskAssigneeId !== 0 && $taskAssigneeId !== (int) $user->id) {
+                $assigneeName = optional($task->assignedTo)->name ?? 'another user';
+
+                Log::info('workspace_task.status_update_denied', [
+                    'reason'           => 'talent_not_assignee',
+                    'user_id'          => $user->id,
+                    'workspace_id'     => $workspace->id,
+                    'task_id'          => $task->id,
+                    'task_code'        => $task->task_code,
+                    'assignee_id'      => $taskAssigneeId,
+                    'resolved_role'    => $role,
+                    'effective_role'   => $effectiveRole,
+                    'from_status'      => $fromStatus,
+                    'requested_status' => $newStatus,
+                ]);
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "You can only update tasks assigned to you. This task is assigned to {$assigneeName}.",
+                    ], 403);
+                }
+                return back()->withErrors(['status' => 'You can only update tasks assigned to you.']);
+            }
+        }
+
+        // ── Transition permission check ────────────────────────────────────
+        $allowed = WorkspaceTask::allowedTransitions($fromStatus, $effectiveRole);
 
         if (! in_array($newStatus, $allowed, true)) {
+            $fromLabel = WorkspaceTask::statusLabels()[$fromStatus] ?? $fromStatus;
+            $toLabel   = WorkspaceTask::statusLabels()[$newStatus]  ?? $newStatus;
+
+            Log::info('workspace_task.status_update_denied', [
+                'reason'           => 'transition_not_allowed',
+                'user_id'          => $user->id,
+                'workspace_id'     => $workspace->id,
+                'task_id'          => $task->id,
+                'task_code'        => $task->task_code,
+                'resolved_role'    => $role,
+                'effective_role'   => $effectiveRole,
+                'from_status'      => $fromStatus,
+                'requested_status' => $newStatus,
+                'allowed'          => $allowed,
+            ]);
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'You are not allowed to move this task to that status.',
-                ], 403);
+                    'message' => "This task cannot be moved from \"{$fromLabel}\" to \"{$toLabel}\". "
+                               . (empty($allowed)
+                                    ? 'No further moves are available from this status.'
+                                    : 'Allowed next statuses: ' . implode(', ', array_map(
+                                        fn ($s) => WorkspaceTask::statusLabels()[$s] ?? $s,
+                                        $allowed
+                                      )) . '.'),
+                ], 422);
             }
-            return back()->withErrors(['status' => 'This status transition is not allowed.']);
+            return back()->withErrors(['status' => "Cannot move from \"{$fromLabel}\" to \"{$toLabel}\"."]);
         }
 
-        $oldStatus  = $task->status;
+        // ── Apply the transition ───────────────────────────────────────────
         $timestamps = [];
-
         if ($newStatus === 'in_progress' && ! $task->started_at) {
             $timestamps['started_at'] = now();
         }
@@ -374,7 +478,7 @@ class WorkspaceTaskController extends Controller
 
         $task->update(array_merge(['status' => $newStatus], $timestamps));
 
-        AuditLogger::workspaceTaskStatusChanged($task, $oldStatus, $newStatus, [
+        AuditLogger::workspaceTaskStatusChanged($task, $fromStatus, $newStatus, [
             'workspace_id' => $workspace->id,
         ]);
 
@@ -384,7 +488,7 @@ class WorkspaceTaskController extends Controller
             return response()->json([
                 'success' => true,
                 'status'  => $newStatus,
-                'message' => "Task moved to {$label}.",
+                'message' => "Task moved to \"{$label}\".",
             ], 200);
         }
 

@@ -30,6 +30,13 @@ class WorkspaceTask extends Model
     ];
 
     protected $casts = [
+        // Integer FKs — cast explicitly to avoid PHP PDO returning them as strings,
+        // which would break strict === comparisons used in access checks.
+        'workspace_id'        => 'integer',
+        'created_by_user_id'  => 'integer',
+        'assigned_to_user_id' => 'integer',
+        'sort_order'          => 'integer',
+        // Dates / datetimes
         'due_date'     => 'date',
         'started_at'   => 'datetime',
         'submitted_at' => 'datetime',
@@ -78,24 +85,50 @@ class WorkspaceTask extends Model
     /**
      * Returns the allowed next statuses for a given current status and role.
      *
-     * Roles: 'admin', 'manager', 'talent', 'client', 'observer'
+     * Roles accepted: 'admin' | 'manager' | 'talent' | 'client' | 'observer'
+     *
+     * Note: 'assigned_user' is mapped to 'talent' before this method is called
+     * via WorkspaceTaskController::transitionRole().
+     *
+     * Admin / Manager:  broad operational control — can move tasks in any
+     *                   operationally-sensible direction, plus cancel anything
+     *                   that is still in-flight.
+     *
+     * Talent:           can self-advance work they are doing and submit for
+     *                   review. Can only update tasks assigned to themselves
+     *                   (enforced in WorkspaceTaskController::updateStatus).
+     *
+     * Client:           review-only — can approve or request revision on
+     *                   submitted work, and close approved work.
+     *
+     * Observer / none:  read-only — no transitions allowed.
      */
     public static function allowedTransitions(string $fromStatus, string $role): array
     {
-        if (in_array($role, ['admin', 'manager'])) {
+        // ── Admin / Manager ───────────────────────────────────────────────
+        if (in_array($role, ['admin', 'manager'], true)) {
             return match ($fromStatus) {
+                // Start work or cancel
                 'pending'            => ['in_progress', 'cancelled'],
+                // Advance, block, revert to pending, submit, or cancel
                 'in_progress'        => ['blocked', 'submitted', 'pending', 'cancelled'],
+                // Unblock or cancel
                 'blocked'            => ['in_progress', 'cancelled'],
-                'submitted'          => ['revision_requested', 'approved', 'in_progress'],
+                // Review outcome: approve, request revision, or push back to in-progress
+                'submitted'          => ['approved', 'revision_requested', 'in_progress'],
+                // Send back to work or cancel
                 'revision_requested' => ['in_progress', 'cancelled'],
+                // Close approved work
                 'approved'           => ['closed'],
+                // Terminal states — nothing further
                 'closed'             => [],
                 'cancelled'          => [],
                 default              => [],
             };
         }
 
+        // ── Talent ────────────────────────────────────────────────────────
+        // Can self-advance their own assigned work. Cannot approve or close.
         if ($role === 'talent') {
             return match ($fromStatus) {
                 'pending'            => ['in_progress'],
@@ -106,14 +139,17 @@ class WorkspaceTask extends Model
             };
         }
 
+        // ── Client ────────────────────────────────────────────────────────
+        // Review-only: can approve submitted work, request revision, or close approved.
         if ($role === 'client') {
             return match ($fromStatus) {
-                'submitted' => ['revision_requested', 'approved'],
+                'submitted' => ['approved', 'revision_requested'],
                 'approved'  => ['closed'],
                 default     => [],
             };
         }
 
+        // ── Observer / unrecognised role ──────────────────────────────────
         return [];
     }
 

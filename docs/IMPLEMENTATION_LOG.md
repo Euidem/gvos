@@ -7,6 +7,28 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-30 | Phase 5 Fix 2 | Task Detail 404 and Kanban Drag-Drop Failure
+
+**Root cause:** `WorkspaceTask` model had no integer casts for FK columns (`workspace_id`, `created_by_user_id`, `assigned_to_user_id`). PHP PDO (with `ATTR_EMULATE_PREPARES = true`) returns integer columns as strings. `authorizeTaskBelongsToWorkspace()` used strict `!==` between the string FK and the integer primary key of `$workspace->id`, causing `abort(404)` on every task request. The same mismatch affected `canEdit` checks using `created_by_user_id === $user->id`.
+
+Drag-drop failure: the same abort(404) was triggered before the AJAX handler could process the transition, resulting in a JSON 404 response without a useful `message` field → frontend showed the generic fallback toast.
+
+Additionally: no talent-assignee restriction in `updateStatus()` — talent could update any task in the workspace.
+
+**Files changed:**
+
+| File | Change |
+|------|--------|
+| `app/Models/WorkspaceTask.php` | Added integer casts for FK columns and sort_order; improved allowedTransitions() comments |
+| `app/Http/Controllers/WorkspaceTaskController.php` | Fixed authorizeTaskBelongsToWorkspace with (int) casts + JSON 404 response; added talent assignee restriction in updateStatus(); descriptive transition error messages; Log::info for denied transitions |
+| `resources/views/workspace/tasks/index.blade.php` | Per-card drag handle visibility (talent sees handle only on their tasks); X-Requested-With header; revertCard() helper; status-code-aware error messages; improved catch handler |
+
+**Commit:** "Fix task detail routes and Kanban status updates"
+
+**Tool:** Claude Code | **Status:** Fix complete
+
+---
+
 ### 2026-05-30 | Phase 5 Fix | Workspace Task Access for Primary Team Members
 
 **Root cause:** `WorkspaceTaskController::getUserWorkspaceRole()` used strict `===` to compare `$workspace->primary_manager_id` (string from Eloquent) against `$user->id` (integer). This always returned `false`, so primary manager and primary talent fell through to `'none'` and were denied access. Additionally, `WorkspaceController::show()` did not check admin roles, and neither controller handled task-assignment fallback.

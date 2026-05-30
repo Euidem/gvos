@@ -586,14 +586,47 @@ Primary managers and primary talent could not access the Kanban board or workspa
 
 ---
 
+---
+
+## Phase 5 Fix 2 — Task Detail 404 and Kanban Drag-Drop Failure ✅ (2026-05-30)
+
+### Root Causes
+
+| # | Bug | Cause |
+|---|-----|-------|
+| 1 | Task detail page returns 404 | `authorizeTaskBelongsToWorkspace()` used strict `!==` comparison. `$task->workspace_id` is returned as a PHP **string** by PDO (no integer cast on the model). `$workspace->id` is an integer (primary key, auto-cast). `"1" !== 1` is always `true` in PHP → `abort(404)` fired on every task request. |
+| 2 | Drag-drop shows "Could not move this task" | Same `abort(404)` in `authorizeTaskBelongsToWorkspace()` was called before the AJAX status update logic. Laravel returned a 404 response → JS could not find a useful `message` field → fallback toast text shown. |
+| 3 | `canEdit` and `created_by_user_id` comparisons | `$task->created_by_user_id === $user->id` also had the string/int mismatch, preventing task creators from editing their own pending tasks. |
+| 4 | Talent could move tasks not assigned to them | No assignee ownership check existed in `updateStatus()`. |
+| 5 | Generic fallback error messages | Frontend only showed "Could not move this task." for all failure types with no useful detail. |
+
+### What Was Fixed
+
+| File | Change |
+|------|--------|
+| `app/Models/WorkspaceTask.php` | Added integer casts for `workspace_id`, `created_by_user_id`, `assigned_to_user_id`, `sort_order` — fixes ALL type-comparison bugs at the model level. Made `allowedTransitions()` comments more explicit. |
+| `app/Http/Controllers/WorkspaceTaskController.php` | `authorizeTaskBelongsToWorkspace()` now uses `(int)` casts AND returns a JSON 404 response when the request expects JSON (so the Kanban board gets a useful message). `updateStatus()` adds talent-assignee restriction (talent can only update tasks assigned to themselves), descriptive transition error messages ("cannot move from X to Y"), `Log::info` entries for all failed transitions. `show()`, `edit()`, `update()` all use explicit `(int)` casts for creator comparison. |
+| `resources/views/workspace/tasks/index.blade.php` | Drag handle now only shown to talent on their own assigned tasks or unassigned tasks (admin/manager/client see all handles). Added `X-Requested-With: XMLHttpRequest` header to fetch. Refactored revert logic into `revertCard()` helper. Error handling now shows status-code-aware fallback messages (403/422/404 each get specific text). `.catch()` shows a descriptive "unexpected response" message. Toast max-width increased for longer server messages. |
+
+### Transition Rules (confirmed)
+
+| Role | Can update tasks | Status moves allowed |
+|------|-----------------|---------------------|
+| admin/manager | Any task in workspace | Any operationally-sensible move + cancel |
+| talent | Only tasks assigned to themselves (or unassigned) | pending→in_progress, in_progress→blocked/submitted, blocked→in_progress, revision_requested→in_progress |
+| client | Any task in workspace | submitted→approved/revision_requested, approved→closed |
+| observer | None | None |
+
+---
+
 ## Next Steps
 
 1. cPanel: `git pull origin main && php artisan optimize:clear && php artisan view:clear` (no new migrations)
-2. Verify primary manager can log in and access workspace + Kanban board
-3. Verify primary talent can log in and access workspace + Kanban board
-4. Verify super admin can access any workspace
-5. Verify task-assigned user (no member row) can view their task
-6. Verify "Sync Team" Filament action creates member rows and shows notification
-7. Verify auto-sync fires on workspace save when primary IDs are set
-8. Verify drag-and-drop on the Kanban board still works
+2. Verify task card click opens task detail page (no 404)
+3. Verify talent can drag their own assigned tasks
+4. Verify talent cannot drag tasks assigned to others (no drag handle shown)
+5. Verify error toast shows the server's actual message (not "Could not move this task")
+6. Verify manager can drag any task in the workspace
+7. Verify client can move submitted → approved / revision_requested
+8. Verify audit log records every successful drag
 9. Get Phase 5 sign-off, then begin Phase 6 (if approved)

@@ -16,6 +16,9 @@
         'high'   => ['bg' => '#FFFBEB', 'color' => '#D97706', 'label' => 'High'],
         'urgent' => ['bg' => '#FEF2F2', 'color' => '#DC2626', 'label' => 'URGENT'],
     ];
+    // Roles that can drag at all (enforces SortableJS init).
+    // Per-card drag handle visibility adds a second layer for talent.
+    $draggableRoles = ['admin', 'manager', 'talent', 'client'];
 @endphp
 
     {{-- ── Kanban-specific styles ─────────────────────────────────────────── --}}
@@ -86,6 +89,7 @@
             transform: translateX(24px);
             transition: opacity 0.2s ease, transform 0.2s ease;
             pointer-events: none;
+            max-width: 380px;
         }
         .toast-item.show { opacity: 1; transform: translateX(0); }
         .toast-success { background:#ECFDF5; color:#065F46; border:1px solid rgba(16,185,129,0.30); }
@@ -108,7 +112,7 @@
                 <span id="kanban-total-count">{{ $tasks->count() }}</span>
                 task{{ $tasks->count() !== 1 ? 's' : '' }}
                 &middot; {{ $workspace->workspace_code }}
-                @if (in_array($role, ['admin', 'manager', 'talent', 'client']))
+                @if (in_array($role, $draggableRoles))
                     &middot; <span style="color:#0058be;">Drag cards between columns to change status</span>
                 @endif
             </p>
@@ -177,6 +181,19 @@
                     @php
                         $badge = $priorityBadge[$task->priority] ?? ['bg' => '#F1F5F9', 'color' => '#64748B', 'label' => ucfirst($task->priority)];
                         $dateColor = $task->isOverdue() ? '#DC2626' : ($task->isDueSoon() ? '#D97706' : '#9CA3AF');
+
+                        // Drag handle visibility rules:
+                        //   admin/manager: always show
+                        //   talent:        only on tasks assigned to this user OR unassigned tasks
+                        //   client:        always show (backend enforces valid transitions)
+                        //   others:        never show
+                        $taskAssigneeId = (int) ($task->assigned_to_user_id ?? 0);
+                        $showDragHandle = match ($role) {
+                            'admin', 'manager' => true,
+                            'talent'           => $taskAssigneeId === 0 || $taskAssigneeId === $currentUserId,
+                            'client'           => true,
+                            default            => false,
+                        };
                     @endphp
                     <div class="kanban-card bg-white rounded-xl p-4"
                          style="border:1px solid #E2E8F0; box-shadow:0 1px 3px rgba(0,0,0,0.06);"
@@ -192,8 +209,8 @@
                             </span>
                             <div class="flex items-center gap-1">
                                 <span class="text-[10px] font-mono" style="color:#9CA3AF;">{{ $task->task_code }}</span>
-                                @if (in_array($role, ['admin', 'manager', 'talent', 'client']))
-                                    <span class="drag-handle material-symbols-outlined" style="font-size:18px;" title="Drag to move">drag_indicator</span>
+                                @if ($showDragHandle)
+                                    <span class="drag-handle material-symbols-outlined" style="font-size:18px;" title="Drag to change status">drag_indicator</span>
                                 @endif
                             </div>
                         </div>
@@ -297,7 +314,7 @@
             var t = document.createElement('div');
             t.className = 'toast-item toast-' + type;
             t.innerHTML =
-                '<span style="font-family:\'Material Symbols Outlined\';font-size:16px;">'
+                '<span style="font-family:\'Material Symbols Outlined\';font-size:16px;flex-shrink:0;">'
                 + (type === 'success' ? 'check_circle' : 'error')
                 + '</span><span>' + message + '</span>';
             container.appendChild(t);
@@ -307,7 +324,7 @@
             setTimeout(function () {
                 t.classList.remove('show');
                 setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 250);
-            }, 3500);
+            }, 4500);
         }
 
         // ── Column count badge updater ────────────────────────────────────────
@@ -321,6 +338,7 @@
 
         // ── Column empty-state updater ────────────────────────────────────────
         function updateEmptyState(columnEl) {
+            if (!columnEl) return;
             var list     = columnEl.querySelector('.kanban-task-list');
             var emptyMsg = columnEl.querySelector('.kanban-empty-msg');
             if (!list || !emptyMsg) return;
@@ -328,13 +346,15 @@
             emptyMsg.classList.toggle('hidden', hasCards);
         }
 
-        // ── Total task count (header) ─────────────────────────────────────────
-        function updateTotalCount(delta) {
-            var el = document.getElementById('kanban-total-count');
-            if (el) {
-                var n = parseInt(el.textContent || '0', 10) + delta;
-                el.textContent = Math.max(0, n);
-            }
+        // ── Revert a card to its original column ──────────────────────────────
+        function revertCard(card, fromCol, toCol, oldIndex, oldStatus, newStatus) {
+            if (card.parentNode === toCol) toCol.removeChild(card);
+            var refEl = fromCol.children[oldIndex] || null;
+            fromCol.insertBefore(card, refEl);
+            updateColCount(newStatus, -1);
+            updateColCount(oldStatus, +1);
+            updateEmptyState(fromCol.closest('[data-column-status]'));
+            updateEmptyState(toCol.closest('[data-column-status]'));
         }
 
         // ── Initialise SortableJS on each column ──────────────────────────────
@@ -382,48 +402,59 @@
                     updateEmptyState(evt.from.closest('[data-column-status]'));
                     updateEmptyState(evt.to.closest('[data-column-status]'));
 
-                    // AJAX status update
-                    fetch('/workspaces/' + WORKSPACE_ID + '/tasks/' + taskId + '/status', {
+                    // AJAX status update — uses route-equivalent URL
+                    var statusUrl = '/workspaces/' + WORKSPACE_ID + '/tasks/' + taskId + '/status';
+
+                    fetch(statusUrl, {
                         method:  'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept':       'application/json',
-                            'X-CSRF-TOKEN': CSRF,
+                            'Content-Type':     'application/json',
+                            'Accept':           'application/json',
+                            'X-CSRF-TOKEN':     CSRF,
+                            'X-Requested-With': 'XMLHttpRequest',
                         },
                         body: JSON.stringify({ status: newStatus }),
                     })
                     .then(function (res) {
+                        // Parse JSON regardless of HTTP status.
+                        // If the body is not JSON (e.g., server-level HTML error page),
+                        // the parse will throw and we fall to the .catch() handler.
                         return res.json().then(function (data) {
-                            return { ok: res.ok, data: data };
+                            return { ok: res.ok, status: res.status, data: data };
                         });
                     })
                     .then(function (result) {
-                        if (result.ok && result.data.success) {
-                            // Confirm move
+                        if (result.ok && result.data && result.data.success) {
+                            // ── Move confirmed ──────────────────────────────
                             card.dataset.currentStatus = newStatus;
                             showToast(result.data.message || 'Task moved.', 'success');
                         } else {
-                            // Revert move
-                            if (card.parentNode === evt.to) evt.to.removeChild(card);
-                            var refEl = evt.from.children[oldIndex] || null;
-                            evt.from.insertBefore(card, refEl);
-                            updateColCount(newStatus,  -1);
-                            updateColCount(oldStatus,  +1);
-                            updateEmptyState(evt.from.closest('[data-column-status]'));
-                            updateEmptyState(evt.to.closest('[data-column-status]'));
-                            showToast(result.data.message || 'Could not move this task.', 'error');
+                            // ── Move rejected — revert card ─────────────────
+                            revertCard(card, evt.from, evt.to, oldIndex, oldStatus, newStatus);
+
+                            // Use the server's message when available, or a
+                            // status-code-aware fallback if the message is missing.
+                            var msg = (result.data && result.data.message)
+                                ? result.data.message
+                                : (result.status === 403
+                                    ? 'You do not have permission to make this move.'
+                                    : result.status === 422
+                                    ? 'This status move is not allowed.'
+                                    : result.status === 404
+                                    ? 'Task or workspace not found. Please refresh.'
+                                    : 'Could not move this task. Please try again.');
+
+                            showToast(msg, 'error');
                         }
                     })
                     .catch(function () {
-                        // Network error — revert
-                        if (card.parentNode === evt.to) evt.to.removeChild(card);
-                        var refEl = evt.from.children[oldIndex] || null;
-                        evt.from.insertBefore(card, refEl);
-                        updateColCount(newStatus,  -1);
-                        updateColCount(oldStatus,  +1);
-                        updateEmptyState(evt.from.closest('[data-column-status]'));
-                        updateEmptyState(evt.to.closest('[data-column-status]'));
-                        showToast('Network error. Task was not moved.', 'error');
+                        // Non-JSON response (server-level HTML error page, network
+                        // failure, CORS block, etc.) — always revert the card.
+                        revertCard(card, evt.from, evt.to, oldIndex, oldStatus, newStatus);
+                        showToast(
+                            'The server returned an unexpected response. Please refresh the page and try again.',
+                            'error'
+                        );
                     });
                 },
             });

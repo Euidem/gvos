@@ -90,6 +90,31 @@ Target class [role] does not exist.
 
 ---
 
+### 2026-05-30 | Phase 5 | Critical | Task detail 404 and Kanban drag-drop failure
+
+**Description:** After the workspace access fix, talent and manager users could see the Kanban board but:
+1. Clicking any task card returned a 404 page.
+2. Dragging a card showed "Could not move this task" (or an uninformative error toast).
+
+**Root cause:**
+`WorkspaceTask` model had no integer casts on its foreign key columns (`workspace_id`, `created_by_user_id`, `assigned_to_user_id`). PHP PDO with `ATTR_EMULATE_PREPARES = true` (the Laravel MySQL default) returns integer DB columns as PHP **strings**. `authorizeTaskBelongsToWorkspace()` used strict `!==` to compare `$task->workspace_id` (string `"1"`) against `$workspace->id` (integer `1`). In PHP, `"1" !== 1` is always `true`, so `abort(404)` was triggered on every task request regardless of whether the task belonged to the workspace. The drag-drop AJAX path hit the same abort, producing a 404 JSON response whose `message` field did not clearly indicate the actual cause.
+
+Additionally: no talent-assignee restriction existed — talent could update any task in the workspace.
+
+**Resolution:**
+- Added integer casts for FK columns to `WorkspaceTask` model.
+- Fixed `authorizeTaskBelongsToWorkspace()` with explicit `(int)` casts + returns a JSON 404 for AJAX requests.
+- Added talent-assignee check in `updateStatus()` with descriptive error message.
+- Improved all error messages to include from/to status names.
+- Added `Log::info` for all failed transition attempts.
+- Updated Kanban frontend: per-card drag handle visibility for talent, `X-Requested-With` header, `revertCard()` helper, status-code-aware error messages.
+
+**Commit:** "Fix task detail routes and Kanban status updates"
+
+**Status:** Resolved.
+
+---
+
 ### 2026-05-30 | Phase 5 | Critical | Primary manager / talent 403 on workspace and task board
 
 **Description:** Users set as `primary_manager_id` or `primary_talent_id` on a workspace could not access the workspace detail page or the Kanban task board. They received a 403 "You do not have access to this workspace." error.
