@@ -719,6 +719,73 @@ Run after `git pull && php artisan optimize:clear && php artisan view:clear` (no
 
 ---
 
+## Phase 5 Fix 3 — Talent Kanban Drag-Drop Permission Fix
+
+Run after `git pull && php artisan optimize:clear && php artisan view:clear` (no new migrations).
+
+### Scenario 1: Assigned talent — allowed drag (core scenario)
+
+- [ ] Login as talent user who is assigned to a task in the workspace
+- [ ] Kanban board loads — drag handles visible on their assigned task
+- [ ] Drag task from Pending → In Progress
+- [ ] Card lands in In Progress column
+- [ ] Green toast: "Task moved to \"In Progress\"."
+- [ ] Check Laravel log: `workspace_task.status_update_attempt` entry with `effective_role: talent`, `is_task_assignee: true`
+
+### Scenario 2: Talent — submit task
+
+- [ ] Task in In Progress, assigned to talent
+- [ ] Drag In Progress → Submitted
+- [ ] Move succeeds, green toast
+
+### Scenario 3: Talent — invalid move blocked with descriptive message
+
+- [ ] Task in Submitted status, assigned to talent
+- [ ] Talent drags to Approved column (not allowed for talent)
+- [ ] Card reverts to Submitted
+- [ ] Red toast shows server message: "This task cannot be moved from \"Submitted\" to \"Approved\". Allowed next statuses: Approved, Revision Requested."
+- [ ] Browser console shows `[GVOS Kanban] Drag rejected` with httpStatus 422 and response JSON
+
+### Scenario 4: Primary talent — unassigned task
+
+- [ ] Login as the user set as `primary_talent_id` on the workspace
+- [ ] Board has an unassigned task (assigned_to_user_id is null)
+- [ ] Drag handle is visible on that unassigned task
+- [ ] Drag Pending → In Progress
+- [ ] Move succeeds
+
+### Scenario 5: Regular talent — cannot move unassigned task
+
+- [ ] Login as a talent who is a workspace member but NOT the primary_talent_id
+- [ ] Board has an unassigned task
+- [ ] Drag handle IS visible (unassigned tasks show handle for all talent)
+- [ ] Attempt to drag unassigned task to another column
+- [ ] Card reverts
+- [ ] Red toast: "Only the primary talent can move unassigned tasks."
+
+### Scenario 6: Manager — broad access
+
+- [ ] Login as manager (primary manager or member with role=manager)
+- [ ] Drag handles visible on all task cards
+- [ ] Drag Submitted → Approved → succeeds
+- [ ] Drag In Progress → Cancelled → succeeds
+
+### Scenario 7: assigned_user tier — SortableJS enabled
+
+- [ ] If a user is assigned to a task but has NO workspace member row (assigned_user tier)
+- [ ] Kanban board loads — SortableJS IS initialized (CAN_DRAG = true)
+- [ ] Drag handle IS visible on their specific assigned task
+- [ ] Drag Pending → In Progress → succeeds
+- [ ] Check Laravel log: `workspace_role: assigned_user`, `effective_role: talent`, `is_task_assignee: true`
+
+### Logging Verification
+
+- [ ] Every drag attempt (success or fail) logs `workspace_task.status_update_attempt` with: user_id, user_email, user_roles, workspace_id, task_id, task_code, task_assigned_to, from_status, requested_status, workspace_role, effective_role, is_task_assignee, is_primary_talent, is_primary_manager, allowed_transitions
+- [ ] Every failed drag logs `workspace_task.status_update_denied` with reason field
+- [ ] Browser console shows `[GVOS Kanban] Drag rejected` for server-rejected drags with httpStatus and full response JSON
+
+---
+
 ## Phase 6 — Chat and Files (planned)
 ## Phase 7 — Time Tracking and Reports (planned)
 ## Phase 8 — Billing (planned)

@@ -619,14 +619,77 @@ Primary managers and primary talent could not access the Kanban board or workspa
 
 ---
 
+---
+
+---
+
+## Phase 5 Fix 3 — Talent Kanban Drag-Drop Permission Fix ✅ (2026-05-30)
+
+### Root Cause
+
+After Fix 2, task detail pages worked and drag handles appeared correctly for talent. But dragging a card still failed. The root causes were:
+
+1. **`updateStatus()` relied solely on `resolveUserWorkspaceRole()`** — In edge cases where the talent user was the primary talent but without a synced member row, or where `resolveUserWorkspaceRole()` returned `'assigned_user'` rather than `'talent'`, the single-signal role check could incorrectly deny access or map to the wrong effective role.
+
+2. **`assigned_user` not in `CAN_DRAG` list** — The Kanban view used `in_array($role, ['admin','manager','talent','client'])` to decide whether to initialise SortableJS. Users resolved as `assigned_user` (no member row, but assigned to a task) saw no drag handles and had SortableJS disabled, even though they should have talent-level drag rights.
+
+3. **No comprehensive logging** — Without server-side logging at every decision point, diagnosing the exact rejection reason required guessing.
+
+### What Was Fixed
+
+| File | Change |
+|------|--------|
+| `app/Http/Controllers/WorkspaceTaskController.php` | `updateStatus()` completely rewritten with multi-signal role determination (Steps 1–8). Now checks `$isTaskAssignee`, `$isPrimaryTalent`, `$isPrimaryManager` **in addition to** `resolveUserWorkspaceRole()`. Added comprehensive `Log::info('workspace_task.status_update_attempt', [...])` at Step 5 logging all context on every attempt. All rejection paths log to `workspace_task.status_update_denied` with full context: user_id, email, roles, workspace_id, task_id, assigned_to, from/to status, resolved role, effective role, allowed transitions, rejection reason. |
+| `resources/views/workspace/tasks/index.blade.php` | Added `'assigned_user'` to `$draggableRoles` and to the `CAN_DRAG` JS expression. Added `'assigned_user'` case to `showDragHandle` match (only shows handle on their own assigned tasks). Added `console.warn('[GVOS Kanban] Drag rejected', {...})` on AJAX failure and `console.warn('[GVOS Kanban] Drag network/parse error', {...})` on `.catch()` — logs taskId, fromStatus, toStatus, httpStatus, response JSON for debugging. |
+
+### Role Determination Logic (new — `updateStatus()` Step 3)
+
+```
+if workspaceRole === 'admin'                                              → admin
+elif isPrimaryManager OR workspaceRole === 'manager'                     → manager
+elif isTaskAssignee OR isPrimaryTalent OR workspaceRole in [talent, assigned_user] → talent
+elif workspaceRole === 'client'                                           → client
+else                                                                      → 403 + log
+```
+
+### Talent Move Rules (Step 6)
+
+| Condition | Can move? |
+|-----------|-----------|
+| Task is explicitly assigned to this talent | ✅ Yes |
+| Task is unassigned AND user is primary talent | ✅ Yes |
+| Task is unassigned AND user is NOT primary talent | ❌ No — "Only the primary talent can move unassigned tasks." |
+| Task is assigned to a different user | ❌ No — "You can only move tasks assigned to you. This task is assigned to [name]." |
+
+### Transition Rules (unchanged)
+
+| Role | Allowed moves |
+|------|--------------|
+| admin/manager | Any operationally-sensible move + cancel |
+| talent | pending→in_progress, in_progress→blocked/submitted, blocked→in_progress, revision_requested→in_progress |
+| client | submitted→approved/revision_requested, approved→closed |
+| observer | None |
+
+### Test Scenarios (PART J)
+
+1. **Assigned talent drag** — Talent drags their own task pending→in_progress → succeeds, green toast
+2. **Talent submit** — Talent drags in_progress→submitted → succeeds, green toast
+3. **Talent invalid move** — Talent drags submitted→approved → 422, red toast with "cannot move from Submitted to Approved. Allowed next statuses: Approved, Revision Requested" (server message)
+4. **Primary talent + unassigned task** — Primary talent drags unassigned task → succeeds
+5. **Manager approve** — Manager drags submitted→approved → succeeds
+6. **Client review** — Client drags submitted→approved or submitted→revision_requested → succeeds
+
+---
+
 ## Next Steps
 
 1. cPanel: `git pull origin main && php artisan optimize:clear && php artisan view:clear` (no new migrations)
-2. Verify task card click opens task detail page (no 404)
-3. Verify talent can drag their own assigned tasks
-4. Verify talent cannot drag tasks assigned to others (no drag handle shown)
-5. Verify error toast shows the server's actual message (not "Could not move this task")
+2. Verify talent can drag their own assigned tasks (pending→in_progress)
+3. Verify talent can submit (in_progress→submitted)
+4. Verify talent cannot approve (submitted→approved) — red toast with clear message
+5. Verify primary talent can move unassigned tasks
 6. Verify manager can drag any task in the workspace
 7. Verify client can move submitted → approved / revision_requested
-8. Verify audit log records every successful drag
-9. Get Phase 5 sign-off, then begin Phase 6 (if approved)
+8. Check Laravel logs: every drag attempt must produce a `workspace_task.status_update_attempt` log entry
+9. Check browser console: failed drags must show `[GVOS Kanban] Drag rejected` with full context
+10. Get Phase 5 sign-off, then begin Phase 6 (if approved)

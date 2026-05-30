@@ -90,6 +90,27 @@ Target class [role] does not exist.
 
 ---
 
+### 2026-05-30 | Phase 5 | Critical | Talent Kanban drag-drop still failing after Fix 2
+
+**Description:** After Fix 2, task detail pages worked correctly. But dragging a Kanban card still failed silently for talent users. The card would move in the UI and then revert with an error toast, but no useful server message was surfaced to identify the cause.
+
+**Root cause:**
+1. `updateStatus()` relied on `resolveUserWorkspaceRole()` alone. In edge cases (primary talent with no member row, or `assigned_user` tier), this could produce a wrong effective role or deny access incorrectly.
+2. The Kanban view's `CAN_DRAG` check excluded `'assigned_user'` from the draggable role list, disabling SortableJS for those users.
+3. No server-side logging at drag-attempt time made diagnosis impossible without adding logging first.
+
+**Resolution:**
+- Rewrote `updateStatus()` with 8-step multi-signal role determination. Now checks `$isTaskAssignee`, `$isPrimaryTalent`, `$isPrimaryManager` alongside `resolveUserWorkspaceRole()`.
+- Added comprehensive `Log::info` at every decision point (step 5: attempt log; all rejection paths: denied log with reason).
+- Added `'assigned_user'` to `CAN_DRAG` and `showDragHandle` in the Kanban view.
+- Added `console.warn` to JS fetch error handler for browser-side debugging.
+
+**Commit:** "Fix talent Kanban task movement permissions"
+
+**Status:** Resolved.
+
+---
+
 ### 2026-05-30 | Phase 5 | Critical | Task detail 404 and Kanban drag-drop failure
 
 **Description:** After the workspace access fix, talent and manager users could see the Kanban board but:

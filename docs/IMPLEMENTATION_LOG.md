@@ -7,6 +7,23 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-30 | Phase 5 Fix 3 | Talent Kanban Drag-Drop Permission Fix
+
+**Root cause:** `updateStatus()` relied solely on `resolveUserWorkspaceRole()` for role determination. In edge cases (primary talent with no synced member row, or `resolveUserWorkspaceRole()` returning `'assigned_user'`), the single-signal check could deny access or produce a wrong effective role. Additionally, the Kanban view's `CAN_DRAG` check used `in_array($role, ['admin','manager','talent','client'])` which excluded `'assigned_user'` — so users in the assigned_user tier saw no drag handles and had SortableJS disabled despite having talent-level drag rights. No server-side logging existed at drag-attempt time, making diagnosis difficult.
+
+**Files changed:**
+
+| File | Change |
+|------|--------|
+| `app/Http/Controllers/WorkspaceTaskController.php` | `updateStatus()` rewritten with 8-step multi-signal role determination. Steps 2–3: gather `$isTaskAssignee`, `$isPrimaryTalent`, `$isPrimaryManager` signals alongside `resolveUserWorkspaceRole()`. Step 5: comprehensive `Log::info('workspace_task.status_update_attempt', [...])` on every attempt. Step 6: talent canMove = isTaskAssignee OR (unassigned AND isPrimaryTalent). All rejection paths log full context with reason, user info, task info. |
+| `resources/views/workspace/tasks/index.blade.php` | Added `'assigned_user'` to `$draggableRoles` and `CAN_DRAG` expression. Added `'assigned_user'` match case in `showDragHandle` (only their own tasks). Added `console.warn('[GVOS Kanban] Drag rejected', {...})` and `console.warn('[GVOS Kanban] Drag network/parse error', {...})` for debugging. |
+
+**Commit:** "Fix talent Kanban task movement permissions"
+
+**Tool:** Claude Code | **Status:** Fix complete
+
+---
+
 ### 2026-05-30 | Phase 5 Fix 2 | Task Detail 404 and Kanban Drag-Drop Failure
 
 **Root cause:** `WorkspaceTask` model had no integer casts for FK columns (`workspace_id`, `created_by_user_id`, `assigned_to_user_id`). PHP PDO (with `ATTR_EMULATE_PREPARES = true`) returns integer columns as strings. `authorizeTaskBelongsToWorkspace()` used strict `!==` between the string FK and the integer primary key of `$workspace->id`, causing `abort(404)` on every task request. The same mismatch affected `canEdit` checks using `created_by_user_id === $user->id`.

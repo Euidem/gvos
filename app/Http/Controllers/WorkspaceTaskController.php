@@ -365,18 +365,52 @@ class WorkspaceTaskController extends Controller
      *
      * All JSON error messages are human-readable so the Kanban toast can
      * display them directly without a generic fallback.
+     *
+     * Role determination uses a multi-signal approach rather than relying
+     * solely on resolveUserWorkspaceRole(), so that edge cases such as a
+     * primary talent with no member row, or an assigned user whose member
+     * row has an unexpected role, are all handled correctly.
      */
     public function updateStatus(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
-        // ── Workspace / task membership check ─────────────────────────────
+        // ── Step 1: Verify task belongs to this workspace ──────────────────
         $this->authorizeTaskBelongsToWorkspace($workspace, $task, $request);
 
-        $user          = $request->user();
-        $role          = $workspace->resolveUserWorkspaceRole($user);
-        $effectiveRole = $this->transitionRole($role);
+        $user = $request->user();
 
-        // Abort 403 if user has no workspace access at all
-        if ($role === 'none') {
+        // ── Step 2: Gather role-resolution signals (PART I / PART B) ──────
+        $workspaceRole   = $workspace->resolveUserWorkspaceRole($user);
+        $isTaskAssignee  = $task->assigned_to_user_id !== null
+                           && (int) $task->assigned_to_user_id === (int) $user->id;
+        $isPrimaryTalent = $workspace->primary_talent_id !== null
+                           && (int) $workspace->primary_talent_id === (int) $user->id;
+        $isPrimaryManager = $workspace->primary_manager_id !== null
+                            && (int) $workspace->primary_manager_id === (int) $user->id;
+
+        // ── Step 3: Determine effective role (priority: admin > manager > talent > client) ──
+        if ($workspaceRole === 'admin') {
+            $effectiveRole = 'admin';
+        } elseif ($isPrimaryManager || $workspaceRole === 'manager') {
+            $effectiveRole = 'manager';
+        } elseif ($isTaskAssignee || $isPrimaryTalent || in_array($workspaceRole, ['talent', 'assigned_user'], true)) {
+            $effectiveRole = 'talent';
+        } elseif ($workspaceRole === 'client') {
+            $effectiveRole = 'client';
+        } else {
+            // No access path — log and block
+            Log::info('workspace_task.status_update_denied', [
+                'reason'             => 'no_workspace_access',
+                'user_id'            => $user->id,
+                'user_email'         => $user->email,
+                'user_roles'         => $user->getRoleNames()->toArray(),
+                'workspace_id'       => $workspace->id,
+                'task_id'            => $task->id,
+                'task_assigned_to'   => $task->assigned_to_user_id,
+                'workspace_role'     => $workspaceRole,
+                'is_task_assignee'   => $isTaskAssignee,
+                'is_primary_talent'  => $isPrimaryTalent,
+                'is_primary_manager' => $isPrimaryManager,
+            ]);
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
@@ -386,7 +420,7 @@ class WorkspaceTaskController extends Controller
             abort(403, 'You do not have access to this workspace.');
         }
 
-        // ── Validate the requested new status ─────────────────────────────
+        // ── Step 4: Validate the requested new status ──────────────────────
         $validated = $request->validate([
             'status' => 'required|in:pending,in_progress,blocked,submitted,revision_requested,approved,closed,cancelled',
         ]);
@@ -394,39 +428,67 @@ class WorkspaceTaskController extends Controller
         $newStatus  = $validated['status'];
         $fromStatus = $task->status;
 
-        // ── Talent assignee restriction ────────────────────────────────────
-        // Talent (including assigned_user mapped to talent) may only update
-        // tasks that are explicitly assigned to themselves.  Tasks assigned
-        // to another user are blocked; unassigned tasks are allowed.
+        // ── Step 5: Log full context for all attempts (PART A) ─────────────
+        Log::info('workspace_task.status_update_attempt', [
+            'user_id'             => $user->id,
+            'user_email'          => $user->email,
+            'user_roles'          => $user->getRoleNames()->toArray(),
+            'workspace_id'        => $workspace->id,
+            'task_id'             => $task->id,
+            'task_code'           => $task->task_code,
+            'task_assigned_to'    => $task->assigned_to_user_id,
+            'from_status'         => $fromStatus,
+            'requested_status'    => $newStatus,
+            'workspace_role'      => $workspaceRole,
+            'effective_role'      => $effectiveRole,
+            'is_task_assignee'    => $isTaskAssignee,
+            'is_primary_talent'   => $isPrimaryTalent,
+            'is_primary_manager'  => $isPrimaryManager,
+            'allowed_transitions' => WorkspaceTask::allowedTransitions($fromStatus, $effectiveRole),
+        ]);
+
+        // ── Step 6: Talent assignee restriction ────────────────────────────
+        // Talent may move:
+        //   (a) any task that is explicitly assigned to themselves, OR
+        //   (b) an unassigned task if they are the primary talent.
+        // All other cases are blocked to prevent cross-task interference.
         if ($effectiveRole === 'talent') {
-            $taskAssigneeId = (int) ($task->assigned_to_user_id ?? 0);
-            if ($taskAssigneeId !== 0 && $taskAssigneeId !== (int) $user->id) {
-                $assigneeName = optional($task->assignedTo)->name ?? 'another user';
+            $taskIsUnassigned = $task->assigned_to_user_id === null;
+            $canMove          = $isTaskAssignee || ($taskIsUnassigned && $isPrimaryTalent);
+
+            if (! $canMove) {
+                $assigneeName = $taskIsUnassigned
+                    ? 'no one (only the primary talent can move unassigned tasks)'
+                    : (optional($task->assignedTo)->name ?? 'another user');
 
                 Log::info('workspace_task.status_update_denied', [
-                    'reason'           => 'talent_not_assignee',
-                    'user_id'          => $user->id,
-                    'workspace_id'     => $workspace->id,
-                    'task_id'          => $task->id,
-                    'task_code'        => $task->task_code,
-                    'assignee_id'      => $taskAssigneeId,
-                    'resolved_role'    => $role,
-                    'effective_role'   => $effectiveRole,
-                    'from_status'      => $fromStatus,
-                    'requested_status' => $newStatus,
+                    'reason'             => 'talent_not_assignee',
+                    'user_id'            => $user->id,
+                    'user_email'         => $user->email,
+                    'workspace_id'       => $workspace->id,
+                    'task_id'            => $task->id,
+                    'task_code'          => $task->task_code,
+                    'task_assigned_to'   => $task->assigned_to_user_id,
+                    'task_is_unassigned' => $taskIsUnassigned,
+                    'is_task_assignee'   => $isTaskAssignee,
+                    'is_primary_talent'  => $isPrimaryTalent,
+                    'from_status'        => $fromStatus,
+                    'requested_status'   => $newStatus,
                 ]);
 
                 if ($request->expectsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => "You can only update tasks assigned to you. This task is assigned to {$assigneeName}.",
+                        'message' => $taskIsUnassigned
+                            ? 'Only the primary talent can move unassigned tasks.'
+                            : "You can only move tasks assigned to you. This task is assigned to {$assigneeName}.",
                     ], 403);
                 }
                 return back()->withErrors(['status' => 'You can only update tasks assigned to you.']);
             }
         }
 
-        // ── Transition permission check ────────────────────────────────────
+        // ── Step 7: Transition permission check ────────────────────────────
         $allowed = WorkspaceTask::allowedTransitions($fromStatus, $effectiveRole);
 
         if (! in_array($newStatus, $allowed, true)) {
@@ -436,10 +498,10 @@ class WorkspaceTaskController extends Controller
             Log::info('workspace_task.status_update_denied', [
                 'reason'           => 'transition_not_allowed',
                 'user_id'          => $user->id,
+                'user_email'       => $user->email,
                 'workspace_id'     => $workspace->id,
                 'task_id'          => $task->id,
                 'task_code'        => $task->task_code,
-                'resolved_role'    => $role,
                 'effective_role'   => $effectiveRole,
                 'from_status'      => $fromStatus,
                 'requested_status' => $newStatus,
@@ -461,7 +523,7 @@ class WorkspaceTaskController extends Controller
             return back()->withErrors(['status' => "Cannot move from \"{$fromLabel}\" to \"{$toLabel}\"."]);
         }
 
-        // ── Apply the transition ───────────────────────────────────────────
+        // ── Step 8: Apply the transition ───────────────────────────────────
         $timestamps = [];
         if ($newStatus === 'in_progress' && ! $task->started_at) {
             $timestamps['started_at'] = now();

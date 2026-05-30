@@ -17,8 +17,10 @@
         'urgent' => ['bg' => '#FEF2F2', 'color' => '#DC2626', 'label' => 'URGENT'],
     ];
     // Roles that can drag at all (enforces SortableJS init).
-    // Per-card drag handle visibility adds a second layer for talent.
-    $draggableRoles = ['admin', 'manager', 'talent', 'client'];
+    // 'assigned_user' = user assigned to a task but with no explicit member row;
+    // they get talent-level drag rights (server enforces the per-task restriction).
+    // Per-card drag handle visibility adds a second layer for talent / assigned_user.
+    $draggableRoles = ['admin', 'manager', 'talent', 'assigned_user', 'client'];
 @endphp
 
     {{-- ── Kanban-specific styles ─────────────────────────────────────────── --}}
@@ -183,14 +185,16 @@
                         $dateColor = $task->isOverdue() ? '#DC2626' : ($task->isDueSoon() ? '#D97706' : '#9CA3AF');
 
                         // Drag handle visibility rules:
-                        //   admin/manager: always show
-                        //   talent:        only on tasks assigned to this user OR unassigned tasks
-                        //   client:        always show (backend enforces valid transitions)
-                        //   others:        never show
+                        //   admin/manager:  always show
+                        //   talent:         show on tasks assigned to this user OR unassigned tasks
+                        //   assigned_user:  show only on tasks explicitly assigned to this user
+                        //   client:         always show (backend enforces valid transitions)
+                        //   others:         never show
                         $taskAssigneeId = (int) ($task->assigned_to_user_id ?? 0);
                         $showDragHandle = match ($role) {
                             'admin', 'manager' => true,
                             'talent'           => $taskAssigneeId === 0 || $taskAssigneeId === $currentUserId,
+                            'assigned_user'    => $taskAssigneeId === $currentUserId,
                             'client'           => true,
                             default            => false,
                         };
@@ -299,7 +303,7 @@
 
         // ── Config ──────────────────────────────────────────────────────────
         var WORKSPACE_ID = {{ (int) $workspace->id }};
-        var CAN_DRAG     = {{ in_array($role, ['admin', 'manager', 'talent', 'client']) ? 'true' : 'false' }};
+        var CAN_DRAG     = {{ in_array($role, ['admin', 'manager', 'talent', 'assigned_user', 'client']) ? 'true' : 'false' }};
         var CSRF         = '{{ csrf_token() }}';
 
         if (!CAN_DRAG || typeof Sortable === 'undefined') return;
@@ -432,6 +436,15 @@
                             // ── Move rejected — revert card ─────────────────
                             revertCard(card, evt.from, evt.to, oldIndex, oldStatus, newStatus);
 
+                            // Log full context for debugging (PART G)
+                            console.warn('[GVOS Kanban] Drag rejected', {
+                                taskId:     taskId,
+                                fromStatus: oldStatus,
+                                toStatus:   newStatus,
+                                httpStatus: result.status,
+                                response:   result.data,
+                            });
+
                             // Use the server's message when available, or a
                             // status-code-aware fallback if the message is missing.
                             var msg = (result.data && result.data.message)
@@ -447,10 +460,19 @@
                             showToast(msg, 'error');
                         }
                     })
-                    .catch(function () {
+                    .catch(function (err) {
                         // Non-JSON response (server-level HTML error page, network
                         // failure, CORS block, etc.) — always revert the card.
                         revertCard(card, evt.from, evt.to, oldIndex, oldStatus, newStatus);
+
+                        // Log for debugging (PART G)
+                        console.warn('[GVOS Kanban] Drag network/parse error', {
+                            taskId:     taskId,
+                            fromStatus: oldStatus,
+                            toStatus:   newStatus,
+                            error:      err ? err.toString() : 'unknown',
+                        });
+
                         showToast(
                             'The server returned an unexpected response. Please refresh the page and try again.',
                             'error'
