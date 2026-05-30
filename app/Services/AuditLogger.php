@@ -274,6 +274,16 @@ class AuditLogger
         ], $extra));
     }
 
+    public static function workspacePrimaryTeamSynced(Model $workspace, array $syncResult = []): void
+    {
+        self::log('workspace.primary_team_synced', $workspace, array_merge([
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'added'          => count($syncResult['added'] ?? []),
+            'reactivated'    => count($syncResult['reactivated'] ?? []),
+            'skipped'        => count($syncResult['skipped'] ?? []),
+        ], $syncResult));
+    }
+
     public static function trialWorkspaceCreated(Model $trial, Model $workspace, array $extra = []): void
     {
         self::log('trial.workspace_created', $trial, array_merge([

@@ -9,36 +9,57 @@ use Illuminate\Http\Request;
 class WorkspaceController extends Controller
 {
     /**
-     * List all workspaces the authenticated user is a member of
-     * (or all workspaces for admins / managers with broader access).
+     * List workspaces the authenticated user may access.
+     *
+     * Admins see every workspace.
+     * All other users see workspaces where they:
+     *   – have an active member row, OR
+     *   – are the primary_manager_id, OR
+     *   – are the primary_talent_id, OR
+     *   – are assigned to at least one task in the workspace.
      */
     public function index(Request $request)
     {
         $user = $request->user();
 
-        $workspaces = Workspace::with(['primaryManager', 'primaryTalent', 'trial', 'leadRequest'])
-            ->whereHas('members', function ($q) use ($user) {
-                $q->where('user_id', $user->id)->where('status', 'active');
-            })
-            ->orWhere('primary_manager_id', $user->id)
-            ->orWhere('primary_talent_id', $user->id)
-            ->orderByDesc('created_at')
-            ->get();
+        $eager = ['primaryManager', 'primaryTalent', 'trial', 'leadRequest'];
+
+        if ($user->hasAnyRole(['super_admin', 'operations_admin'])) {
+            // Admins see the full list
+            $workspaces = Workspace::with($eager)
+                ->orderByDesc('created_at')
+                ->get();
+        } else {
+            // All non-admin access paths grouped in a single where() closure
+            // so the orWhere clauses do not bleed into outer query scope.
+            $workspaces = Workspace::with($eager)
+                ->where(function ($q) use ($user) {
+                    $q->whereHas('members', function ($mq) use ($user) {
+                        $mq->where('user_id', $user->id)->where('status', 'active');
+                    })
+                    ->orWhere('primary_manager_id', $user->id)
+                    ->orWhere('primary_talent_id', $user->id)
+                    ->orWhereHas('tasks', function ($tq) use ($user) {
+                        $tq->where('assigned_to_user_id', $user->id);
+                    });
+                })
+                ->orderByDesc('created_at')
+                ->get();
+        }
 
         return view('workspace.index', compact('workspaces'));
     }
 
     /**
-     * Show a single workspace — only if the user is a member or primary team.
+     * Show a single workspace — delegates access check to the model helper
+     * so all access paths (admin, primary team, member, assigned task) are
+     * evaluated consistently.
      */
     public function show(Request $request, Workspace $workspace)
     {
         $user = $request->user();
 
-        $isMember = $workspace->members()->where('user_id', $user->id)->where('status', 'active')->exists();
-        $isPrimary = in_array($user->id, [$workspace->primary_manager_id, $workspace->primary_talent_id]);
-
-        if (! $isMember && ! $isPrimary) {
+        if (! $workspace->userHasAccess($user)) {
             abort(403, 'You do not have access to this workspace.');
         }
 

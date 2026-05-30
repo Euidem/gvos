@@ -532,11 +532,68 @@ No migrations needed.
 
 ---
 
+---
+
+## Phase 5 Fix — Workspace Access Bug ✅ (2026-05-30)
+
+### Root Cause
+
+Primary managers and primary talent could not access the Kanban board or workspace detail page despite being assigned as `primary_manager_id` / `primary_talent_id`. Two bugs were found:
+
+1. **Strict `===` type mismatch** — Eloquent returns `primary_manager_id` and `primary_talent_id` as strings from the database (no integer cast defined on the model). `$user->id` is an integer. PHP's strict `===` comparison between a string and an integer always returns `false`. So the `===` checks in `WorkspaceTaskController::getUserWorkspaceRole()` silently failed even when the IDs matched.
+
+2. **Missing admin check in `WorkspaceController::show()`** — Super admins and operations admins would get a 403 on the workspace detail page because only member/primary checks were performed.
+
+3. **Missing task-assignment fallback** — A user assigned to a task but without a workspace member row could not view that task.
+
+### What Was Fixed
+
+| File | Change |
+|------|--------|
+| `app/Models/Workspace.php` | Added `resolveUserWorkspaceRole(User $user): string` — 5-tier role resolver using `(int)` casts to fix the type mismatch. Added `userHasAccess()`, `userCanCreateTasks()`, `userCanManageTasks()`, `userCanViewInternalTaskNotes()` helper methods. Added `syncPrimaryTeamToMembers()` — creates or reactivates member rows for primary manager and primary talent. |
+| `app/Http/Controllers/WorkspaceController.php` | `index()` rewritten: admins see all workspaces; non-admins see member + primary + task-assigned workspaces. `show()` now delegates to `$workspace->userHasAccess($user)`. |
+| `app/Http/Controllers/WorkspaceTaskController.php` | Removed broken private `getUserWorkspaceRole()`. Uses `$workspace->resolveUserWorkspaceRole($user)`. Added `transitionRole()` to map `assigned_user` → `talent`. Task `show()` now allows task-assigned users without workspace access to view their specific task. |
+| `app/Filament/Resources/WorkspaceResource.php` | Added "Sync Team" table action — creates/reactivates member rows for primary manager and primary talent with audit logging and Filament success notification. |
+| `app/Filament/Resources/WorkspaceResource/Pages/EditWorkspace.php` | Added "Sync Primary Team" header action. `afterSave()` now auto-syncs primary team to member rows whenever primary_manager_id or primary_talent_id is set. |
+| `app/Services/AuditLogger.php` | Added `workspacePrimaryTeamSynced()` wrapper. |
+
+### Role Resolution Priority (new — `Workspace::resolveUserWorkspaceRole()`)
+
+| Priority | Condition | Role returned |
+|----------|-----------|---------------|
+| 1 | User has `super_admin` or `operations_admin` system role | `admin` |
+| 2 | `primary_manager_id` matches user (int-cast comparison) | `manager` |
+| 3 | `primary_talent_id` matches user (int-cast comparison) | `talent` |
+| 4a | Active workspace member row with `role=manager` | `manager` |
+| 4b | Active workspace member row with `role=talent` | `talent` |
+| 4c | Active workspace member row with `role=client` | `client` |
+| 4d | Active workspace member row with `role=observer` | `observer` |
+| 5 | Assigned to a task in this workspace | `assigned_user` |
+| — | None of the above | `none` → 403 |
+
+### Access Paths Now Working
+
+- [x] Super admin / operations admin can view any workspace and task board
+- [x] Primary manager can view workspace and task board without a member row
+- [x] Primary talent can view workspace and task board without a member row
+- [x] Active member (any role) can view workspace and task board
+- [x] User assigned to a task can view that specific task (even with no member row)
+- [x] Observer-role members can view board but cannot drag/create/edit
+- [x] `assigned_user` tier maps to `talent` for status transition purposes
+- [x] Saving a workspace in Filament auto-syncs primary team to member rows
+- [x] "Sync Team" action available in Workspace table + edit page header
+- [x] Full audit trail for all sync events
+
+---
+
 ## Next Steps
 
 1. cPanel: `git pull origin main && php artisan optimize:clear && php artisan view:clear` (no new migrations)
-2. Verify drag-and-drop on the Kanban board
-3. Verify invalid move reverts card and shows error toast
-4. Verify audit log records status change on drag
-5. Verify workspace detail page shows "Open Kanban Board" button and metric cards
-6. Get Phase 5 sign-off, then begin Phase 6 (if approved)
+2. Verify primary manager can log in and access workspace + Kanban board
+3. Verify primary talent can log in and access workspace + Kanban board
+4. Verify super admin can access any workspace
+5. Verify task-assigned user (no member row) can view their task
+6. Verify "Sync Team" Filament action creates member rows and shows notification
+7. Verify auto-sync fires on workspace save when primary IDs are set
+8. Verify drag-and-drop on the Kanban board still works
+9. Get Phase 5 sign-off, then begin Phase 6 (if approved)

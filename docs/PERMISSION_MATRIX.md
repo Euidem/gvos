@@ -170,7 +170,7 @@ pending → approved → active → completed → (payment_pending on lead)
 | `/workspaces` (portal index) | ✅ (all) | ✅ (all) | 👁 assigned | 👁 assigned | 👁 own | 👁 trial only |
 | `/workspaces/{workspace}` (portal detail) | ✅ | ✅ | 👁 if member/primary | 👁 if member/primary | 👁 if member | 👁 if trial ws |
 
-> Workspace detail page (`/workspaces/{workspace}`) aborts 403 if the authenticated user is not a member (active status) and not the primary_manager_id or primary_talent_id.
+> Workspace detail page (`/workspaces/{workspace}`) uses `Workspace::userHasAccess($user)` (model helper) which covers all tiers: admin roles, primary team, active members, and task-assigned users. See Phase 5 role resolution table.
 
 ---
 
@@ -178,28 +178,38 @@ pending → approved → active → completed → (payment_pending on lead)
 
 ### Task Board Routes
 
-All task routes require `auth` + `check.status` middleware. No additional `role:` middleware — access is enforced inside the controller using `getUserWorkspaceRole()`.
+All task routes require `auth` + `check.status` middleware. No additional `role:` middleware — access is enforced inside the controller using `Workspace::resolveUserWorkspaceRole()`.
 
-| Action | admin/manager | talent | client | observer/none |
+| Action | admin/manager | talent / assigned_user | client | observer/none |
 |--------|-------------|--------|--------|--------------|
 | View task list (`index`) | ✅ | ✅ | ✅ | ❌ 403 |
-| View task detail (`show`) | ✅ | ✅ | ✅ | ❌ 403 |
-| Create task (`create` / `store`) | ✅ | ❌ 403 | ❌ 403 | ❌ 403 |
-| Edit task (`edit` / `update`) | ✅ | ✅ (own assigned only if not admin) | ❌ 403 | ❌ 403 |
+| View task detail (`show`) | ✅ | ✅ (+ task-assigned fallback) | ✅ | ❌ 403 |
+| Create task (`create` / `store`) | ✅ | ✅ talent only | ❌ 403 | ❌ 403 |
+| Edit task (`edit` / `update`) | ✅ | ✅ (own pending tasks only) | ❌ 403 | ❌ 403 |
 | Add public comment | ✅ | ✅ | ✅ | ❌ 403 |
 | Add internal comment | ✅ | ❌ (forced public) | ❌ (forced public) | ❌ |
 | Change task status | ✅ (any transition) | Allowed transitions only | Allowed transitions only | ❌ |
 | Set internal_notes | ✅ | ❌ (stripped) | ❌ (stripped) | ❌ |
 
-### Role Determination (`getUserWorkspaceRole()`)
+### Role Determination (`Workspace::resolveUserWorkspaceRole()`)
 
-```
-if user hasAnyRole(['super_admin', 'operations_admin']) → 'admin'
-else if active workspace_member exists → member.role (client|talent|manager|observer)
-else if workspace.primary_manager_id === user.id → 'manager'
-else if workspace.primary_talent_id === user.id → 'talent'
-else → 'none' (403 on requireWorkspaceAccess)
-```
+Centralised method on the `Workspace` model. Called by both `WorkspaceController` and `WorkspaceTaskController`. Uses `(int)` casts on both sides to avoid the Eloquent string/integer strict-comparison mismatch.
+
+| Priority | Condition | Role returned |
+|----------|-----------|---------------|
+| 1 | `super_admin` or `operations_admin` system role | `admin` |
+| 2 | `primary_manager_id` matches user (int-cast) | `manager` |
+| 3 | `primary_talent_id` matches user (int-cast) | `talent` |
+| 4a | Active member row with `role=manager` | `manager` |
+| 4b | Active member row with `role=talent` | `talent` |
+| 4c | Active member row with `role=client` | `client` |
+| 4d | Active member row with `role=observer` | `observer` |
+| 5 | Assigned to any task in this workspace | `assigned_user` |
+| — | None of the above | `none` → 403 |
+
+`assigned_user` is mapped to `talent` via `transitionRole()` before passing to `allowedTransitions()`.
+
+For task `show()`, a user with role `none` may still view a specific task if they are the `assigned_to_user_id` for that task — they receive effective role `talent` for display purposes only.
 
 ### Task Status Allowed Transitions
 

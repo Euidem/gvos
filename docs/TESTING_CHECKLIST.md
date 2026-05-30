@@ -575,6 +575,73 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 
 ---
 
+## Phase 5 Fix — Workspace Access for Primary Team Members
+
+Run after `git pull && php artisan optimize:clear && php artisan view:clear` (no new migrations).
+
+### Primary Manager Access
+
+- [ ] Log in as the user set as `primary_manager_id` on a workspace (with no member row)
+- [ ] `/workspaces` index shows that workspace in the list
+- [ ] `/workspaces/{workspace}` loads (no 403)
+- [ ] `/workspaces/{workspace}/tasks` (Kanban board) loads with manager-level drag permissions
+- [ ] Can create a new task on the board
+- [ ] Can drag tasks between columns (manager role transitions apply)
+- [ ] Status action buttons on task detail work correctly
+
+### Primary Talent Access
+
+- [ ] Log in as the user set as `primary_talent_id` on a workspace (with no member row)
+- [ ] `/workspaces` index shows that workspace in the list
+- [ ] `/workspaces/{workspace}` loads (no 403)
+- [ ] `/workspaces/{workspace}/tasks` (Kanban board) loads with talent-level drag permissions
+- [ ] Can create a new task
+- [ ] Talent-only transitions work (pending → in_progress, in_progress → submitted, etc.)
+- [ ] Cannot approve/close tasks (client-only transitions blocked)
+
+### Admin Access
+
+- [ ] Log in as `super_admin` — `/workspaces` shows ALL workspaces (not just member ones)
+- [ ] Log in as `operations_admin` — same
+- [ ] `/workspaces/{workspace}` for any workspace loads without 403
+
+### Active Member Access (regression check)
+
+- [ ] User with active member row (any role) can still access workspace and task board
+- [ ] Observer role: can view board; drag handle NOT shown; cannot create tasks
+
+### Task-Assigned Fallback
+
+- [ ] A user assigned to a task but with no workspace member row can view `/workspaces/{workspace}/tasks/{task}`
+- [ ] They cannot access the Kanban index `/workspaces/{workspace}/tasks` (no workspace access = 403)
+  - *(Note: `assigned_user` tier gives workspace-level access via `userHasAccess()` — so the index IS accessible to assigned users. Verify intended behaviour.)*
+- [ ] Their status buttons use talent-level transitions
+
+### Filament Sync Actions
+
+- [ ] Open Workspace list in Filament `/admin/workspaces`
+- [ ] "Sync Team" action is visible on rows where primary_manager_id or primary_talent_id is set
+- [ ] Click "Sync Team" → confirm modal → notification appears: "Primary team synced | Added: N · Reactivated: N · Already active: N"
+- [ ] After sync: member rows created/reactivated for primary manager and primary talent
+- [ ] Audit log `workspace.primary_team_synced` fires with counts in context
+- [ ] If member row already exists and is active with correct role: notification shows "Already active: 2" (no duplicate row)
+
+### Auto-Sync on Workspace Save
+
+- [ ] Edit a workspace in Filament, change `primary_manager_id` to a different user, Save
+- [ ] New user automatically gets an active member row (role=manager)
+- [ ] Previous primary manager member row is NOT automatically removed (manual action required)
+- [ ] Audit log `workspace.primary_team_synced` + `workspace.member_added` fires
+
+### Edit-Page Header Action
+
+- [ ] Open Filament workspace edit page
+- [ ] "Sync Primary Team" button appears in page header
+- [ ] Click → confirm → success notification
+- [ ] Member rows created/reactivated as expected
+
+---
+
 ## Phase 6 — Chat and Files (planned)
 ## Phase 7 — Time Tracking and Reports (planned)
 ## Phase 8 — Billing (planned)

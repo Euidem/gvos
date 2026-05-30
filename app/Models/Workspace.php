@@ -75,6 +75,159 @@ class Workspace extends Model
         return 'WS-' . str_pad($latest + 1, 6, '0', STR_PAD_LEFT);
     }
 
+    // ── Access helpers ────────────────────────────────────────────────────
+
+    /**
+     * Resolve the effective role this user holds in the workspace.
+     *
+     * Priority order:
+     *   admin         – super_admin or operations_admin system role
+     *   manager       – primary_manager_id match OR active member with role=manager
+     *   talent        – primary_talent_id match OR active member with role=talent
+     *   client        – active member with role=client
+     *   observer      – active member with role=observer
+     *   assigned_user – assigned to at least one task (no member row required)
+     *   none          – no access
+     *
+     * Note: primary_manager_id / primary_talent_id are stored as integers in the
+     * DB but Eloquent returns them as strings when no cast is defined. Both sides
+     * are explicitly cast to int to avoid strict === mismatches.
+     */
+    public function resolveUserWorkspaceRole(User $user): string
+    {
+        // Tier 1 – system admins always get full admin access
+        if ($user->hasAnyRole(['super_admin', 'operations_admin'])) {
+            return 'admin';
+        }
+
+        // Tier 2 – primary manager (cast both to int; DB column has no cast)
+        if ($this->primary_manager_id !== null && (int) $this->primary_manager_id === (int) $user->id) {
+            return 'manager';
+        }
+
+        // Tier 3 – primary talent
+        if ($this->primary_talent_id !== null && (int) $this->primary_talent_id === (int) $user->id) {
+            return 'talent';
+        }
+
+        // Tier 4 – active member row (role from the member record)
+        $member = $this->members()
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->first();
+
+        if ($member) {
+            return match ($member->role) {
+                'manager'  => 'manager',
+                'talent'   => 'talent',
+                'client'   => 'client',
+                'observer' => 'observer',
+                default    => 'observer',
+            };
+        }
+
+        // Tier 5 – assigned to a task in this workspace (no member row needed)
+        if ($this->tasks()->where('assigned_to_user_id', $user->id)->exists()) {
+            return 'assigned_user';
+        }
+
+        return 'none';
+    }
+
+    /**
+     * Returns true if the user may view this workspace and its task board.
+     */
+    public function userHasAccess(User $user): bool
+    {
+        return $this->resolveUserWorkspaceRole($user) !== 'none';
+    }
+
+    /**
+     * Returns true if the user may create tasks in this workspace.
+     * Admins, managers, and talents can create tasks.
+     */
+    public function userCanCreateTasks(User $user): bool
+    {
+        return in_array($this->resolveUserWorkspaceRole($user), ['admin', 'manager', 'talent'], true);
+    }
+
+    /**
+     * Returns true if the user may manage (edit/delete) tasks in this workspace.
+     * Only admins and managers can manage tasks.
+     */
+    public function userCanManageTasks(User $user): bool
+    {
+        return in_array($this->resolveUserWorkspaceRole($user), ['admin', 'manager'], true);
+    }
+
+    /**
+     * Returns true if the user may view internal notes and internal comments.
+     * Only admins and managers see internal content.
+     */
+    public function userCanViewInternalTaskNotes(User $user): bool
+    {
+        return in_array($this->resolveUserWorkspaceRole($user), ['admin', 'manager'], true);
+    }
+
+    // ── Primary-team sync ─────────────────────────────────────────────────
+
+    /**
+     * Ensure the primary manager and primary talent each have an active
+     * WorkspaceMember row in this workspace.
+     *
+     * Rules:
+     *   – If no row exists → create with status=active, role=manager|talent.
+     *   – If a row exists but is removed, or has the wrong role → reactivate
+     *     and correct the role.
+     *   – If already active with the correct role → skip (no-op).
+     *
+     * Returns a summary array keyed by 'added', 'reactivated', 'skipped'.
+     * Each value is an array of ['user_id' => …, 'role' => …] entries.
+     *
+     * @return array{added: array, reactivated: array, skipped: array}
+     */
+    public function syncPrimaryTeamToMembers(): array
+    {
+        $result = ['added' => [], 'reactivated' => [], 'skipped' => []];
+
+        $candidates = [];
+        if ($this->primary_manager_id) {
+            $candidates[(int) $this->primary_manager_id] = 'manager';
+        }
+        if ($this->primary_talent_id) {
+            $candidates[(int) $this->primary_talent_id] = 'talent';
+        }
+
+        foreach ($candidates as $userId => $role) {
+            $member = $this->members()->where('user_id', $userId)->first();
+
+            if (! $member) {
+                // No member row at all — create one.
+                WorkspaceMember::create([
+                    'workspace_id' => $this->id,
+                    'user_id'      => $userId,
+                    'role'         => $role,
+                    'status'       => 'active',
+                    'joined_at'    => now(),
+                ]);
+                $result['added'][] = ['user_id' => $userId, 'role' => $role];
+            } elseif ($member->status === 'removed' || $member->role !== $role) {
+                // Existing row needs reactivation or role correction.
+                $member->update([
+                    'role'      => $role,
+                    'status'    => 'active',
+                    'joined_at' => $member->joined_at ?? now(),
+                ]);
+                $result['reactivated'][] = ['user_id' => $userId, 'role' => $role];
+            } else {
+                // Already an active member with the correct role — nothing to do.
+                $result['skipped'][] = ['user_id' => $userId, 'role' => $role];
+            }
+        }
+
+        return $result;
+    }
+
     // ── Relationships ─────────────────────────────────────────────────────
 
     public function leadRequest(): BelongsTo

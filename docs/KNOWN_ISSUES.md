@@ -88,6 +88,33 @@ Target class [role] does not exist.
 
 ---
 
+---
+
+### 2026-05-30 | Phase 5 | Critical | Primary manager / talent 403 on workspace and task board
+
+**Description:** Users set as `primary_manager_id` or `primary_talent_id` on a workspace could not access the workspace detail page or the Kanban task board. They received a 403 "You do not have access to this workspace." error.
+
+**Root cause:**
+1. `WorkspaceTaskController::getUserWorkspaceRole()` used strict `===` to compare `$workspace->primary_manager_id` (string, returned by Eloquent without a cast) against `$user->id` (integer). PHP strict comparison between a string and an integer always returns `false`. Both primary-team checks silently failed.
+2. `WorkspaceController::show()` did not check admin system roles — `super_admin` / `operations_admin` users would also get 403 on the workspace detail page.
+3. Neither controller provided a task-assignment fallback (user assigned to a task but with no member row).
+
+**Resolution:**
+- Added centralised `resolveUserWorkspaceRole(User $user)` method to `Workspace` model using `(int)` casts to eliminate the type mismatch.
+- Added `userHasAccess()`, `userCanCreateTasks()`, `userCanManageTasks()`, `userCanViewInternalTaskNotes()` helpers to `Workspace` model.
+- Added `syncPrimaryTeamToMembers()` to `Workspace` model to create or reactivate member rows for primary team.
+- Rewrote `WorkspaceController::index()` and `show()` to use the model helpers.
+- Rewrote `WorkspaceTaskController` to delegate role resolution to the model; added `transitionRole()` mapping; added task-assigned fallback in `show()`.
+- Added "Sync Team" Filament table action and "Sync Primary Team" header action to `WorkspaceResource`.
+- `EditWorkspace::afterSave()` now auto-syncs primary team to member rows.
+- Added `workspacePrimaryTeamSynced()` to `AuditLogger`.
+
+**Commit:** "Fix workspace task access for primary team members"
+
+**Status:** Resolved.
+
+---
+
 ## Warnings / Notes
 
 ### Phase 1 | Low | Tailwind CDN in production

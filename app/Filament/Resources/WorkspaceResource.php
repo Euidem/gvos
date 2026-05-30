@@ -252,6 +252,46 @@ class WorkspaceResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
 
+                Tables\Actions\Action::make('sync_primary_team')
+                    ->label('Sync Team')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('info')
+                    ->tooltip('Ensure primary manager and talent have active member rows')
+                    ->requiresConfirmation()
+                    ->modalHeading('Sync Primary Team Members')
+                    ->modalDescription('This will create or reactivate workspace member rows for the primary manager and primary talent. Existing active member rows are not affected.')
+                    ->modalSubmitActionLabel('Sync Now')
+                    ->visible(fn (Workspace $record): bool =>
+                        $record->primary_manager_id !== null || $record->primary_talent_id !== null
+                    )
+                    ->action(function (Workspace $record): void {
+                        $syncResult = $record->syncPrimaryTeamToMembers();
+                        AuditLogger::workspacePrimaryTeamSynced($record, $syncResult);
+
+                        foreach ($syncResult['added'] as $entry) {
+                            $member = $record->members()->where('user_id', $entry['user_id'])->first();
+                            if ($member) {
+                                AuditLogger::workspaceMemberAdded($record, $member, ['source' => 'manual_sync']);
+                            }
+                        }
+                        foreach ($syncResult['reactivated'] as $entry) {
+                            $member = $record->members()->where('user_id', $entry['user_id'])->first();
+                            if ($member) {
+                                AuditLogger::workspaceMemberUpdated($record, $member, ['source' => 'manual_sync', 'action' => 'reactivated']);
+                            }
+                        }
+
+                        $added       = count($syncResult['added']);
+                        $reactivated = count($syncResult['reactivated']);
+                        $skipped     = count($syncResult['skipped']);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Primary team synced')
+                            ->body("Added: {$added} · Reactivated: {$reactivated} · Already active: {$skipped}")
+                            ->success()
+                            ->send();
+                    }),
+
                 Tables\Actions\Action::make('activate')
                     ->label('Activate')
                     ->icon('heroicon-o-play')

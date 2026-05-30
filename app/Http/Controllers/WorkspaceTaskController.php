@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceTask;
 use App\Models\WorkspaceTaskComment;
@@ -13,48 +14,34 @@ class WorkspaceTaskController extends Controller
     // ── Access helpers ────────────────────────────────────────────────────
 
     /**
-     * Resolve the authenticated user's effective role within a workspace.
+     * Resolve the user's effective role and abort 403 if they have no access.
      *
-     * Returns: 'admin' | 'manager' | 'talent' | 'client' | 'observer' | 'none'
+     * Returns the raw role string from Workspace::resolveUserWorkspaceRole().
+     * Callers that need a role for transition checks should also call
+     * transitionRole() to normalise 'assigned_user' → 'talent'.
      */
-    private function getUserWorkspaceRole(\App\Models\User $user, Workspace $workspace): string
+    private function requireWorkspaceAccess(User $user, Workspace $workspace): string
     {
-        if ($user->hasAnyRole(['super_admin', 'operations_admin'])) {
-            return 'admin';
-        }
-
-        $member = $workspace->members()
-            ->where('user_id', $user->id)
-            ->where('status', 'active')
-            ->first();
-
-        if ($member) {
-            return $member->role; // client | talent | manager | observer
-        }
-
-        if ($workspace->primary_manager_id === $user->id) {
-            return 'manager';
-        }
-
-        if ($workspace->primary_talent_id === $user->id) {
-            return 'talent';
-        }
-
-        return 'none';
-    }
-
-    /**
-     * Resolve role or abort 403 if the user has no access to the workspace.
-     */
-    private function requireWorkspaceAccess(\App\Models\User $user, Workspace $workspace): string
-    {
-        $role = $this->getUserWorkspaceRole($user, $workspace);
+        $role = $workspace->resolveUserWorkspaceRole($user);
 
         if ($role === 'none') {
             abort(403, 'You do not have access to this workspace.');
         }
 
         return $role;
+    }
+
+    /**
+     * Map the 'assigned_user' tier to 'talent' for status-transition checks.
+     * All other roles pass through unchanged.
+     *
+     * 'assigned_user' is returned by resolveUserWorkspaceRole() when the user is
+     * assigned to a task but has no workspace member row. For transition purposes
+     * they have the same permissions as a talent.
+     */
+    private function transitionRole(string $role): string
+    {
+        return $role === 'assigned_user' ? 'talent' : $role;
     }
 
     /**
@@ -69,13 +56,17 @@ class WorkspaceTaskController extends Controller
 
     private function isAdminOrManager(string $role): bool
     {
-        return in_array($role, ['admin', 'manager']);
+        return in_array($role, ['admin', 'manager'], true);
     }
 
     // ── Controller actions ────────────────────────────────────────────────
 
     /**
-     * Task board — tasks grouped by status.
+     * Task board (Kanban) — tasks grouped by status.
+     *
+     * Accessible to any user with workspace access.
+     * Drag-and-drop on the frontend is restricted by the $role variable passed
+     * to the view (observers and assigned_users cannot drag).
      */
     public function index(Request $request, Workspace $workspace)
     {
@@ -89,7 +80,8 @@ class WorkspaceTaskController extends Controller
 
         $tasksByStatus = $tasks->groupBy('status');
 
-        $canCreate = ! in_array($role, ['observer']);
+        // 'assigned_user' and 'observer' cannot create tasks
+        $canCreate = $workspace->userCanCreateTasks($user);
 
         return view('workspace.tasks.index', compact(
             'workspace', 'tasks', 'tasksByStatus', 'role', 'canCreate'
@@ -104,12 +96,12 @@ class WorkspaceTaskController extends Controller
         $user = $request->user();
         $role = $this->requireWorkspaceAccess($user, $workspace);
 
-        if ($role === 'observer') {
+        if (! $workspace->userCanCreateTasks($user)) {
             abort(403, 'You cannot create tasks in this workspace.');
         }
 
         $members = $workspace->activeMembers()->with('user')->get();
-        $isAdminOrManager = $this->isAdminOrManager($role);
+        $isAdminOrManager = $this->isAdminOrManager($this->transitionRole($role));
 
         return view('workspace.tasks.create', compact(
             'workspace', 'members', 'role', 'isAdminOrManager'
@@ -124,11 +116,12 @@ class WorkspaceTaskController extends Controller
         $user = $request->user();
         $role = $this->requireWorkspaceAccess($user, $workspace);
 
-        if ($role === 'observer') {
+        if (! $workspace->userCanCreateTasks($user)) {
             abort(403);
         }
 
-        $isAdminOrManager = $this->isAdminOrManager($role);
+        $effectiveRole    = $this->transitionRole($role);
+        $isAdminOrManager = $this->isAdminOrManager($effectiveRole);
 
         $validated = $request->validate([
             'title'               => 'required|string|max:255',
@@ -162,14 +155,29 @@ class WorkspaceTaskController extends Controller
 
     /**
      * Task detail page.
+     *
+     * Special case: a user with role 'none' at the workspace level may still
+     * view a specific task if they are the assigned user for that task.
+     * In that case they receive 'talent' access for display purposes.
      */
     public function show(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
         $this->authorizeTaskBelongsToWorkspace($workspace, $task);
 
         $user = $request->user();
-        $role = $this->requireWorkspaceAccess($user, $workspace);
-        $isAdminOrManager = $this->isAdminOrManager($role);
+        $role = $workspace->resolveUserWorkspaceRole($user);
+
+        // Task-assigned fallback: no workspace access but assigned to this task
+        if ($role === 'none') {
+            if ($task->assigned_to_user_id !== null && (int) $task->assigned_to_user_id === (int) $user->id) {
+                $role = 'talent'; // Effective role for this specific task page
+            } else {
+                abort(403, 'You do not have access to this task.');
+            }
+        }
+
+        $effectiveRole    = $this->transitionRole($role);
+        $isAdminOrManager = $this->isAdminOrManager($effectiveRole);
 
         $task->load(['createdBy', 'assignedTo', 'workspace']);
 
@@ -178,7 +186,7 @@ class WorkspaceTaskController extends Controller
             ? $task->comments()->with('user')->get()
             : $task->comments()->where('visibility', 'public')->with('user')->get();
 
-        $allowedTransitions = WorkspaceTask::allowedTransitions($task->status, $role);
+        $allowedTransitions = WorkspaceTask::allowedTransitions($task->status, $effectiveRole);
 
         $canEdit = $isAdminOrManager
             || ($task->created_by_user_id === $user->id && $task->status === 'pending');
@@ -198,9 +206,10 @@ class WorkspaceTaskController extends Controller
     {
         $this->authorizeTaskBelongsToWorkspace($workspace, $task);
 
-        $user = $request->user();
-        $role = $this->requireWorkspaceAccess($user, $workspace);
-        $isAdminOrManager = $this->isAdminOrManager($role);
+        $user             = $request->user();
+        $role             = $this->requireWorkspaceAccess($user, $workspace);
+        $effectiveRole    = $this->transitionRole($role);
+        $isAdminOrManager = $this->isAdminOrManager($effectiveRole);
 
         $canEdit = $isAdminOrManager
             || ($task->created_by_user_id === $user->id && $task->status === 'pending');
@@ -223,9 +232,10 @@ class WorkspaceTaskController extends Controller
     {
         $this->authorizeTaskBelongsToWorkspace($workspace, $task);
 
-        $user = $request->user();
-        $role = $this->requireWorkspaceAccess($user, $workspace);
-        $isAdminOrManager = $this->isAdminOrManager($role);
+        $user             = $request->user();
+        $role             = $this->requireWorkspaceAccess($user, $workspace);
+        $effectiveRole    = $this->transitionRole($role);
+        $isAdminOrManager = $this->isAdminOrManager($effectiveRole);
 
         $canEdit = $isAdminOrManager
             || ($task->created_by_user_id === $user->id && $task->status === 'pending');
@@ -275,9 +285,10 @@ class WorkspaceTaskController extends Controller
     {
         $this->authorizeTaskBelongsToWorkspace($workspace, $task);
 
-        $user = $request->user();
-        $role = $this->requireWorkspaceAccess($user, $workspace);
-        $isAdminOrManager = $this->isAdminOrManager($role);
+        $user             = $request->user();
+        $role             = $this->requireWorkspaceAccess($user, $workspace);
+        $effectiveRole    = $this->transitionRole($role);
+        $isAdminOrManager = $this->isAdminOrManager($effectiveRole);
 
         $validated = $request->validate([
             'comment'    => 'required|string|max:5000',
@@ -319,23 +330,23 @@ class WorkspaceTaskController extends Controller
      *
      * JSON success: 200 { success: true, status, message }
      * JSON permission denied: 403 { success: false, message }
-     * JSON invalid status: 422 (Laravel validation, auto for expectsJson requests)
      */
     public function updateStatus(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
         $this->authorizeTaskBelongsToWorkspace($workspace, $task);
 
-        $user = $request->user();
-        $role = $this->requireWorkspaceAccess($user, $workspace);
+        $user          = $request->user();
+        $role          = $this->requireWorkspaceAccess($user, $workspace);
+        $effectiveRole = $this->transitionRole($role);
 
         $validated = $request->validate([
             'status' => 'required|in:pending,in_progress,blocked,submitted,revision_requested,approved,closed,cancelled',
         ]);
 
         $newStatus = $validated['status'];
-        $allowed   = WorkspaceTask::allowedTransitions($task->status, $role);
+        $allowed   = WorkspaceTask::allowedTransitions($task->status, $effectiveRole);
 
-        if (! in_array($newStatus, $allowed)) {
+        if (! in_array($newStatus, $allowed, true)) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
@@ -345,9 +356,9 @@ class WorkspaceTaskController extends Controller
             return back()->withErrors(['status' => 'This status transition is not allowed.']);
         }
 
-        $oldStatus = $task->status;
-
+        $oldStatus  = $task->status;
         $timestamps = [];
+
         if ($newStatus === 'in_progress' && ! $task->started_at) {
             $timestamps['started_at'] = now();
         }

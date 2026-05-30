@@ -7,6 +7,27 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-30 | Phase 5 Fix | Workspace Task Access for Primary Team Members
+
+**Root cause:** `WorkspaceTaskController::getUserWorkspaceRole()` used strict `===` to compare `$workspace->primary_manager_id` (string from Eloquent) against `$user->id` (integer). This always returned `false`, so primary manager and primary talent fell through to `'none'` and were denied access. Additionally, `WorkspaceController::show()` did not check admin roles, and neither controller handled task-assignment fallback.
+
+**Files changed:**
+
+| File | Change |
+|------|--------|
+| `app/Models/Workspace.php` | Added `resolveUserWorkspaceRole()`, `userHasAccess()`, `userCanCreateTasks()`, `userCanManageTasks()`, `userCanViewInternalTaskNotes()`, `syncPrimaryTeamToMembers()` |
+| `app/Http/Controllers/WorkspaceController.php` | Rewrote `index()` (admin see-all, task-assigned fallback, grouped OR clauses); rewrote `show()` (delegates to model helper) |
+| `app/Http/Controllers/WorkspaceTaskController.php` | Removed broken private helper; delegates to model method; added `transitionRole()` to map `assigned_user` → `talent`; `show()` allows task-assigned users to view their specific task |
+| `app/Filament/Resources/WorkspaceResource.php` | Added "Sync Team" table action with Filament notification |
+| `app/Filament/Resources/WorkspaceResource/Pages/EditWorkspace.php` | Added "Sync Primary Team" header action; `afterSave()` now auto-syncs primary team to member rows |
+| `app/Services/AuditLogger.php` | Added `workspacePrimaryTeamSynced()` audit wrapper |
+
+**Commit:** "Fix workspace task access for primary team members"
+
+**Tool:** Claude Code | **Status:** Access fix complete
+
+---
+
 ### 2026-05-27 | Phase 0 | Project Foundation Created
 
 - Created GVOS project directory, /docs (16 files), /design-reference (Stitch screens)
