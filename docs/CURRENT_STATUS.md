@@ -1,7 +1,7 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-05-30
-**Current Phase:** Phase 4 — Workspace Engine ✅ Complete
+**Current Phase:** Phase 5 — Task Board Foundation ✅ Complete
 
 ---
 
@@ -453,12 +453,72 @@ No migrations needed.
 
 ---
 
+---
+
+## Phase 5 Status — Complete ✅ (2026-05-30)
+
+### PART A — Migrations (2 new)
+- [x] `2024_01_06_000001_create_workspace_tasks_table.php` — task_code, workspace_id, created_by_user_id, assigned_to_user_id, title, description, priority enum (low/normal/high/urgent), status enum (8 values), due_date, lifecycle timestamps, sort_order, internal_notes, soft deletes, indexes
+- [x] `2024_01_06_000002_create_workspace_task_comments_table.php` — workspace_task_id, user_id, comment, visibility enum (public/internal), soft deletes, index
+
+### PART B — Models (2 new, 2 updated)
+- [x] `app/Models/WorkspaceTask.php` — SoftDeletes; statusLabels(), priorityLabels(), allowedTransitions(fromStatus, role), generateCode(), isOpen(), isDueSoon(), isOverdue(); relationships: workspace, createdBy, assignedTo, comments
+- [x] `app/Models/WorkspaceTaskComment.php` — SoftDeletes; isInternal(), isPublic() helpers; relationships: task, user
+- [x] `app/Models/Workspace.php` — added tasks() and openTasks() HasMany relationships
+- [x] `app/Models/User.php` — added createdWorkspaceTasks(), assignedWorkspaceTasks(), workspaceTaskComments() HasMany relationships
+
+### PART C–D — Task Access and Status Flow
+- [x] Role-based access enforced in WorkspaceTaskController via private helper `getUserWorkspaceRole()`
+- [x] 8 statuses: pending, in_progress, blocked, submitted, revision_requested, approved, closed, cancelled
+- [x] `allowedTransitions()`: admin/manager have broad freedom; talent can self-advance and submit; client can approve/request revision/close; observer/none: none
+
+### PART E — workspace/show.blade.php updated
+- [x] Replaced "coming soon" placeholder with real task board summary
+- [x] Shows open task count, status count chips linking to board, preview of 4 open tasks, "New Task" + "View All" links (role-gated)
+
+### PART F–G — Routes and Controller and Blade Views
+- [x] 8 nested routes under `workspaces/{workspace}/tasks` (all auth + check.status)
+- [x] `app/Http/Controllers/WorkspaceTaskController.php` — index, create, store, show, edit, update, storeComment, updateStatus
+- [x] `resources/views/workspace/tasks/index.blade.php` — horizontal scrollable 7-column kanban board, status columns with task cards, priority badges, assignee avatars, comment counts
+- [x] `resources/views/workspace/tasks/create.blade.php` — task creation form with internal notes for admin/manager
+- [x] `resources/views/workspace/tasks/show.blade.php` — task detail with status action buttons (confirm dialog), comment thread, sidebar meta
+- [x] `resources/views/workspace/tasks/edit.blade.php` — task edit form, pre-filled
+
+### PART H — Filament WorkspaceTaskResource
+- [x] Nav group: "Workspace", sort 2; navigation badge showing open task count (warning color)
+- [x] Full form + table with status/priority badges
+- [x] Archive table action (soft delete); no hard delete
+- [x] CreateWorkspaceTask page: auto-sets created_by_user_id + task_code
+- [x] EditWorkspaceTask page: before-snapshot audit, logs status change + assignment change events
+
+### PART I — Dashboard Updates (all 7 dashboards)
+- [x] Super Admin: taskTotal, taskOpen, taskBlocked, taskSubmitted count grid; Phase 5 notice
+- [x] Operations Admin: same task count grid; Phase 5 notice
+- [x] Talent: myAssignedTasks, myBlockedTasks, myDueSoonTasks; conditional "My Tasks" section; Phase 5 notice
+- [x] Line Manager: managerTasksOpen, managerTasksSubmitted; Task Board card made active; task summary grid; Phase 5 notice
+- [x] Individual Client: clientOpenTasks, clientSubmittedTasks; conditional task summary; Phase 5 notice
+- [x] Business Client Admin: same as individual client; Phase 5 notice
+- [x] Business Client Staff: same as individual client; Phase 5 notice
+
+### PART J — AuditLogger (7 new wrappers)
+- [x] workspaceTaskCreated, workspaceTaskUpdated, workspaceTaskStatusChanged
+- [x] workspaceTaskAssigned, workspaceTaskCommentAdded, workspaceTaskInternalCommentAdded, workspaceTaskDeleted
+
+### PART K — Documentation
+- [x] CURRENT_STATUS.md updated
+- [x] IMPLEMENTATION_LOG.md updated
+- [x] DATABASE_SCHEMA.md updated (Phase 4 actual schema, Phase 5 tables documented, planned tables updated)
+- [x] PERMISSION_MATRIX.md updated
+- [x] TESTING_CHECKLIST.md updated
+- [x] KNOWN_ISSUES.md updated
+
+---
+
 ## Next Steps
 
-1. cPanel: `git pull origin main && php artisan optimize:clear && php artisan view:clear` (no migrations needed)
-2. Verify login page: dark navy background, card has clear internal padding, form fields well-spaced
-3. Verify forgot-password page: dark navy visual header, card padded correctly
-4. Verify portal sidebar: visibly dark navy (#0B0F19), not white or transparent
-5. Verify active nav state: highlighted with border-l-4 and light text
-6. Get Phase 4 + UI Audit v3 sign-off
-7. Begin Phase 5: Task Board
+1. cPanel: `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`
+2. Verify task board loads inside a workspace (`/workspaces/{workspace}/tasks`)
+3. Verify task creation, status transitions, comment submission
+4. Verify Filament WorkspaceTaskResource at `/admin/workspace-tasks`
+5. Verify dashboard task counts update correctly
+6. Get Phase 5 sign-off, then begin Phase 6 (if approved)

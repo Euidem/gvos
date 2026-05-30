@@ -428,6 +428,57 @@ Commit: `c472ebb`
 
 ---
 
+### 2026-05-30 | Phase 5 | Task Board Foundation
+
+**PART A — Migrations (2 new):**
+- `database/migrations/2024_01_06_000001_create_workspace_tasks_table.php`
+- `database/migrations/2024_01_06_000002_create_workspace_task_comments_table.php`
+
+**PART B — Models (2 new, 2 updated):**
+- `app/Models/WorkspaceTask.php` — SoftDeletes, allowedTransitions(), generateCode(), isDueSoon(), isOverdue(), all relationships
+- `app/Models/WorkspaceTaskComment.php` — SoftDeletes, isInternal/isPublic helpers, task/user relationships
+- `app/Models/Workspace.php` — added tasks() and openTasks() HasMany
+- `app/Models/User.php` — added createdWorkspaceTasks(), assignedWorkspaceTasks(), workspaceTaskComments() HasMany
+
+**PART C–D — Task access and status flow:**
+- Role-based access via private `getUserWorkspaceRole()` helper in WorkspaceTaskController
+- 8 statuses: pending, in_progress, blocked, submitted, revision_requested, approved, closed, cancelled
+- Static `allowedTransitions(fromStatus, role)` enforced in both controller and Blade view
+
+**PART E — workspace/show.blade.php:**
+- Replaced "coming soon" task placeholder with real task board summary card
+- Role-gated "New Task" and "View All Tasks" links; open task count; status chips; 4-task preview
+
+**PART F–G — Routes, Controller, Blade views:**
+- `routes/web.php` — 8 nested routes under workspaces/{workspace}/tasks (inside auth + check.status group)
+- `app/Http/Controllers/WorkspaceTaskController.php` — 8 methods: index, create, store, show, edit, update, storeComment, updateStatus
+- `resources/views/workspace/tasks/index.blade.php` — 7-column scrollable kanban board
+- `resources/views/workspace/tasks/create.blade.php` — creation form, internal notes for admin/manager only
+- `resources/views/workspace/tasks/show.blade.php` — detail, status buttons with confirm(), comment thread, sidebar meta
+- `resources/views/workspace/tasks/edit.blade.php` — edit form pre-filled with old() pattern
+
+**PART H — Filament WorkspaceTaskResource:**
+- `app/Filament/Resources/WorkspaceTaskResource.php` — full form, table, Archive action, navigation badge
+- `app/Filament/Resources/WorkspaceTaskResource/Pages/CreateWorkspaceTask.php` — mutateFormDataBeforeCreate sets created_by_user_id + task_code
+- `app/Filament/Resources/WorkspaceTaskResource/Pages/EditWorkspaceTask.php` — before-snapshot audit, logs status change and assignment change
+
+**PART I — Dashboard updates (7 dashboards):**
+- super-admin, operations-admin: task overview grid (total/open/blocked/submitted)
+- talent: assigned tasks / blocked / due-soon
+- line-manager: open tasks / submitted awaiting review; Task Board card made active
+- individual-client, business-client-admin, business-client-staff: open tasks / submitted tasks
+
+**PART J — AuditLogger (7 new wrappers):**
+- workspaceTaskCreated, workspaceTaskUpdated, workspaceTaskStatusChanged
+- workspaceTaskAssigned, workspaceTaskCommentAdded, workspaceTaskInternalCommentAdded, workspaceTaskDeleted
+
+**PART K — Documentation (6 files updated):**
+- CURRENT_STATUS.md, IMPLEMENTATION_LOG.md, DATABASE_SCHEMA.md, PERMISSION_MATRIX.md, TESTING_CHECKLIST.md, KNOWN_ISSUES.md
+
+**Tool:** Claude Code | **Status:** Phase 5 complete — push to GitHub, test on cPanel
+
+---
+
 ### 2026-05-30 | UI Visual Repair v3 | Fix broken layout — inline styles for critical backgrounds, stable spacing utilities
 
 **Root cause:** Even with the CDN config in the correct order (v2 fix) and the CSS fallback block present, certain custom tokens were still not applying reliably:

@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 3 migrations created and active
+## Status: Phase 5 migrations created and active
 
 ---
 
@@ -182,6 +182,10 @@ Profile record for Line Manager role users.
 
 Phase 3 actions: `lead_request.created`, `lead_request.updated`, `lead_request.status_changed`, `price_estimate.created`, `price_estimate.updated`, `price_estimate.accepted`, `trial.created`, `trial.updated`, `trial.started`, `trial.completed`, `trial.cancelled`, `trial.payment_pending`
 
+Phase 4 actions: `workspace.created`, `workspace.updated`, `workspace.status_changed`, `workspace.member_added`, `workspace.member_updated`, `workspace.member_removed`, `trial.workspace_created`
+
+Phase 5 actions: `workspace_task.created`, `workspace_task.updated`, `workspace_task.status_changed`, `workspace_task.assigned`, `workspace_task.comment_added`, `workspace_task.internal_comment_added`, `workspace_task.deleted`
+
 ---
 
 ## Phase 3 Tables (live)
@@ -263,50 +267,114 @@ Trial records linking a lead request to an active lead user and assigned team.
 
 ---
 
-## Phase 4+ Tables (planned)
+## Phase 4 Tables (live)
 
-### workspaces (Phase 4+)
+### workspaces
+Workspace records linking a trial/company/client to a team and task board.
+
 | Column | Type | Notes |
 |--------|------|-------|
 | id | bigint PK | |
+| workspace_code | string(30) unique nullable | e.g. WS-00001 |
 | name | string | |
-| type | enum | trial, standard, business |
-| status | enum | trial, active, suspended, closed |
-| client_id | FK users | |
-| company_id | FK companies nullable | |
-| department_id | FK departments nullable | |
-| trial_ends_at | timestamp nullable | |
-| billing_starts_at | timestamp nullable | |
-| created_at / updated_at | timestamps | |
-
----
-
-### workspace_members (Phase 4)
-| Column | Type | Notes |
-|--------|------|-------|
-| id | bigint PK | |
-| workspace_id | FK workspaces | |
-| user_id | FK users | |
-| role_in_workspace | enum | client, talent, manager |
-| joined_at | timestamp | |
-
----
-
-### tasks (Phase 5)
-| Column | Type | Notes |
-|--------|------|-------|
-| id | bigint PK | |
-| workspace_id | FK workspaces | |
-| title | string | |
 | description | text nullable | |
-| status | enum | backlog, todo, in_progress, in_review, done, rejected |
-| priority | enum | low, medium, high, urgent |
-| assignee_id | FK users nullable | |
-| created_by | FK users | |
-| due_date | date nullable | |
-| approved_at | timestamp nullable | |
-| approved_by | FK users nullable | |
+| lead_request_id | FK lead_requests nullable | nullOnDelete |
+| trial_id | FK trials nullable | nullOnDelete |
+| company_id | FK companies nullable | nullOnDelete |
+| client_profile_id | FK client_profiles nullable | nullOnDelete |
+| primary_manager_id | FK users nullable | nullOnDelete |
+| primary_talent_id | FK users nullable | nullOnDelete |
+| status | enum | pending, active, paused, completed, cancelled |
+| type | enum | trial, ongoing, project |
+| starts_at | timestamp nullable | |
+| ends_at | timestamp nullable | |
+| task_limit | integer unsigned nullable | |
+| file_limit_mb | integer unsigned nullable | |
+| notes | text nullable | internal only |
 | created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | soft deletes |
+
+---
+
+### workspace_members
+Pivot table tracking which users belong to each workspace with what role.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| user_id | FK users | cascadeOnDelete |
+| role | enum | client, talent, manager, observer |
+| status | enum | active, removed |
+| joined_at | timestamp nullable | |
+| removed_at | timestamp nullable | |
+| notes | text nullable | |
+| created_at / updated_at | timestamps | |
+| UNIQUE | (workspace_id, user_id) | prevents duplicate membership |
+
+---
+
+## Phase 5 Tables (live)
+
+### workspace_tasks
+Task records within a workspace. Central entity of the Phase 5 task board.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| task_code | string(30) unique nullable | e.g. TASK-00001 |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| created_by_user_id | FK users | |
+| assigned_to_user_id | FK users nullable | nullOnDelete |
+| title | string | |
+| description | longtext nullable | |
+| priority | enum | low, normal, high, urgent |
+| status | enum | pending, in_progress, blocked, submitted, revision_requested, approved, closed, cancelled |
+| due_date | date nullable | |
+| started_at | timestamp nullable | set when → in_progress |
+| submitted_at | timestamp nullable | set when → submitted |
+| approved_at | timestamp nullable | set when → approved |
+| closed_at | timestamp nullable | set when → closed |
+| sort_order | integer | default: 0 |
+| internal_notes | text nullable | admin/manager only |
+| created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | soft deletes |
+| INDEX | (workspace_id, status) | |
+| INDEX | assigned_to_user_id | |
+
+#### Status Flow
+
+```
+pending → in_progress → blocked → in_progress (loop)
+                     → submitted → revision_requested → in_progress
+                                → approved → closed
+                                           → cancelled (any stage, admin/manager)
+```
+
+#### Role Transitions
+
+| Role | Allowed transitions |
+|------|-------------------|
+| admin / manager | Any status (full control, including back-transitions) |
+| talent | pending→in_progress, in_progress→blocked/submitted, blocked→in_progress, revision_requested→in_progress |
+| client | submitted→revision_requested/approved, approved→closed |
+| observer / none | None |
+
+---
+
+### workspace_task_comments
+Comments on workspace tasks. Supports public and internal (admin/manager-only) visibility.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_task_id | FK workspace_tasks | cascadeOnDelete |
+| user_id | FK users | |
+| comment | longtext | |
+| visibility | enum | public, internal |
+| created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | soft deletes |
+| INDEX | (workspace_task_id, visibility) | |
 
 ---
 
@@ -331,8 +399,10 @@ See billing schema in `BILLING_RULES.md`
 - `trials` → one `active_lead_user` (via FK to users) (Phase 3)
 - `trials` → one `assigned_talent_user` (via FK to users) (Phase 3)
 - `trials` → one `assigned_manager_user` (via FK to users) (Phase 3)
-- `workspaces` → many `workspace_members` → many `users` (Phase 4+)
-- `workspaces` → many `tasks`, `messages`, `files`, `time_logs` (Phase 5+)
+- `workspaces` → many `workspace_members` → many `users` (Phase 4)
+- `workspaces` → many `workspace_tasks` (Phase 5)
+- `workspace_tasks` → many `workspace_task_comments` (Phase 5)
+- `workspaces` → many `messages`, `files`, `time_logs` (Phase 6/7)
 - `workspaces` → one active `subscription` → many `invoices` (Phase 8)
 
 ---

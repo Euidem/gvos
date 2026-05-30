@@ -282,4 +282,66 @@ class AuditLogger
             'workspace_id'   => $workspace->id ?? null,
         ], $extra));
     }
+
+    // ── Phase 5 — Workspace Tasks ─────────────────────────────────────────
+
+    public static function workspaceTaskCreated(Model $task, array $extra = []): void
+    {
+        self::log('workspace_task.created', $task, array_merge([
+            'task_code'    => $task->task_code ?? null,
+            'workspace_id' => $task->workspace_id ?? null,
+            'title'        => $task->title ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceTaskUpdated(Model $task, array $changes = []): void
+    {
+        self::log('workspace_task.updated', $task, array_merge([
+            'task_code'    => $task->task_code ?? null,
+            'workspace_id' => $task->workspace_id ?? null,
+        ], $changes));
+    }
+
+    public static function workspaceTaskStatusChanged(Model $task, string $from, string $to, array $extra = []): void
+    {
+        self::log('workspace_task.status_changed', $task, array_merge([
+            'task_code'    => $task->task_code ?? null,
+            'workspace_id' => $task->workspace_id ?? null,
+            'from'         => $from,
+            'to'           => $to,
+        ], $extra));
+    }
+
+    public static function workspaceTaskAssigned(Model $task, array $extra = []): void
+    {
+        self::log('workspace_task.assigned', $task, array_merge([
+            'task_code'    => $task->task_code ?? null,
+            'workspace_id' => $task->workspace_id ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceTaskCommentAdded(Model $task, array $extra = []): void
+    {
+        self::log('workspace_task.comment_added', $task, array_merge([
+            'task_code'    => $task->task_code ?? null,
+            'workspace_id' => $task->workspace_id ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceTaskInternalCommentAdded(Model $task, array $extra = []): void
+    {
+        self::log('workspace_task.internal_comment_added', $task, array_merge([
+            'task_code'    => $task->task_code ?? null,
+            'workspace_id' => $task->workspace_id ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceTaskDeleted(Model $task, array $extra = []): void
+    {
+        self::log('workspace_task.deleted', $task, array_merge([
+            'task_code'    => $task->task_code ?? null,
+            'workspace_id' => $task->workspace_id ?? null,
+            'title'        => $task->title ?? null,
+        ], $extra));
+    }
 }

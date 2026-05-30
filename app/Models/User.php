@@ -95,6 +95,24 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Workspace::class, 'primary_talent_id');
     }
 
+    /** Tasks created by this user. */
+    public function createdWorkspaceTasks(): HasMany
+    {
+        return $this->hasMany(WorkspaceTask::class, 'created_by_user_id');
+    }
+
+    /** Tasks assigned to this user. */
+    public function assignedWorkspaceTasks(): HasMany
+    {
+        return $this->hasMany(WorkspaceTask::class, 'assigned_to_user_id');
+    }
+
+    /** Task comments authored by this user. */
+    public function workspaceTaskComments(): HasMany
+    {
+        return $this->hasMany(WorkspaceTaskComment::class);
+    }
+
     // ── Status helpers ───────────────────────────────────────────────────
 
     public function isActive(): bool

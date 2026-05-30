@@ -452,7 +452,107 @@ Run after `git pull && php artisan optimize:clear` (no migrations needed).
 
 ---
 
-## Phase 5 — Task Board (planned)
+## Phase 5 — Task Board
+
+Run after `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### Migrations
+- [ ] `php artisan migrate` runs without error
+- [ ] `workspace_tasks` table exists with all columns
+- [ ] `workspace_task_comments` table exists with all columns
+- [ ] `php artisan route:list` shows 8 workspace task routes
+
+### Task Board — Filament Admin
+- [ ] `/admin/workspace-tasks` loads — nav group "Workspace", nav item "Tasks" visible
+- [ ] Navigation badge shows count of open tasks (pending + in_progress + revision_requested) in amber
+- [ ] Can create a task from Filament — task_code auto-generated (TASK-00001 format)
+- [ ] created_by_user_id set to the logged-in admin
+- [ ] Status and priority dropdowns show correct options
+- [ ] Editing a task fires `workspace_task.updated` audit log with before/after diff
+- [ ] Changing status in edit fires `workspace_task.status_changed` audit log entry
+- [ ] Changing assigned_to fires `workspace_task.assigned` audit log entry
+- [ ] Archive action (soft delete) visible in table — no hard delete button
+- [ ] Archived tasks do not appear in main list
+
+### Task Board — Workspace Portal
+
+#### Index (Kanban Board)
+- [ ] `/workspaces/{workspace}/tasks` loads for a workspace member
+- [ ] Page shows 7 status columns: Pending, In Progress, Blocked, Submitted, Revision Requested, Approved, Closed
+- [ ] Tasks appear in the correct column for their status
+- [ ] Task cards show: priority badge, task code (mono), title (truncated), assignee name, comment count, due date
+- [ ] Overdue tasks show due date in red; due-soon tasks show in amber
+- [ ] "No tasks here" empty state shown in each empty column
+- [ ] Global empty state shown when workspace has no tasks at all
+- [ ] "New Task" button visible to admin/manager only
+- [ ] Non-member accessing task index → 403
+
+#### Create Task
+- [ ] `/workspaces/{workspace}/tasks/create` accessible to admin/manager
+- [ ] Talent/client accessing create → 403
+- [ ] Form: title (required), description, assign-to (dropdown of workspace members), priority, due date
+- [ ] Internal notes field shown only to admin/manager
+- [ ] Submitting valid form creates task; task appears in "Pending" column on index
+- [ ] task_code auto-generated (TASK-XXXXX format)
+- [ ] `workspace_task.created` audit log entry created
+- [ ] Missing title → validation error displayed on form
+
+#### Task Detail (Show)
+- [ ] `/workspaces/{workspace}/tasks/{task}` loads
+- [ ] Task code, status badge, priority badge, title, description visible
+- [ ] Internal notes shown only to admin/manager (hidden for talent/client)
+- [ ] Status action buttons shown based on allowed transitions for the user's role
+- [ ] Clicking a status button shows a confirm() dialog; Cancel does not change status
+- [ ] Status change succeeds → page reloads with updated status
+- [ ] Status change fires `workspace_task.status_changed` audit log
+- [ ] Wrong transition attempt (e.g. talent trying to approve) → 403 or flash error
+- [ ] Comments section shows all public comments for all members
+- [ ] Internal comments visible only to admin/manager
+- [ ] Add comment form: submitting a public comment creates `workspace_task_comments` row (visibility=public)
+- [ ] Internal comment checkbox shown only to admin/manager
+- [ ] Talent/client submitting with internal checked → comment saved as public (server override)
+- [ ] `workspace_task.comment_added` audit log fires on public comment
+- [ ] `workspace_task.internal_comment_added` audit log fires on internal comment
+
+#### Edit Task
+- [ ] `/workspaces/{workspace}/tasks/{task}/edit` accessible to admin/manager
+- [ ] Form pre-fills all fields from existing task (using old() fallback pattern)
+- [ ] Due date input pre-filled in YYYY-MM-DD format
+- [ ] Internal notes field shown only to admin/manager
+- [ ] Saving updates the task; flash success shown
+- [ ] `workspace_task.updated` audit log fires
+
+### Workspace Show — Task Summary
+- [ ] `/workspaces/{workspace}` task summary section replaces old "coming soon" placeholder
+- [ ] Open task count shown correctly
+- [ ] Status count chips shown and link to task board
+- [ ] Up to 4 open tasks previewed with title, assignee, due date
+- [ ] "New Task" link shown only to admin/manager
+- [ ] "View All Tasks" link shown to all members
+- [ ] Empty state shown correctly when no tasks exist
+
+### Dashboard Task Counts
+- [ ] Super Admin dashboard: Task Overview section shows Total, Open, Blocked, Awaiting Review counts
+- [ ] Operations Admin dashboard: same Task Overview section
+- [ ] Talent dashboard: "My Tasks" section shows Active Tasks, Blocked, Due Soon (conditional — only if > 0)
+- [ ] Line Manager dashboard: Workspace Tasks section shows Open, Submitted Awaiting Review
+- [ ] Line Manager dashboard: Task Board quick-action card is now a clickable link (not disabled)
+- [ ] Individual Client dashboard: Workspace Tasks section shown if tasks exist
+- [ ] Business Client Admin dashboard: Workspace Tasks section shown if tasks exist
+- [ ] Business Client Staff dashboard: Workspace Tasks section shown if tasks exist
+- [ ] All 7 dashboards: notice updated to "Phase 5 — Task Board" (not Phase 4)
+
+### Audit Log Verification
+- [ ] `workspace_task.created` — fires when task created via portal or Filament
+- [ ] `workspace_task.updated` — fires when task edited
+- [ ] `workspace_task.status_changed` — fires when status changes, context has from/to values
+- [ ] `workspace_task.assigned` — fires when assignee changes, context has from/to user IDs
+- [ ] `workspace_task.comment_added` — fires when public comment submitted
+- [ ] `workspace_task.internal_comment_added` — fires when internal comment submitted
+- [ ] `workspace_task.deleted` — fires when task archived (soft deleted)
+
+---
+
 ## Phase 6 — Chat and Files (planned)
 ## Phase 7 — Time Tracking and Reports (planned)
 ## Phase 8 — Billing (planned)

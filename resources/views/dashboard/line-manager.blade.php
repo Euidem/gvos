@@ -9,6 +9,16 @@
         })
         ->whereIn('status', ['pending', 'active'])
         ->count();
+
+    // Task counts for managed workspaces (Phase 5)
+    $managedWorkspaceIds = \App\Models\Workspace::where(function ($q) use ($user) {
+            $q->where('primary_manager_id', $user->id)
+              ->orWhereHas('members', fn ($m) => $m->where('user_id', $user->id)->where('role', 'manager')->where('status', 'active'));
+        })->pluck('id');
+    $managerTasksOpen      = \App\Models\WorkspaceTask::whereIn('workspace_id', $managedWorkspaceIds)
+        ->whereIn('status', ['pending', 'in_progress', 'blocked', 'revision_requested'])->count();
+    $managerTasksSubmitted = \App\Models\WorkspaceTask::whereIn('workspace_id', $managedWorkspaceIds)
+        ->where('status', 'submitted')->count();
 @endphp
 
     <div class="flex items-start justify-between mb-8">
@@ -81,25 +91,47 @@
                 </div>
             </div>
         </a>
-        <div class="bg-white rounded-xl border border-dashed border-border-subtle px-5 py-4 opacity-50 cursor-not-allowed shadow-sm">
+        <a href="{{ route('workspace.index') }}"
+           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-outline" style="font-size: 18px;">task_alt</span>
+                <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">task_alt</span>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-on-surface-variant">Task Board</p>
-                    <p class="text-xs text-outline mt-0.5">Coming in Phase 5</p>
+                    <p class="text-sm font-semibold text-on-surface">Task Board</p>
+                    <p class="text-xs text-outline mt-0.5">
+                        {{ $managerTasksOpen }} open &middot; {{ $managerTasksSubmitted }} awaiting review
+                    </p>
                 </div>
             </div>
+        </a>
+    </div>
+
+    {{-- ── Task summary (Phase 5) ──────────────────────────────────────── --}}
+    @if ($managedWorkspaceIds->isNotEmpty())
+    <div class="mb-8">
+        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Workspace Tasks</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <a href="{{ route('workspace.index') }}"
+               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-secondary">{{ $managerTasksOpen }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Open Tasks in My Workspaces</p>
+            </a>
+            <a href="{{ route('workspace.index') }}"
+               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-status-trial/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-status-trial">{{ $managerTasksSubmitted }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Submitted — Awaiting Review</p>
+            </a>
         </div>
     </div>
+    @endif
 
     <div class="bg-secondary/5 border border-secondary/20 rounded-xl px-6 py-5 flex items-start gap-3">
         <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size: 18px;">info</span>
         <div>
-            <p class="text-sm font-semibold text-secondary">Phase 4 — Workspace Engine</p>
+            <p class="text-sm font-semibold text-secondary">Phase 5 — Task Board</p>
             <p class="text-sm text-on-surface-variant mt-0.5">
-                Your workspaces are now visible. Task board, team oversight and reporting are coming in later phases.
+                Task boards are now live inside each workspace. Review submitted tasks and manage your workspace tasks directly.
             </p>
         </div>
     </div>

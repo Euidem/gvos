@@ -3,6 +3,20 @@
     <div class="max-w-4xl mx-auto space-y-8">
 
         @php
+            $user           = auth()->user();
+            $userIsAdmin    = $user->hasAnyRole(['super_admin', 'operations_admin']);
+            $activeMember   = $workspace->activeMembers->firstWhere('user_id', $user->id);
+            $memberRole     = $activeMember?->role;
+            $userIsPrimary  = in_array($user->id, [$workspace->primary_manager_id, $workspace->primary_talent_id]);
+            $effectiveRole  = $userIsAdmin ? 'admin'
+                            : ($memberRole ?? ($userIsPrimary ? ($workspace->primary_manager_id === $user->id ? 'manager' : 'talent') : 'none'));
+            $canCreateTask  = $effectiveRole !== 'none' && $effectiveRole !== 'observer';
+
+            // Task counts for summary
+            $taskCounts = $workspace->tasks()->selectRaw('status, count(*) as cnt')->groupBy('status')->pluck('cnt', 'status');
+            $openCount  = $taskCounts->only(['pending','in_progress','blocked','submitted','revision_requested'])->sum();
+            $totalCount = $taskCounts->sum();
+
             $statusColors = [
                 'active'    => 'bg-status-active/10 text-status-active border border-status-active/20',
                 'pending'   => 'bg-status-payment-due/10 text-status-payment-due border border-status-payment-due/20',
@@ -174,15 +188,109 @@
             </div>
         @endif
 
-        {{-- ── Coming soon placeholder ───────────────────────────────────── --}}
-        <div class="bg-white rounded-xl border border-border-subtle shadow-card p-6">
-            <div class="text-center py-6">
-                <div class="w-12 h-12 bg-secondary/5 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">task_alt</span>
+        {{-- ── Task Board Summary ────────────────────────────────────────── --}}
+        <div class="bg-white rounded-xl border border-border-subtle shadow-card overflow-hidden">
+            <div class="px-6 pt-5 pb-4 flex items-center justify-between border-b border-border-subtle">
+                <h3 class="text-sm font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">task_alt</span>
+                    Task Board
+                </h3>
+                <div class="flex items-center gap-3">
+                    @if ($canCreateTask)
+                        <a href="{{ route('workspace.tasks.create', $workspace) }}"
+                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all"
+                           style="background-color:#0058be">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
+                            New Task
+                        </a>
+                    @endif
+                    <a href="{{ route('workspace.tasks.index', $workspace) }}"
+                       class="text-xs text-secondary hover:brightness-110 transition-all flex items-center gap-1">
+                        View All
+                        <span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+                    </a>
                 </div>
-                <h4 class="text-sm font-semibold text-on-surface mb-1">Tasks, files, and chat coming soon</h4>
-                <p class="text-xs text-on-surface-variant max-w-sm mx-auto">The GVOS team is setting up your full workspace. Task board and file sharing will be available in a future update.</p>
             </div>
+
+            @if ($totalCount === 0)
+                <div class="p-8 text-center">
+                    <p class="text-sm text-outline italic">No tasks yet in this workspace.</p>
+                    @if ($canCreateTask)
+                        <a href="{{ route('workspace.tasks.create', $workspace) }}"
+                           class="inline-flex items-center gap-1.5 mt-3 px-4 py-2 rounded-lg text-xs font-semibold text-white"
+                           style="background-color:#0058be">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
+                            Create First Task
+                        </a>
+                    @endif
+                </div>
+            @else
+                {{-- Status count chips --}}
+                <div class="px-6 py-4 flex flex-wrap gap-2">
+                    @php
+                        $chipDefs = [
+                            'pending'            => ['label' => 'Pending',         'cls' => 'bg-status-payment-due/10 text-status-payment-due'],
+                            'in_progress'        => ['label' => 'In Progress',     'cls' => 'bg-secondary/10 text-secondary'],
+                            'blocked'            => ['label' => 'Blocked',         'cls' => 'bg-status-blocked/10 text-status-blocked'],
+                            'submitted'          => ['label' => 'Submitted',       'cls' => 'bg-status-trial/10 text-status-trial'],
+                            'revision_requested' => ['label' => 'Revision Req.',   'cls' => 'bg-status-blocked/10 text-status-blocked'],
+                            'approved'           => ['label' => 'Approved',        'cls' => 'bg-status-active/10 text-status-active'],
+                            'closed'             => ['label' => 'Closed',          'cls' => 'bg-status-completed/10 text-status-completed'],
+                        ];
+                    @endphp
+                    @foreach ($chipDefs as $s => $chip)
+                        @if (($taskCounts[$s] ?? 0) > 0)
+                            <a href="{{ route('workspace.tasks.index', $workspace) }}"
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold {{ $chip['cls'] }} hover:opacity-80 transition-opacity">
+                                {{ $taskCounts[$s] }} {{ $chip['label'] }}
+                            </a>
+                        @endif
+                    @endforeach
+                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-outline bg-surface-container-low">
+                        {{ $totalCount }} total
+                    </span>
+                </div>
+
+                {{-- Recent open tasks preview --}}
+                @php
+                    $previewTasks = $workspace->tasks()
+                        ->with(['assignedTo'])
+                        ->whereIn('status', ['pending','in_progress','blocked','submitted','revision_requested'])
+                        ->orderBy('created_at', 'desc')
+                        ->limit(4)
+                        ->get();
+                @endphp
+                @if ($previewTasks->isNotEmpty())
+                    <div class="border-t border-border-subtle divide-y divide-border-subtle">
+                        @foreach ($previewTasks as $pt)
+                            <a href="{{ route('workspace.tasks.show', [$workspace, $pt]) }}"
+                               class="flex items-center justify-between px-6 py-3 hover:bg-surface-container-low transition-colors group">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <span class="text-[10px] font-mono text-outline flex-shrink-0">{{ $pt->task_code }}</span>
+                                    <span class="text-sm text-on-surface truncate group-hover:text-secondary transition-colors">{{ $pt->title }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 flex-shrink-0 ml-3">
+                                    @if ($pt->assignedTo)
+                                        <span class="text-xs text-outline hidden sm:block">{{ Str::limit($pt->assignedTo->name, 12) }}</span>
+                                    @endif
+                                    @if ($pt->due_date)
+                                        <span class="text-[11px] {{ $pt->isOverdue() ? 'text-status-blocked' : 'text-outline' }}">
+                                            {{ $pt->due_date->format('d M') }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </a>
+                        @endforeach
+                        @if ($openCount > 4)
+                            <div class="px-6 py-3 text-center">
+                                <a href="{{ route('workspace.tasks.index', $workspace) }}" class="text-xs text-secondary hover:brightness-110 transition-all">
+                                    View all {{ $openCount }} open tasks →
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+            @endif
         </div>
 
         {{-- ── Back link ─────────────────────────────────────────────────── --}}

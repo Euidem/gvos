@@ -204,6 +204,30 @@ Custom spacing tokens defined in `tailwind.config extend.spacing` (e.g. `card-pa
 
 ---
 
+### Phase 5 | Low | Filament task assignee dropdown shows all users, not filtered to workspace members
+
+The `WorkspaceTaskResource` form shows all users in the `assigned_to_user_id` dropdown. Ideally it should be filtered to members of the selected workspace. This is a known limitation acknowledged in the Phase 5 spec: "if that is complex, use all users for now with a note to refine later." A future improvement would reactively filter the assignee dropdown based on the selected workspace_id.
+
+---
+
+### Phase 5 | Low | Task status buttons do not perform optimistic UI update
+
+Clicking a status action button on the task detail page (`/workspaces/{workspace}/tasks/{task}`) submits a POST form. The page reloads after the server processes the update. There is no client-side optimistic update or AJAX. The JavaScript `confirm()` dialog prevents accidental submissions. A future improvement could use a Livewire component or fetch/XHR for a smoother experience.
+
+---
+
+### Phase 5 | Low | Task `sort_order` is not editable via the portal UI
+
+The `workspace_tasks.sort_order` column exists and is used to order tasks within a column. However, there is no drag-and-drop or manual reordering UI on the kanban board — tasks are ordered by `sort_order` ascending then `created_at` ascending. Drag-to-reorder is a future Phase 6/7 enhancement.
+
+---
+
+### Phase 5 | Info | Internal notes and internal comments are server-enforced, not hidden at DB level
+
+Internal notes on tasks and internal comments are stripped server-side for non-admin/non-manager users — the field is simply unsaved on store/update, and internal comments are overridden to 'public'. The Blade views additionally hide these fields from the UI. The underlying data is not encrypted; admin DB access can still read all internal fields.
+
+---
+
 ### UI Repair v3 | Info | Structural background colors must use inline styles, not custom token classes
 
 Custom color token classes (`bg-sidebar-bg`, `bg-background`) on structural elements (`<body>`, `<aside>`, `<main>`) are unreliable even with both a tailwind.config definition and a CSS fallback block. The Tailwind CDN `@base` layer or browser default stylesheets can override them in some environments.

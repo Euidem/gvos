@@ -9,6 +9,19 @@
         })
         ->whereIn('status', ['pending', 'active'])
         ->count();
+
+    // Task counts (Phase 5)
+    $myAssignedTasks = \App\Models\WorkspaceTask::where('assigned_to_user_id', $user->id)
+        ->whereIn('status', ['pending', 'in_progress', 'blocked', 'revision_requested'])
+        ->count();
+    $myDueSoonTasks = \App\Models\WorkspaceTask::where('assigned_to_user_id', $user->id)
+        ->whereIn('status', ['pending', 'in_progress'])
+        ->whereNotNull('due_date')
+        ->whereDate('due_date', '<=', now()->addDays(3))
+        ->count();
+    $myBlockedTasks = \App\Models\WorkspaceTask::where('assigned_to_user_id', $user->id)
+        ->where('status', 'blocked')
+        ->count();
 @endphp
 
     <div class="flex items-start justify-between mb-8">
@@ -90,18 +103,46 @@
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-on-surface-variant">Time Tracker</p>
-                    <p class="text-xs text-outline mt-0.5">Coming in Phase 7</p>
+                    <p class="text-xs text-outline mt-0.5">Coming in a later phase</p>
                 </div>
             </div>
         </div>
     </div>
 
+    {{-- ── My Tasks (Phase 5) ───────────────────────────────────────────── --}}
+    @if ($myAssignedTasks > 0 || $myBlockedTasks > 0)
+    <div class="mb-8">
+        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">My Tasks</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <a href="{{ route('workspace.index') }}"
+               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-secondary">{{ $myAssignedTasks }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Active Tasks</p>
+            </a>
+            @if ($myBlockedTasks > 0)
+            <a href="{{ route('workspace.index') }}"
+               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-status-blocked/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-status-blocked">{{ $myBlockedTasks }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Blocked</p>
+            </a>
+            @endif
+            @if ($myDueSoonTasks > 0)
+            <a href="{{ route('workspace.index') }}"
+               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-status-payment-due/30 hover:shadow-card transition-all shadow-sm">
+                <p class="text-2xl font-bold text-status-payment-due">{{ $myDueSoonTasks }}</p>
+                <p class="text-xs text-on-surface-variant mt-1 font-medium">Due Soon</p>
+            </a>
+            @endif
+        </div>
+    </div>
+    @endif
+
     <div class="bg-secondary/5 border border-secondary/20 rounded-xl px-6 py-5 flex items-start gap-3">
         <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size: 18px;">info</span>
         <div>
-            <p class="text-sm font-semibold text-secondary">Phase 4 — Workspace Engine</p>
+            <p class="text-sm font-semibold text-secondary">Phase 5 — Task Board</p>
             <p class="text-sm text-on-surface-variant mt-0.5">
-                Your workspaces are now visible. Task boards, time tracking and daily reports are coming in later phases.
+                Workspace task boards are now live. Open your workspace to view and update your assigned tasks.
             </p>
         </div>
     </div>

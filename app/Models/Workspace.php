@@ -116,4 +116,15 @@ class Workspace extends Model
     {
         return $this->hasMany(WorkspaceMember::class)->where('status', 'active');
     }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(WorkspaceTask::class)->orderBy('sort_order')->orderBy('created_at');
+    }
+
+    public function openTasks(): HasMany
+    {
+        return $this->hasMany(WorkspaceTask::class)
+            ->whereIn('status', ['pending', 'in_progress', 'blocked', 'submitted', 'revision_requested']);
+    }
 }

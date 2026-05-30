@@ -161,12 +161,79 @@ pending → approved → active → completed → (payment_pending on lead)
 
 ---
 
+## Phase 4 — Workspace Engine Access Control
+
+| Resource | super_admin | operations_admin | line_manager | talent | client roles | active_lead |
+|----------|------------|-----------------|--------------|--------|-------------|-------------|
+| Workspaces (Filament) | ✅ CRUD | ✅ CRUD | ❌ | ❌ | ❌ | ❌ |
+| Workspace Members (Filament RelationManager) | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| `/workspaces` (portal index) | ✅ (all) | ✅ (all) | 👁 assigned | 👁 assigned | 👁 own | 👁 trial only |
+| `/workspaces/{workspace}` (portal detail) | ✅ | ✅ | 👁 if member/primary | 👁 if member/primary | 👁 if member | 👁 if trial ws |
+
+> Workspace detail page (`/workspaces/{workspace}`) aborts 403 if the authenticated user is not a member (active status) and not the primary_manager_id or primary_talent_id.
+
+---
+
+## Phase 5 — Task Board Access Control
+
+### Task Board Routes
+
+All task routes require `auth` + `check.status` middleware. No additional `role:` middleware — access is enforced inside the controller using `getUserWorkspaceRole()`.
+
+| Action | admin/manager | talent | client | observer/none |
+|--------|-------------|--------|--------|--------------|
+| View task list (`index`) | ✅ | ✅ | ✅ | ❌ 403 |
+| View task detail (`show`) | ✅ | ✅ | ✅ | ❌ 403 |
+| Create task (`create` / `store`) | ✅ | ❌ 403 | ❌ 403 | ❌ 403 |
+| Edit task (`edit` / `update`) | ✅ | ✅ (own assigned only if not admin) | ❌ 403 | ❌ 403 |
+| Add public comment | ✅ | ✅ | ✅ | ❌ 403 |
+| Add internal comment | ✅ | ❌ (forced public) | ❌ (forced public) | ❌ |
+| Change task status | ✅ (any transition) | Allowed transitions only | Allowed transitions only | ❌ |
+| Set internal_notes | ✅ | ❌ (stripped) | ❌ (stripped) | ❌ |
+
+### Role Determination (`getUserWorkspaceRole()`)
+
+```
+if user hasAnyRole(['super_admin', 'operations_admin']) → 'admin'
+else if active workspace_member exists → member.role (client|talent|manager|observer)
+else if workspace.primary_manager_id === user.id → 'manager'
+else if workspace.primary_talent_id === user.id → 'talent'
+else → 'none' (403 on requireWorkspaceAccess)
+```
+
+### Task Status Allowed Transitions
+
+| From Status | admin/manager | talent | client |
+|------------|-------------|--------|--------|
+| pending | any | in_progress | — |
+| in_progress | any | blocked, submitted | — |
+| blocked | any | in_progress | — |
+| submitted | any | — | revision_requested, approved |
+| revision_requested | any | in_progress | — |
+| approved | any | — | closed |
+| closed | any | — | — |
+| cancelled | any | — | — |
+
+### Task Board Filament (WorkspaceTaskResource)
+
+| Action | super_admin | operations_admin | All others |
+|--------|------------|-----------------|------------|
+| View tasks list | ✅ | ✅ | ❌ |
+| Create task | ✅ | ✅ | ❌ |
+| Edit task | ✅ | ✅ | ❌ |
+| Hard delete | ❌ disabled | ❌ | ❌ |
+| Archive (soft delete) | ✅ | ✅ | ❌ |
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
 - Phase 2 Filament navigation group: "People & Organizations" (sort positions 1–5).
 - Phase 3 Filament navigation group: "Leads & Trials" (sort positions 1–3).
+- Phase 4 Filament navigation group: "Workspace" (sort positions 1). Phase 5 adds WorkspaceTaskResource at sort 2.
 - Always enforce on server — never rely on front-end hiding alone.
 - Business client staff permissions are per-user, managed by Business Client Admin (Phase 4+).
 - GetVirtual brand name must not appear in any visible app UI (screens, panels, dashboards, notices). Internal documentation only.
 - Active leads can only see their own trial data via `/lead/dashboard` — they cannot access Filament.
+- Task internal notes and internal comments are invisible to non-admin/non-manager roles — enforced in controller, not just hidden in Blade.

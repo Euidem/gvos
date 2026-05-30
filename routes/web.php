@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadRequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkspaceController;
+use App\Http\Controllers\WorkspaceTaskController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,6 +46,18 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/workspaces',            [WorkspaceController::class, 'index'])->name('workspace.index');
     Route::get('/workspaces/{workspace}', [WorkspaceController::class, 'show'])->name('workspace.show');
+
+    // ── Workspace task routes (Phase 5) ───────────────────────────────────
+    Route::prefix('workspaces/{workspace}/tasks')->name('workspace.tasks.')->group(function () {
+        Route::get('/',                          [WorkspaceTaskController::class, 'index'])->name('index');
+        Route::get('/create',                    [WorkspaceTaskController::class, 'create'])->name('create');
+        Route::post('/',                         [WorkspaceTaskController::class, 'store'])->name('store');
+        Route::get('/{task}',                    [WorkspaceTaskController::class, 'show'])->name('show');
+        Route::get('/{task}/edit',               [WorkspaceTaskController::class, 'edit'])->name('edit');
+        Route::put('/{task}',                    [WorkspaceTaskController::class, 'update'])->name('update');
+        Route::post('/{task}/comments',          [WorkspaceTaskController::class, 'storeComment'])->name('comments.store');
+        Route::post('/{task}/status',            [WorkspaceTaskController::class, 'updateStatus'])->name('status.update');
+    });
 });
 
 // ── Manager Console ──────────────────────────────────────────────────────
