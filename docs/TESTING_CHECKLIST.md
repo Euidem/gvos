@@ -476,16 +476,37 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 
 ### Task Board — Workspace Portal
 
-#### Index (Kanban Board)
+#### Index (Kanban Board — Drag & Drop)
 - [ ] `/workspaces/{workspace}/tasks` loads for a workspace member
-- [ ] Page shows 7 status columns: Pending, In Progress, Blocked, Submitted, Revision Requested, Approved, Closed
+- [ ] Page shows 7 status columns: Pending, In Progress, Blocked, Submitted, Revision Req., Approved, Closed
+- [ ] Each column has a distinct colored header with icon, label, and count badge
 - [ ] Tasks appear in the correct column for their status
-- [ ] Task cards show: priority badge, task code (mono), title (truncated), assignee name, comment count, due date
+- [ ] Task cards show: priority badge, task code, title (truncated), assignee avatar/name, comment count, due date
 - [ ] Overdue tasks show due date in red; due-soon tasks show in amber
-- [ ] "No tasks here" empty state shown in each empty column
-- [ ] Global empty state shown when workspace has no tasks at all
-- [ ] "New Task" button visible to admin/manager only
+- [ ] Empty columns show "No tasks here" message (below the droppable zone)
+- [ ] Global empty state shown when workspace has no tasks at all; has "Create First Task" button
+- [ ] "New Task" button visible to admin/manager/talent/client (not observer)
+- [ ] "Drag cards between columns to change status" hint visible to authorized roles
 - [ ] Non-member accessing task index → 403
+
+#### Drag and Drop
+- [ ] Task cards for admin/manager/talent/client show `drag_indicator` handle icon
+- [ ] Observer role cards do not show drag handle; SortableJS not initialized
+- [ ] Dragging a card shows: ghost placeholder (dashed blue border), elevated dragged clone (shadow + rotation)
+- [ ] Drop target column shows blue dashed outline while hovering (highlight removed on drop)
+- [ ] Dropping a card in a new column sends AJAX POST to `/workspaces/{ws}/tasks/{task}/status`
+- [ ] Successful move: card stays in new column, count badges update, green toast shown
+- [ ] Failed move (permission denied): card reverts to original column, error toast shown
+- [ ] Failed move (network error): card reverts to original column, error toast shown
+- [ ] Column empty-state message appears/disappears correctly after moves
+- [ ] Clicking a card (not dragging) navigates to task detail page
+- [ ] Valid talent move: pending → in_progress succeeds (green toast)
+- [ ] Valid talent move: in_progress → submitted succeeds (green toast)
+- [ ] Invalid move as talent: submitted → approved → 403 → card reverts, error toast
+- [ ] Valid client move: submitted → approved succeeds (green toast)
+- [ ] Audit log `workspace_task.status_changed` fires on every successful drag move
+- [ ] Mobile horizontal scroll still works at narrow viewport
+- [ ] SortableJS CDN not loaded on other pages (only task board index)
 
 #### Create Task
 - [ ] `/workspaces/{workspace}/tasks/create` accessible to admin/manager
@@ -522,14 +543,15 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] Saving updates the task; flash success shown
 - [ ] `workspace_task.updated` audit log fires
 
-### Workspace Show — Task Summary
-- [ ] `/workspaces/{workspace}` task summary section replaces old "coming soon" placeholder
-- [ ] Open task count shown correctly
-- [ ] Status count chips shown and link to task board
-- [ ] Up to 4 open tasks previewed with title, assignee, due date
-- [ ] "New Task" link shown only to admin/manager
-- [ ] "View All Tasks" link shown to all members
-- [ ] Empty state shown correctly when no tasks exist
+### Workspace Show — Kanban Board Section
+- [ ] `/workspaces/{workspace}` shows "Kanban Board" section with `view_kanban` icon
+- [ ] "Open Kanban Board" button (blue, prominent) links to `/workspaces/{workspace}/tasks`
+- [ ] "New Task" outline button visible to admin/manager/talent/client only
+- [ ] When tasks exist: 4 metric cards visible (Total, Open, Blocked, Awaiting Review) with correct counts
+- [ ] Status chips visible with count and color coding, linking to task board
+- [ ] Up to 4 open tasks previewed with task code, title, assignee, due date
+- [ ] "View all N open tasks on Kanban Board" link shown when open count > 4
+- [ ] When no tasks: empty state shown with `view_kanban` icon and create button (if authorized)
 
 ### Dashboard Task Counts
 - [ ] Super Admin dashboard: Task Overview section shows Total, Open, Blocked, Awaiting Review counts

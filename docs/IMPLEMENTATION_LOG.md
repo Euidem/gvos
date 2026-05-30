@@ -428,6 +428,47 @@ Commit: `c472ebb`
 
 ---
 
+### 2026-05-30 | Phase 5 Improvement | Kanban Drag & Drop
+
+**Goal:** Upgrade the static task board into an interactive Kanban board (Trello/Jira style) with drag-and-drop.
+
+**Files modified (3):**
+
+| File | Change |
+|------|--------|
+| `resources/views/workspace/tasks/index.blade.php` | Full rewrite — SortableJS kanban board, drag handles, toast system, ghost/hover styles |
+| `app/Http/Controllers/WorkspaceTaskController.php` | `updateStatus()` now returns JSON (200/403/422) when `$request->expectsJson()`; form redirect behavior unchanged |
+| `resources/views/workspace/show.blade.php` | Task section updated: "Open Kanban Board" button, 4 metric cards, improved status chips |
+
+**No database changes made.**
+
+**How drag and drop works:**
+- SortableJS CDN loaded only on the task board page
+- Each column's task list is a SortableJS group (`kanban-board`) — cross-list dropping enabled
+- Drag handle (`.drag-handle`) targets the Material Symbols `drag_indicator` icon on each card
+- `onAdd` fires when a card is dropped into a new column: fires fetch POST to `/workspaces/{id}/tasks/{id}/status`
+- AJAX request includes `Accept: application/json` so backend returns JSON (not redirect)
+- On success: card's `data-current-status` updated, column counts updated, success toast shown
+- On failure (403 permission denied, 422 invalid): card reverted to original column, error toast shown
+- Card click navigation uses `isDragging` flag to prevent navigation on drop
+
+**Visual feedback:**
+- `.sortable-ghost`: dashed blue border placeholder while dragging
+- `.sortable-chosen`: elevated floating card with shadow + slight rotation
+- `.kanban-col-drop`: blue outline on valid drop target column (via `onMove` callback)
+- Toast system: fixed top-right, auto-dismisses after 3.5s, green/red variants
+- Column count badges update optimistically (reverted on error)
+- Column empty-state message shown/hidden dynamically via JS
+
+**Backend permission enforcement:**
+- `updateStatus()` calls `getUserWorkspaceRole()` and `WorkspaceTask::allowedTransitions()`
+- Disallowed transition → JSON 403 → card reverts client-side
+- Invalid status string → JSON 422 (Laravel validation) → card reverts client-side
+
+**Tool:** Claude Code | **Status:** Kanban improvement complete — push to GitHub, test on cPanel
+
+---
+
 ### 2026-05-30 | Phase 5 | Task Board Foundation
 
 **PART A — Migrations (2 new):**

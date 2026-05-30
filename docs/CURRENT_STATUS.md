@@ -1,7 +1,7 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-05-30
-**Current Phase:** Phase 5 — Task Board Foundation ✅ Complete
+**Current Phase:** Phase 5 — Task Board Foundation + Kanban Drag & Drop ✅ Complete
 
 ---
 
@@ -514,11 +514,29 @@ No migrations needed.
 
 ---
 
+---
+
+## Phase 5 Improvement — Kanban Drag & Drop ✅ (2026-05-30)
+
+### What was improved
+- [x] Task board index (`workspace/tasks/index.blade.php`) fully redesigned as an interactive Kanban board
+- [x] SortableJS CDN added to task board page only (not globally)
+- [x] Drag handle (`drag_indicator` icon) on each task card — only authorized roles see it
+- [x] Cards draggable between columns; dropped card triggers AJAX POST to existing status route
+- [x] `WorkspaceTaskController@updateStatus` now returns JSON when request expects JSON; form behavior unchanged
+- [x] Backend role permissions enforced on every drag — invalid moves return 403 JSON and card reverts
+- [x] Visual feedback: ghost placeholder, lifted dragging card, column drop highlight, toast notifications
+- [x] Optimistic UI: column counts update immediately; reverted on failure
+- [x] `workspace/show.blade.php` updated: "Open Kanban Board" button, 4 task metric cards (Total/Open/Blocked/Awaiting Review), improved status chips with color coding
+- [x] No database changes made
+
+---
+
 ## Next Steps
 
-1. cPanel: `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`
-2. Verify task board loads inside a workspace (`/workspaces/{workspace}/tasks`)
-3. Verify task creation, status transitions, comment submission
-4. Verify Filament WorkspaceTaskResource at `/admin/workspace-tasks`
-5. Verify dashboard task counts update correctly
+1. cPanel: `git pull origin main && php artisan optimize:clear && php artisan view:clear` (no new migrations)
+2. Verify drag-and-drop on the Kanban board
+3. Verify invalid move reverts card and shows error toast
+4. Verify audit log records status change on drag
+5. Verify workspace detail page shows "Open Kanban Board" button and metric cards
 6. Get Phase 5 sign-off, then begin Phase 6 (if approved)

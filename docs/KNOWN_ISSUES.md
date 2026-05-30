@@ -204,6 +204,24 @@ Custom spacing tokens defined in `tailwind.config extend.spacing` (e.g. `card-pa
 
 ---
 
+### Phase 5 Kanban | Info | SortableJS loaded via CDN — no npm, no build step
+
+SortableJS is loaded from `https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js` only on the task board index page. This is intentional for the current Blade+CDN phase. A future improvement would pin a specific SortableJS version and include it in a compiled bundle (Vite + npm). The `@latest` tag means the version could change on CDN update — if breakage occurs, pin to a specific version (e.g., `@1.15.3`).
+
+---
+
+### Phase 5 Kanban | Low | Empty column placeholder is static (not dynamically inserted)
+
+The "No tasks here" message in empty columns is rendered by PHP at page load. If all tasks are dragged out of a column during a session (without page reload), the "No tasks here" message correctly appears (JS toggles it via `updateEmptyState()`). However, if all tasks are dragged INTO an empty column, the PHP-rendered "No tasks here" text disappears correctly. This is handled client-side in the `onAdd` callback.
+
+---
+
+### Phase 5 Kanban | Low | Drag-and-drop not available on touch devices in all browsers
+
+SortableJS supports touch events (mobile drag-and-drop) but browser support varies. On iOS Safari, touch-drag may require the `forceFallback: true` option in SortableJS config. Currently set to default (`false`) which uses native HTML5 drag API. If mobile drag-and-drop is needed, add `forceFallback: true, fallbackTolerance: 3` to the SortableJS config.
+
+---
+
 ### Phase 5 | Low | Filament task assignee dropdown shows all users, not filtered to workspace members
 
 The `WorkspaceTaskResource` form shows all users in the `assigned_to_user_id` dropdown. Ideally it should be filtered to members of the selected workspace. This is a known limitation acknowledged in the Phase 5 spec: "if that is complex, use all users for now with a note to refine later." A future improvement would reactively filter the assignee dropdown based on the selected workspace_id.

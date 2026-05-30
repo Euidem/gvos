@@ -313,6 +313,13 @@ class WorkspaceTaskController extends Controller
 
     /**
      * Advance or change task status.
+     *
+     * Supports both standard HTML form submissions (redirect) and AJAX JSON
+     * requests from the Kanban board (returns JSON).
+     *
+     * JSON success: 200 { success: true, status, message }
+     * JSON permission denied: 403 { success: false, message }
+     * JSON invalid status: 422 (Laravel validation, auto for expectsJson requests)
      */
     public function updateStatus(Request $request, Workspace $workspace, WorkspaceTask $task)
     {
@@ -329,6 +336,12 @@ class WorkspaceTaskController extends Controller
         $allowed   = WorkspaceTask::allowedTransitions($task->status, $role);
 
         if (! in_array($newStatus, $allowed)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not allowed to move this task to that status.',
+                ], 403);
+            }
             return back()->withErrors(['status' => 'This status transition is not allowed.']);
         }
 
@@ -355,6 +368,14 @@ class WorkspaceTaskController extends Controller
         ]);
 
         $label = WorkspaceTask::statusLabels()[$newStatus] ?? $newStatus;
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'status'  => $newStatus,
+                'message' => "Task moved to {$label}.",
+            ], 200);
+        }
 
         return back()->with('success', "Task status updated to \"{$label}\".");
     }

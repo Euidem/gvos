@@ -188,32 +188,44 @@
             </div>
         @endif
 
-        {{-- ── Task Board Summary ────────────────────────────────────────── --}}
+        {{-- ── Kanban Board Summary ─────────────────────────────────────────── --}}
+        @php
+            $blockedCount   = $taskCounts['blocked']   ?? 0;
+            $submittedCount = $taskCounts['submitted']  ?? 0;
+        @endphp
         <div class="bg-white rounded-xl border border-border-subtle shadow-card overflow-hidden">
+
+            {{-- Section header --}}
             <div class="px-6 pt-5 pb-4 flex items-center justify-between border-b border-border-subtle">
                 <h3 class="text-sm font-bold text-on-surface flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">task_alt</span>
-                    Task Board
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">view_kanban</span>
+                    Kanban Board
                 </h3>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
                     @if ($canCreateTask)
                         <a href="{{ route('workspace.tasks.create', $workspace) }}"
-                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all"
-                           style="background-color:#0058be">
+                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                           style="border-color:#0058be; color:#0058be;">
                             <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
                             New Task
                         </a>
                     @endif
                     <a href="{{ route('workspace.tasks.index', $workspace) }}"
-                       class="text-xs text-secondary hover:brightness-110 transition-all flex items-center gap-1">
-                        View All
-                        <span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:brightness-110"
+                       style="background-color:#0058be">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">view_kanban</span>
+                        Open Kanban Board
                     </a>
                 </div>
             </div>
 
             @if ($totalCount === 0)
+                {{-- Empty state --}}
                 <div class="p-8 text-center">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3"
+                         style="background-color:rgba(0,88,190,.06);">
+                        <span class="material-symbols-outlined" style="font-size:22px; color:#0058be;">view_kanban</span>
+                    </div>
                     <p class="text-sm text-outline italic">No tasks yet in this workspace.</p>
                     @if ($canCreateTask)
                         <a href="{{ route('workspace.tasks.create', $workspace) }}"
@@ -224,31 +236,50 @@
                         </a>
                     @endif
                 </div>
+
             @else
-                {{-- Status count chips --}}
-                <div class="px-6 py-4 flex flex-wrap gap-2">
+                {{-- Task metric cards --}}
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-0 border-b border-border-subtle divide-x divide-border-subtle">
+                    <div class="px-5 py-4 text-center">
+                        <p class="text-2xl font-bold text-on-surface">{{ $totalCount }}</p>
+                        <p class="text-xs text-outline mt-0.5 font-medium">Total</p>
+                    </div>
+                    <div class="px-5 py-4 text-center">
+                        <p class="text-2xl font-bold" style="color:#0058be;">{{ $openCount }}</p>
+                        <p class="text-xs text-outline mt-0.5 font-medium">Open</p>
+                    </div>
+                    <div class="px-5 py-4 text-center">
+                        <p class="text-2xl font-bold" style="color:#DC2626;">{{ $blockedCount }}</p>
+                        <p class="text-xs text-outline mt-0.5 font-medium">Blocked</p>
+                    </div>
+                    <div class="px-5 py-4 text-center">
+                        <p class="text-2xl font-bold" style="color:#7C3AED;">{{ $submittedCount }}</p>
+                        <p class="text-xs text-outline mt-0.5 font-medium">Awaiting Review</p>
+                    </div>
+                </div>
+
+                {{-- Status chips --}}
+                <div class="px-6 py-4 flex flex-wrap gap-2 border-b border-border-subtle">
                     @php
                         $chipDefs = [
-                            'pending'            => ['label' => 'Pending',         'cls' => 'bg-status-payment-due/10 text-status-payment-due'],
-                            'in_progress'        => ['label' => 'In Progress',     'cls' => 'bg-secondary/10 text-secondary'],
-                            'blocked'            => ['label' => 'Blocked',         'cls' => 'bg-status-blocked/10 text-status-blocked'],
-                            'submitted'          => ['label' => 'Submitted',       'cls' => 'bg-status-trial/10 text-status-trial'],
-                            'revision_requested' => ['label' => 'Revision Req.',   'cls' => 'bg-status-blocked/10 text-status-blocked'],
-                            'approved'           => ['label' => 'Approved',        'cls' => 'bg-status-active/10 text-status-active'],
-                            'closed'             => ['label' => 'Closed',          'cls' => 'bg-status-completed/10 text-status-completed'],
+                            'pending'            => ['label' => 'Pending',        'bg' => '#FFFBEB', 'color' => '#D97706'],
+                            'in_progress'        => ['label' => 'In Progress',    'bg' => '#EFF6FF', 'color' => '#0058be'],
+                            'blocked'            => ['label' => 'Blocked',        'bg' => '#FFF5F5', 'color' => '#DC2626'],
+                            'submitted'          => ['label' => 'Submitted',      'bg' => '#F5F3FF', 'color' => '#7C3AED'],
+                            'revision_requested' => ['label' => 'Revision Req.',  'bg' => '#FFF7ED', 'color' => '#EA580C'],
+                            'approved'           => ['label' => 'Approved',       'bg' => '#F0FDF4', 'color' => '#059669'],
+                            'closed'             => ['label' => 'Closed',         'bg' => '#F9FAFB', 'color' => '#6B7280'],
                         ];
                     @endphp
                     @foreach ($chipDefs as $s => $chip)
                         @if (($taskCounts[$s] ?? 0) > 0)
                             <a href="{{ route('workspace.tasks.index', $workspace) }}"
-                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold {{ $chip['cls'] }} hover:opacity-80 transition-opacity">
+                               class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold hover:opacity-80 transition-opacity"
+                               style="background-color:{{ $chip['bg'] }}; color:{{ $chip['color'] }}; border:1px solid {{ $chip['color'] }}33;">
                                 {{ $taskCounts[$s] }} {{ $chip['label'] }}
                             </a>
                         @endif
                     @endforeach
-                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-outline bg-surface-container-low">
-                        {{ $totalCount }} total
-                    </span>
                 </div>
 
                 {{-- Recent open tasks preview --}}
@@ -261,7 +292,7 @@
                         ->get();
                 @endphp
                 @if ($previewTasks->isNotEmpty())
-                    <div class="border-t border-border-subtle divide-y divide-border-subtle">
+                    <div class="divide-y divide-border-subtle">
                         @foreach ($previewTasks as $pt)
                             <a href="{{ route('workspace.tasks.show', [$workspace, $pt]) }}"
                                class="flex items-center justify-between px-6 py-3 hover:bg-surface-container-low transition-colors group">
@@ -274,21 +305,23 @@
                                         <span class="text-xs text-outline hidden sm:block">{{ Str::limit($pt->assignedTo->name, 12) }}</span>
                                     @endif
                                     @if ($pt->due_date)
-                                        <span class="text-[11px] {{ $pt->isOverdue() ? 'text-status-blocked' : 'text-outline' }}">
+                                        <span class="text-[11px] font-medium" style="color: {{ $pt->isOverdue() ? '#DC2626' : '#9CA3AF' }};">
                                             {{ $pt->due_date->format('d M') }}
                                         </span>
                                     @endif
                                 </div>
                             </a>
                         @endforeach
-                        @if ($openCount > 4)
-                            <div class="px-6 py-3 text-center">
-                                <a href="{{ route('workspace.tasks.index', $workspace) }}" class="text-xs text-secondary hover:brightness-110 transition-all">
-                                    View all {{ $openCount }} open tasks →
-                                </a>
-                            </div>
-                        @endif
                     </div>
+                    @if ($openCount > 4)
+                        <div class="px-6 py-3 text-center border-t border-border-subtle">
+                            <a href="{{ route('workspace.tasks.index', $workspace) }}"
+                               class="text-xs font-semibold transition-all hover:brightness-110"
+                               style="color:#0058be;">
+                                View all {{ $openCount }} open tasks on Kanban Board →
+                            </a>
+                        </div>
+                    @endif
                 @endif
             @endif
         </div>
