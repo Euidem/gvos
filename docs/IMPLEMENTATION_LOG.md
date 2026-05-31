@@ -7,6 +7,60 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-31 | Phase 7 | Time Tracking & Work Reports Foundation
+
+**What was done:** Full Phase 7 implementation — workspace time logging and weekly work reports. Includes two new DB migrations, two new models (with access helpers), two new controllers (8+7 methods), 8 Blade views (4 time log + 4 reports), two new Filament resources, AuditLogger wrappers (9 new), workspace/show and tasks/show view updates, dashboard Phase 7 notices for all 7 portals, and documentation updates.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_05_30_000004_create_workspace_time_logs_table.php` | workspace_time_logs table with status, visibility, reviewer FK, duration fields |
+| `database/migrations/2026_05_30_000005_create_workspace_weekly_reports_table.php` | workspace_weekly_reports table with status, week dates, total_minutes, published_at |
+| `app/Models/WorkspaceTimeLog.php` | SoftDeletes; resolvedDurationMinutes(), durationForHumans(), isClientVisible(); access helpers |
+| `app/Models/WorkspaceWeeklyReport.php` | SoftDeletes; weekLabel(), totalDurationForHumans(), visibleStatusesFor(); access helpers |
+| `app/Http/Controllers/WorkspaceTimeLogController.php` | index/create/store/show/edit/update/review/destroy; role-filtered queries |
+| `app/Http/Controllers/WorkspaceWeeklyReportController.php` | index/create/store/show/edit/update/destroy; auto-suggested week, auto-fills total_minutes |
+| `resources/views/workspace/time-logs/index.blade.php` | Paginated time log table filtered by role |
+| `resources/views/workspace/time-logs/create.blade.php` | Time log creation form with start/end time and duration override |
+| `resources/views/workspace/time-logs/show.blade.php` | Log detail with inline review form for managers/admins |
+| `resources/views/workspace/time-logs/edit.blade.php` | Edit form with manager-only visibility and client_visible_summary fields |
+| `resources/views/workspace/reports/index.blade.php` | Report list filtered by status per role |
+| `resources/views/workspace/reports/create.blade.php` | Report creation with auto-suggested week and total_minutes hint |
+| `resources/views/workspace/reports/show.blade.php` | Report detail with inline approve/publish actions |
+| `resources/views/workspace/reports/edit.blade.php` | Report edit form with full status control for managers |
+| `app/Filament/Resources/WorkspaceTimeLogResource.php` | Read-only admin resource; status + visibility badge filters; sort 7 |
+| `app/Filament/Resources/WorkspaceTimeLogResource/Pages/ListWorkspaceTimeLogs.php` | List page |
+| `app/Filament/Resources/WorkspaceWeeklyReportResource.php` | Read-only admin resource; status badge filter; sort 8 |
+| `app/Filament/Resources/WorkspaceWeeklyReportResource/Pages/ListWorkspaceWeeklyReports.php` | List page |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `app/Models/Workspace.php` | Added timeLogs() and weeklyReports() HasMany (Phase 7 section) |
+| `app/Models/WorkspaceTask.php` | Added timeLogs() HasMany (workspace_task_id FK) |
+| `app/Models/User.php` | Added 4 new Phase 7 HasMany relationships |
+| `app/Services/AuditLogger.php` | Added 9 new time log and weekly report wrappers |
+| `routes/web.php` | Added 15 new Phase 7 routes (8 time log + 7 report) |
+| `resources/views/workspace/show.blade.php` | Replaced Time Tracking placeholder with active Time Logs + Reports cards; Billing/Password Vault remain placeholders |
+| `resources/views/workspace/tasks/show.blade.php` | Added time log sidebar section (last 5 logs for task) and Log Time button |
+| `resources/views/dashboard/super-admin.blade.php` | Phase 7 notice |
+| `resources/views/dashboard/operations-admin.blade.php` | Phase 7 notice |
+| `resources/views/dashboard/talent.blade.php` | Phase 7 notice |
+| `resources/views/dashboard/line-manager.blade.php` | Phase 7 notice |
+| `resources/views/dashboard/individual-client.blade.php` | Phase 7 notice |
+| `resources/views/dashboard/business-client-admin.blade.php` | Phase 7 notice |
+| `resources/views/dashboard/business-client-staff.blade.php` | Phase 7 notice |
+| `docs/CURRENT_STATUS.md` | Updated to Phase 7 complete |
+| `docs/IMPLEMENTATION_LOG.md` | This entry |
+| `docs/DATABASE_SCHEMA.md` | Added Phase 7 table schemas |
+| `docs/PERMISSION_MATRIX.md` | Added Phase 7 access control section |
+| `docs/TESTING_CHECKLIST.md` | Added Phase 7 test scenarios |
+| `docs/KNOWN_ISSUES.md` | Added Phase 7 known limitations |
+
+---
+
 ### 2026-05-30 | Phase 6 | Workspace Chat & Files Foundation
 
 **What was done:** Full Phase 6 implementation — workspace chat (messages) and file sharing foundation. Includes two new DB migrations, two new models, two new controllers, two new Blade views, two new Filament resources, task file attachment integration, audit logging, and dashboard updates across all 8 dashboards.

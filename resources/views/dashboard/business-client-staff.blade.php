@@ -135,9 +135,9 @@
     <div class="bg-secondary/5 border border-secondary/20 rounded-xl px-6 py-5 flex items-start gap-3">
         <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size: 18px;">info</span>
         <div>
-            <p class="text-sm font-semibold text-secondary">Phase 6 — Chat &amp; Files</p>
+            <p class="text-sm font-semibold text-secondary">Phase 7 — Time Tracking &amp; Work Reports</p>
             <p class="text-sm text-on-surface-variant mt-0.5">
-                Workspace chat and file sharing are now live. Open your workspace to view messages and access shared files.
+                Weekly work reports are now available. Open your workspace to view published progress reports from your team.
             </p>
         </div>
     </div>

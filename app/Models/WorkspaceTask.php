@@ -214,4 +214,11 @@ class WorkspaceTask extends Model
     {
         return $this->hasMany(WorkspaceFile::class, 'workspace_task_id')->orderByDesc('created_at');
     }
+
+    // ── Phase 7 relationships ─────────────────────────────────────────────
+
+    public function timeLogs(): HasMany
+    {
+        return $this->hasMany(WorkspaceTimeLog::class, 'workspace_task_id')->orderByDesc('log_date');
+    }
 }

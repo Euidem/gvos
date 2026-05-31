@@ -410,4 +410,90 @@ class AuditLogger
             'visibility'        => $file->visibility ?? null,
         ], $extra));
     }
+
+    // ── Phase 7: Time Log wrappers ────────────────────────────────────────
+
+    public static function timeLogCreated(Model $timeLog, array $extra = []): void
+    {
+        self::log('time_log.created', $timeLog, array_merge([
+            'workspace_id' => $timeLog->workspace_id ?? null,
+            'user_id'      => $timeLog->user_id ?? null,
+            'log_date'     => $timeLog->log_date ?? null,
+            'status'       => $timeLog->status ?? null,
+        ], $extra));
+    }
+
+    public static function timeLogUpdated(Model $timeLog, array $extra = []): void
+    {
+        self::log('time_log.updated', $timeLog, array_merge([
+            'workspace_id' => $timeLog->workspace_id ?? null,
+            'user_id'      => $timeLog->user_id ?? null,
+            'status'       => $timeLog->status ?? null,
+        ], $extra));
+    }
+
+    public static function timeLogReviewed(Model $timeLog, array $extra = []): void
+    {
+        self::log('time_log.reviewed', $timeLog, array_merge([
+            'workspace_id' => $timeLog->workspace_id ?? null,
+            'user_id'      => $timeLog->user_id ?? null,
+            'status'       => $timeLog->status ?? null,
+            'visibility'   => $timeLog->visibility ?? null,
+        ], $extra));
+    }
+
+    public static function timeLogDeleted(Model $timeLog, array $extra = []): void
+    {
+        self::log('time_log.deleted', $timeLog, array_merge([
+            'workspace_id' => $timeLog->workspace_id ?? null,
+            'user_id'      => $timeLog->user_id ?? null,
+            'log_date'     => $timeLog->log_date ?? null,
+        ], $extra));
+    }
+
+    // ── Phase 7: Weekly Report wrappers ───────────────────────────────────
+
+    public static function weeklyReportCreated(Model $report, array $extra = []): void
+    {
+        self::log('weekly_report.created', $report, array_merge([
+            'workspace_id'    => $report->workspace_id ?? null,
+            'week_start_date' => $report->week_start_date ?? null,
+            'week_end_date'   => $report->week_end_date ?? null,
+            'status'          => $report->status ?? null,
+        ], $extra));
+    }
+
+    public static function weeklyReportUpdated(Model $report, array $extra = []): void
+    {
+        self::log('weekly_report.updated', $report, array_merge([
+            'workspace_id' => $report->workspace_id ?? null,
+            'status'       => $report->status ?? null,
+        ], $extra));
+    }
+
+    public static function weeklyReportDeleted(Model $report, array $extra = []): void
+    {
+        self::log('weekly_report.deleted', $report, array_merge([
+            'workspace_id'    => $report->workspace_id ?? null,
+            'week_start_date' => $report->week_start_date ?? null,
+            'status'          => $report->status ?? null,
+        ], $extra));
+    }
+
+    public static function weeklyReportPublished(Model $report, array $extra = []): void
+    {
+        self::log('weekly_report.published', $report, array_merge([
+            'workspace_id'    => $report->workspace_id ?? null,
+            'week_start_date' => $report->week_start_date ?? null,
+        ], $extra));
+    }
+
+    public static function weeklyReportStatusChanged(Model $report, string $from, string $to, array $extra = []): void
+    {
+        self::log('weekly_report.status_changed', $report, array_merge([
+            'workspace_id' => $report->workspace_id ?? null,
+            'from'         => $from,
+            'to'           => $to,
+        ], $extra));
+    }
 }

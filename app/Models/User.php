@@ -125,6 +125,32 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(WorkspaceFile::class, 'uploaded_by_user_id');
     }
 
+    // ── Phase 7 relationships ────────────────────────────────────────────
+
+    /** Time logs submitted by this user. */
+    public function workspaceTimeLogs(): HasMany
+    {
+        return $this->hasMany(WorkspaceTimeLog::class);
+    }
+
+    /** Time logs reviewed by this user (as manager/admin). */
+    public function reviewedWorkspaceTimeLogs(): HasMany
+    {
+        return $this->hasMany(WorkspaceTimeLog::class, 'reviewed_by_user_id');
+    }
+
+    /** Weekly reports prepared by this user. */
+    public function preparedWeeklyReports(): HasMany
+    {
+        return $this->hasMany(WorkspaceWeeklyReport::class, 'prepared_by_user_id');
+    }
+
+    /** Weekly reports reviewed by this user. */
+    public function reviewedWeeklyReports(): HasMany
+    {
+        return $this->hasMany(WorkspaceWeeklyReport::class, 'reviewed_by_user_id');
+    }
+
     // ── Status helpers ───────────────────────────────────────────────────
 
     public function isActive(): bool

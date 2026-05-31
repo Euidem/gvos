@@ -1,0 +1,159 @@
+<x-layouts.gvos :title="$workspace->name . ' — Time Logs'">
+
+    {{-- ── Breadcrumb ────────────────────────────────────────────────────── --}}
+    <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-5">
+        <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
+        <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
+        <span>Time Logs</span>
+    </div>
+
+    {{-- ── Page header ─────────────────────────────────────────────────── --}}
+    <div class="flex items-center justify-between mb-5">
+        <div>
+            <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary" style="font-size: 22px;">schedule</span>
+                Time Logs
+            </h2>
+            <p class="text-xs text-outline mt-0.5">{{ $workspace->workspace_code }}
+                @if ($isClient) &middot; Showing approved summaries @endif
+            </p>
+        </div>
+        <div class="flex items-center gap-2">
+            @if ($canCreate)
+                <a href="{{ route('workspace.time-logs.create', $workspace) }}"
+                   class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all text-white"
+                   style="background-color:#0058be;">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
+                    Log Time
+                </a>
+            @endif
+            <a href="{{ route('workspace.reports.index', $workspace) }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+               style="border-color:#0058be; color:#0058be;">
+                <span class="material-symbols-outlined" style="font-size: 14px;">summarize</span>
+                Reports
+            </a>
+            <a href="{{ route('workspace.show', $workspace) }}"
+               class="text-sm text-secondary hover:brightness-110 transition-all flex items-center gap-1">
+                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                Workspace
+            </a>
+        </div>
+    </div>
+
+    {{-- ── Session flash ─────────────────────────────────────────────────── --}}
+    @if (session('success'))
+        <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg text-sm"
+             style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);color:#065F46;">
+            <span class="material-symbols-outlined flex-shrink-0" style="font-size: 18px;">check_circle</span>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- ── Time logs table ──────────────────────────────────────────────── --}}
+    <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
+
+        @if ($timeLogs->isEmpty())
+            <div class="p-12 text-center">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
+                     style="background-color:rgba(0,88,190,.06);">
+                    <span class="material-symbols-outlined" style="font-size: 26px; color:#0058be;">schedule</span>
+                </div>
+                <h4 class="text-sm font-semibold mb-1" style="color:#1E293B;">No time logs yet</h4>
+                <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
+                    @if ($canCreate)
+                        Log your first work session to get started.
+                    @else
+                        No time logs are available for this workspace yet.
+                    @endif
+                </p>
+                @if ($canCreate)
+                    <a href="{{ route('workspace.time-logs.create', $workspace) }}"
+                       class="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all"
+                       style="background-color:#0058be;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
+                        Log Time
+                    </a>
+                @endif
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr style="background-color:#F8FAFC;border-bottom:1px solid #E2E8F0;">
+                            <th class="text-left px-4 py-3 text-xs font-semibold text-outline">Date</th>
+                            @if (!$isClient)
+                                <th class="text-left px-4 py-3 text-xs font-semibold text-outline">Logged by</th>
+                            @endif
+                            <th class="text-left px-4 py-3 text-xs font-semibold text-outline">Summary</th>
+                            <th class="text-left px-4 py-3 text-xs font-semibold text-outline">Duration</th>
+                            <th class="text-left px-4 py-3 text-xs font-semibold text-outline">Task</th>
+                            @if (!$isClient)
+                                <th class="text-left px-4 py-3 text-xs font-semibold text-outline">Status</th>
+                            @endif
+                            <th class="text-left px-4 py-3 text-xs font-semibold text-outline"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#F1F5F9]">
+                        @foreach ($timeLogs as $log)
+                            <tr class="hover:bg-[#F8FAFC] transition-colors">
+                                <td class="px-4 py-3 text-xs font-medium text-on-surface whitespace-nowrap">
+                                    {{ $log->log_date ? $log->log_date->format('d M Y') : '—' }}
+                                </td>
+                                @if (!$isClient)
+                                    <td class="px-4 py-3 text-xs text-on-surface-variant">
+                                        {{ $log->user->name ?? '—' }}
+                                    </td>
+                                @endif
+                                <td class="px-4 py-3 text-xs text-on-surface max-w-xs">
+                                    @if ($isClient && $log->client_visible_summary)
+                                        {{ Str::limit($log->client_visible_summary, 80) }}
+                                    @else
+                                        {{ Str::limit($log->work_summary, 80) }}
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-xs text-on-surface-variant whitespace-nowrap">
+                                    {{ $log->durationForHumans() }}
+                                </td>
+                                <td class="px-4 py-3 text-xs text-on-surface-variant">
+                                    {{ $log->task ? Str::limit($log->task->title, 40) : '—' }}
+                                </td>
+                                @if (!$isClient)
+                                    <td class="px-4 py-3">
+                                        @php
+                                            $statusColors = [
+                                                'draft'     => '#94A3B8',
+                                                'submitted' => '#0058be',
+                                                'reviewed'  => '#7C3AED',
+                                                'approved'  => '#059669',
+                                                'rejected'  => '#DC2626',
+                                            ];
+                                            $sc = $statusColors[$log->status] ?? '#94A3B8';
+                                        @endphp
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                                              style="background-color:{{ $sc }}18; color:{{ $sc }};">
+                                            {{ $log->statusLabel() }}
+                                        </span>
+                                    </td>
+                                @endif
+                                <td class="px-4 py-3 text-right">
+                                    <a href="{{ route('workspace.time-logs.show', [$workspace, $log]) }}"
+                                       class="text-xs font-semibold hover:brightness-110 transition-all"
+                                       style="color:#0058be;">View</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Pagination --}}
+            @if ($timeLogs->hasPages())
+                <div class="px-4 py-3 border-t border-[#E2E8F0]">
+                    {{ $timeLogs->links() }}
+                </div>
+            @endif
+        @endif
+    </div>
+
+</x-layouts.gvos>

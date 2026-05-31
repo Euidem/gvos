@@ -1,7 +1,7 @@
 # GVOS — Current Status
 
-**Last Updated:** 2026-05-30
-**Current Phase:** Phase 6 — Workspace Chat & Files ✅ Complete
+**Last Updated:** 2026-05-31
+**Current Phase:** Phase 7 — Time Tracking & Work Reports ✅ Complete
 
 ---
 
@@ -822,13 +822,101 @@ Expanded the workspace role model from 4 values (client/talent/manager/observer)
 
 ---
 
+## Phase 7 Status — Complete ✅ (2026-05-31)
+
+### PART A — Database Migrations (2 new tables)
+- [x] `workspace_time_logs` — id, workspace_id FK, user_id FK, workspace_task_id nullable FK, log_date, started_at nullable, ended_at nullable, duration_minutes nullable, work_summary, work_details nullable, status enum(draft/submitted/reviewed/approved/rejected), reviewed_by_user_id nullable FK, reviewed_at nullable, manager_notes nullable, client_visible_summary nullable, visibility enum(internal/client_summary), timestamps, softDeletes
+- [x] `workspace_weekly_reports` — id, workspace_id FK, week_start_date, week_end_date, prepared_by_user_id nullable FK, reviewed_by_user_id nullable FK, total_minutes, summary, achievements nullable, blockers nullable, next_steps nullable, client_notes nullable, status enum(draft/submitted/approved/published), published_at nullable, timestamps, softDeletes
+
+### PART B — Models (2 new, 3 updated)
+- [x] `app/Models/WorkspaceTimeLog.php` — SoftDeletes; statusLabels(), visibilityLabels(), resolvedDurationMinutes(), durationForHumans(), isClientVisible(); access helpers: canCreate(), canReview(), canViewAll(), isClientRole(); relationships: workspace, user, task, reviewedBy
+- [x] `app/Models/WorkspaceWeeklyReport.php` — SoftDeletes; statusLabels(), totalDurationForHumans(), weekLabel(), isPublishedToClients(); visibleStatusesFor(), canCreate(), canApprove(); relationships: workspace, preparedBy, reviewedBy
+- [x] `app/Models/Workspace.php` — added timeLogs() and weeklyReports() HasMany (Phase 7 section)
+- [x] `app/Models/WorkspaceTask.php` — added timeLogs() HasMany (workspace_task_id FK)
+- [x] `app/Models/User.php` — added workspaceTimeLogs(), reviewedWorkspaceTimeLogs(), preparedWeeklyReports(), reviewedWeeklyReports() HasMany
+
+### PART C — Access Rules (reuse resolveUserWorkspaceRole())
+- [x] canCreate: admin, workspace_admin, manager, talent, assigned_user
+- [x] canReview: admin, workspace_admin, manager
+- [x] canViewAll: admin, workspace_admin, manager
+- [x] isClientRole: client_admin, client_staff, client (legacy)
+- [x] Clients: approved + client_summary logs only; published reports only
+- [x] Talent: own logs only; sees submitted/approved/published reports (not draft)
+- [x] Observer: no access to time logs or reports
+
+### PART D — Routes (15 new)
+- [x] 8 time log routes under `workspaces/{workspace}/time-logs` (index, create, store, show, edit, update, review, destroy)
+- [x] 7 weekly report routes under `workspaces/{workspace}/reports` (index, create, store, show, edit, update, destroy)
+
+### PART E — Controllers (2 new)
+- [x] `app/Http/Controllers/WorkspaceTimeLogController.php` — index, create, store, show, edit, update, review, destroy; role-filtered query; int-cast FK comparisons
+- [x] `app/Http/Controllers/WorkspaceWeeklyReportController.php` — index, create, store, show, edit, update, destroy; suggests last-week dates and auto-computes total_minutes from approved logs
+
+### PART F — Time Log Blade Views (4 new)
+- [x] `resources/views/workspace/time-logs/index.blade.php` — filtered table (admin sees all, client sees approved+client_summary, talent sees own); Log Time button
+- [x] `resources/views/workspace/time-logs/create.blade.php` — log_date, work_summary, optional task, start/end time, duration override, work_details, draft/submit status
+- [x] `resources/views/workspace/time-logs/show.blade.php` — 2-col layout; review form (manager/admin, submitted only); client-visible summary toggle; manager notes; sidebar details
+- [x] `resources/views/workspace/time-logs/edit.blade.php` — same fields as create; manager-only visibility and client_visible_summary fields
+
+### PART G — Weekly Report Blade Views (4 new)
+- [x] `resources/views/workspace/reports/index.blade.php` — status-filtered list; status badges; New Report button
+- [x] `resources/views/workspace/reports/create.blade.php` — auto-suggested week; auto-filled total_minutes from approved logs; summary, achievements, blockers, next_steps, client_notes
+- [x] `resources/views/workspace/reports/show.blade.php` — full report display; inline approve/publish quick actions; blockers/next_steps hidden from clients; sidebar metadata
+- [x] `resources/views/workspace/reports/edit.blade.php` — all fields editable; manager sees approved/published status options
+
+### PART H — workspace/show.blade.php updated
+- [x] Time Logs active card (count filtered by role) links to workspace.time-logs.index
+- [x] Weekly Reports active card (count filtered by role) links to workspace.reports.index
+- [x] Time Tracking placeholder removed; Billing and Password Vault remain as placeholders (2-col)
+
+### PART I — workspace/tasks/show.blade.php updated
+- [x] Sidebar time log section: last 5 logs for the task (date, user, summary, duration, view link)
+- [x] "Log Time" button (pre-selects task via query param) — talent/manager/admin only
+- [x] Hidden from clients; hidden from observers
+
+### PART J — Filament Resources (2 new)
+- [x] `WorkspaceTimeLogResource` — nav group "Workspace", sort 7; read-only from Filament; filters: status, visibility; badge colours per status
+- [x] `WorkspaceWeeklyReportResource` — nav group "Workspace", sort 8; read-only from Filament; filter: status; badge colours per status
+
+### PART K — AuditLogger (9 new wrappers)
+- [x] timeLogCreated, timeLogUpdated, timeLogReviewed, timeLogDeleted
+- [x] weeklyReportCreated, weeklyReportUpdated, weeklyReportDeleted, weeklyReportPublished, weeklyReportStatusChanged
+
+### PART L — Dashboard Updates (all 7 portals)
+- [x] All 7 dashboards: Phase notice updated to "Phase 7 — Time Tracking & Work Reports"
+- [x] Super Admin / Operations Admin: notice describes talent→manager→client flow
+- [x] Talent: notice describes logging work sessions and weekly progress
+- [x] Line Manager: notice describes reviewing/approving and publishing reports
+- [x] Client portals (individual, business admin, business staff): notice describes published reports
+
+### PART M — Documentation
+- [x] CURRENT_STATUS.md updated
+- [x] IMPLEMENTATION_LOG.md updated
+- [x] DATABASE_SCHEMA.md updated
+- [x] PERMISSION_MATRIX.md updated
+- [x] TESTING_CHECKLIST.md updated
+- [x] KNOWN_ISSUES.md updated
+
+---
+
+## Architecture Notes (Phase 7 additions)
+
+- **Duration resolution:** `resolvedDurationMinutes()` prefers explicit `duration_minutes`; falls back to `started_at` → `ended_at` diff. Stored as integer minutes.
+- **Client visibility:** Clients only see time logs where `status=approved AND visibility=client_summary`. Weekly reports: `status=published` only.
+- **Talent visibility:** Sees own time logs of any status; sees weekly reports with status submitted/approved/published (not draft).
+- **Weekly report total_minutes:** Auto-suggested from approved time logs in the selected week date range during create. Manager can manually override.
+- **No surveillance:** No automated screenshots, no keystroke logging, no screen time monitoring. Time logging is entirely manual/self-reported.
+- **No billing yet:** Duration data is captured but not wired to any billing or payroll system.
+- **Int casts on all FK columns:** workspace_id, user_id, workspace_task_id, reviewed_by_user_id etc. cast to integer in both new models — consistent with Phase 5/6 pattern.
+
+---
+
 ## Next Steps
 
 1. cPanel: `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan view:clear`
-2. Verify workspace chat: post a message, verify Internal visibility toggle (admin/manager only), verify delete works for own messages and for admin on others
-3. Verify file upload: try each category, try internal toggle, verify download streams correctly (not a redirect to a public URL)
-4. Verify observer cannot post messages or upload files (form hidden, route returns 403)
-5. Verify internal files are hidden from client/talent views
-6. Verify task file attachment upload from task show page
-7. Filament: check Messages and Files resources appear under Workspace nav group; verify archive/remove actions work
-8. Phase 7 is NOT yet started — do not proceed without explicit instruction
+2. Verify time log creation: talent logs time, submits; manager reviews and approves
+3. Verify client visibility: client cannot see internal logs; can see approved+client_summary only
+4. Verify weekly report flow: create → submit → approve → publish; client sees only published
+5. Verify task show page time log sidebar renders correctly
+6. Verify Filament: WorkspaceTimeLogResource and WorkspaceWeeklyReportResource appear under Workspace nav group, sort 7 and 8
+7. Phase 8 is NOT yet started — do not proceed without explicit instruction

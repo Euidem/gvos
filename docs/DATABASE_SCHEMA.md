@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 6 migrations created and active
+## Status: Phase 7 migrations created and active
 
 ---
 
@@ -439,6 +439,73 @@ They are NOT publicly accessible via URL. Downloads are served through `Workspac
 
 #### Allowed MIME Types
 PDF, JPEG, PNG, GIF, WebP, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, CSV, ZIP — max 10 MB.
+
+---
+
+---
+
+## Phase 7 Tables (live)
+
+### workspace_time_logs
+Individual work session logs submitted by talents and reviewed by managers.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| user_id | FK users | who logged the time |
+| workspace_task_id | FK workspace_tasks nullable | nullOnDelete |
+| log_date | date | the date worked |
+| started_at | timestamp nullable | session start datetime |
+| ended_at | timestamp nullable | session end datetime |
+| duration_minutes | integer nullable | explicit override; auto-derived from start/end if null |
+| work_summary | text | required brief description |
+| work_details | longText nullable | internal detail notes |
+| status | enum | draft, submitted, reviewed, approved, rejected; default: draft |
+| reviewed_by_user_id | FK users nullable | nullOnDelete |
+| reviewed_at | timestamp nullable | |
+| manager_notes | text nullable | internal manager feedback |
+| client_visible_summary | text nullable | what clients see when visibility=client_summary |
+| visibility | enum | internal, client_summary; default: internal |
+| created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | soft deletes |
+| INDEX | (workspace_id, status) | |
+| INDEX | (user_id, log_date) | |
+| INDEX | workspace_task_id | |
+
+#### Client Visibility Rule
+Clients see a time log only when `status = 'approved' AND visibility = 'client_summary'`. The `client_visible_summary` text is shown instead of `work_summary` for clients.
+
+---
+
+### workspace_weekly_reports
+Weekly work summary reports prepared by managers and published to clients.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| week_start_date | date | |
+| week_end_date | date | |
+| prepared_by_user_id | FK users nullable | nullOnDelete |
+| reviewed_by_user_id | FK users nullable | nullOnDelete |
+| total_minutes | integer | default: 0; auto-suggested from approved time logs |
+| summary | longText | required |
+| achievements | longText nullable | |
+| blockers | longText nullable | internal — clients do not see this |
+| next_steps | longText nullable | internal — clients do not see this |
+| client_notes | longText nullable | shown to clients |
+| status | enum | draft, submitted, approved, published; default: draft |
+| published_at | timestamp nullable | set when status transitions to published |
+| created_at / updated_at | timestamps | |
+| deleted_at | timestamp nullable | soft deletes |
+| INDEX | (workspace_id, status) | |
+| INDEX | (workspace_id, week_start_date) | |
+
+#### Status Flow
+`draft` → `submitted` → `approved` → `published`
+
+Clients see only `published` reports. Talents see `submitted`, `approved`, `published` (not draft). Managers/admins see all.
 
 ---
 

@@ -387,6 +387,60 @@
                 @endif
             </div>
 
+            {{-- ── Time Logs for this task (Phase 7) ──────────────────────── --}}
+            @php
+                $taskTimeLogs       = $task->timeLogs()->with('user')->orderByDesc('log_date')->limit(5)->get();
+                $taskTimeLogRole    = $workspace->resolveUserWorkspaceRole(auth()->user());
+                $canLogTimeForTask  = \App\Models\WorkspaceTimeLog::canCreate($taskTimeLogRole);
+                $canSeeTimeLogs     = $taskTimeLogRole !== 'observer'
+                                      && !in_array($taskTimeLogRole, ['client_admin','client_staff','client'], true);
+            @endphp
+            @if ($canSeeTimeLogs)
+                <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold text-outline uppercase tracking-wide flex items-center gap-1.5">
+                            <span class="material-symbols-outlined" style="font-size: 14px; color:#0058be;">schedule</span>
+                            Time Logs
+                        </h3>
+                        @if ($canLogTimeForTask)
+                            <a href="{{ route('workspace.time-logs.create', $workspace) }}?task={{ $task->id }}"
+                               class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold text-white"
+                               style="background-color:#0058be;">
+                                <span class="material-symbols-outlined" style="font-size: 12px;">add</span>
+                                Log Time
+                            </a>
+                        @endif
+                    </div>
+
+                    @if ($taskTimeLogs->isEmpty())
+                        <p class="text-xs italic text-outline">No time logs for this task yet.</p>
+                    @else
+                        <div class="space-y-2">
+                            @foreach ($taskTimeLogs as $tl)
+                                <div class="flex items-center justify-between text-xs">
+                                    <div class="min-w-0">
+                                        <span class="font-medium text-on-surface">{{ $tl->log_date ? $tl->log_date->format('d M') : '—' }}</span>
+                                        <span class="text-outline ml-1">{{ $tl->user->name ?? '—' }}</span>
+                                        <span class="text-on-surface-variant ml-1 truncate">— {{ Str::limit($tl->work_summary, 40) }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+                                        <span class="font-semibold" style="color:#0058be;">{{ $tl->durationForHumans() }}</span>
+                                        <a href="{{ route('workspace.time-logs.show', [$workspace, $tl]) }}"
+                                           class="text-[10px] font-semibold hover:underline" style="color:#0058be;">View</a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-[#F1F5F9]">
+                            <a href="{{ route('workspace.time-logs.index', $workspace) }}"
+                               class="text-[10px] font-semibold hover:underline" style="color:#0058be;">
+                                View all time logs →
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
             {{-- Back links --}}
             <div class="space-y-2">
                 <a href="{{ route('workspace.tasks.index', $workspace) }}"

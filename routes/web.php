@@ -7,6 +7,8 @@ use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceFileController;
 use App\Http\Controllers\WorkspaceMessageController;
 use App\Http\Controllers\WorkspaceTaskController;
+use App\Http\Controllers\WorkspaceTimeLogController;
+use App\Http\Controllers\WorkspaceWeeklyReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -75,6 +77,29 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/',                     [WorkspaceFileController::class, 'store'])->name('store');
         Route::get('/{file}/download',       [WorkspaceFileController::class, 'download'])->name('download');
         Route::delete('/{file}',             [WorkspaceFileController::class, 'destroy'])->name('destroy');
+    });
+
+    // ── Workspace time log routes (Phase 7) ───────────────────────────────
+    Route::prefix('workspaces/{workspace}/time-logs')->name('workspace.time-logs.')->group(function () {
+        Route::get('/',            [WorkspaceTimeLogController::class, 'index'])->name('index');
+        Route::get('/create',      [WorkspaceTimeLogController::class, 'create'])->name('create');
+        Route::post('/',           [WorkspaceTimeLogController::class, 'store'])->name('store');
+        Route::get('/{timeLog}',   [WorkspaceTimeLogController::class, 'show'])->name('show');
+        Route::get('/{timeLog}/edit',    [WorkspaceTimeLogController::class, 'edit'])->name('edit');
+        Route::put('/{timeLog}',         [WorkspaceTimeLogController::class, 'update'])->name('update');
+        Route::post('/{timeLog}/review', [WorkspaceTimeLogController::class, 'review'])->name('review');
+        Route::delete('/{timeLog}',      [WorkspaceTimeLogController::class, 'destroy'])->name('destroy');
+    });
+
+    // ── Workspace weekly report routes (Phase 7) ──────────────────────────
+    Route::prefix('workspaces/{workspace}/reports')->name('workspace.reports.')->group(function () {
+        Route::get('/',              [WorkspaceWeeklyReportController::class, 'index'])->name('index');
+        Route::get('/create',        [WorkspaceWeeklyReportController::class, 'create'])->name('create');
+        Route::post('/',             [WorkspaceWeeklyReportController::class, 'store'])->name('store');
+        Route::get('/{report}',      [WorkspaceWeeklyReportController::class, 'show'])->name('show');
+        Route::get('/{report}/edit', [WorkspaceWeeklyReportController::class, 'edit'])->name('edit');
+        Route::put('/{report}',      [WorkspaceWeeklyReportController::class, 'update'])->name('update');
+        Route::delete('/{report}',   [WorkspaceWeeklyReportController::class, 'destroy'])->name('destroy');
     });
 });
 

@@ -294,15 +294,53 @@ All file routes require `auth` + `check.status`. Access is enforced via `Workspa
 
 ---
 
+## Phase 7 — Time Tracking & Work Reports Access Control
+
+### Time Log Routes (`workspaces/{workspace}/time-logs/...`)
+
+| Route | admin | workspace_admin | manager | talent / assigned_user | client_admin | client_staff | observer |
+|-------|-------|-----------------|---------|------------------------|--------------|--------------|----------|
+| index | all logs | all logs | all logs | own logs only | approved+client_summary | approved+client_summary | ❌ 403 |
+| create / store | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| show | any log | any log | any log | own only | approved+client_summary | approved+client_summary | ❌ |
+| edit / update | any log | any log | any log | own (draft/rejected) | ❌ | ❌ | ❌ |
+| review | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| destroy | ✅ | ✅ | ✅ | own draft only | ❌ | ❌ | ❌ |
+
+### Weekly Report Routes (`workspaces/{workspace}/reports/...`)
+
+| Route | admin | workspace_admin | manager | talent | client_admin | client_staff | observer |
+|-------|-------|-----------------|---------|--------|--------------|--------------|----------|
+| index | all statuses | all statuses | all statuses | submitted/approved/published | published only | published only | ❌ |
+| create / store | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| show | any status | any status | any status | submitted+ | published | published | ❌ |
+| edit / update | draft/submitted | draft/submitted | draft/submitted | ❌ | ❌ | ❌ | ❌ |
+| destroy | draft/submitted | draft/submitted | draft/submitted | ❌ | ❌ | ❌ | ❌ |
+
+### Phase 7 Filament Resources (Workspace nav group)
+
+| Resource | View | Create | Edit | Delete | Nav sort |
+|----------|------|--------|------|--------|---------|
+| WorkspaceTimeLogResource | super_admin, ops_admin | ❌ (portal only) | super_admin, ops_admin | super_admin, ops_admin | 7 |
+| WorkspaceWeeklyReportResource | super_admin, ops_admin | ❌ (portal only) | super_admin, ops_admin | super_admin, ops_admin | 8 |
+
+> Client roles (client_admin, client_staff, legacy client) never access Filament admin panel.
+> Time log visibility: clients see only `status=approved AND visibility=client_summary` records.
+> Weekly report visibility: clients see only `status=published` records.
+> Blockers and next_steps fields in weekly reports are hidden from client-role views in Blade templates.
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
 - Phase 2 Filament navigation group: "People & Organizations" (sort positions 1–5).
 - Phase 3 Filament navigation group: "Leads & Trials" (sort positions 1–3).
-- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5).
+- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5). Phase 7 adds WorkspaceTimeLogResource (sort 7) and WorkspaceWeeklyReportResource (sort 8).
 - Always enforce on server — never rely on front-end hiding alone.
 - Business client staff permissions are per-user, managed by Business Client Admin (Phase 4+).
 - GetVirtual brand name must not appear in any visible app UI (screens, panels, dashboards, notices). Internal documentation only.
 - Active leads can only see their own trial data via `/lead/dashboard` — they cannot access Filament.
 - Task internal notes and internal comments are invisible to non-admin/non-manager roles — enforced in controller, not just hidden in Blade.
+- Time log `client_visible_summary` is shown to clients instead of `work_summary` when `visibility=client_summary`. Always enforced in controller query, not only in Blade.
 - Internal workspace messages and files are invisible to client/talent/observer roles — enforced in controller query filters and download access checks.

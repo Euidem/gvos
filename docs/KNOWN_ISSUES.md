@@ -51,6 +51,44 @@ The `message` column is `longText` (no DB constraint). The 5000-character limit 
 
 ---
 
+## Phase 7 Warnings / Notes
+
+### Phase 7 | Info | Time logging is fully manual — no automated time capture
+
+All time logging is manual and self-reported by the talent. There is no automated screenshot capture, keystroke tracking, screen-time monitoring, or any surveillance mechanism. This is intentional by design for Phase 7. The `duration_minutes` field can be entered directly or auto-calculated from start/end times only when the user provides them.
+
+---
+
+### Phase 7 | Info | Duration auto-calculation is based on same-day times only
+
+`resolvedDurationMinutes()` calculates the diff between `started_at` and `ended_at`. If a work session crosses midnight (e.g. 23:00 → 01:00), the controller stores both as datetimes on the same `log_date`. No midnight-crossing validation is applied in Phase 7 — the talent is expected to log cross-midnight sessions as two separate logs.
+
+---
+
+### Phase 7 | Info | Duration is stored in minutes — no sub-minute precision
+
+The `duration_minutes` column is an integer. Sub-minute precision is not captured. All inputs are rounded to whole minutes.
+
+---
+
+### Phase 7 | Low | total_minutes on weekly reports is not auto-updated when time logs change
+
+When a weekly report is created, `total_minutes` is auto-suggested from approved time logs in the date range. However, if additional time logs are approved after the report is saved, the `total_minutes` value does NOT auto-update. The manager must manually edit the report to reflect the corrected total. A future improvement would be a computed aggregate relationship.
+
+---
+
+### Phase 7 | Info | Time logs are not linked to billing or payroll
+
+The `duration_minutes` and `status` data captured in Phase 7 are stored but not yet wired to any billing calculation, invoice generation, or payroll system. Those features are explicitly deferred.
+
+---
+
+### Phase 7 | Low | client_visible_summary is not required when visibility = client_summary
+
+When a manager sets `visibility = client_summary`, the `client_visible_summary` field is recommended but not required. If it is blank, the client index/show pages will show an empty cell in that column. Validation could be added in a future iteration to require `client_visible_summary` when `visibility = client_summary`.
+
+---
+
 ---
 
 ## Resolved Issues

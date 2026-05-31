@@ -17,6 +17,15 @@
             $openCount  = $taskCounts->only(['pending','in_progress','blocked','submitted','revision_requested'])->sum();
             $totalCount = $taskCounts->sum();
 
+            // Phase 7 counts
+            $timeLogCount  = $workspace->timeLogs()->count();
+            $reportCount   = $workspace->weeklyReports()->count();
+            // Clients see only approved+client_summary logs, and published reports
+            if (in_array($effectiveRole, ['client_admin','client_staff','client'], true)) {
+                $timeLogCount = $workspace->timeLogs()->where('status','approved')->where('visibility','client_summary')->count();
+                $reportCount  = $workspace->weeklyReports()->where('status','published')->count();
+            }
+
             $statusColors = [
                 'active'    => 'bg-status-active/10 text-status-active border border-status-active/20',
                 'pending'   => 'bg-status-payment-due/10 text-status-payment-due border border-status-payment-due/20',
@@ -389,19 +398,60 @@
             </a>
         </div>
 
-        {{-- ── Future sections (placeholders) ────────────────────────────── --}}
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-white rounded-xl border border-dashed border-border-subtle p-5 opacity-50 cursor-not-allowed">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined text-outline" style="font-size: 18px;">timer</span>
+        {{-- ── Time Tracking & Reports (Phase 7 — active) ─────────────────── --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+            {{-- Time Logs card --}}
+            <a href="{{ route('workspace.time-logs.index', $workspace) }}"
+               class="bg-white rounded-xl border border-border-subtle shadow-card p-6 hover:border-secondary/30 hover:shadow-card transition-all group">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform"
+                             style="background-color:rgba(0,88,190,.06);">
+                            <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">schedule</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-on-surface">Time Logs</h3>
                     </div>
-                    <div>
-                        <p class="text-sm font-semibold text-on-surface-variant">Time Tracking</p>
-                        <p class="text-xs text-outline mt-0.5">Coming in a later phase</p>
-                    </div>
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                          style="background:rgba(0,88,190,.06);color:#0058be;">
+                        {{ $timeLogCount }} {{ Str::plural('log', $timeLogCount) }}
+                    </span>
                 </div>
-            </div>
+                <p class="text-xs text-outline leading-relaxed">
+                    Track and review work sessions, durations and daily activity logs.
+                </p>
+                <p class="text-xs font-semibold mt-3 group-hover:underline transition-all" style="color:#0058be;">
+                    View Time Logs →
+                </p>
+            </a>
+
+            {{-- Weekly Reports card --}}
+            <a href="{{ route('workspace.reports.index', $workspace) }}"
+               class="bg-white rounded-xl border border-border-subtle shadow-card p-6 hover:border-secondary/30 hover:shadow-card transition-all group">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform"
+                             style="background-color:rgba(0,88,190,.06);">
+                            <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">summarize</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-on-surface">Weekly Reports</h3>
+                    </div>
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                          style="background:rgba(0,88,190,.06);color:#0058be;">
+                        {{ $reportCount }} {{ Str::plural('report', $reportCount) }}
+                    </span>
+                </div>
+                <p class="text-xs text-outline leading-relaxed">
+                    View weekly work summaries and progress reports for this workspace.
+                </p>
+                <p class="text-xs font-semibold mt-3 group-hover:underline transition-all" style="color:#0058be;">
+                    View Reports →
+                </p>
+            </a>
+        </div>
+
+        {{-- ── Future sections (placeholders) ────────────────────────────── --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="bg-white rounded-xl border border-dashed border-border-subtle p-5 opacity-50 cursor-not-allowed">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center">

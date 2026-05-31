@@ -1000,6 +1000,79 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 
 ---
 
-## Phase 7 — Time Tracking and Reports (planned)
+## Phase 7 — Time Tracking & Work Reports
+
+### Migrations
+- [ ] `php artisan migrate` runs without error on cPanel
+- [ ] `workspace_time_logs` table exists with all columns and indexes
+- [ ] `workspace_weekly_reports` table exists with all columns and indexes
+
+### Time Log — Talent / Admin creation
+- [ ] Talent can navigate to Workspace → Time Logs → Log Time
+- [ ] Create form saves draft log with date, summary, duration
+- [ ] Start/end time auto-calculates duration when duration_minutes is blank
+- [ ] Talent can submit a draft log (status → submitted)
+- [ ] Talent can only see own logs on index page
+- [ ] Talent can edit own draft or rejected log; cannot edit submitted/approved
+- [ ] Talent can delete own draft log only
+
+### Time Log — Manager review
+- [ ] Manager sees all logs on index (all statuses)
+- [ ] Manager sees review form on show page (only when status = submitted)
+- [ ] Manager can approve, mark reviewed, or reject a log
+- [ ] Manager can set visibility = client_summary and write client_visible_summary
+- [ ] Manager can write manager_notes (internal)
+
+### Time Log — Client visibility
+- [ ] Client index shows only approved + client_summary logs
+- [ ] Client sees client_visible_summary, not work_summary
+- [ ] Client cannot see manager_notes or work_details
+- [ ] Client cannot access create/edit/delete routes (403)
+- [ ] Observer gets 403 on time log index and show
+
+### Task show page — time logs sidebar
+- [ ] Talent/Manager see time log section in task show sidebar
+- [ ] Log Time button pre-selects task via query param
+- [ ] Client role does NOT see time logs sidebar
+- [ ] Observer does NOT see time logs sidebar
+
+### Weekly reports — creation and editing
+- [ ] Manager creates a weekly report with suggested week dates
+- [ ] total_minutes auto-filled from approved logs for that week
+- [ ] Manager can save as draft or submit
+- [ ] Manager can approve a submitted report (status → approved)
+- [ ] Manager can publish an approved report (published_at populated)
+- [ ] Manager cannot edit approved or published report (403)
+
+### Weekly reports — visibility
+- [ ] Client sees only published reports
+- [ ] Talent sees submitted/approved/published (not draft)
+- [ ] Manager/Admin sees all statuses
+- [ ] Blockers/next_steps hidden from client on show page
+- [ ] Observer gets 403 on reports index
+
+### Workspace show page
+- [ ] Time Logs active card links to time-logs.index with correct count
+- [ ] Weekly Reports active card links to reports.index with correct count
+- [ ] Client counts are filtered (approved+client_summary / published)
+- [ ] Billing and Password Vault remain as dashed placeholder cards
+- [ ] Old Time Tracking placeholder is removed
+
+### Filament resources
+- [ ] WorkspaceTimeLogResource appears under Workspace, sort 7
+- [ ] WorkspaceWeeklyReportResource appears under Workspace, sort 8
+- [ ] Status badge colours correct (approved=success, rejected=danger, etc.)
+- [ ] Create buttons absent on both resources
+
+### Dashboard Phase 7 notices
+- [ ] All 7 portal dashboards show "Phase 7 — Time Tracking & Work Reports" notice
+
+### Access control edge cases
+- [ ] No workspace membership → 403 on all time log and report routes
+- [ ] Talent cannot call review route (403)
+- [ ] Client cannot call create/store/edit/update on logs or reports (403)
+
+---
+
 ## Phase 8 — Billing (planned)
 ## Phase 12 — Launch Readiness (planned)

@@ -310,4 +310,16 @@ class Workspace extends Model
     {
         return $this->hasMany(WorkspaceFile::class)->orderByDesc('created_at');
     }
+
+    // ── Phase 7 relationships ─────────────────────────────────────────────
+
+    public function timeLogs(): HasMany
+    {
+        return $this->hasMany(WorkspaceTimeLog::class)->orderByDesc('log_date')->orderByDesc('created_at');
+    }
+
+    public function weeklyReports(): HasMany
+    {
+        return $this->hasMany(WorkspaceWeeklyReport::class)->orderByDesc('week_start_date');
+    }
 }
