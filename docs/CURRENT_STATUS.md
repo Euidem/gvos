@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-05-31
 **Current Phase:** Phase 7 — Time Tracking & Work Reports ✅ Complete
-**Current Activity:** UI Correction — Batch 1b Complete (login page rebuilt to Stitch 2-col split-screen)
+**Current Activity:** UI Correction — Batch 2 Complete (all 8 dashboards rebuilt to Stitch layouts)
 
 ---
 
@@ -947,7 +947,7 @@ Feature development is paused. The Stitch UI export has been designated as the f
 
 **No code was changed. No database was changed. Documentation only.**
 
-**Next step:** Begin Batch 1a (shared layout correction) when instructed.
+**Next step:** Batch 3 — Workspace core pages (workspace show, task board, task detail).
 
 ---
 

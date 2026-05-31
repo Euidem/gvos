@@ -7,6 +7,46 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-31 | UI Correction Batch 2 | Dashboards — Stitch Alignment
+
+**What was done:** Rebuilt all 8 portal dashboards to match Stitch design. Removed all Phase notice banners. Preserved all existing PHP data bindings. No backend, database, or route changes.
+
+**Stitch references used:**
+- Super Admin → `admin_overview_gvos`
+- Operations Admin → `admin_overview_gvos`
+- Talent → `talent_dashboard_gvos_1`
+- Line Manager → `manager_command_center_gvos`
+- Individual Client → `client_dashboard_gvos`
+- Business Client Admin → `business_admin_dashboard_gvos`
+- Business Client Staff → `client_dashboard_gvos` (staff variant)
+- Active Lead → `lead_dashboard_gvos_1`
+
+**Files modified:**
+
+| File | Key changes |
+|------|-------------|
+| `resources/views/dashboard/super-admin.blade.php` | Bento metric grid, lead pipeline bars, Phase 7 time log counts, admin quick nav |
+| `resources/views/dashboard/operations-admin.blade.php` | Workspace health 4-col grid, pipeline bars, action items sidebar |
+| `resources/views/dashboard/talent.blade.php` | Clock-In placeholder widget (UI only), 4-col metrics, workspace list, quick links |
+| `resources/views/dashboard/line-manager.blade.php` | Greeting + command header, 4-col status bento, workspace list with task counts |
+| `resources/views/dashboard/individual-client.blade.php` | Workspace overview cards, task/report stats, quick access grid |
+| `resources/views/dashboard/business-client-admin.blade.php` | Dark account card + metric grid, workspace list, quick links |
+| `resources/views/dashboard/business-client-staff.blade.php` | Lighter version with metric cards + workspace list |
+| `resources/views/dashboard/active-lead.blade.php` | Trial countdown card, service request details, talent/manager/estimate info |
+
+**Phase banners removed from all 8 dashboards:**
+- "Phase 5 — Task Board" notice
+- "Phase 6 — Chat & Files" notice
+- "Phase 7 — Time Tracking & Work Reports" notice
+
+**Preserved data bindings:**
+- All existing `@php` blocks and DB queries kept
+- Added Phase 7 model queries (WorkspaceTimeLog, WorkspaceWeeklyReport) to admin dashboards
+- Fixed `assignedTalent`/`assignedManager` relationship names in active-lead dashboard
+- Fixed `estimated_amount` field name (not `total_amount`)
+
+---
+
 ### 2026-05-31 | UI Correction Batch 1b | Login Page — Stitch 2-Col Split Screen
 
 **What was done:** Rebuilt login page to match Stitch `login_gvos_1` split-screen design. Added `split` variant to auth layout for full-screen support. No backend, database, or route changes.

@@ -1,158 +1,184 @@
 <x-layouts.gvos title="My Dashboard">
+{{-- Stitch reference: client_dashboard_gvos/code.html --}}
 @php
     $user = auth()->user();
     $profile = $user->profile;
     $clientProfile = $user->clientProfile;
-    $myWorkspaces = \App\Models\Workspace::whereHas('members', fn ($m) => $m->where('user_id', $user->id)->where('status', 'active'))
-        ->whereIn('status', ['pending', 'active'])
-        ->count();
 
-    // Task counts (Phase 5)
-    $clientWorkspaceIds  = \App\Models\WorkspaceMember::where('user_id', $user->id)->where('status', 'active')->pluck('workspace_id');
-    $clientOpenTasks     = \App\Models\WorkspaceTask::whereIn('workspace_id', $clientWorkspaceIds)->whereIn('status', ['pending', 'in_progress', 'blocked'])->count();
-    $clientSubmittedTasks = \App\Models\WorkspaceTask::whereIn('workspace_id', $clientWorkspaceIds)->where('status', 'submitted')->count();
+    $clientWorkspaceIds = \App\Models\WorkspaceMember::where('user_id', $user->id)
+        ->where('status', 'active')->pluck('workspace_id');
+
+    $myWorkspaces = \App\Models\Workspace::whereIn('id', $clientWorkspaceIds)
+        ->whereIn('status', ['pending', 'active'])->count();
+
+    $clientOpenTasks      = \App\Models\WorkspaceTask::whereIn('workspace_id', $clientWorkspaceIds)
+        ->whereIn('status', ['pending', 'in_progress', 'blocked'])->count();
+    $clientSubmittedTasks = \App\Models\WorkspaceTask::whereIn('workspace_id', $clientWorkspaceIds)
+        ->where('status', 'submitted')->count();
+
+    $publishedReports = \App\Models\WorkspaceWeeklyReport::whereIn('workspace_id', $clientWorkspaceIds)
+        ->where('status', 'published')->count();
+
+    $name = $profile?->first_name ?? $user->name ?? 'there';
 @endphp
 
-    <div class="flex items-start justify-between mb-8">
-        <div>
-            <h2 class="text-2xl font-bold text-on-surface">
-                Welcome back{{ $profile?->first_name ? ', ' . $profile->first_name : '' }}
-            </h2>
-            <p class="text-sm text-on-surface-variant mt-1">GVOS Client Portal</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <span class="text-xs bg-status-active/10 text-status-active border border-status-active/20 px-3 py-1 rounded-full font-medium">
-                {{ ucfirst($user->status) }}
-            </span>
-            <span class="text-xs bg-secondary/5 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-medium">
-                Client
-            </span>
-        </div>
+{{-- ── Page header ─────────────────────────────────────────────────────── --}}
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+    <div>
+        <h2 class="font-headline-lg text-headline-lg text-primary">Welcome back, {{ $name }}</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+            Your operations are running smoothly.
+        </p>
     </div>
-
-    {{-- ── Client profile status card ────────────────────────────────────── --}}
-    @if ($clientProfile)
-    <div class="bg-white rounded-xl border border-border-subtle px-6 py-4 mb-6 flex items-center gap-4 shadow-card">
-        <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">person</span>
-        </div>
-        <div class="flex-1">
-            <p class="text-sm font-medium text-on-surface">Client Profile</p>
-            <p class="text-xs text-outline mt-0.5">
-                @if ($clientProfile->service_interest)
-                    Service interest: <span class="font-medium text-on-surface-variant">{{ $clientProfile->service_interest }}</span>
-                @else
-                    Complete your profile to speed up onboarding.
-                @endif
-            </p>
-        </div>
-        <span class="text-xs px-2.5 py-1 rounded-full font-medium
-            @if($clientProfile->status === 'active') bg-status-active/10 text-status-active border border-status-active/20
-            @elseif($clientProfile->status === 'pending') bg-status-payment-due/10 text-status-payment-due border border-status-payment-due/20
-            @elseif($clientProfile->status === 'suspended') bg-status-blocked/10 text-status-blocked border border-status-blocked/20
-            @else bg-surface-container-low text-on-surface-variant border border-border-subtle
-            @endif">
-            {{ ucfirst($clientProfile->status) }}
-        </span>
-    </div>
-    @endif
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <a href="{{ route('profile.show') }}"
-           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">person</span>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-on-surface">My Profile</p>
-                    <p class="text-xs text-outline mt-0.5">Update your details and password</p>
-                </div>
+    <div class="flex gap-3">
+        <div class="bg-white p-3 rounded-xl border border-border-subtle flex items-center gap-3 shadow-sm">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center"
+                 style="background:rgba(16,185,129,0.1);color:#10B981;">
+                <span class="material-symbols-outlined" style="font-size:18px;">bolt</span>
             </div>
-        </a>
-        <a href="{{ route('workspace.index') }}"
-           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">workspaces</span>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-on-surface">My Workspace</p>
-                    <p class="text-xs text-outline mt-0.5">
-                        {{ $myWorkspaces > 0 ? $myWorkspaces . ' active workspace' . ($myWorkspaces !== 1 ? 's' : '') : 'No active workspaces yet' }}
-                    </p>
-                </div>
-            </div>
-        </a>
-        <div class="bg-white rounded-xl border border-dashed border-border-subtle px-5 py-4 opacity-50 cursor-not-allowed shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-outline" style="font-size: 18px;">receipt_long</span>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-on-surface-variant">Billing</p>
-                    <p class="text-xs text-outline mt-0.5">Coming in Phase 8</p>
-                </div>
+            <div>
+                <p class="font-label-md text-[10px] text-outline uppercase">Status</p>
+                <p class="font-label-md text-label-md text-status-active">Operational</p>
             </div>
         </div>
     </div>
+</section>
 
-    {{-- ── Task counts (Phase 5) ──────────────────────────────────────── --}}
-    @if ($clientOpenTasks > 0 || $clientSubmittedTasks > 0)
-    <div class="mb-8">
-        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Workspace Tasks</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+{{-- ── Bento grid ──────────────────────────────────────────────────────── --}}
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
+
+    {{-- Assigned team card (spans 8 cols on lg) --}}
+    <div class="md:col-span-12 lg:col-span-8 bg-white rounded-xl border border-border-subtle p-card-padding shadow-sm">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="font-headline-md text-headline-md text-primary font-bold">Your Workspace Overview</h3>
             <a href="{{ route('workspace.index') }}"
-               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-secondary">{{ $clientOpenTasks }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Open Tasks</p>
-            </a>
-            <a href="{{ route('workspace.index') }}"
-               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-status-trial/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-status-trial">{{ $clientSubmittedTasks }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Submitted — Awaiting Approval</p>
+               class="text-secondary font-label-md text-label-md flex items-center hover:underline">
+                View <span class="material-symbols-outlined ml-1" style="font-size:16px;">chevron_right</span>
             </a>
         </div>
-    </div>
-    @endif
 
-    {{-- ── Workspace communication ──────────────────────────────────────── --}}
-    @if ($myWorkspaces > 0)
-    <div class="mb-8">
-        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Communication</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <a href="{{ route('workspace.index') }}"
-               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm flex items-center gap-3">
-                <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">chat</span>
+        @if ($myWorkspaces === 0)
+            <div class="text-center py-8">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
+                     style="background:rgba(0,88,190,0.06)">
+                    <span class="material-symbols-outlined text-secondary" style="font-size:24px;">workspaces</span>
                 </div>
-                <div>
-                    <p class="text-sm font-semibold text-on-surface">Workspace Chat</p>
-                    <p class="text-xs text-outline mt-0.5">Message your team in your workspace</p>
-                </div>
-            </a>
-            <a href="{{ route('workspace.index') }}"
-               class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm flex items-center gap-3">
-                <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">folder_open</span>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-on-surface">Workspace Files</p>
-                    <p class="text-xs text-outline mt-0.5">Access and download shared documents</p>
-                </div>
-            </a>
-        </div>
+                <p class="font-body-md text-body-md text-on-surface-variant">No active workspaces yet.</p>
+                <p class="font-body-sm text-body-sm text-outline mt-1">Your team will set up your workspace shortly.</p>
+            </div>
+        @else
+            @php
+                $workspaceList = \App\Models\Workspace::whereIn('id', $clientWorkspaceIds)
+                    ->whereIn('status', ['pending', 'active'])
+                    ->with(['primaryTalent', 'primaryManager'])
+                    ->limit(3)
+                    ->get();
+            @endphp
+            <div class="grid grid-cols-1 sm:grid-cols-{{ min(3, $workspaceList->count()) }} gap-4">
+                @foreach ($workspaceList as $ws)
+                    @php
+                        $wsOpenTasks = \App\Models\WorkspaceTask::where('workspace_id', $ws->id)
+                            ->whereIn('status', ['pending', 'in_progress', 'blocked'])->count();
+                        $wsSubmitted = \App\Models\WorkspaceTask::where('workspace_id', $ws->id)
+                            ->where('status', 'submitted')->count();
+                    @endphp
+                    <a href="{{ route('workspace.show', $ws) }}"
+                       class="p-4 rounded-xl border border-border-subtle hover:border-secondary/30 hover:shadow-md transition-all group">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                                 style="background-color:#0058be;">
+                                {{ strtoupper(substr($ws->name, 0, 2)) }}
+                            </div>
+                            <div>
+                                <p class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-secondary transition-colors">
+                                    {{ Str::limit($ws->name, 20) }}
+                                </p>
+                                <p class="font-label-md text-[10px] text-outline">{{ $ws->workspace_code }}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-outline">Open tasks</span>
+                                <span class="font-semibold text-on-surface">{{ $wsOpenTasks }}</span>
+                            </div>
+                            @if ($wsSubmitted > 0)
+                            <div class="flex justify-between">
+                                <span class="text-outline">Awaiting approval</span>
+                                <span class="font-semibold text-status-payment-due">{{ $wsSubmitted }}</span>
+                            </div>
+                            @endif
+                            @if ($ws->primaryTalent)
+                            <div class="flex justify-between">
+                                <span class="text-outline">Your talent</span>
+                                <span class="font-semibold text-on-surface">{{ Str::limit($ws->primaryTalent->name, 14) }}</span>
+                            </div>
+                            @endif
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        @endif
     </div>
-    @endif
 
-    <div class="bg-secondary/5 border border-secondary/20 rounded-xl px-6 py-5 flex items-start gap-3">
-        <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size: 18px;">info</span>
-        <div>
-            <p class="text-sm font-semibold text-secondary">Phase 7 — Time Tracking &amp; Work Reports</p>
-            <p class="text-sm text-on-surface-variant mt-0.5">
-                Weekly work reports are now available. Open your workspace to view published progress reports and approved activity summaries from your team.
-            </p>
+    {{-- Status sidebar (spans 4 cols) --}}
+    <div class="md:col-span-12 lg:col-span-4 space-y-4">
+
+        {{-- Tasks awaiting approval --}}
+        <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">
+            <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                 style="background:rgba(245,158,11,0.08)">
+                <span class="material-symbols-outlined text-status-payment-due" style="font-size:20px;">pending_actions</span>
+            </div>
+            <div class="flex-1">
+                <p class="font-label-md text-label-md text-outline">Tasks Awaiting Approval</p>
+                <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $clientSubmittedTasks }}</h4>
+            </div>
         </div>
+
+        {{-- Published reports --}}
+        <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">
+            <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                 style="background:rgba(5,150,105,0.08)">
+                <span class="material-symbols-outlined text-status-completed" style="font-size:20px;">summarize</span>
+            </div>
+            <div class="flex-1">
+                <p class="font-label-md text-label-md text-outline">Published Reports</p>
+                <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $publishedReports }}</h4>
+            </div>
+        </div>
+
+        {{-- Open tasks --}}
+        <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">
+            <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                 style="background:rgba(0,88,190,0.06)">
+                <span class="material-symbols-outlined text-secondary" style="font-size:20px;">task_alt</span>
+            </div>
+            <div class="flex-1">
+                <p class="font-label-md text-label-md text-outline">Open Tasks</p>
+                <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $clientOpenTasks }}</h4>
+            </div>
+        </div>
+
     </div>
+</div>
+
+{{-- ── Quick access cards ───────────────────────────────────────────────── --}}
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    @foreach ([
+        ['label' => 'Workspace', 'sub' => 'View tasks and activity', 'icon' => 'workspaces',  'color' => '#0058be', 'route' => route('workspace.index')],
+        ['label' => 'Chat',      'sub' => 'Workspace messages',      'icon' => 'forum',        'color' => '#8B5CF6', 'route' => route('workspace.index')],
+        ['label' => 'Files',     'sub' => 'Shared documents',        'icon' => 'folder_open',  'color' => '#10B981', 'route' => route('workspace.index')],
+    ] as $card)
+    <a href="{{ $card['route'] }}"
+       class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm hover:border-secondary/30 hover:shadow-md transition-all group">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
+             style="background:{{ $card['color'] }}12;">
+            <span class="material-symbols-outlined" style="font-size:20px;color:{{ $card['color'] }};">{{ $card['icon'] }}</span>
+        </div>
+        <p class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-secondary transition-colors">{{ $card['label'] }}</p>
+        <p class="font-label-md text-[10px] text-outline mt-0.5">{{ $card['sub'] }}</p>
+    </a>
+    @endforeach
+</div>
 
 </x-layouts.gvos>

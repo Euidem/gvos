@@ -1,4 +1,5 @@
 <x-layouts.gvos title="Operations Dashboard">
+{{-- Stitch reference: admin_overview_gvos/code.html --}}
 @php
     $user = auth()->user();
     $profile = $user->profile;
@@ -8,211 +9,180 @@
     $clientCount     = \App\Models\ClientProfile::count();
     $workspaceCount  = \App\Models\Workspace::count();
     $workspaceActive = \App\Models\Workspace::where('status', 'active')->count();
+    $workspaceTrial  = \App\Models\Workspace::where('type', 'trial')->whereIn('status', ['pending', 'active'])->count();
 
-    // Lead pipeline counts
     $leadTotal          = \App\Models\LeadRequest::count();
     $leadNew            = \App\Models\LeadRequest::where('status', 'new')->count();
     $leadUnderReview    = \App\Models\LeadRequest::where('status', 'under_review')->count();
-    $leadTrialApproved  = \App\Models\LeadRequest::where('status', 'trial_approved')->count();
     $leadTrialActive    = \App\Models\LeadRequest::where('status', 'trial_active')->count();
     $leadPaymentPending = \App\Models\LeadRequest::where('status', 'payment_pending')->count();
 
-    // Task counts (Phase 5)
     $taskTotal     = \App\Models\WorkspaceTask::count();
     $taskOpen      = \App\Models\WorkspaceTask::whereIn('status', ['pending', 'in_progress', 'revision_requested'])->count();
     $taskBlocked   = \App\Models\WorkspaceTask::where('status', 'blocked')->count();
     $taskSubmitted = \App\Models\WorkspaceTask::where('status', 'submitted')->count();
 
-    // Chat & Files counts (Phase 6)
     $messageTotal = \App\Models\WorkspaceMessage::count();
     $fileTotal    = \App\Models\WorkspaceFile::count();
+
+    $timePending  = \App\Models\WorkspaceTimeLog::where('status', 'submitted')->count();
+    $reportsDraft = \App\Models\WorkspaceWeeklyReport::where('status', 'submitted')->count();
+
+    $name = $profile?->first_name ?? $user->name ?? 'there';
 @endphp
 
-    <div class="flex items-start justify-between mb-8">
+{{-- ── Page header ─────────────────────────────────────────────────────── --}}
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+    <div>
+        <h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Operations Overview</h2>
+        <p class="font-body-md text-body-md text-outline mt-1">
+            Active workspace health, lead pipeline and task management.
+        </p>
+    </div>
+    <div class="flex gap-3">
+        <a href="/admin" class="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-lg font-label-md text-label-md hover:brightness-110 transition-all">
+            <span class="material-symbols-outlined" style="font-size:16px;">admin_panel_settings</span>
+            Ops Console
+        </a>
+    </div>
+</div>
+
+{{-- ── Workspace health cards ───────────────────────────────────────────── --}}
+<div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+
+    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between h-[140px]">
+        <div class="flex justify-between items-start">
+            <span class="font-label-md text-label-md text-outline">Active Workspaces</span>
+            <span class="material-symbols-outlined text-secondary" style="font-size:18px;">corporate_fare</span>
+        </div>
         <div>
-            <h2 class="text-2xl font-bold text-on-surface">
-                Welcome back{{ $profile?->first_name ? ', ' . $profile->first_name : '' }}
-            </h2>
-            <p class="text-sm text-on-surface-variant mt-1">GVOS Ops Console — Operations Administrator</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <span class="text-xs bg-status-active/10 text-status-active border border-status-active/20 px-3 py-1 rounded-full font-medium">
-                {{ ucfirst($user->status) }}
-            </span>
-            <span class="text-xs bg-secondary/5 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-medium">
-                Operations Admin
-            </span>
+            <p class="font-headline-lg text-headline-lg text-primary font-bold">{{ $workspaceActive }}</p>
+            <p class="font-label-md text-label-md text-outline">of {{ $workspaceCount }} total</p>
         </div>
     </div>
 
-    {{-- ── Entity counts ────────────────────────────────────────────────── --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <a href="/admin/companies"
-           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">business</span>
-            </div>
-            <p class="text-2xl font-bold text-on-surface">{{ $companyCount }}</p>
-            <p class="text-xs text-on-surface-variant mt-1 font-medium">Companies</p>
-        </a>
-        <a href="/admin/talent-profiles"
-           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">badge</span>
-            </div>
-            <p class="text-2xl font-bold text-on-surface">{{ $talentCount }}</p>
-            <p class="text-xs text-on-surface-variant mt-1 font-medium">Talent Profiles</p>
-        </a>
-        <a href="/admin/manager-profiles"
-           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">manage_accounts</span>
-            </div>
-            <p class="text-2xl font-bold text-on-surface">{{ $managerCount }}</p>
-            <p class="text-xs text-on-surface-variant mt-1 font-medium">Manager Profiles</p>
-        </a>
-        <a href="/admin/client-profiles"
-           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">group</span>
-            </div>
-            <p class="text-2xl font-bold text-on-surface">{{ $clientCount }}</p>
-            <p class="text-xs text-on-surface-variant mt-1 font-medium">Client Profiles</p>
-        </a>
-        <a href="/admin/workspaces"
-           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="material-symbols-outlined text-outline" style="font-size: 16px;">workspaces</span>
-            </div>
-            <p class="text-2xl font-bold text-on-surface">{{ $workspaceActive }}<span class="text-base font-normal text-outline">/{{ $workspaceCount }}</span></p>
-            <p class="text-xs text-on-surface-variant mt-1 font-medium">Active Workspaces</p>
-        </a>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <a href="/admin/users"
-           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm group">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-secondary/5 rounded-lg flex items-center justify-center group-hover:bg-secondary/10 transition-colors">
-                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">group</span>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-on-surface">View Users</p>
-                    <p class="text-xs text-outline">Browse all platform users</p>
-                </div>
-            </div>
-        </a>
-
-        <a href="{{ route('profile.show') }}"
-           class="bg-white rounded-xl border border-border-subtle px-5 py-4 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm group">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center group-hover:bg-secondary/5 transition-colors">
-                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">person</span>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-on-surface">My Profile</p>
-                    <p class="text-xs text-outline">Update your details and password</p>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    {{-- ── Lead pipeline ───────────────────────────────────────────────── --}}
-    <div class="mb-8">
-        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Lead Pipeline</h3>
-        <div class="grid grid-cols-2 lg:grid-cols-6 gap-3">
-            <a href="/admin/lead-requests"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-on-surface">{{ $leadTotal }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Total Leads</p>
-            </a>
-            <a href="/admin/lead-requests?tableFilters[status][value]=new"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-payment-due/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-status-payment-due">{{ $leadNew }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">New</p>
-            </a>
-            <a href="/admin/lead-requests?tableFilters[status][value]=under_review"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-on-surface">{{ $leadUnderReview }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Under Review</p>
-            </a>
-            <a href="/admin/lead-requests?tableFilters[status][value]=trial_approved"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-active/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-status-active">{{ $leadTrialApproved }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Trial Approved</p>
-            </a>
-            <a href="/admin/lead-requests?tableFilters[status][value]=trial_active"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-completed/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-status-completed">{{ $leadTrialActive }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Trial Active</p>
-            </a>
-            <a href="/admin/lead-requests?tableFilters[status][value]=payment_pending"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-payment-due/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-status-payment-due">{{ $leadPaymentPending }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Payment Pending</p>
-            </a>
+    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between h-[140px]">
+        <div class="flex justify-between items-start">
+            <span class="font-label-md text-label-md text-outline">Trial Workspaces</span>
+            <span class="material-symbols-outlined text-status-trial" style="font-size:18px;">auto_awesome</span>
         </div>
-    </div>
-
-    {{-- ── Task summary ────────────────────────────────────────────────── --}}
-    <div class="mb-8">
-        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Task Overview</h3>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <a href="/admin/workspace-tasks"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-on-surface">{{ $taskTotal }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Total Tasks</p>
-            </a>
-            <a href="/admin/workspace-tasks?tableFilters[status][value]=pending"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-secondary">{{ $taskOpen }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Open Tasks</p>
-            </a>
-            <a href="/admin/workspace-tasks?tableFilters[status][value]=blocked"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-blocked/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-status-blocked">{{ $taskBlocked }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Blocked</p>
-            </a>
-            <a href="/admin/workspace-tasks?tableFilters[status][value]=submitted"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-status-trial/30 hover:shadow-card transition-all shadow-sm">
-                <p class="text-2xl font-bold text-status-trial">{{ $taskSubmitted }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Awaiting Review</p>
-            </a>
-        </div>
-    </div>
-
-    {{-- ── Chat & Files summary ────────────────────────────────────────── --}}
-    <div class="mb-8">
-        <h3 class="text-xs font-semibold text-outline mb-3 uppercase tracking-wider">Chat &amp; Files</h3>
-        <div class="grid grid-cols-2 gap-3">
-            <a href="/admin/workspace-messages"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="material-symbols-outlined text-outline" style="font-size: 16px;">chat</span>
-                </div>
-                <p class="text-2xl font-bold text-on-surface">{{ $messageTotal }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Total Messages</p>
-            </a>
-            <a href="/admin/workspace-files"
-               class="bg-white rounded-xl border border-border-subtle px-4 py-3 hover:border-secondary/30 hover:shadow-card transition-all shadow-sm">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="material-symbols-outlined text-outline" style="font-size: 16px;">folder_open</span>
-                </div>
-                <p class="text-2xl font-bold text-on-surface">{{ $fileTotal }}</p>
-                <p class="text-xs text-on-surface-variant mt-1 font-medium">Total Files</p>
-            </a>
-        </div>
-    </div>
-
-    <div class="bg-secondary/5 border border-secondary/20 rounded-xl px-6 py-5 flex items-start gap-3">
-        <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size: 18px;">info</span>
         <div>
-            <p class="text-sm font-semibold text-secondary">Phase 7 — Time Tracking &amp; Work Reports</p>
-            <p class="text-sm text-on-surface-variant mt-0.5">
-                Time logs and weekly reports are now live. Talents log work sessions; managers review and approve;
-                clients see published summaries. Billing and advanced features are coming in later phases.
-            </p>
+            <p class="font-headline-lg text-headline-lg text-primary font-bold">{{ $workspaceTrial }}</p>
+            <p class="font-label-md text-label-md text-outline">{{ $leadTrialActive }} leads active</p>
         </div>
     </div>
+
+    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between h-[140px]">
+        <div class="flex justify-between items-start">
+            <span class="font-label-md text-label-md text-outline">Tasks Awaiting Review</span>
+            <span class="material-symbols-outlined text-status-payment-due" style="font-size:18px;">pending_actions</span>
+        </div>
+        <div>
+            <p class="font-headline-lg text-headline-lg text-primary font-bold">{{ $taskSubmitted }}</p>
+            <p class="font-label-md text-label-md text-outline">{{ $taskBlocked }} blocked</p>
+        </div>
+    </div>
+
+    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between h-[140px]">
+        <div class="flex justify-between items-start">
+            <span class="font-label-md text-label-md text-outline">Payment Pending</span>
+            <span class="material-symbols-outlined text-status-blocked" style="font-size:18px;">warning</span>
+        </div>
+        <div>
+            <p class="font-headline-lg text-headline-lg text-status-blocked font-bold">{{ $leadPaymentPending }}</p>
+            <p class="font-label-md text-label-md text-outline">Requires action</p>
+        </div>
+    </div>
+
+</div>
+
+{{-- ── Lead pipeline + Actions ─────────────────────────────────────────── --}}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+    {{-- Lead pipeline --}}
+    <div class="lg:col-span-2 bg-white rounded-xl border border-border-subtle p-card-padding shadow-sm">
+        <div class="flex justify-between items-center mb-5">
+            <h4 class="font-headline-md text-headline-md text-primary font-bold">Lead Pipeline</h4>
+            <a href="/admin/lead-requests" class="text-secondary font-label-md text-label-md hover:underline">View all</a>
+        </div>
+        <div class="space-y-3">
+            @php
+                $stages = [
+                    ['label' => 'New',           'count' => $leadNew,            'color' => '#0058be'],
+                    ['label' => 'Under Review',  'count' => $leadUnderReview,    'color' => '#8B5CF6'],
+                    ['label' => 'Trial Active',  'count' => $leadTrialActive,    'color' => '#10B981'],
+                    ['label' => 'Pmt. Pending',  'count' => $leadPaymentPending, 'color' => '#F59E0B'],
+                ];
+                $maxCount = max(array_column($stages, 'count')) ?: 1;
+            @endphp
+            @foreach ($stages as $stage)
+                <div class="flex items-center gap-4">
+                    <p class="font-label-md text-label-md text-outline w-28 flex-shrink-0">{{ $stage['label'] }}</p>
+                    <div class="flex-1 h-2 rounded-full overflow-hidden bg-surface-container-high">
+                        <div class="h-full rounded-full"
+                             style="width:{{ $maxCount > 0 ? round($stage['count'] / $maxCount * 100) : 0 }}%;background-color:{{ $stage['color'] }}"></div>
+                    </div>
+                    <span class="font-bold text-sm w-6 text-right" style="color:{{ $stage['color'] }}">{{ $stage['count'] }}</span>
+                </div>
+            @endforeach
+        </div>
+        <div class="mt-5 pt-4 border-t border-border-subtle flex justify-between items-center">
+            <p class="font-label-md text-label-md text-outline">Total in pipeline</p>
+            <span class="font-headline-md text-headline-md text-primary font-bold">{{ $leadTotal }}</span>
+        </div>
+    </div>
+
+    {{-- Action items --}}
+    <div class="space-y-4">
+        <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">
+            <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(0,88,190,0.06)">
+                <span class="material-symbols-outlined text-secondary" style="font-size:20px;">schedule</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-label-md text-label-md text-outline">Time Logs Pending</p>
+                <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $timePending }}</h4>
+            </div>
+            <a href="/admin/workspace-time-logs" class="text-secondary font-label-md text-label-md hover:underline">Review</a>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">
+            <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.06)">
+                <span class="material-symbols-outlined text-status-trial" style="font-size:20px;">summarize</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-label-md text-label-md text-outline">Reports for Review</p>
+                <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $reportsDraft }}</h4>
+            </div>
+            <a href="/admin/workspace-weekly-reports" class="text-secondary font-label-md text-label-md hover:underline">Review</a>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">
+            <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,0.06)">
+                <span class="material-symbols-outlined text-status-active" style="font-size:20px;">forum</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-label-md text-label-md text-outline">Messages / Files</p>
+                <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $messageTotal + $fileTotal }}</h4>
+            </div>
+            <a href="/admin/workspace-messages" class="text-secondary font-label-md text-label-md hover:underline">View</a>
+        </div>
+    </div>
+</div>
+
+{{-- ── Platform stats ──────────────────────────────────────────────────── --}}
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-5">
+    @foreach ([
+        ['Companies', $companyCount, 'business', '#0058be'],
+        ['Talents', $talentCount, 'badge', '#10B981'],
+        ['Clients', $clientCount, 'person', '#F59E0B'],
+        ['Managers', $managerCount, 'supervisor_account', '#8B5CF6'],
+    ] as [$label, $count, $icon, $color])
+    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+            <span class="material-symbols-outlined" style="color:{{ $color }};font-size:20px;">{{ $icon }}</span>
+            <p class="font-label-md text-label-md text-outline uppercase tracking-wider">{{ $label }}</p>
+        </div>
+        <p class="font-headline-md text-headline-md text-primary font-bold">{{ $count }}</p>
+    </div>
+    @endforeach
+</div>
 
 </x-layouts.gvos>
