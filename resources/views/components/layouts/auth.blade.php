@@ -1,4 +1,9 @@
 @props(['title' => 'Sign in', 'variant' => 'dark'])
+{{--
+    variant options:
+      dark  — centered card on dark bg (#0B0F19)  [default, used by all other auth pages]
+      split — full-screen with no centering         [used by login.blade.php 2-col layout]
+--}}
 <!DOCTYPE html>
 <html lang="en" class="h-full">
 <head>
@@ -126,15 +131,43 @@
         .bg-status-blocked\/10{background-color:rgba(239,68,68,.1)}
         .border-status-blocked\/20{border-color:rgba(239,68,68,.2)}
         .text-secondary-fixed\/70{color:rgba(216,226,255,.7)}
+        .text-secondary-fixed-dim{color:#adc6ff}
+        .bg-secondary-fixed-dim\/20{background-color:rgba(173,198,255,.2)}
+        .text-status-active{color:#10B981}
+        .bg-status-active\/20{background-color:rgba(16,185,129,.2)}
+        .border-white\/10{border-color:rgba(255,255,255,.1)}
+        .bg-white\/5{background-color:rgba(255,255,255,.05)}
+        .bg-white\/10{background-color:rgba(255,255,255,.1)}
         .focus\:ring-secondary\/20:focus{box-shadow:0 0 0 2px rgba(0,88,190,.2)}
         .focus\:border-secondary:focus{border-color:#0058be}
         .hover\:brightness-110:hover{filter:brightness(1.1)}
         .active\:scale-\[0\.98\]:active{transform:scale(.98)}
+        /* Login split-screen animations (Stitch login_gvos_1) */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-16px); }
+        }
+        .animate-float-slow { animation: float 8s ease-in-out infinite; }
+        .animate-float-delayed { animation: float 10s ease-in-out infinite 1.5s; }
+        .login-glass {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
     </style>
 </head>
+@if($variant === 'split')
+{{-- Split layout: full-screen, no centering — login.blade.php owns the layout --}}
+<body class="h-full font-body-md antialiased overflow-hidden" style="background-color:#f7f9fb">
+    <!-- GVOS UI Visual Repair v3 active -->
+    {{ $slot }}
+</body>
+@else
+{{-- Default centered card layout — used by forgot-password, reset, etc. --}}
 <body class="h-full font-sans antialiased flex items-center justify-center min-h-screen px-4 {{ $variant === 'light' ? 'bg-dot-pattern' : '' }}"
       @if($variant !== 'light') style="background-color:#0B0F19" @endif>
     <!-- GVOS UI Visual Repair v3 active -->
     {{ $slot }}
 </body>
+@endif
 </html>

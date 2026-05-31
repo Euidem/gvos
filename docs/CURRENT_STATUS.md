@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-05-31
 **Current Phase:** Phase 7 — Time Tracking & Work Reports ✅ Complete
-**Current Activity:** UI Correction — Batch 1a Complete (shared portal shell aligned to Stitch)
+**Current Activity:** UI Correction — Batch 1b Complete (login page rebuilt to Stitch 2-col split-screen)
 
 ---
 
@@ -989,3 +989,39 @@ Feature development is paused. The Stitch UI export has been designated as the f
 - No database changes ✅
 - No route changes ✅
 - `GetVirtual` does not appear anywhere ✅
+
+---
+
+## UI Correction — Batch 1b Complete (2026-05-31)
+
+**Files modified:**
+- `resources/views/auth/login.blade.php` — full rewrite to 2-col Stitch split-screen
+- `resources/views/components/layouts/auth.blade.php` — added `split` variant, CSS tokens for login decorative panel
+
+**Stitch reference:** `login_gvos_1/code.html`
+
+**Changes:**
+- Layout: single centered card → 2-col split screen (left 45% white form, right 55% dark `#0B0F19` decorative panel)
+- Email label: "Email Address" → "Business Email"
+- Password label: "Password" → "Security Key"
+- Forgot password link: "Forgot password?" → "Reset Access"
+- Remember checkbox: "Keep me signed in" → "Persistent session for 24 hours"
+- Submit button: "Sign in" → "Initialize Session" (with `arrow_forward` icon)
+- Added password show/hide toggle (inline JS, `visibility` / `visibility_off` icon)
+- Security footer: updated to "Security Protocol Active" with `verified_user` icon + AES-256 note
+- Right panel: dark bg with dot-grid overlay, two floating glass cards (Node Distribution + Security Audit), bottom decoration with team indicator — all CSS-only, no external images
+- Subtle slide-in animation for form panel (matches Stitch micro-interaction)
+- `auth.blade.php`: added `split` variant branch (full-screen body, no centering); all other auth pages unchanged; added CSS tokens for decorative elements
+
+**Preserved:**
+- POST action `route('login')` ✅
+- `@csrf` token ✅
+- `name="email"` with `old('email')`, `name="password"`, `name="remember"` ✅
+- `@error('email')` and `@error('password')` validation error display ✅
+- `session('status')` for password reset success ✅
+- `route('password.request')` forgot password link ✅
+- `autocomplete`, `autofocus`, `required` attributes ✅
+- Visual Repair v3 comment in auth layout ✅
+- All other auth pages unaffected by `split` variant addition ✅
+- `GetVirtual` does not appear anywhere ✅
+- No database changes, no route changes ✅

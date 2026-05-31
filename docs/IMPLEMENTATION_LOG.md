@@ -7,6 +7,35 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-31 | UI Correction Batch 1b | Login Page — Stitch 2-Col Split Screen
+
+**What was done:** Rebuilt login page to match Stitch `login_gvos_1` split-screen design. Added `split` variant to auth layout for full-screen support. No backend, database, or route changes.
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `resources/views/auth/login.blade.php` | Complete rewrite — 2-col split screen matching Stitch login_gvos_1 |
+| `resources/views/components/layouts/auth.blade.php` | Added `split` variant body class; added CSS token fallbacks for decorative elements |
+| `docs/CURRENT_STATUS.md` | Batch 1b completion noted |
+| `docs/IMPLEMENTATION_LOG.md` | This entry |
+| `docs/UI_CORRECTION_PLAN.md` | Batch 1b marked complete |
+
+**Key changes:**
+- Layout: single centered card → `flex min-h-screen` two-column split
+- Left panel: `w-full lg:w-[45%] bg-surface-container-lowest` — form only
+- Right panel: `hidden lg:flex lg:w-[55%] bg-sidebar-bg` — decorative, CSS-only (no external images)
+- Field labels: "Business Email" + "Security Key" + "Reset Access" link
+- Remember: "Persistent session for 24 hours"
+- Button: "Initialize Session" with arrow icon
+- Added password show/hide toggle (inline onclick JS, no Alpine/Vue dependency)
+- Security footer: "Security Protocol Active" with verified_user icon
+- Right panel: dot-grid overlay + radial glow + two float-animated glass cards + bottom team bar
+- Slide-in animation for form panel (Stitch micro-interaction)
+- All Laravel auth functionality preserved: POST action, CSRF, old() values, @error, session('status'), routes
+
+---
+
 ### 2026-05-31 | UI Correction Batch 1a | Shared Portal Shell — Stitch Alignment
 
 **What was done:** Updated the shared GVOS portal layout (`gvos.blade.php`) to match the Stitch `manager_command_center_gvos` shell structure. No database, routes, or business logic changed.
