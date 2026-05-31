@@ -2,6 +2,7 @@
 
 **Last Updated:** 2026-05-31
 **Current Phase:** Phase 7 — Time Tracking & Work Reports ✅ Complete
+**Current Activity:** UI Source of Truth Alignment (feature dev paused)
 
 ---
 
@@ -920,3 +921,30 @@ Expanded the workspace role model from 4 values (client/talent/manager/observer)
 5. Verify task show page time log sidebar renders correctly
 6. Verify Filament: WorkspaceTimeLogResource and WorkspaceWeeklyReportResource appear under Workspace nav group, sort 7 and 8
 7. Phase 8 is NOT yet started — do not proceed without explicit instruction
+
+---
+
+## UI Source of Truth Alignment (2026-05-31)
+
+Feature development is paused. The Stitch UI export has been designated as the frontend source of truth.
+
+**What was done:**
+- Stitch zip extracted to `design-reference/stitch_gvos_operations_platform/` (67 screen folders)
+- `docs/UI_SOURCE_OF_TRUTH.md` created — maps every route to its Stitch screen folder
+- `docs/UI_CORRECTION_PLAN.md` created — 7 correction batches with file lists, risk levels, test checklists
+- `docs/FRONTEND_IMPLEMENTATION_RULES.md` created — 15 frontend rules; Stitch is the source of truth
+- `docs/SEMI_AUTOMATED_TIME_TRACKING_PLAN.md` created — timer plan documented (not yet implemented)
+
+**Summary of UI drift found:**
+- Login: Major drift — current is single-column; Stitch is 2-col split-screen with decorative panel
+- Dashboards: Major drift — phase banners don't exist in Stitch; talent needs Clock-In widget; manager needs richer metrics
+- Sidebar: Moderate drift — missing Quick Action button, user profile card, workspace switcher for talent
+- Header: Moderate drift — missing Clock In button
+- Workspace show: Major drift — Stitch is a rich monitoring screen; current is a static card grid
+- Chat/files/tasks: Moderate drift — layout differs but structure is close
+- Time tracking: Major drift — Stitch shows a timer widget; current is a plain form table
+- Phase banners: All 7 dashboards have banners that don't exist in any Stitch screen
+
+**No code was changed. No database was changed. Documentation only.**
+
+**Next step:** Begin Batch 1a (shared layout correction) when instructed.

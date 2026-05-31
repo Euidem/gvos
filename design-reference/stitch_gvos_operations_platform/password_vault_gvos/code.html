@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Password Vault</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#001a42",
+                        "status-completed": "#059669",
+                        "on-primary-fixed": "#131b2e",
+                        "tertiary-container": "#271901",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#fefcff",
+                        "background": "#f7f9fb",
+                        "status-suspended": "#64748B",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-tertiary-fixed": "#271901",
+                        "primary": "#000000",
+                        "on-tertiary-container": "#98805d",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-container": "#7c839b",
+                        "secondary-container": "#2170e4",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d8dadc",
+                        "on-surface": "#191c1e",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "on-secondary-fixed-variant": "#004395",
+                        "secondary": "#0058be",
+                        "surface-bright": "#f7f9fb",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "outline": "#76777d",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "surface-tint": "#565e74",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed": "#d8e2ff",
+                        "inverse-primary": "#bec6e0",
+                        "primary-fixed-dim": "#bec6e0",
+                        "status-urgent": "#B91C1C",
+                        "surface-container-low": "#f2f4f6",
+                        "status-active": "#10B981",
+                        "status-payment-due": "#F59E0B",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "status-blocked": "#EF4444",
+                        "sidebar-bg": "#0B0F19",
+                        "border-subtle": "#E2E8F0",
+                        "outline-variant": "#c6c6cd",
+                        "tertiary": "#000000",
+                        "surface-container": "#eceef0",
+                        "status-trial": "#8B5CF6",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-background": "#191c1e",
+                        "primary-container": "#131b2e",
+                        "on-surface-variant": "#45464d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "40px",
+                        "card-padding": "24px",
+                        "base": "4px",
+                        "input-gap": "16px",
+                        "gutter": "24px",
+                        "container-margin": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "label-md": ["Inter"],
+                        "mono-sm": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .password-mask {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.15em;
+        }
+        .sidebar-blur {
+            backdrop-filter: blur(8px);
+        }
+        .reveal-animation {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md">
+<!-- Side Navigation Shell -->
+<aside class="w-[280px] h-full fixed left-0 top-0 bg-sidebar-bg flex flex-col py-gutter px-4 z-50">
+<div class="mb-10 px-4">
+<h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed">GVOS Platform</h1>
+<p class="font-body-sm text-body-sm text-on-primary-container">Enterprise Ops</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-4 py-3 rounded-xl text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-xl text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="workspaces">workspaces</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-xl text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Talent Pool</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-xl text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Finance</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-xl text-secondary-fixed-dim bg-white/10 border-l-4 border-secondary-fixed font-bold" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-xl text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-6 border-t border-white/10">
+<a class="flex items-center px-4 py-3 rounded-xl text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-xl text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation Shell -->
+<header class="flex items-center justify-between px-gutter h-16 w-full ml-[280px] max-w-[calc(100%-280px)] sticky top-0 z-40 bg-surface-container-lowest shadow-sm border-b border-border-subtle">
+<div class="flex items-center flex-1">
+<div class="relative w-full max-w-md focus-within:ring-2 focus-within:ring-secondary rounded-lg">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-body-sm focus:ring-0" placeholder="Search secrets, logs, or talent..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-all relative">
+<span class="material-symbols-outlined text-outline" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-px bg-border-subtle mx-2"></div>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                Add New Secret
+            </button>
+<img alt="User Avatar" class="w-8 h-8 rounded-full object-cover border border-border-subtle" data-alt="Close-up professional portrait of a tech executive in a light-filled modern office. The lighting is soft and corporate, utilizing a bright high-key aesthetic with clean white backgrounds. The image projects institutional trust and quiet power through sharp focus and premium composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9VLGPzvh384bP_Fql3jIDrj6n-uSnarbUhogJf5ngaXSLxYMb8xIPQMuIAdp6Qv43evP3hVl5hnkhD0RWCsIu6gd76oXlAM6NemTcxzsfCU6EBSCtXjwahYLJh2okKkbNWQ26OWRwko8Gd9In-TgOBgGNfTatnBlK0ceYw1V60s7Jp6Ekm6p44XpqH7X_eB36RJ3tayXnIQC6CkAg4MDg8yfE70UppE8WeRqbX2ei59QT9S1BExYHKiduXLTAaRe2nlZ3E0iqKQ"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] p-gutter min-h-screen">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<nav class="flex items-center gap-2 text-outline font-label-md mb-2">
+<span>GVOS</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-secondary">Security Vault</span>
+</nav>
+<h2 class="font-headline-lg text-headline-lg text-primary">Password Vault</h2>
+<p class="text-on-surface-variant font-body-md mt-1">End-to-end encrypted storage for mission-critical credentials.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="bg-status-active/10 text-status-active px-3 py-1.5 rounded-full flex items-center gap-2 font-label-md">
+<span class="w-2 h-2 bg-status-active rounded-full animate-pulse"></span>
+                    AES-256 Active
+                </div>
+</div>
+</div>
+<!-- Bento Grid Overview -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed mb-4">
+<span class="material-symbols-outlined" data-icon="key">key</span>
+</div>
+<span class="font-label-md text-outline">Total Secrets</span>
+</div>
+<div class="mt-2">
+<span class="font-headline-lg text-headline-lg">42</span>
+<span class="text-status-active font-label-md ml-2">+3 this week</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed mb-4">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+</div>
+<span class="font-label-md text-outline">Active Shared Sessions</span>
+</div>
+<div class="mt-2">
+<span class="font-headline-lg text-headline-lg">12</span>
+<span class="text-on-surface-variant font-label-md ml-2">Across 8 users</span>
+</div>
+</div>
+<div class="md:col-span-2 bg-sidebar-bg p-card-padding rounded-xl text-white flex items-center relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md mb-1 text-secondary-fixed-dim">Security Health</h3>
+<p class="text-on-primary-container font-body-sm mb-4 max-w-xs">All vault items are currently protected with hardware-level encryption.</p>
+<button class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg font-label-md transition-colors">Run Security Audit</button>
+</div>
+<div class="absolute right-[-20px] top-[-20px] opacity-10">
+<span class="material-symbols-outlined text-[200px]" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+</div>
+</div>
+<!-- Secrets Table -->
+<section class="bg-surface-container-lowest rounded-xl border border-border-subtle shadow-sm overflow-hidden mb-8">
+<div class="px-gutter py-4 border-b border-border-subtle flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md">Shared Credentials</h3>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors text-outline">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors text-outline">
+<span class="material-symbols-outlined" data-icon="sort">sort</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low border-b border-border-subtle">
+<th class="px-gutter py-4 font-label-md text-outline">Website / App</th>
+<th class="px-gutter py-4 font-label-md text-outline">Username</th>
+<th class="px-gutter py-4 font-label-md text-outline">Password</th>
+<th class="px-gutter py-4 font-label-md text-outline">Access Permissions</th>
+<th class="px-gutter py-4 font-label-md text-outline text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<!-- Secret Item 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-outline" data-icon="language">language</span>
+</div>
+<span class="font-body-md font-semibold text-primary">AWS Production Console</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<code class="font-mono-sm text-mono-sm bg-surface-container-low px-2 py-1 rounded">admin_gv_ops</code>
+</td>
+<td class="px-gutter py-5">
+<div class="flex items-center gap-2 group/reveal">
+<span class="password-mask text-outline tracking-widest font-bold">••••••••••••</span>
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 hover:underline" onclick="this.previousElementSibling.innerText='Pr0d_S3cure_!23'; this.previousElementSibling.classList.remove('password-mask', 'text-outline')">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+<button class="text-outline hover:text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex -space-x-2">
+<img class="w-7 h-7 rounded-full border-2 border-surface-container-lowest" data-alt="A professional woman with a warm expression in a minimalist office setting. The lighting is soft and even, highlighting her face clearly against a bright, modern interior with neutral tones. The aesthetic is clean and corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_Mbxc1ax24K1B0QoriLfDuB2ut4ZzJYtp0lDXXUZTIiEMze84zpd3y9pdWzmm3Pt5YjwS2DzjIxSdDUe8_uj309Lr7DgPB5c8RqvlUJmFWOJWN9rKg4qljDRLc7WOhQU-l2i27yB2_oXLHFRSlC83ZdTuG03E4x2yM70Hr81WWCaZU_jh0NP53lGgNZdh9QiEHiu5kVl4Q8b_dHakQuIYbQQl3Jb6xkPsAH4qpCd9l42fv45_63L5rag2NtmqVbGBRo4US5tZhA"/>
+<img class="w-7 h-7 rounded-full border-2 border-surface-container-lowest" data-alt="A professional man looking directly at the camera in a modern tech office environment. Bright high-key lighting creates a positive and trustworthy atmosphere. The background is a slightly blurred workspace with clean lines and premium finishes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAX00RgAjW75lf1cOWG1ZwCSyeNxZjlMeU1XdTPEqsqDze1AKOiCSVcmOJbTVEaQ53A71wx_g80pnBbq0VN5cG2iqJB1TrEScGB_Nwoiq0QT8vG68-lx4rshR1aDPdmw4FjbHlPyorQmUcCW7JiA-T2HywRCboCWaO2M85jch--ZV-5qcUdVQ9Ir3FmGyPpgHfgaWwk9mBLiJE9oOuU3ClCCka3n2spyn_X7P-nFUb8aXoWX2FEkgIRP-H3k6IxZ7qvbY9eqQpfhw"/>
+<div class="w-7 h-7 rounded-full bg-surface-container-high border-2 border-surface-container-lowest flex items-center justify-center font-label-md text-[10px]">+3</div>
+</div>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-status-blocked hover:bg-error-container/20 px-3 py-1 rounded-lg font-label-md transition-all">Revoke Access</button>
+</td>
+</tr>
+<!-- Secret Item 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-outline" data-icon="database">database</span>
+</div>
+<span class="font-body-md font-semibold text-primary">Stripe API (Live)</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<code class="font-mono-sm text-mono-sm bg-surface-container-low px-2 py-1 rounded">sk_live_gvos_finance</code>
+</td>
+<td class="px-gutter py-5">
+<div class="flex items-center gap-2 group/reveal">
+<span class="password-mask text-outline tracking-widest font-bold">••••••••••••</span>
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+<button class="text-outline hover:text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex -space-x-2">
+<img class="w-7 h-7 rounded-full border-2 border-surface-container-lowest" data-alt="Close up portrait of a male data scientist in a corporate setting. The lighting is diffused and bright, creating a clean light-mode aesthetic. The composition is centered and professional, conveying focus and reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQiyBZU6lxxgQHH-w1wF6TVf8Cm5cypGopALrEdp1UzzfsbSVk3dPO3b6aJALcpACGArBmQ5yvTjHS7nXLCSirES-Ni7XYMrmjRsAKz6FB3uc79owIvcFvJpOoWN135LzotHoOmt8dZbYgytrh9T2k5yR0jzcbK7ccKzWz97kAItBUW_jXtUMWpSMuqQ0dAbBcWuPftaKbdR1rh_gAkxGOqApRdlgKCQdSszcECUiO1mTJZdetAi31VYi_OsRWome-93sWWidYnw"/>
+<div class="w-7 h-7 rounded-full bg-surface-container-high border-2 border-surface-container-lowest flex items-center justify-center font-label-md text-[10px]">Only You</div>
+</div>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-status-blocked hover:bg-error-container/20 px-3 py-1 rounded-lg font-label-md transition-all">Revoke Access</button>
+</td>
+</tr>
+<!-- Secret Item 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-outline" data-icon="terminal">terminal</span>
+</div>
+<span class="font-body-md font-semibold text-primary">GitHub Enterprise</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<code class="font-mono-sm text-mono-sm bg-surface-container-low px-2 py-1 rounded">gvos-deploy-bot</code>
+</td>
+<td class="px-gutter py-5">
+<div class="flex items-center gap-2 group/reveal">
+<span class="password-mask text-outline tracking-widest font-bold">••••••••••••</span>
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+<button class="text-outline hover:text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex -space-x-2">
+<img class="w-7 h-7 rounded-full border-2 border-surface-container-lowest" data-alt="Portrait of a female security analyst in a bright, modern office with soft-box lighting. The image emphasizes professional trust and clarity through a high-key color palette and sharp focus. The setting is clean, minimal, and technologically advanced." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSShjv9CFXyC7JcyOiim2QYRPMcN3sHyfbQ3O-NFx5J-tSWFcorkSUOMh0J4fAA_uLdhuf8oresybXyqhrMgkPjn1iKN99ZCoFvNOAe_8RRvxz2T8X0PumfHgugVRCiLV4gVN76tCYP0AG-uOnoghcWra9Mr2iEM7v607ksH0HQEv2RqqgkbG1qTJxOuRd_GVNsJI2p92V--6MVQgozzqx-GIMdXoTqFuwyPo5iIvsDdOCVM1Wfyzycmj1GJ1VImP3i2IgOelCIg"/>
+<img class="w-7 h-7 rounded-full border-2 border-surface-container-lowest" data-alt="Professional man in a executive suite with bright lighting. The background is a soft-focus office with modern furniture and neutral colors. The overall aesthetic is one of institutional trust and corporate efficiency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmLgqous2zHgOX4iJxT5ZKskmuTvZkSFRsMxZv5GzsxF5zKL98IWaT20-p3qcct56j78h8YYQPswnTVihXvK_-peXJYtpC6T1yi165z-sxwzOGlOnRXq94awWh1N_4jE06ac-SUsR79mBeY9CrZBwPXkVdMaM60M2sWXFdmDIaes8zhtXc4KRMmzEsRe0HEBqLwaMQR_qBhmw-WbJaZm2YDtP_1rolaG2lsNJ-YQ1cfUsdxZ53NvA4sxnmtapsa8cmc4k80YymBA"/>
+<div class="w-7 h-7 rounded-full bg-surface-container-high border-2 border-surface-container-lowest flex items-center justify-center font-label-md text-[10px]">+8</div>
+</div>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-status-blocked hover:bg-error-container/20 px-3 py-1 rounded-lg font-label-md transition-all">Revoke Access</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-gutter py-4 bg-surface-container-low flex items-center justify-between">
+<span class="text-body-sm text-outline">Showing 1-12 of 42 secrets</span>
+<div class="flex gap-2">
+<button class="p-2 border border-border-subtle rounded-lg hover:bg-surface transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-2 border border-border-subtle rounded-lg hover:bg-surface transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Security Audit Log -->
+<section class="bg-surface-container-lowest rounded-xl border border-border-subtle shadow-sm overflow-hidden mb-gutter">
+<div class="px-gutter py-4 border-b border-border-subtle flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="history">history</span>
+<h3 class="font-headline-md text-headline-md">Security Audit Log</h3>
+</div>
+<div class="px-gutter py-4 space-y-4">
+<div class="flex items-center justify-between py-3 border-b border-border-subtle last:border-0 hover:bg-surface-container-low rounded px-2 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-status-active"></div>
+<div>
+<p class="font-body-md font-medium text-primary"><span class="font-bold">Sarah Chen</span> revealed password for <span class="text-secondary">AWS Production Console</span></p>
+<p class="text-body-sm text-outline">IP: 192.168.1.45 • Session ID: GV-982-AX</p>
+</div>
+</div>
+<span class="font-mono-sm text-mono-sm text-outline">2 mins ago</span>
+</div>
+<div class="flex items-center justify-between py-3 border-b border-border-subtle last:border-0 hover:bg-surface-container-low rounded px-2 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-status-suspended"></div>
+<div>
+<p class="font-body-md font-medium text-primary"><span class="font-bold">James Wilson</span> copied username for <span class="text-secondary">Stripe API (Live)</span></p>
+<p class="text-body-sm text-outline">IP: 45.12.33.102 • Session ID: GV-112-LZ</p>
+</div>
+</div>
+<span class="font-mono-sm text-mono-sm text-outline">1 hour ago</span>
+</div>
+<div class="flex items-center justify-between py-3 border-b border-border-subtle last:border-0 hover:bg-surface-container-low rounded px-2 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-status-urgent"></div>
+<div>
+<p class="font-body-md font-medium text-primary"><span class="font-bold">System</span> revoked access for <span class="text-status-blocked font-bold">Marcus Holloway</span> (Expired Session)</p>
+<p class="text-body-sm text-outline">Automated Policy • Rule ID: AUTO-EXP-01</p>
+</div>
+</div>
+<span class="font-mono-sm text-mono-sm text-outline">3 hours ago</span>
+</div>
+</div>
+<div class="px-gutter py-3 text-center border-t border-border-subtle">
+<button class="text-secondary font-label-md hover:underline">Download Detailed CSV Log</button>
+</div>
+</section>
+</main>
+<!-- Success Toast (Hidden by default) -->
+<div class="fixed bottom-gutter right-gutter bg-sidebar-bg text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 transition-transform duration-300 z-[100]" id="toast">
+<span class="material-symbols-outlined text-status-active">check_circle</span>
+<span class="font-body-md">Password copied to clipboard</span>
+</div>
+<!-- Scripts for micro-interactions -->
+<script>
+        // Micro-interaction: Reveal Feedback
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20');
+            }, 3000);
+        }
+
+        // Add event listeners to all copy buttons
+        document.querySelectorAll('[data-icon="content_copy"]').forEach(btn => {
+            btn.parentElement.addEventListener('click', () => {
+                showToast();
+            });
+        });
+
+        // Add a subtle "locked" animation on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const vaultItems = document.querySelectorAll('tbody tr');
+            vaultItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    item.style.transition = 'all 0.4s ease-out';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        });
+    </script>
+</body></html>

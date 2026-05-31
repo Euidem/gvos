@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#f7f9fb",
+                      "outline": "#76777d",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "status-completed": "#059669",
+                      "surface-bright": "#f7f9fb",
+                      "on-secondary-fixed": "#001a42",
+                      "status-blocked": "#EF4444",
+                      "secondary-container": "#2170e4",
+                      "on-tertiary-container": "#98805d",
+                      "on-surface-variant": "#45464d",
+                      "tertiary-container": "#271901",
+                      "tertiary-fixed": "#fcdeb5",
+                      "surface-tint": "#565e74",
+                      "surface-container-low": "#f2f4f6",
+                      "status-active": "#10B981",
+                      "on-primary-fixed": "#131b2e",
+                      "surface-dim": "#d8dadc",
+                      "status-suspended": "#64748B",
+                      "on-primary-container": "#7c839b",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "error-container": "#ffdad6",
+                      "status-payment-due": "#F59E0B",
+                      "secondary-fixed": "#d8e2ff",
+                      "status-urgent": "#B91C1C",
+                      "on-error": "#ffffff",
+                      "on-background": "#191c1e",
+                      "surface-container": "#eceef0",
+                      "inverse-primary": "#bec6e0",
+                      "on-surface": "#191c1e",
+                      "sidebar-bg": "#0B0F19",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "on-tertiary-fixed": "#271901",
+                      "on-primary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "background": "#f7f9fb",
+                      "primary-container": "#131b2e",
+                      "primary": "#000000",
+                      "on-secondary-container": "#fefcff",
+                      "inverse-on-surface": "#eff1f3",
+                      "secondary": "#0058be",
+                      "tertiary": "#000000",
+                      "surface-container-high": "#e6e8ea",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-tertiary": "#ffffff",
+                      "surface-variant": "#e0e3e5",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "surface-container-highest": "#e0e3e5",
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#dae2fd",
+                      "outline-variant": "#c6c6cd",
+                      "border-subtle": "#E2E8F0",
+                      "status-trial": "#8B5CF6",
+                      "on-secondary-fixed-variant": "#004395",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "inverse-surface": "#2d3133"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "input-gap": "16px",
+                      "container-margin": "32px",
+                      "section-gap": "40px",
+                      "gutter": "24px",
+                      "card-padding": "24px",
+                      "base": "4px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "mono-sm": ["JetBrains Mono"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "display-lg": ["Manrope"],
+                      "body-sm": ["Inter"],
+                      "headline-md": ["Manrope"],
+                      "headline-lg": ["Manrope"],
+                      "body-lg": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .animate-check {
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface overflow-hidden">
+<!-- Background Texture -->
+<div class="fixed inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#0058be 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
+<main class="relative z-10 flex items-center justify-center min-h-screen p-gutter">
+<!-- Confetti Simulation -->
+<canvas class="confetti-canvas" id="confetti"></canvas>
+<!-- Success Container -->
+<div class="max-w-[640px] w-full bg-surface-container-lowest rounded-xl shadow-xl border border-border-subtle p-12 text-center relative overflow-hidden">
+<!-- Decorative Accent -->
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary"></div>
+<!-- Header: Success Icon -->
+<div class="mb-8 flex justify-center">
+<div class="w-24 h-24 rounded-full bg-status-active/10 flex items-center justify-center relative">
+<div class="absolute inset-0 rounded-full border-2 border-status-active animate-ping opacity-20"></div>
+<span class="material-symbols-outlined text-status-active text-5xl" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+</div>
+</div>
+<!-- Confirmation Message -->
+<div class="space-y-3 mb-10">
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Report Successfully Submitted</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto">
+                    Your high-impact operational report has been encrypted and synced with the GVOS Control Plane.
+                </p>
+</div>
+<!-- Productivity Badge / Streak -->
+<div class="inline-flex items-center gap-3 px-4 py-2 bg-secondary/5 border border-secondary/10 rounded-lg mb-12">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-widest">7-Day Streak Achieved</span>
+<div class="h-4 w-[1px] bg-secondary/20"></div>
+<span class="font-mono-sm text-mono-sm text-secondary">+250 OPS XP</span>
+</div>
+<!-- Grid: What's Next Suggestions -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+<!-- Option 1: Next Task -->
+<button class="group p-5 bg-surface-container-low border border-transparent hover:border-secondary/20 hover:bg-white transition-all duration-200 rounded-lg">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">assignment_add</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase">Queue</p>
+<p class="font-body-md text-body-md font-semibold text-primary">Next Task</p>
+</button>
+<!-- Option 2: Open Chat -->
+<button class="group p-5 bg-surface-container-low border border-transparent hover:border-secondary/20 hover:bg-white transition-all duration-200 rounded-lg">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">forum</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase">Commms</p>
+<p class="font-body-md text-body-md font-semibold text-primary">Team Chat</p>
+</button>
+<!-- Option 3: Dashboard -->
+<button class="group p-5 bg-surface-container-low border border-transparent hover:border-secondary/20 hover:bg-white transition-all duration-200 rounded-lg">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase">Overview</p>
+<p class="font-body-md text-body-md font-semibold text-primary">Dashboard</p>
+</button>
+</div>
+<!-- Footer Action -->
+<div class="mt-12 pt-8 border-t border-border-subtle">
+<button class="font-label-md text-label-md text-outline hover:text-primary transition-colors flex items-center gap-2 mx-auto" onclick="window.history.back()">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                    Return to Operations
+                </button>
+</div>
+</div>
+</main>
+<!-- Success Feedback: Visual Atmosphere -->
+<div class="fixed bottom-gutter right-gutter bg-white/80 backdrop-blur-md border border-border-subtle p-4 rounded-lg shadow-lg flex items-center gap-4 animate-bounce">
+<div class="w-10 h-10 rounded-full bg-status-active flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-primary">Peak Performance</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Reporting efficiency +14%</p>
+</div>
+</div>
+<script>
+        // Simple Confetti Animation
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const colors = ['#0058be', '#2170e4', '#059669', '#10B981'];
+
+        class Particle {
+            constructor() {
+                this.x = canvas.width / 2;
+                this.y = canvas.height / 2;
+                this.size = Math.random() * 8 + 4;
+                this.speedX = (Math.random() - 0.5) * 15;
+                this.speedY = (Math.random() - 0.5) * 15 - 5;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.gravity = 0.2;
+                this.life = 100;
+            }
+            update() {
+                this.speedY += this.gravity;
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].life <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+
+        // Responsive resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body></html>

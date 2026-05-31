@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS | Talent Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface": "#f7f9fb",
+            "outline": "#76777d",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary": "#ffffff",
+            "status-completed": "#059669",
+            "surface-bright": "#f7f9fb",
+            "on-secondary-fixed": "#001a42",
+            "status-blocked": "#EF4444",
+            "secondary-container": "#2170e4",
+            "on-tertiary-container": "#98805d",
+            "on-surface-variant": "#45464d",
+            "tertiary-container": "#271901",
+            "tertiary-fixed": "#fcdeb5",
+            "surface-tint": "#565e74",
+            "surface-container-low": "#f2f4f6",
+            "status-active": "#10B981",
+            "on-primary-fixed": "#131b2e",
+            "surface-dim": "#d8dadc",
+            "status-suspended": "#64748B",
+            "on-primary-container": "#7c839b",
+            "on-tertiary-fixed-variant": "#574425",
+            "error-container": "#ffdad6",
+            "status-payment-due": "#F59E0B",
+            "secondary-fixed": "#d8e2ff",
+            "status-urgent": "#B91C1C",
+            "on-error": "#ffffff",
+            "on-background": "#191c1e",
+            "surface-container": "#eceef0",
+            "inverse-primary": "#bec6e0",
+            "on-surface": "#191c1e",
+            "sidebar-bg": "#0B0F19",
+            "tertiary-fixed-dim": "#dec29a",
+            "on-tertiary-fixed": "#271901",
+            "on-primary": "#ffffff",
+            "on-error-container": "#93000a",
+            "background": "#f7f9fb",
+            "primary-container": "#131b2e",
+            "primary": "#000000",
+            "on-secondary-container": "#fefcff",
+            "inverse-on-surface": "#eff1f3",
+            "secondary": "#0058be",
+            "tertiary": "#000000",
+            "surface-container-high": "#e6e8ea",
+            "primary-fixed-dim": "#bec6e0",
+            "on-tertiary": "#ffffff",
+            "surface-variant": "#e0e3e5",
+            "secondary-fixed-dim": "#adc6ff",
+            "surface-container-highest": "#e0e3e5",
+            "error": "#ba1a1a",
+            "primary-fixed": "#dae2fd",
+            "outline-variant": "#c6c6cd",
+            "border-subtle": "#E2E8F0",
+            "status-trial": "#8B5CF6",
+            "on-secondary-fixed-variant": "#004395",
+            "on-primary-fixed-variant": "#3f465c",
+            "inverse-surface": "#2d3133"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "input-gap": "16px",
+            "container-margin": "32px",
+            "section-gap": "40px",
+            "gutter": "24px",
+            "card-padding": "24px",
+            "base": "4px"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "mono-sm": ["JetBrains Mono"],
+            "headline-md": ["Manrope"],
+            "headline-lg": ["Manrope"],
+            "label-md": ["Inter"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #e2e8f0;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-secondary/20">
+<!-- Side Navigation (Immutable Labels from JSON) -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg flex flex-col py-6 shadow-xl z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1">terminal</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white leading-none">GVOS</h1>
+<p class="font-label-md text-label-md text-on-primary-container uppercase tracking-widest mt-1">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard Active for Welcome Screen -->
+<a class="flex items-center gap-3 px-6 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings_suggest</span>
+<span class="font-body-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-body-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-body-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">lan</span>
+<span class="font-body-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-6 space-y-1">
+<button class="w-full bg-secondary hover:bg-secondary-container text-white py-3 px-4 rounded-lg font-label-md transition-colors flex items-center justify-center gap-2 mb-6">
+<span class="material-symbols-outlined text-[18px]">add</span>
+        New Instance
+      </button>
+<a class="flex items-center gap-3 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md">Support</span>
+</a>
+<a class="flex items-center gap-3 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-body-sm focus:ring-2 focus:ring-secondary/20" placeholder="Search operations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="material-symbols-outlined hover:bg-surface-container-high p-2 rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined hover:bg-surface-container-high p-2 rounded-full transition-colors">history</button>
+</div>
+<button class="bg-primary text-white px-6 py-2 rounded-lg font-label-md hover:opacity-90 transition-opacity">Deploy</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a diverse young person with a friendly expression, captured against a neutral studio background. The lighting is soft and corporate, perfectly matching the clean and sophisticated light-mode interface of a high-end fintech or security software platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf6fieiD9nsciR2rCMtwaugc7ADJc2WCXKQeMgqTchIfwi4vb2-8-TzJGZScc80wqot4MQQmOHnlZAnKYbPGWMvw_26x2cTugPMp3AqGvg2c7Ht5wXt5fVaJJzsVPF79NUuQUjM38c5QohtuWUkaReg9zVnEy-yjVSRdEMxm2rU3XrIMasr95N7FtFDK88fGIWk25amgRzgraRwTYX6VAqEJGE-EQzpd70NqpeB7aWuLVY4zJceMOex9QXwPcHKfjWVYsDU6Bmpg"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[280px] pt-16 min-h-screen bg-surface">
+<div class="max-w-[1200px] mx-auto p-container-margin">
+<!-- Welcome Hero Section -->
+<section class="mb-section-gap relative rounded-xl overflow-hidden bg-white shadow-sm border border-border-subtle p-10 flex flex-col md:flex-row items-center gap-10">
+<div class="flex-1 space-y-6">
+<div class="space-y-2">
+<span class="bg-secondary/10 text-secondary px-3 py-1 rounded-full font-label-md uppercase tracking-wider">Welcome to GVOS</span>
+<h2 class="font-headline-lg text-headline-lg text-primary">Glad to have you with us, Alex.</h2>
+<p class="text-on-surface-variant text-body-lg max-w-xl leading-relaxed">
+              You've officially joined the GVOS Virtual Assistant Network. Our ecosystem is built on trust, efficiency, and elite operational standards. Let's get your workspace ready.
+            </p>
+</div>
+<div class="flex gap-4">
+<button class="bg-secondary text-white px-8 py-4 rounded-xl font-headline-md text-[18px] hover:shadow-lg hover:translate-y-[-2px] transition-all flex items-center gap-3" onclick="startTour()">
+<span class="material-symbols-outlined">explore</span>
+              Take a Tour
+            </button>
+<button class="bg-white border border-border-subtle text-primary px-8 py-4 rounded-xl font-headline-md text-[18px] hover:bg-surface-container transition-all">
+              Skip for now
+            </button>
+</div>
+</div>
+<div class="hidden lg:block w-72 h-72">
+<img alt="Technology Workspace" class="rounded-2xl shadow-2xl rotate-3" data-alt="A high-tech, minimalist home office setup with a high-end monitor displaying abstract blue data visualizations. The desk is organized with a premium laptop and a single architectural lamp. The lighting is warm yet professional, conveying a sense of calm and operational efficiency in a modern SaaS environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb39zmj2IKhRFBTqUr1bJhxDtC6Xaw0JilUMaUnL1vwA_S5JlSmyZPuvTcvtMeeD1JxwgTsXlo9BCCoUefLUjQjsYQ2n408waqg_d6HVTgiAh--rCLj-8IL4fmx7Bly0Mpgiz63tsq4RJHqy_iuRfvqgjX57Az84JPlx6GgAtswOAom-WR5lxvuVWLrmsuSIlDgMZ2SKwludhjiYhngwL4Cxfa0jmWV7sOkavd-gEKY3c_QIdLlhWkxctfq8HvqxdMFlk_KkblEg"/>
+</div>
+</section>
+<!-- Grid Layout for Onboarding Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Checklist: Getting Started (Bento Style) -->
+<div class="lg:col-span-7 space-y-6">
+<div class="bg-white rounded-xl shadow-sm border border-border-subtle p-card-padding">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-primary">Getting Started</h3>
+<span class="text-outline font-label-md">2 of 4 complete</span>
+</div>
+<div class="space-y-4">
+<!-- Checklist Item 1: Complete -->
+<div class="flex items-center gap-4 p-4 rounded-lg bg-status-active/5 border border-status-active/20 group">
+<div class="w-10 h-10 rounded-full bg-status-active flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">check_circle</span>
+</div>
+<div class="flex-1">
+<h4 class="font-body-md font-semibold text-primary">Complete Profile</h4>
+<p class="text-body-sm text-on-surface-variant">Your professional details are verified.</p>
+</div>
+<span class="font-label-md text-status-active">Verified</span>
+</div>
+<!-- Checklist Item 2: Complete -->
+<div class="flex items-center gap-4 p-4 rounded-lg bg-status-active/5 border border-status-active/20 group">
+<div class="w-10 h-10 rounded-full bg-status-active flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">check_circle</span>
+</div>
+<div class="flex-1">
+<h4 class="font-body-md font-semibold text-primary">Link Bank Account</h4>
+<p class="text-body-sm text-on-surface-variant">Connected via SecureStripe.</p>
+</div>
+<span class="font-label-md text-status-active">Linked</span>
+</div>
+<!-- Checklist Item 3: Pending -->
+<div class="flex items-center gap-4 p-4 rounded-lg bg-surface border border-border-subtle hover:border-secondary transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline group-hover:bg-secondary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+<div class="flex-1">
+<h4 class="font-body-md font-semibold text-primary">Set Availability</h4>
+<p class="text-body-sm text-on-surface-variant">Define your core operating hours.</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary">arrow_forward</span>
+</div>
+<!-- Checklist Item 4: Pending -->
+<div class="flex items-center gap-4 p-4 rounded-lg bg-surface border border-border-subtle hover:border-secondary transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline group-hover:bg-secondary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">quiz</span>
+</div>
+<div class="flex-1">
+<h4 class="font-body-md font-semibold text-primary">Pass Security Quiz</h4>
+<p class="text-body-sm text-on-surface-variant">Understand our data protection protocols.</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Components -->
+<div class="lg:col-span-5 space-y-6">
+<!-- Assigned Manager -->
+<div class="bg-white rounded-xl shadow-sm border border-border-subtle p-card-padding">
+<h3 class="font-label-md text-outline uppercase tracking-wider mb-6">Your Operations Manager</h3>
+<div class="flex items-center gap-4 mb-6">
+<div class="relative">
+<img alt="Manager" class="w-16 h-16 rounded-full object-cover border-2 border-surface-container" data-alt="A portrait of a confident female executive in a professional navy blue suit, standing in a brightly lit modern office environment. The image uses a soft focus on the background to emphasize the person, embodying a calm, supportive, and leadership-oriented atmosphere consistent with a premium corporate design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBF6kPF1huNMcRAMFQun3DagPRrc-auQWnj7k0kQtU105h7YN9602ZUlMkcHRge2hovLMtmxQIxacXPHyimQ2AFe_mkPNgJP20bi66LXWEg-dz5Rn4tNZq_uKQY81i9sHOsA_2VJJqfC0zeTP-Nn3lYPoHfYemYvxXAIsP_qxOb_F5awS5T39RzyPF9NYKbBT9wO4xw01JhkmBVSyhZliSysnrsVpm5rFHvaLq4IRzPWCMJKOvegXLOHVFGkhceVUgUU2PwWlkngA"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-status-active border-2 border-white rounded-full"></div>
+</div>
+<div>
+<h4 class="font-headline-md text-[20px] text-primary">Sarah Chen</h4>
+<p class="text-body-sm text-on-surface-variant">Senior Ops Lead</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-3 bg-secondary/5 text-secondary rounded-lg font-label-md hover:bg-secondary/10 transition-colors">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+                Message
+              </button>
+<button class="flex items-center justify-center gap-2 py-3 bg-surface-container text-primary rounded-lg font-label-md hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                Book Call
+              </button>
+</div>
+</div>
+<!-- Training Materials (Links) -->
+<div class="bg-white rounded-xl shadow-sm border border-border-subtle p-card-padding">
+<h3 class="font-label-md text-outline uppercase tracking-wider mb-6">Training Resources</h3>
+<div class="space-y-3">
+<a class="flex items-center gap-4 p-3 rounded-lg hover:bg-surface-container transition-colors group" href="#">
+<div class="p-2 bg-surface-container rounded-lg group-hover:bg-white text-secondary">
+<span class="material-symbols-outlined">menu_book</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md font-medium text-primary">Assistant Playbook</p>
+<p class="text-body-sm text-on-surface-variant">Core procedures &amp; best practices.</p>
+</div>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg hover:bg-surface-container transition-colors group border-t border-border-subtle pt-3" href="#">
+<div class="p-2 bg-surface-container rounded-lg group-hover:bg-white text-secondary">
+<span class="material-symbols-outlined">video_library</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md font-medium text-primary">Platform Tutorials</p>
+<p class="text-body-sm text-on-surface-variant">Mastering the GVOS Control Plane.</p>
+</div>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg hover:bg-surface-container transition-colors group border-t border-border-subtle pt-3" href="#">
+<div class="p-2 bg-surface-container rounded-lg group-hover:bg-white text-secondary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md font-medium text-primary">Security Guidelines</p>
+<p class="text-body-sm text-on-surface-variant">Essential data handling rules.</p>
+</div>
+</a>
+</div>
+<button class="w-full mt-6 py-3 text-secondary font-label-md hover:underline decoration-2 underline-offset-4">
+              View All Resources
+            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Interactive Tour Modal (Hidden by default) -->
+<div class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[60] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="tour-overlay">
+<div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 transform scale-95 transition-transform duration-300" id="tour-modal">
+<div class="flex flex-col items-center text-center space-y-6">
+<div class="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[40px]" style="font-variation-settings: 'FILL' 1">rocket_launch</span>
+</div>
+<div class="space-y-2">
+<h2 class="font-headline-lg text-headline-lg text-primary">Initializing System Tour</h2>
+<p class="text-on-surface-variant text-body-md">We'll guide you through your new dashboard, operations management, and secure vault in just 2 minutes.</p>
+</div>
+<div class="flex flex-col w-full gap-3">
+<button class="w-full bg-secondary text-white py-4 rounded-xl font-headline-md text-[18px]" onclick="closeTour()">Begin Tour</button>
+<button class="w-full py-4 text-on-surface-variant font-label-md" onclick="closeTour()">I'll explore on my own</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+    function startTour() {
+      const overlay = document.getElementById('tour-overlay');
+      const modal = document.getElementById('tour-modal');
+      overlay.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.remove('scale-95');
+      modal.classList.add('scale-100');
+    }
+
+    function closeTour() {
+      const overlay = document.getElementById('tour-overlay');
+      const modal = document.getElementById('tour-modal');
+      overlay.classList.add('opacity-0', 'pointer-events-none');
+      modal.classList.remove('scale-100');
+      modal.classList.add('scale-95');
+    }
+
+    // Add some hover interactivity to checklist items
+    document.querySelectorAll('.group').forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        // Optional interaction logic
+      });
+    });
+  </script>
+</body></html>

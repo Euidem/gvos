@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS | Company Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-active {
+            background: rgba(0, 88, 190, 0.1);
+            backdrop-filter: blur(4px);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-container": "#98805d",
+                      "status-payment-due": "#F59E0B",
+                      "inverse-primary": "#bec6e0",
+                      "inverse-on-surface": "#eff1f3",
+                      "secondary": "#0058be",
+                      "status-suspended": "#64748B",
+                      "tertiary-container": "#271901",
+                      "surface-variant": "#e0e3e5",
+                      "surface": "#f7f9fb",
+                      "on-error": "#ffffff",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "on-tertiary": "#ffffff",
+                      "outline": "#76777d",
+                      "status-urgent": "#B91C1C",
+                      "secondary-container": "#2170e4",
+                      "on-surface": "#191c1e",
+                      "secondary-fixed": "#d8e2ff",
+                      "status-trial": "#8B5CF6",
+                      "on-secondary-container": "#fefcff",
+                      "surface-bright": "#f7f9fb",
+                      "surface-container": "#eceef0",
+                      "on-background": "#191c1e",
+                      "inverse-surface": "#2d3133",
+                      "primary": "#000000",
+                      "on-secondary-fixed-variant": "#004395",
+                      "error": "#ba1a1a",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "status-completed": "#059669",
+                      "primary-fixed": "#dae2fd",
+                      "on-secondary": "#ffffff",
+                      "outline-variant": "#c6c6cd",
+                      "background": "#f7f9fb",
+                      "sidebar-bg": "#0B0F19",
+                      "on-primary-container": "#7c839b",
+                      "primary-container": "#131b2e",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "border-subtle": "#E2E8F0",
+                      "on-error-container": "#93000a",
+                      "tertiary": "#000000",
+                      "tertiary-fixed": "#fcdeb5",
+                      "surface-container-low": "#f2f4f6",
+                      "surface-dim": "#d8dadc",
+                      "on-secondary-fixed": "#001a42",
+                      "surface-tint": "#565e74",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-primary": "#ffffff",
+                      "status-blocked": "#EF4444",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-high": "#e6e8ea",
+                      "on-tertiary-fixed": "#271901",
+                      "on-primary-fixed": "#131b2e",
+                      "on-surface-variant": "#45464d",
+                      "status-active": "#10B981",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-padding": "24px",
+                      "section-gap": "40px",
+                      "gutter": "24px",
+                      "base": "4px",
+                      "input-gap": "16px",
+                      "container-margin": "32px"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "headline-lg": ["Manrope"],
+                      "body-md": ["Inter"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "headline-md": ["Manrope"],
+                      "display-lg": ["Manrope"],
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "mono-sm": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg shadow-xl flex flex-col py-6 z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white leading-none">GVOS</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-primary-container mt-1">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">settings_suggest</span>
+<span class="font-label-md text-label-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-6 py-4 space-y-4">
+<button class="w-full bg-secondary text-white py-3 px-4 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-secondary-container transition-all shadow-lg shadow-secondary/20">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Instance
+            </button>
+<div class="pt-4 border-t border-white/10 space-y-2">
+<a class="flex items-center gap-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-2 font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all" placeholder="Search companies, instances, or keys..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 border-r border-outline-variant pr-6">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">history</span>
+</button>
+</div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface leading-none">Admin Access</p>
+<p class="font-body-sm text-[10px] text-on-surface-variant mt-1">Super Admin Role</p>
+</div>
+<img alt="User Profile" class="w-10 h-10 rounded-full border-2 border-surface-container-highest" data-alt="A high-quality professional portrait of a senior tech executive in a brightly lit, modern office environment. The lighting is soft and flattering, creating a premium light-mode aesthetic with clean lines and a professional demeanor. The subject is wearing a smart-casual blazer, projecting authority and technical expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5c0mEXgm0ro-Of_GGtgKtz8Lg6DHQQeQz3IHyZXYrD_LiwDHtoLUHacDR6C4IlQvHugzv-ms_9bQ5PZddKeHmc0jFDT9PmHY8cOYIprSPzdaNlbdN63xzOkj_SMNPJFUGN5gKSJbtbjPjOrfNEmgqd6tpFKAvSHqha0M2O1mmBRuhkmCKyToorkUJG_ZoLJAPrrQp0h_rMtUXKNGu4emfJbYwreCiH7wRzn6Fv6m8m-FJ4KFQO_h-IS8zrGTQD_ny-EMz6cnCjA"/>
+</div>
+<button class="bg-primary text-white px-5 py-2 rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-all active:opacity-80">
+                Deploy
+            </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] pt-16 min-h-screen">
+<div class="max-w-[1440px] mx-auto p-section-gap">
+<!-- Page Header Section -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-md text-label-md text-secondary bg-secondary/10 px-2 py-0.5 rounded">Admin Console</span>
+<span class="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Companies</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Company Management</h2>
+<p class="text-on-surface-variant font-body-md mt-1">Manage global enterprise entities, workspace utilization, and financial performance.</p>
+</div>
+<button class="bg-secondary text-white px-6 py-3 rounded-lg font-label-md text-label-md flex items-center gap-2 hover:shadow-lg hover:shadow-secondary/10 transition-all">
+<span class="material-symbols-outlined">domain_add</span>
+                    Add Company
+                </button>
+</div>
+<!-- Dashboard Overview Stats (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-section-gap">
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-secondary/5 rounded-lg text-secondary">
+<span class="material-symbols-outlined">corporate_fare</span>
+</div>
+<span class="text-status-active font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +3%
+                        </span>
+</div>
+<p class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Total Entities</p>
+<h3 class="text-headline-md font-headline-md mt-1">1,248</h3>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-status-trial/5 rounded-lg text-status-trial">
+<span class="material-symbols-outlined">group</span>
+</div>
+<span class="text-on-surface-variant font-label-md text-label-md">84% Capacity</span>
+</div>
+<p class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Total Active Seats</p>
+<h3 class="text-headline-md font-headline-md mt-1">12,842</h3>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-status-active/5 rounded-lg text-status-active">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="text-status-active font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> 12.5%
+                        </span>
+</div>
+<p class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Total MRR</p>
+<h3 class="text-headline-md font-headline-md mt-1">$1.42M</h3>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-status-urgent/5 rounded-lg text-status-urgent">
+<span class="material-symbols-outlined">priority_high</span>
+</div>
+<span class="text-status-urgent font-label-md text-label-md">Action Required</span>
+</div>
+<p class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Upcoming Renewals</p>
+<h3 class="text-headline-md font-headline-md mt-1">24</h3>
+</div>
+</div>
+<!-- Filters & Actions -->
+<div class="bg-white rounded-t-xl border-x border-t border-border-subtle p-gutter flex flex-wrap gap-4 items-center justify-between">
+<div class="flex gap-4 items-center">
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border border-border-subtle rounded-lg px-4 pr-10 py-2 font-label-md text-label-md focus:outline-none focus:ring-2 focus:ring-secondary/10 transition-all cursor-pointer">
+<option>All Plan Tiers</option>
+<option>Enterprise</option>
+<option>Business Pro</option>
+<option>Growth</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border border-border-subtle rounded-lg px-4 pr-10 py-2 font-label-md text-label-md focus:outline-none focus:ring-2 focus:ring-secondary/10 transition-all cursor-pointer">
+<option>All Regions</option>
+<option>North America</option>
+<option>Europe (EMEA)</option>
+<option>Asia Pacific</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 border border-border-subtle rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Advanced Filters
+                    </button>
+<button class="px-4 py-2 border border-border-subtle rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Export PDF
+                    </button>
+</div>
+</div>
+<!-- Companies Table -->
+<div class="bg-white border-x border-b border-border-subtle rounded-b-xl overflow-hidden shadow-sm">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low/50 border-y border-border-subtle">
+<th class="px-gutter py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Company</th>
+<th class="px-gutter py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Status &amp; Tier</th>
+<th class="px-gutter py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Seat Usage</th>
+<th class="px-gutter py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Workspaces</th>
+<th class="px-gutter py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Total MRR</th>
+<th class="px-gutter py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Renewal</th>
+<th class="px-gutter py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center font-bold text-white overflow-hidden shadow-inner">
+<img alt="Nebula Corp" class="w-full h-full object-cover" data-alt="A sleek, minimalist corporate logo for a technology firm named Nebula Corp. The image features modern geometric shapes in vibrant blue and deep charcoal gray against a clean, bright white background. The visual style is contemporary and professional, suitable for a high-end SaaS environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwySmqbE-i7TtmqqMaV_TQ1-R60OkFiLKQKNd34tPmf-5bPLqQZf5YVBB_e63Jbp2l0TCBELvU4_jkRUpsA2Yh4Z4pHD-Yt61fa0ygA0I7GordrChR_iGe1OSgZATFKfGAyqEgQw-ReOWvweGMk2ve2iOvJ4K_K_COxBkf0aPG_vL3D0do7nu-Odu1jsziTFJ51Q1VN4etkQcbfz5jH-2BYNuKnwCYtITA-6W8nQgx06dhLQIWsMxLea-h0SQXJlFrYM3cRgtEjA"/>
+</div>
+<div>
+<p class="font-body-md font-semibold text-primary">Nebula Dynamics</p>
+<p class="text-label-md text-on-surface-variant">Deep Tech • San Francisco</p>
+</div>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1.5 text-status-active font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-status-active"></span> Active
+                                    </span>
+<span class="bg-secondary/10 text-secondary px-2 py-0.5 rounded-full text-[10px] font-bold uppercase w-fit">Enterprise</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between items-center mb-1">
+<span class="font-mono-sm text-mono-sm text-on-surface">42/50</span>
+<span class="text-label-md text-on-surface-variant">84%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 84%"></div>
+</div>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex items-center gap-1">
+<span class="font-mono-sm text-mono-sm">12</span>
+<span class="material-symbols-outlined text-outline text-[16px]">hub</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<p class="font-mono-sm text-mono-sm text-primary font-bold">$12,400.00</p>
+<p class="text-[10px] text-on-surface-variant">Annual Billing</p>
+</td>
+<td class="px-gutter py-5">
+<div class="flex flex-col">
+<p class="font-label-md text-label-md text-on-surface">Oct 24, 2024</p>
+<p class="text-[10px] text-status-active font-medium">In 182 days</p>
+</div>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center font-bold text-on-surface overflow-hidden shadow-inner">
+<img alt="Ironclad Fin" class="w-full h-full object-cover" data-alt="A sophisticated emblem for a financial security company called Ironclad Fin. The design uses heavy, solid typography and a shield motif in metallic silver and dark slate blue. The overall mood is one of institutional trust and unshakeable stability, rendered with a modern, high-contrast flat design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7jyxt20nORCDKtOhicZueW1tKpYnfY9mPDA_DYfWBwuaTDw8u37KPqV3WAjtdEOAU8_wcjohR-Tlsei8Nvv8xKBWTM54l964Ddvu8sQQe11mLU3Is9PZUuDq9gUPlqziiEnpe0ZikSDWLC_7Z2oB3TbLjKQ69xdt3mbFX6VrS1M0bA6-hInVQ7_5ZJJqOf0pL01npni2zrZHFN9zAxdMq0bu1shXRTVaLmlt8eoiJjUgRaMrN9qvE0dcriYkHvyKfCLSsEq_60Q"/>
+</div>
+<div>
+<p class="font-body-md font-semibold text-primary">Ironclad Financial</p>
+<p class="text-label-md text-on-surface-variant">Fintech • London</p>
+</div>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1.5 text-status-payment-due font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-status-payment-due"></span> Payment Due
+                                    </span>
+<span class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded-full text-[10px] font-bold uppercase w-fit">Business Pro</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between items-center mb-1">
+<span class="font-mono-sm text-mono-sm text-on-surface">198/200</span>
+<span class="text-label-md text-status-urgent">99%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-status-urgent h-full" style="width: 99%"></div>
+</div>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex items-center gap-1">
+<span class="font-mono-sm text-mono-sm">4</span>
+<span class="material-symbols-outlined text-outline text-[16px]">hub</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<p class="font-mono-sm text-mono-sm text-primary font-bold">$42,150.00</p>
+<p class="text-[10px] text-on-surface-variant">Quarterly Billing</p>
+</td>
+<td class="px-gutter py-5">
+<div class="flex flex-col">
+<p class="font-label-md text-label-md text-on-surface">May 12, 2024</p>
+<p class="text-[10px] text-status-urgent font-medium">In 8 days</p>
+</div>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container flex items-center justify-center font-bold text-white overflow-hidden shadow-inner">
+<img alt="BioPulse" class="w-full h-full object-cover" data-alt="A modern, vibrant logo for BioPulse, a life sciences corporation. The design features an abstract pulse line integrated with a DNA double helix, using a fresh palette of emerald green and crisp white. The style is clean, medical-grade, and optimistic, captured in a bright studio environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtUWCrDK96Zxe1IDPMm56Fsu70fALl-JLPqHqYgHJc5OwVDyf-fGHbybIGc2-ejUeZjX_U0t8V2H8asG31HG3aA49yx2tCAplne2iaigj8DgxkfKDqBiHIs_D7W2e5ULliBdfzCTuisvK06yyw4S1R8THrIZeCb0Tv9Hk0ZDtiUnzR1N5n0A0rvlSxC1cGXul3XONzj60hW4K91g9flGVtRKIbQWSRsF1V65-tzb1Luv0zCEPFIxaWr7H-lrDHZqi48H4A1uCM-Q"/>
+</div>
+<div>
+<p class="font-body-md font-semibold text-primary">BioPulse Labs</p>
+<p class="text-label-md text-on-surface-variant">Life Sciences • Boston</p>
+</div>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1.5 text-status-active font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-status-active"></span> Active
+                                    </span>
+<span class="bg-secondary/10 text-secondary px-2 py-0.5 rounded-full text-[10px] font-bold uppercase w-fit">Enterprise</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between items-center mb-1">
+<span class="font-mono-sm text-mono-sm text-on-surface">15/50</span>
+<span class="text-label-md text-on-surface-variant">30%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 30%"></div>
+</div>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex items-center gap-1">
+<span class="font-mono-sm text-mono-sm">2</span>
+<span class="material-symbols-outlined text-outline text-[16px]">hub</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<p class="font-mono-sm text-mono-sm text-primary font-bold">$8,900.00</p>
+<p class="text-[10px] text-on-surface-variant">Monthly Billing</p>
+</td>
+<td class="px-gutter py-5">
+<div class="flex flex-col">
+<p class="font-label-md text-label-md text-on-surface">Dec 01, 2024</p>
+<p class="text-[10px] text-on-surface-variant font-medium">In 218 days</p>
+</div>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-gutter py-5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center font-bold text-on-surface overflow-hidden shadow-inner">
+<img alt="Vortex Cloud" class="w-full h-full object-cover" data-alt="A dynamic, abstract logo for Vortex Cloud. The visual consists of swirling, translucent gradients in purple and teal, suggesting high-speed data flow and connectivity. The image is set against a dark background, creating a high-tech, command-center aesthetic typical of cutting-edge infrastructure providers." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsz4zrNxEozoSx_4p8SPP0mRsY5pSGgvraXAiHetzEk2WzERnK1GSvkboYZA-67YaI1dkvx_v-xu8UuvmLYJNPHurergU2LMukxN2QrDOctk9yfyw8FbnDVI8zCX9cdovO_zQvySdt6ka_MyrvpYuPBMcXDHOzQtfpg72hqRMg72qy5bouGZKbvRWKoOpy8MNBLIxskKD3sSBkpL3lszgI9SY0ilBQOzcFg6NbtnnW3spOx46m-iapV6dqWONaZM-G-gmIP5U9bA"/>
+</div>
+<div>
+<p class="font-body-md font-semibold text-primary">Vortex Cloud Services</p>
+<p class="text-label-md text-on-surface-variant">Infrastructure • Singapore</p>
+</div>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1.5 text-status-suspended font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-status-suspended"></span> Suspended
+                                    </span>
+<span class="bg-surface-container-highest text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-bold uppercase w-fit">Growth</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between items-center mb-1">
+<span class="font-mono-sm text-mono-sm text-on-surface-variant">0/15</span>
+<span class="text-label-md text-on-surface-variant">0%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-outline-variant h-full" style="width: 0%"></div>
+</div>
+</div>
+</td>
+<td class="px-gutter py-5">
+<div class="flex items-center gap-1">
+<span class="font-mono-sm text-mono-sm text-on-surface-variant">0</span>
+<span class="material-symbols-outlined text-outline-variant text-[16px]">hub</span>
+</div>
+</td>
+<td class="px-gutter py-5 opacity-40">
+<p class="font-mono-sm text-mono-sm text-primary font-bold">$0.00</p>
+<p class="text-[10px] text-on-surface-variant">Inactive</p>
+</td>
+<td class="px-gutter py-5">
+<div class="flex flex-col opacity-40">
+<p class="font-label-md text-label-md text-on-surface">Jan 15, 2024</p>
+<p class="text-[10px] text-status-suspended font-medium">Expired</p>
+</div>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="mt-6 flex items-center justify-between">
+<p class="text-body-sm text-on-surface-variant">Showing 1 to 4 of 1,248 results</p>
+<div class="flex gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-container-low transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-secondary text-white font-label-md text-label-md">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-container-low transition-colors font-label-md text-label-md">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-container-low transition-colors font-label-md text-label-md">3</button>
+<span class="w-10 h-10 flex items-center justify-center text-outline">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-container-low transition-colors font-label-md text-label-md">312</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Side Overlay for Quick View (Hidden by default) -->
+<div class="fixed inset-y-0 right-0 w-[400px] bg-white shadow-2xl border-l border-border-subtle transform translate-x-full transition-transform duration-300 ease-in-out z-[60]" id="sideOverlay">
+<div class="p-card-padding h-full flex flex-col">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline-md text-headline-md">Entity Details</h3>
+<button class="text-outline hover:text-primary transition-colors" onclick="toggleOverlay()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="space-y-6 flex-1 overflow-y-auto pr-2">
+<div class="text-center">
+<div class="w-24 h-24 mx-auto rounded-xl bg-primary-container mb-4 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[48px]">corporate_fare</span>
+</div>
+<h4 class="font-headline-md text-headline-md">Nebula Dynamics</h4>
+<span class="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-[12px] font-bold uppercase">Enterprise</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 bg-surface-container-low rounded-lg">
+<p class="text-label-md text-on-surface-variant mb-1">REGION</p>
+<p class="font-body-md font-semibold">NA-WEST-1</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<p class="text-label-md text-on-surface-variant mb-1">COMPLIANCE</p>
+<p class="font-body-md font-semibold">SOC2 Type II</p>
+</div>
+</div>
+<div class="space-y-4">
+<h5 class="font-label-md text-label-md uppercase tracking-wider text-outline">Primary Contact</h5>
+<div class="flex items-center gap-3 p-4 border border-border-subtle rounded-lg">
+<img alt="Contact" class="w-10 h-10 rounded-full" data-alt="A professional headshot of a technical account manager. The lighting is bright and even, highlighting a friendly and professional expression. The background is a clean, minimalist corporate setting with soft blues and whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0WIwrYXDSTbKxnJYN9ZIrL0LsNfe6C8wQSVxjhJuWvvCjh6sK40dsNAKmDvrwbzVPI3bVvmXvf_RPaGkHQDfqNpt3bLFjawvHAfsRcc48yxgSnvw7f0WpPmbk-z0H3cwCPUujrmqr-VEVfzqAKbs58eidBI4vzz222hec_-YfnnSGy5-HlFuzHI9Qh16aorgRXPkB7xl7K2B0dxu82MuFqcFaXcDYK40GiqAkmDrWNylec0zKSkseJvlz6alruyoVmPNEaWCq2A"/>
+<div>
+<p class="font-label-md text-label-md text-primary">Marcus Thorne</p>
+<p class="text-[10px] text-on-surface-variant">marcus.t@nebuladynamics.io</p>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<h5 class="font-label-md text-label-md uppercase tracking-wider text-outline">Active Keys</h5>
+<div class="font-mono-sm text-mono-sm p-3 bg-primary-container text-on-primary-container rounded-lg flex justify-between items-center group">
+<span>GVOS_LIVE_8829...X9</span>
+<span class="material-symbols-outlined text-[16px] cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">content_copy</span>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-border-subtle flex gap-3">
+<button class="flex-1 bg-primary text-white py-3 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all">Manage Instance</button>
+<button class="px-4 border border-status-urgent text-status-urgent rounded-lg hover:bg-status-urgent/5 transition-all">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+        function toggleOverlay() {
+            const overlay = document.getElementById('sideOverlay');
+            overlay.classList.toggle('translate-x-full');
+        }
+
+        // Simulating row click
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', (e) => {
+                if(!e.target.closest('button')) {
+                    toggleOverlay();
+                }
+            });
+            row.style.cursor = 'pointer';
+        });
+
+        // Search highlight interaction
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-secondary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-secondary/20');
+        });
+    </script>
+</body></html>

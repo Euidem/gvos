@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS | Global Billing Control Plane</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed": "#131b2e",
+                      "on-tertiary-container": "#98805d",
+                      "on-surface": "#191c1e",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-secondary-fixed-variant": "#004395",
+                      "surface-bright": "#f7f9fb",
+                      "on-error": "#ffffff",
+                      "border-subtle": "#E2E8F0",
+                      "outline-variant": "#c6c6cd",
+                      "tertiary": "#000000",
+                      "on-background": "#191c1e",
+                      "status-blocked": "#EF4444",
+                      "on-primary": "#ffffff",
+                      "secondary": "#0058be",
+                      "primary": "#000000",
+                      "surface": "#f7f9fb",
+                      "surface-container-lowest": "#ffffff",
+                      "error": "#ba1a1a",
+                      "inverse-surface": "#2d3133",
+                      "secondary-fixed": "#d8e2ff",
+                      "status-active": "#10B981",
+                      "sidebar-bg": "#0B0F19",
+                      "tertiary-fixed": "#fcdeb5",
+                      "surface-container": "#eceef0",
+                      "background": "#f7f9fb",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#bec6e0",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "status-trial": "#8B5CF6",
+                      "surface-container-high": "#e6e8ea",
+                      "outline": "#76777d",
+                      "on-surface-variant": "#45464d",
+                      "status-completed": "#059669",
+                      "surface-variant": "#e0e3e5",
+                      "inverse-on-surface": "#eff1f3",
+                      "status-urgent": "#B91C1C",
+                      "status-payment-due": "#F59E0B",
+                      "on-secondary-container": "#fefcff",
+                      "inverse-primary": "#bec6e0",
+                      "tertiary-container": "#271901",
+                      "on-tertiary-fixed": "#271901",
+                      "error-container": "#ffdad6",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#565e74",
+                      "surface-container-low": "#f2f4f6",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "on-secondary-fixed": "#001a42",
+                      "surface-dim": "#d8dadc",
+                      "on-primary-container": "#7c839b",
+                      "status-suspended": "#64748B",
+                      "primary-container": "#131b2e",
+                      "secondary-container": "#2170e4",
+                      "primary-fixed": "#dae2fd"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "section-gap": "40px",
+                      "container-margin": "32px",
+                      "input-gap": "16px",
+                      "card-padding": "24px",
+                      "base": "4px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Manrope"],
+                      "mono-sm": ["JetBrains Mono"],
+                      "headline-lg": ["Manrope"],
+                      "body-sm": ["Inter"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Manrope"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f7f9fb;
+            color: #191c1e;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .transaction-row:hover {
+            background-color: rgba(0, 88, 190, 0.02);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #E2E8F0;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- SideNavBar (Shared Component Identity) -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg flex flex-col py-6 shadow-xl z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white leading-none">GVOS</h1>
+<p class="font-label-md text-label-md text-on-surface-variant/60 uppercase tracking-widest mt-1">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-body-md text-body-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-body-md text-body-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-body-md text-body-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">lan</span>
+<span class="font-body-md text-body-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full bg-secondary hover:bg-secondary/90 text-white font-label-md text-label-md py-3 rounded-lg transition-all duration-200">
+                New Instance
+            </button>
+<div class="mt-6 pt-6 border-t border-white/10 space-y-2">
+<a class="flex items-center gap-3 text-on-surface-variant/60 hover:text-white transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">help</span> Support
+                </a>
+<a class="flex items-center gap-3 text-on-surface-variant/60 hover:text-white transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">logout</span> Sign Out
+                </a>
+</div>
+</div>
+</aside>
+<!-- TopNavBar (Shared Component Identity) -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+<div class="flex items-center gap-8">
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary">GVOS Control Plane</h2>
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-body-sm focus:ring-2 focus:ring-secondary/50" placeholder="Search transactions, regions, or clients..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<button class="bg-primary text-white px-6 py-2 rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-all active:opacity-80">
+                Deploy
+            </button>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="Professional studio headshot of a corporate executive with a clean, sharp appearance. The lighting is sophisticated and directional, creating a premium high-end aesthetic. The background is a soft, out-of-focus modern office environment with neutral tones and blue accents, maintaining the brand's visual consistency and institutional trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3d1D3N3nIgg8Vpu9_CYnAzHJFFn89gmykJCPY7f0_TlQ_ASRBn38SRBZV6sciwRCOQ5STJ36qf8aLSlzkHRWA4L945t1FYZF23KgU0kcN3M-UClLdtrvUYXIU8CTjuExFOtvJMMuIHM5Cry0iQ8Bej_CsTDb4IgdngwdblKraio4oLAWf30cS5sJ-D38ErXNRJabKxNKUqI8rAC74FPJ1IYyUKyWdYkYd5J11KYQwIzXLDFd6KepRxn3GAJxwqAbbC0LnVoCOuw"/>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[280px] mt-16 p-gutter min-h-screen">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<p class="font-label-md text-label-md text-secondary uppercase tracking-[0.2em] mb-2">Global Financials</p>
+<h3 class="font-headline-lg text-headline-lg text-primary">Billing Overview</h3>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 bg-white border border-border-subtle rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                    Fiscal Year 2024
+                </button>
+<button class="flex items-center gap-2 px-6 py-2.5 bg-secondary text-white rounded-lg font-label-md text-label-md hover:shadow-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">download_for_offline</span>
+                    Generate Global Revenue Report
+                </button>
+</div>
+</div>
+<!-- Metrics Grid (Bento Style) -->
+<div class="bento-grid mb-gutter">
+<!-- Total MRR -->
+<div class="col-span-12 lg:col-span-4 glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+<span class="flex items-center gap-1 text-status-active font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span> 12.4%
+                    </span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Total MRR</p>
+<h4 class="font-display-lg text-display-lg text-primary">$4,280,500</h4>
+<div class="mt-4 pt-4 border-t border-border-subtle flex justify-between">
+<span class="text-body-sm font-body-sm text-on-surface-variant/60">Target: $4.5M</span>
+<div class="w-32 bg-surface-container rounded-full h-1.5 mt-2">
+<div class="bg-secondary h-1.5 rounded-full" style="width: 85%"></div>
+</div>
+</div>
+</div>
+<!-- Pending Payments -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-status-payment-due/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-status-payment-due" style="font-variation-settings: 'FILL' 1;">schedule</span>
+</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Pending Payments</p>
+<h4 class="font-headline-lg text-headline-lg text-primary">$182,400</h4>
+<p class="mt-2 font-body-sm text-body-sm text-on-surface-variant/60">14 Invoices awaiting confirmation</p>
+</div>
+<!-- Outstanding Invoices -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-status-urgent/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-status-urgent" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+<span class="px-2 py-0.5 bg-status-urgent/10 text-status-urgent font-label-md text-label-md rounded">High Priority</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Outstanding Invoices</p>
+<h4 class="font-headline-lg text-headline-lg text-primary">$94,200</h4>
+<p class="mt-2 font-body-sm text-body-sm text-on-surface-variant/60">Overdue by 15+ days avg.</p>
+</div>
+</div>
+<!-- Secondary Row: Regional Revenue & Visual Chart -->
+<div class="bento-grid mb-gutter">
+<!-- Revenue by Region -->
+<div class="col-span-12 lg:col-span-5 glass-card p-card-padding rounded-xl">
+<h5 class="font-headline-md text-headline-md text-primary mb-6">Revenue by Region</h5>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center overflow-hidden border border-border-subtle">
+<img alt="US" class="w-full h-full object-cover" data-alt="A macro close-up of a high-quality textured US flag surface with professional studio lighting. The image maintains a clean, minimalist corporate aesthetic with deep blues and crisp whites. Soft ambient shadows emphasize the fabric's premium quality, aligning with the GVOS brand identity of institutional trust and authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ_fY9ltznEvPX0UxGmO_HWPFOYpjpqg-nSHVFE8TitbpPQv2bJGBXXwXFL8xTBIJbK1dkfTQLLRsKobR2MgOsMr9VxVV0iyAnnkp1RvvgvBpEtW5dEd4lD9uUzLD2xJAX9X21vZ_lPuzaeMDW-w0jmNGLgHUgkbYnnzxVSTI97uyR_7aeVN4nQ6_QaeZ23meZtwkydghgMjIFBFkTH6EDhhOQimsnCe70kuezjD7ig-TSZWgV7zzNvbC7x5vOep6AgmoLJe-Ayg"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between mb-1">
+<span class="font-body-md text-body-md text-primary">United States (US)</span>
+<span class="font-label-md text-label-md text-primary">$2,840,000</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bg-secondary h-2 rounded-full" style="width: 66%"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center overflow-hidden border border-border-subtle">
+<img alt="UK" class="w-full h-full object-cover" data-alt="A minimalist, stylized visual representing the United Kingdom in a professional corporate context. Clean graphic lines and a sophisticated color palette of royal blue and white. The lighting is bright and even, evoking a sense of clarity and institutional stability consistent with a high-end fintech dashboard aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGHmgpBMaUGdOSRqXzNDOgK9zMInT5yuelacCf1LyBDSidiwkM4SQcHh8G3-iss-a5IpUm8X0oBIlPrtv7GBTo-v2aEdlYqhOc8dONt0z_dho2nh4jUNjUVJT4AqalbhHx8Ac0xwBTx2BTPZ9_GXbIs64RM6TYaOYZ88cdOfIItWJU7S6uXxu840U6QNPsuPL6b_b4uqPUo0M6q0IHh2JYybh57oSGpySIanpTDfnSwAXJvi609HEngL00dKC6H1T1-dPOTHMfTA"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between mb-1">
+<span class="font-body-md text-body-md text-primary">United Kingdom (UK)</span>
+<span class="font-label-md text-label-md text-primary">£640,000</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bg-secondary h-2 rounded-full" style="width: 22%"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center overflow-hidden border border-border-subtle">
+<img alt="EU" class="w-full h-full object-cover" data-alt="An abstract, architectural representation of European unity using modern glass and steel elements. The color palette is dominated by deep blues and silver, reflecting a clean, corporate, and trustworthy environment. The lighting is soft and diffused, creating a calm and professional atmosphere suitable for global financial operations." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5Sbt1gAfHEmyu4EjcMdaKge7klq8xDs4jKCtNHPi8io81WQDzYS60PwrcVot11DtHh9V5my9UqaBmFibPF-Npl6jzzmUEg0OAjMvD289AhvMDud0N2f4tHwV8Y25KGeC4HKe3rjKJmxcnb_lAd_Ge4yWdXpB7s5tsCuA7nAAzGofbq6Nj5VS0e_Mq2SXX7uAshl0i4kBdSU6vRp3poBZF7NDAu2AsDtpQ_1a84k4v47e0RrS6JEhTGzteE12MsoXWP_RxUbuaYg"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between mb-1">
+<span class="font-body-md text-body-md text-primary">European Union (EU)</span>
+<span class="font-label-md text-label-md text-primary">€800,200</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bg-secondary h-2 rounded-full" style="width: 12%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Financial Projection Chart (Atmospheric) -->
+<div class="col-span-12 lg:col-span-7 glass-card p-card-padding rounded-xl flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h5 class="font-headline-md text-headline-md text-primary">Growth Trajectory</h5>
+<div class="flex gap-2">
+<span class="flex items-center gap-1.5 font-label-md text-label-md text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-secondary"></span> Actual
+                        </span>
+<span class="flex items-center gap-1.5 font-label-md text-label-md text-on-surface-variant/40">
+<span class="w-3 h-3 rounded-full bg-outline-variant"></span> Projection
+                        </span>
+</div>
+</div>
+<div class="flex-1 relative min-h-[240px] bg-gradient-to-b from-white/20 to-transparent flex items-end gap-1">
+<!-- Fake Chart Bars -->
+<div class="flex-1 bg-secondary/5 h-[30%] rounded-t hover:bg-secondary/20 transition-all"></div>
+<div class="flex-1 bg-secondary/5 h-[45%] rounded-t hover:bg-secondary/20 transition-all"></div>
+<div class="flex-1 bg-secondary/5 h-[40%] rounded-t hover:bg-secondary/20 transition-all"></div>
+<div class="flex-1 bg-secondary/5 h-[60%] rounded-t hover:bg-secondary/20 transition-all"></div>
+<div class="flex-1 bg-secondary/10 h-[55%] rounded-t hover:bg-secondary/20 transition-all"></div>
+<div class="flex-1 bg-secondary/20 h-[70%] rounded-t hover:bg-secondary/30 transition-all"></div>
+<div class="flex-1 bg-secondary/40 h-[75%] rounded-t hover:bg-secondary/50 transition-all"></div>
+<div class="flex-1 bg-secondary h-[85%] rounded-t"></div>
+<div class="flex-1 bg-outline-variant/20 h-[88%] border-t-2 border-dashed border-outline rounded-t opacity-50"></div>
+<div class="flex-1 bg-outline-variant/10 h-[92%] border-t-2 border-dashed border-outline rounded-t opacity-30"></div>
+</div>
+<div class="flex justify-between mt-4 font-label-md text-label-md text-on-surface-variant/60">
+<span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span><span>JUL</span><span class="text-secondary font-bold">AUG</span><span>SEP</span><span>OCT</span>
+</div>
+</div>
+</div>
+<!-- Transactions Table -->
+<div class="glass-card rounded-xl overflow-hidden mb-gutter">
+<div class="p-card-padding flex flex-col md:flex-row justify-between items-center gap-4 border-b border-border-subtle">
+<h5 class="font-headline-md text-headline-md text-primary">Recent Global Transactions</h5>
+<div class="flex gap-3 w-full md:w-auto">
+<select class="bg-surface border-border-subtle rounded-lg text-body-sm px-4 py-2 focus:ring-secondary/50">
+<option>All Currencies</option>
+<option>USD - Dollars</option>
+<option>GBP - Pounds</option>
+<option>EUR - Euros</option>
+</select>
+<select class="bg-surface border-border-subtle rounded-lg text-body-sm px-4 py-2 focus:ring-secondary/50">
+<option>All Statuses</option>
+<option>Completed</option>
+<option>Pending</option>
+<option>Failed</option>
+</select>
+<button class="p-2 border border-border-subtle rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Client / Entity</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Date</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Amount</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Currency</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<!-- Row 1 -->
+<tr class="transaction-row transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center font-mono-sm text-white">AX</div>
+<span class="font-body-md text-body-md text-primary font-semibold">Axiom Dynamics Inc.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-body-sm text-body-sm">Aug 24, 2024</td>
+<td class="px-6 py-4 font-label-md text-label-md text-primary">$12,450.00</td>
+<td class="px-6 py-4 text-on-surface-variant font-mono-sm text-mono-sm">USD</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-status-active/10 text-status-active font-label-md text-label-md rounded-full">Completed</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-secondary hover:underline font-label-md text-label-md">Details</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="transaction-row transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-secondary-container flex items-center justify-center font-mono-sm text-white">SK</div>
+<span class="font-body-md text-body-md text-primary font-semibold">SkyLink Global</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-body-sm text-body-sm">Aug 23, 2024</td>
+<td class="px-6 py-4 font-label-md text-label-md text-primary">£8,200.00</td>
+<td class="px-6 py-4 text-on-surface-variant font-mono-sm text-mono-sm">GBP</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-status-payment-due/10 text-status-payment-due font-label-md text-label-md rounded-full">Pending</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-secondary hover:underline font-label-md text-label-md">Details</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="transaction-row transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-inverse-surface flex items-center justify-center font-mono-sm text-white">VN</div>
+<span class="font-body-md text-body-md text-primary font-semibold">Vanguard Networks</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-body-sm text-body-sm">Aug 22, 2024</td>
+<td class="px-6 py-4 font-label-md text-label-md text-primary">€4,500.00</td>
+<td class="px-6 py-4 text-on-surface-variant font-mono-sm text-mono-sm">EUR</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-status-active/10 text-status-active font-label-md text-label-md rounded-full">Completed</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-secondary hover:underline font-label-md text-label-md">Details</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="transaction-row transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-status-blocked/20 text-status-blocked flex items-center justify-center font-mono-sm">NL</div>
+<span class="font-body-md text-body-md text-primary font-semibold">Nova Labs Ltd.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-body-sm text-body-sm">Aug 20, 2024</td>
+<td class="px-6 py-4 font-label-md text-label-md text-primary">$34,000.00</td>
+<td class="px-6 py-4 text-on-surface-variant font-mono-sm text-mono-sm">USD</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-status-urgent/10 text-status-urgent font-label-md text-label-md rounded-full">Failed</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-secondary hover:underline font-label-md text-label-md">Retry</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-low flex justify-between items-center">
+<span class="text-body-sm font-body-sm text-on-surface-variant">Showing 4 of 1,240 transactions</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 border border-border-subtle rounded hover:bg-white transition-colors"><span class="material-symbols-outlined text-[18px] align-middle">chevron_left</span></button>
+<button class="px-3 py-1 border border-border-subtle rounded hover:bg-white transition-colors"><span class="material-symbols-outlined text-[18px] align-middle">chevron_right</span></button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating UI Decoration (Atmospheric Micro-interaction) -->
+<div class="fixed pointer-events-none w-64 h-64 bg-secondary/5 rounded-full blur-[100px] -z-10 transition-transform duration-75" id="glow-cursor"></div>
+<script>
+        // Micro-interaction for the atmospheric glow
+        document.addEventListener('mousemove', (e) => {
+            const glow = document.getElementById('glow-cursor');
+            glow.style.transform = `translate(${e.clientX - 128}px, ${e.clientY - 128}px)`;
+        });
+
+        // Simple animation for the "New Instance" button
+        const fab = document.querySelector('button.bg-secondary');
+        fab.addEventListener('mouseenter', () => {
+            fab.style.transform = 'translateY(-2px)';
+        });
+        fab.addEventListener('mouseleave', () => {
+            fab.style.transform = 'translateY(0)';
+        });
+    </script>
+</body></html>

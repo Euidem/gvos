@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Workspace - Task Board</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Design System Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#271901",
+                    "secondary-container": "#2170e4",
+                    "on-surface": "#191c1e",
+                    "on-secondary-fixed": "#001a42",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-background": "#191c1e",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#271901",
+                    "surface-tint": "#565e74",
+                    "status-payment-due": "#F59E0B",
+                    "status-blocked": "#EF4444",
+                    "on-primary-container": "#7c839b",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e6e8ea",
+                    "on-primary-fixed": "#131b2e",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#98805d",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-secondary-container": "#fefcff",
+                    "on-surface-variant": "#45464d",
+                    "surface-container-low": "#f2f4f6",
+                    "inverse-on-surface": "#eff1f3",
+                    "status-active": "#10B981",
+                    "inverse-surface": "#2d3133",
+                    "status-completed": "#059669",
+                    "secondary-fixed": "#d8e2ff",
+                    "secondary": "#0058be",
+                    "primary-container": "#131b2e",
+                    "outline": "#76777d",
+                    "tertiary-fixed": "#fcdeb5",
+                    "surface": "#f7f9fb",
+                    "on-error": "#ffffff",
+                    "status-trial": "#8B5CF6",
+                    "status-urgent": "#B91C1C",
+                    "tertiary": "#000000",
+                    "inverse-primary": "#bec6e0",
+                    "surface-variant": "#e0e3e5",
+                    "background": "#f7f9fb",
+                    "surface-dim": "#d8dadc",
+                    "primary-fixed-dim": "#bec6e0",
+                    "surface-bright": "#f7f9fb",
+                    "sidebar-bg": "#0B0F19",
+                    "primary": "#000000",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e0e3e5",
+                    "primary-fixed": "#dae2fd",
+                    "surface-container": "#eceef0",
+                    "on-secondary-fixed-variant": "#004395",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#c6c6cd",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "status-suspended": "#64748B",
+                    "border-subtle": "#E2E8F0",
+                    "secondary-fixed-dim": "#adc6ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "40px",
+                    "base": "4px",
+                    "card-padding": "24px",
+                    "gutter": "24px",
+                    "container-margin": "32px",
+                    "input-gap": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Manrope"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e0e3e5; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c6c6cd; }
+        .sidebar-active { position: relative; }
+        .board-column { min-width: 320px; max-width: 320px; }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background">
+<!-- SideNavBar Component -->
+<aside class="w-[280px] h-full fixed left-0 top-0 bg-sidebar-bg flex flex-col py-gutter px-4 z-50">
+<div class="mb-10 px-2">
+<h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed">GVOS Platform</h1>
+<p class="font-body-md text-body-md text-on-primary-container">Enterprise Ops</p>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 font-label-md text-label-md rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 font-label-md text-label-md rounded-lg text-secondary-fixed-dim bg-white/10 border-l-4 border-secondary-fixed font-bold" href="#">
+<span class="material-symbols-outlined">workspaces</span>
+                Workspace
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 font-label-md text-label-md rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">groups</span>
+                Talent Pool
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 font-label-md text-label-md rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">payments</span>
+                Finance
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 font-label-md text-label-md rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">lock</span>
+                Security
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 font-label-md text-label-md rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Reports
+            </a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-white/10 pt-4">
+<button class="w-full flex items-center justify-between px-3 py-2 mb-4 bg-secondary-container text-white rounded-lg font-label-md text-label-md transition-transform active:scale-95">
+                Quick Action
+                <span class="material-symbols-outlined text-sm">add</span>
+</button>
+<a class="flex items-center gap-3 px-3 py-2 font-label-md text-label-md rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 font-label-md text-label-md rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </a>
+</div>
+</aside>
+<!-- Main Wrapper -->
+<div class="ml-[280px] min-h-screen flex flex-col">
+<!-- TopNavBar Component -->
+<header class="sticky top-0 z-40 h-16 w-full bg-surface-container-lowest border-b border-border-subtle flex items-center justify-between px-gutter shadow-sm">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-black text-secondary">GVOS</span>
+<div class="relative group">
+<span class="absolute inset-y-0 left-3 flex items-center text-outline group-focus-within:text-secondary">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg font-body-sm text-body-sm w-64 focus:ring-2 focus:ring-secondary transition-all outline-none" placeholder="Search tasks, files..." type="text"/>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-6 h-full">
+<a class="text-secondary border-b-2 border-secondary font-bold pb-1 font-label-md text-label-md h-full flex items-center" href="#">Workspace</a>
+<a class="text-outline hover:text-primary font-label-md text-label-md h-full flex items-center transition-all" href="#">Messages</a>
+<a class="text-outline hover:text-primary font-label-md text-label-md h-full flex items-center transition-all" href="#">Files</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-low rounded-full text-outline transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="hidden lg:flex items-center gap-2 px-4 py-2 border border-border-subtle rounded-lg font-label-md text-label-md text-primary hover:bg-surface-container-low transition-all">
+                    Clock In
+                </button>
+<button class="bg-secondary text-white px-4 py-2 rounded-lg font-label-md text-label-md hover:brightness-110 transition-all shadow-md">
+                    Create Task
+                </button>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border-2 border-surface-container-high" data-alt="A professional headshot of a modern executive in their early 30s, wearing a charcoal grey suit and white shirt. The background is a blurred high-end office environment with soft morning light streaming through large windows. The image has a clean, high-contrast look consistent with a premium SaaS corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaj94tyo3A24KOL06tBip0wbT_rwjYnioDwM51a54zlPLPAjACpPDyCEqzLJUZK0XBoW6GD3Evu6dfVEv0HQxsx1yTzvC7biB2BYNQIN-MOsurryroJFItqxk2E-ChdJmt6VW00-I79Bgzzw1_sRORFc1lMzFvrtHMf5crCqh5A6q6lj0lf_JI73beNwm6EcFpM-aUXnzAEGlNPcNkC7ZU8yq6pgv1uMtd8JlaWoV1T3jAOUz_AnGfmX-P3ly5-3LnmR6uxr90nw"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col p-8 overflow-hidden bg-surface">
+<!-- Page Header & Filters -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Active Workspace Board</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage enterprise operations and operational flow.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center gap-2 px-3 py-2 bg-white border border-border-subtle rounded-lg">
+<span class="material-symbols-outlined text-outline text-[18px]">filter_list</span>
+<select class="bg-transparent border-none font-label-md text-label-md focus:ring-0 cursor-pointer">
+<option>Status: All</option>
+<option>Pending</option>
+<option>In Progress</option>
+</select>
+</div>
+<div class="flex items-center gap-2 px-3 py-2 bg-white border border-border-subtle rounded-lg">
+<span class="material-symbols-outlined text-outline text-[18px]">priority_high</span>
+<select class="bg-transparent border-none font-label-md text-label-md focus:ring-0 cursor-pointer">
+<option>Priority: All</option>
+<option>Urgent</option>
+<option>High</option>
+</select>
+</div>
+<div class="flex items-center gap-2 px-3 py-2 bg-white border border-border-subtle rounded-lg">
+<span class="material-symbols-outlined text-outline text-[18px]">person</span>
+<select class="bg-transparent border-none font-label-md text-label-md focus:ring-0 cursor-pointer">
+<option>Talent: All</option>
+<option>Alex Rivera</option>
+<option>Sarah Chen</option>
+</select>
+</div>
+<button class="p-2 hover:bg-surface-container-high rounded-lg border border-border-subtle bg-white transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Kanban Board Container -->
+<div class="flex-grow overflow-x-auto pb-6 -mx-8 px-8">
+<div class="flex gap-6 h-full items-start">
+<!-- Pending Column -->
+<div class="board-column flex flex-col h-full shrink-0">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-label-md text-label-md uppercase tracking-wider text-outline">Pending</h3>
+<span class="px-1.5 py-0.5 bg-surface-container-high rounded-full font-mono-sm text-mono-sm text-on-surface-variant">04</span>
+</div>
+<button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">add</span></button>
+</div>
+<div class="space-y-4 overflow-y-auto pr-1">
+<!-- Card 1 -->
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md transition-all cursor-grab active:cursor-grabbing group">
+<div class="flex justify-between items-start mb-3">
+<span class="px-2 py-0.5 bg-secondary-fixed text-on-secondary-fixed-variant rounded font-label-md text-[10px] uppercase tracking-wide">Development</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary opacity-0 group-hover:opacity-100 transition-all">drag_indicator</span>
+</div>
+<h4 class="font-headline-md text-body-md text-primary mb-4 leading-snug">Implement RBAC module for security layer</h4>
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<img alt="Alex Rivera" class="w-6 h-6 rounded-full" data-alt="A portrait of a male software engineer with a friendly expression, wearing a casual navy sweater. He has short dark hair and is positioned against a clean, minimal interior background with neutral tones. Professional lighting and modern tech-centric atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyzYcFJq3vElHSiC-b9NITDn-vLWQKCIlnbpspUWcCPZFst5XTkjukrOyjvrrgj5_ugI3rLo2aVuilqPwdswX5r6JJsbRXFvUzPoUWuhI-CDbZaKMGv28ZCehMWNzZlSyeY0Wv5RTNTN1W0oqVzvVEM7z2T8e_XcFOsEPvJA8Ho28xzjwantXRi3YnXnDY2_57aYqb3kBVq_CuTr8nWLRTFINfLQ8wfeufokWIS2hGD5uT0Lwh-fjceYMsJpTpv0gdHMCw_-hJCQ"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Alex R.</span>
+</div>
+<span class="font-mono-sm text-mono-sm text-status-urgent font-bold">URGENT</span>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-border-subtle">
+<div class="flex items-center gap-1.5 text-outline">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span class="font-label-md text-label-md">Oct 24</span>
+</div>
+<div class="flex items-center gap-1.5 text-outline">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-label-md text-label-md">00:00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- In Progress Column -->
+<div class="board-column flex flex-col h-full shrink-0">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-label-md text-label-md uppercase tracking-wider text-outline">In Progress</h3>
+<span class="px-1.5 py-0.5 bg-secondary-fixed text-on-secondary-fixed-variant rounded-full font-mono-sm text-mono-sm">02</span>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Card 2 -->
+<div class="bg-white p-card-padding rounded-xl border-l-4 border-l-secondary border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-3">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant rounded font-label-md text-[10px] uppercase tracking-wide">Finance</span>
+<div class="flex -space-x-2">
+<img alt="Sarah Chen" class="w-6 h-6 rounded-full border-2 border-white" data-alt="Close-up portrait of a female financial analyst looking confident and professional. She has dark hair tied back and is wearing a sleek, modern blazer. The lighting is bright and airy, reflecting a high-end corporate setting with a minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLy9f6sLnez8vWCHbHwFrLh0876-CmsZ6yFR1Ak18q8wZsdwmajNzg23BH_ELyvwEvL4p3_dFMrYRV3dF-fzUxMXb9htT48gnBXBm2TaHmh3Uwg9W8v7t6podgoB8pHpiDNMwdDqwLekmnnzDnwBXjVhC6Fokem_phPxlofllX8ULTxNjl_VXuml0jHRaiaGIO3RgCGEG34oQrLFhrTJVCe6dzfqcsUGcUfxTO6YOsJHLqHr9SJ5ta5FHmYEQhO80XxfU7lVt9yQ"/>
+</div>
+</div>
+<h4 class="font-headline-md text-body-md text-primary mb-4 leading-snug">Q4 Treasury liquidation and tax reporting</h4>
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Sarah C.</span>
+</div>
+<span class="px-2 py-0.5 bg-error-container text-on-error-container rounded font-label-md text-[10px]">HIGH</span>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-border-subtle">
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px]">play_circle</span>
+<span class="font-mono-sm text-mono-sm font-bold">12:45:02</span>
+</div>
+<div class="flex items-center gap-1.5 text-outline">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span class="font-label-md text-label-md">Oct 22</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Blocked Column -->
+<div class="board-column flex flex-col h-full shrink-0">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-label-md text-label-md uppercase tracking-wider text-status-blocked">Blocked</h3>
+<span class="px-1.5 py-0.5 bg-error-container text-on-error-container rounded-full font-mono-sm text-mono-sm">01</span>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Card 3 -->
+<div class="bg-white p-card-padding rounded-xl border border-status-blocked/20 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] relative">
+<div class="absolute top-0 right-0 p-2 text-status-blocked">
+<span class="material-symbols-outlined text-[18px]">error</span>
+</div>
+<div class="mb-3">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant rounded font-label-md text-[10px] uppercase tracking-wide">API</span>
+</div>
+<h4 class="font-headline-md text-body-md text-primary mb-4 leading-snug">Third-party payment gateway integration</h4>
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<img alt="Marcus" class="w-6 h-6 rounded-full" data-alt="A portrait of a male technical lead with a sharp, focused gaze. He is wearing a minimalist black t-shirt and glasses. The background is a clean, dark-themed studio setting with subtle blue accent lighting, creating an atmosphere of deep focus and technical expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARV866k2zIEhUa220lucTnxyn2jBchnNrFm7gQEs5I_MBZg9FhyV199UETaDYnNtuNl9PImvu9VFtDOQ6WiKIJ3R-jLCtBDa1uoiZnF4t6MA4hgXp8us_r_Tfvn-EonmuXL-zh8Da8-sOBPfeizpULJ2Rp8h2vKxwwbLx4deadXbGqQry2Mb8xvYHhAKGyiM1MwuQ9nIO4yVS6N4y8x0sKoN5s97ZCs5FAMvLd1LQC-FjsMXdawuwiwpAR47PXSBRWZ_9tN36Jtg"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Marcus V.</span>
+</div>
+<span class="font-mono-sm text-mono-sm text-outline">MEDIUM</span>
+</div>
+<div class="p-3 bg-error-container/30 rounded-lg mb-4">
+<p class="font-label-md text-[11px] text-on-error-container font-semibold">BLOCKER: Awaiting API keys from vendor support.</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-border-subtle">
+<div class="flex items-center gap-1.5 text-outline">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-label-md text-label-md">08:20</span>
+</div>
+<div class="flex items-center gap-1.5 text-outline">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span class="font-label-md text-label-md">Oct 19</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Submitted Column -->
+<div class="board-column flex flex-col h-full shrink-0">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-label-md text-label-md uppercase tracking-wider text-outline">Submitted</h3>
+<span class="px-1.5 py-0.5 bg-surface-container-high text-on-surface-variant rounded-full font-mono-sm text-mono-sm">03</span>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Submitted card example -->
+<div class="bg-white/60 p-card-padding rounded-xl border border-border-subtle">
+<div class="mb-3">
+<span class="px-2 py-0.5 bg-status-trial/10 text-status-trial rounded font-label-md text-[10px] uppercase tracking-wide">UI Design</span>
+</div>
+<h4 class="font-headline-md text-body-md text-on-surface-variant mb-4">System Design Tokens for v2.0 update</h4>
+<div class="flex items-center justify-between pt-4 border-t border-border-subtle/50">
+<div class="flex items-center gap-1.5 text-outline">
+<span class="material-symbols-outlined text-[16px]">done_all</span>
+<span class="font-label-md text-label-md">Awaiting Review</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Revision Requested -->
+<div class="board-column flex flex-col h-full shrink-0">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-label-md text-label-md uppercase tracking-wider text-status-payment-due">Revision</h3>
+<span class="px-1.5 py-0.5 bg-status-payment-due/20 text-status-payment-due rounded-full font-mono-sm text-mono-sm">01</span>
+</div>
+</div>
+</div>
+<!-- Approved -->
+<div class="board-column flex flex-col h-full shrink-0">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-label-md text-label-md uppercase tracking-wider text-status-completed">Approved</h3>
+<span class="px-1.5 py-0.5 bg-status-completed/20 text-status-completed rounded-full font-mono-sm text-mono-sm">12</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar for Mobile -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle shadow-lg md:hidden z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-[10px] mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-[10px] mt-1 font-bold">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-md text-[10px] mt-1">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-[10px] mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for hovering cards
+        document.querySelectorAll('.board-column > div:nth-child(2) > div').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+
+        // Simple board horizontal scroll physics
+        const slider = document.querySelector('.flex-grow.overflow-x-auto');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.cursor-grab')) return;
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+        });
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+        });
+        slider.addEventListener('mousemove', (e) => {
+            if(!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2;
+            slider.scrollLeft = scrollLeft - walk;
+        });
+    </script>
+</body></html>

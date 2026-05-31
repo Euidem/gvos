@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS | Talent &amp; Client Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#f2f4f6",
+                    "tertiary-fixed": "#fcdeb5",
+                    "on-primary": "#ffffff",
+                    "surface-tint": "#565e74",
+                    "primary-fixed-dim": "#bec6e0",
+                    "surface-dim": "#d8dadc",
+                    "on-secondary-fixed": "#001a42",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "status-blocked": "#EF4444",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "status-active": "#10B981",
+                    "on-surface-variant": "#45464d",
+                    "on-primary-fixed": "#131b2e",
+                    "on-tertiary-fixed": "#271901",
+                    "sidebar-bg": "#0B0F19",
+                    "background": "#f7f9fb",
+                    "outline-variant": "#c6c6cd",
+                    "primary-container": "#131b2e",
+                    "on-primary-container": "#7c839b",
+                    "border-subtle": "#E2E8F0",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "tertiary": "#000000",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#f7f9fb",
+                    "on-secondary-container": "#fefcff",
+                    "status-trial": "#8B5CF6",
+                    "secondary-fixed": "#d8e2ff",
+                    "inverse-surface": "#2d3133",
+                    "on-background": "#191c1e",
+                    "surface-container": "#eceef0",
+                    "on-secondary-fixed-variant": "#004395",
+                    "error": "#ba1a1a",
+                    "primary": "#000000",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#dae2fd",
+                    "status-completed": "#059669",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "inverse-primary": "#bec6e0",
+                    "status-payment-due": "#F59E0B",
+                    "on-tertiary-container": "#98805d",
+                    "status-urgent": "#B91C1C",
+                    "secondary": "#0058be",
+                    "inverse-on-surface": "#eff1f3",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e0e3e5",
+                    "surface": "#f7f9fb",
+                    "tertiary-container": "#271901",
+                    "on-surface": "#191c1e",
+                    "status-suspended": "#64748B",
+                    "secondary-container": "#2170e4",
+                    "outline": "#76777d",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "input-gap": "16px",
+                    "container-margin": "32px",
+                    "card-padding": "24px",
+                    "section-gap": "40px",
+                    "gutter": "24px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "headline-lg": ["Manrope"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        .glass-nav {
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="w-[280px] h-full fixed left-0 top-0 flex flex-col bg-sidebar-bg py-gutter px-4 z-50 hidden md:flex">
+<div class="mb-8 px-2">
+<h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed">GVOS Platform</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">workspaces</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary-fixed-dim bg-white/10 border-l-4 border-secondary-fixed font-bold active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Talent Pool</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1">
+<button class="w-full flex items-center justify-center gap-2 bg-secondary text-on-secondary py-2.5 rounded-lg font-label-md text-label-md mb-6 hover:bg-secondary-container transition-colors">
+                Quick Action
+            </button>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar (Shared Component) -->
+<header class="flex items-center justify-between px-gutter h-16 w-full ml-0 md:ml-[280px] md:max-w-[calc(100%-280px)] bg-surface-container-lowest dark:bg-surface-dim sticky top-0 z-40 shadow-sm border-b border-border-subtle">
+<div class="flex items-center gap-6 flex-1">
+<span class="md:hidden material-symbols-outlined text-on-surface">menu</span>
+<div class="hidden lg:flex items-center bg-surface-container-low border border-border-subtle rounded-lg px-3 py-1.5 w-64 focus-within:ring-2 focus-within:ring-secondary">
+<span class="material-symbols-outlined text-outline text-[20px]">search</span>
+<input class="bg-transparent border-none outline-none text-body-sm w-full ml-2 placeholder:text-outline" placeholder="Search resources..." type="text"/>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Workspace</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Messages</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Files</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 mr-4 border-r border-border-subtle pr-4">
+<button class="material-symbols-outlined text-outline hover:bg-surface-container-low p-2 rounded-full transition-all">notifications</button>
+<button class="material-symbols-outlined text-outline hover:bg-surface-container-low p-2 rounded-full transition-all">security</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="hidden sm:block px-4 py-2 border border-border-subtle rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-all">Create Task</button>
+<button class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:bg-secondary-container transition-all">Clock In</button>
+</div>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-border-subtle object-cover ml-2" data-alt="A professional headshot of a corporate manager in a high-key, modern office setting. The person has a friendly but authoritative expression, styled with clean, high-contrast lighting that emphasizes the professional and efficient aesthetic of the GVOS platform. The background is softly blurred with hints of a glass-walled executive suite in corporate blue and white tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdjVaGMXUrj_4zR4mSkPINJF-jyM8nIO7GvG7tx5AAJmEdyCWI1OwbsTYBSFu3hPKvRRc-xGYv2yKeHH7vW7whvkSMhgIZPoP5nznmF_P9-sd46Fmh23n553sZsAgIDmMQjj4zpfeUM4tZA0G21U-lSTBrc101y4of_AN0-9D0RDQ9wqIVCCg-sNte2fHLwFEaRIoFrfp0nw6ZYlcl47Hw62uuQCuSYsqiSPQcCvxlUrOmTt1Y4Xkelj_Dq7K72rZcuSCuFqmv-g"/>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-0 md:ml-[280px] p-gutter min-h-[calc(100vh-64px)] pb-24 md:pb-8">
+<!-- Header & Stats Bento -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-section-gap">
+<div class="md:col-span-2 flex flex-col justify-center">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-1">Talent Pool Management</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Global resource allocation and client satisfaction audit.</p>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
+<span class="font-label-md text-label-md text-outline">AVERAGE WORKLOAD</span>
+<div class="flex items-end gap-2">
+<span class="font-display-lg text-display-lg leading-none">74%</span>
+<span class="text-status-active font-label-md text-label-md flex items-center mb-1">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> 2.4%
+                    </span>
+</div>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
+<span class="font-label-md text-label-md text-outline">OPEN CLIENT ISSUES</span>
+<div class="flex items-end gap-2">
+<span class="font-display-lg text-display-lg leading-none text-status-urgent">12</span>
+<span class="text-status-blocked font-label-md text-label-md flex items-center mb-1">
+                        Critical
+                    </span>
+</div>
+</div>
+</div>
+<!-- Filters Row -->
+<div class="flex flex-wrap items-center gap-4 mb-6 bg-surface-container-low p-4 rounded-xl border border-border-subtle">
+<div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-border-subtle min-w-[160px]">
+<span class="material-symbols-outlined text-outline text-sm">filter_list</span>
+<select class="bg-transparent border-none text-label-md font-label-md w-full outline-none focus:ring-0">
+<option>All Roles</option>
+<option>Fullstack Eng</option>
+<option>UI/UX Designer</option>
+<option>Product Manager</option>
+</select>
+</div>
+<div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-border-subtle min-w-[160px]">
+<span class="material-symbols-outlined text-outline text-sm">bolt</span>
+<select class="bg-transparent border-none text-label-md font-label-md w-full outline-none focus:ring-0">
+<option>Status</option>
+<option>Online</option>
+<option>Offline</option>
+</select>
+</div>
+<div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-border-subtle min-w-[160px]">
+<span class="material-symbols-outlined text-outline text-sm">corporate_fare</span>
+<select class="bg-transparent border-none text-label-md font-label-md w-full outline-none focus:ring-0">
+<option>Department</option>
+<option>Engineering</option>
+<option>Operations</option>
+<option>Strategy</option>
+</select>
+</div>
+<button class="ml-auto flex items-center gap-2 text-secondary font-label-md text-label-md px-4 py-2 hover:bg-secondary/5 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                Export Report
+            </button>
+</div>
+<!-- Tabs Navigation -->
+<div class="flex gap-8 border-b border-border-subtle mb-6">
+<button class="pb-3 px-1 border-b-2 border-secondary text-secondary font-bold text-label-md">Talent List</button>
+<button class="pb-3 px-1 border-b-2 border-transparent text-outline hover:text-primary font-label-md">Clients Portfolio</button>
+<button class="pb-3 px-1 border-b-2 border-transparent text-outline hover:text-primary font-label-md">Resource Alerts</button>
+</div>
+<!-- Section 1: Talent Table -->
+<div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden mb-section-gap">
+<div class="p-gutter border-b border-border-subtle flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-primary">Managed Talents</h3>
+<span class="px-3 py-1 bg-surface-container-high rounded-full font-label-md text-label-md">248 Total</span>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-border-subtle">
+<tr>
+<th class="p-4 font-label-md text-label-md text-outline">TALENT NAME</th>
+<th class="p-4 font-label-md text-label-md text-outline">STATUS</th>
+<th class="p-4 font-label-md text-label-md text-outline">WORKLOAD</th>
+<th class="p-4 font-label-md text-label-md text-outline">ACTIVE WORKSPACE</th>
+<th class="p-4 font-label-md text-label-md text-outline">RISK LEVEL</th>
+<th class="p-4 font-label-md text-label-md text-outline text-right">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<!-- Talent Row 1 -->
+<tr class="hover:bg-surface-container-low transition-all">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Close-up portrait of a male software engineer with a focused and professional expression. High-end editorial lighting, sharp focus, set against a clean, minimalist studio background in a light-mode corporate aesthetic. Deep blacks and whites are used to convey technical expertise and reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr4etpd5i_YbxRPZSxoXf0WYS4kltMFiZvDk86LaXexiZW2NwDaGO7RJIXZTOstq-KNU4fjxO03AwIW7D_gqCBh0jy5sZrJ0XTi0TY0ReKqp_DRBmoqTD-d6y4Z1M1OfDWS7k5ZAmqugho08BmrIw4Lwbq1JGjhYiXLwu2X3cyVHJXUYqXGlVPsZKLDbU2gevxVBd2oWjCWjB856GuI58oFav55mrDgjcV0064fG08_nmj5OGPtodXG6Fy5dUkOk9e8BXnOMcRqA"/>
+<div>
+<p class="font-label-md text-body-sm text-primary">Alexander Chen</p>
+<p class="text-[11px] text-outline font-label-md">Senior Fullstack</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="flex items-center gap-1.5 text-status-active font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-status-active"></span> Online
+                                </span>
+</td>
+<td class="p-4">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between mb-1">
+<span class="font-mono-sm text-[10px]">82%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-status-payment-due" style="width: 82%"></div>
+</div>
+</div>
+</td>
+<td class="p-4 font-label-md text-label-md text-primary">Nebula FinTech Core</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-50 text-status-payment-due border border-status-payment-due/20">Medium</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-secondary/10 text-secondary rounded-lg transition-all material-symbols-outlined" title="Quick Message">chat</button>
+<button class="p-2 hover:bg-surface-container-highest text-outline rounded-lg transition-all material-symbols-outlined">more_vert</button>
+</div>
+</td>
+</tr>
+<!-- Talent Row 2 -->
+<tr class="hover:bg-surface-container-low transition-all">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A profile photo of a female creative director looking directly at the camera with a confident, polished look. Soft diffused lighting, minimalist environment with high-end corporate textures. The visual style is modern, sharp, and uses a clean white and deep blue color palette consistent with a premium SaaS management dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZI4-oRoD7tNASyMuO-SEp4WX7BVAivW0Ruio2PwhYUafMatPxPwYw-nxtFqt8-dRFr-Ag8dj-78gn0mC92QoDWH7TW379HM1vD5l4xHB13Bjl3aPZqQ7nFnZ5GY6Ej9FIxZVSnP5uwnOPrWmuOpFPnkxfsSCj5RYAcdI7-gWs2ayFGa0soTQdf_bMQd-ww342kQq5_XPv--AatLBdIVwowLyf8HOGcaNG3_vMA-fxSupo_R1BRlyZxEhcE5xhnL_lo2usKgDiVQ"/>
+<div>
+<p class="font-label-md text-body-sm text-primary">Elena Rodriguez</p>
+<p class="text-[11px] text-outline font-label-md">Product Strategist</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="flex items-center gap-1.5 text-outline font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-outline"></span> Offline
+                                </span>
+</td>
+<td class="p-4">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between mb-1">
+<span class="font-mono-sm text-[10px]">45%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-status-active" style="width: 45%"></div>
+</div>
+</div>
+</td>
+<td class="p-4 font-label-md text-label-md text-primary">Stellar AI Logistics</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-50 text-status-active border border-status-active/20">Low</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-secondary/10 text-secondary rounded-lg transition-all material-symbols-outlined" title="Quick Message">chat</button>
+<button class="p-2 hover:bg-surface-container-highest text-outline rounded-lg transition-all material-symbols-outlined">more_vert</button>
+</div>
+</td>
+</tr>
+<!-- Talent Row 3 -->
+<tr class="hover:bg-surface-container-low transition-all">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Professional headshot of a male engineering manager. Sharp, high-contrast digital photography style with a focus on institutional trust. The background is a sophisticated workspace with glass elements, lit with neutral, clean lighting that matches a light-mode Enterprise dashboard UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYsraMiZWX0FFfx7CxEY_uL14udsHVlf1x5H0QnKt6dXea635NFoUgQNsltg17Dai8g2IyJGdGZu_1mQLGicFlYceWACNuti2ocpCF4s-rBVy9X_D0GWCeWTL4T0QK30ITfuMolo4MkFgHccRv31OcWusfOtKKk7PH_KaOxfCV6fhHIckkvxSQrl-MkKBC-p9emzEAXumwi-Aa5dzJm4kVIeI5R9yJcMPJDPI23oWpBph6KAozxJTiZ2YE3hwcPCtYnD6D-pA94Q"/>
+<div>
+<p class="font-label-md text-body-sm text-primary">Marcus Thorne</p>
+<p class="text-[11px] text-outline font-label-md">DevOps Specialist</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="flex items-center gap-1.5 text-status-active font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-status-active"></span> Online
+                                </span>
+</td>
+<td class="p-4">
+<div class="w-full max-w-[120px]">
+<div class="flex justify-between mb-1">
+<span class="font-mono-sm text-[10px]">98%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-status-blocked" style="width: 98%"></div>
+</div>
+</div>
+</td>
+<td class="p-4 font-label-md text-label-md text-primary">Quantum Grid Dev</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-50 text-status-urgent border border-status-urgent/20">High</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-secondary/10 text-secondary rounded-lg transition-all material-symbols-outlined" title="Quick Message">chat</button>
+<button class="p-2 hover:bg-surface-container-highest text-outline rounded-lg transition-all material-symbols-outlined">more_vert</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Section 2: Client Table -->
+<div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden">
+<div class="p-gutter border-b border-border-subtle flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-primary">Client Portfolio</h3>
+<div class="flex gap-2">
+<button class="text-secondary font-label-md text-label-md px-3 py-1 bg-secondary/5 rounded-lg">View All Clients</button>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-border-subtle">
+<tr>
+<th class="p-4 font-label-md text-label-md text-outline">CLIENT ENTITY</th>
+<th class="p-4 font-label-md text-label-md text-outline">SATISFACTION</th>
+<th class="p-4 font-label-md text-label-md text-outline">BILLING STATUS</th>
+<th class="p-4 font-label-md text-label-md text-outline">OPEN ISSUES</th>
+<th class="p-4 font-label-md text-label-md text-outline text-right">MGMT</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<!-- Client Row 1 -->
+<tr class="hover:bg-surface-container-low transition-all">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-secondary-fixed font-bold">N</div>
+<div>
+<p class="font-label-md text-body-sm text-primary">Nebula FinTech</p>
+<p class="text-[11px] text-outline font-label-md">Tier 1 • Enterprise</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-status-active text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md font-bold">4.9</span>
+</div>
+</td>
+<td class="p-4">
+<span class="px-3 py-1 rounded-full text-[11px] font-bold bg-green-50 text-status-completed border border-status-completed/20">Active</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<span class="font-mono-sm text-body-sm text-primary">02</span>
+<span class="w-4 h-4 rounded-full bg-status-payment-due flex items-center justify-center text-[9px] text-white">!</span>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="px-3 py-1.5 text-secondary border border-secondary rounded-lg font-label-md text-label-md hover:bg-secondary/5 transition-all">Dashboard</button>
+</td>
+</tr>
+<!-- Client Row 2 -->
+<tr class="hover:bg-surface-container-low transition-all">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-outline font-bold">S</div>
+<div>
+<p class="font-label-md text-body-sm text-primary">Stellar AI</p>
+<p class="text-[11px] text-outline font-label-md">Tier 2 • Growth</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-status-payment-due text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md font-bold">3.8</span>
+</div>
+</td>
+<td class="p-4">
+<span class="px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-status-payment-due border border-status-payment-due/20">Payment Due</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<span class="font-mono-sm text-body-sm text-primary">08</span>
+<span class="w-4 h-4 rounded-full bg-status-urgent flex items-center justify-center text-[9px] text-white">!</span>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="px-3 py-1.5 text-secondary border border-secondary rounded-lg font-label-md text-label-md hover:bg-secondary/5 transition-all">Dashboard</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Shared Component - Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle shadow-lg md:hidden z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md-mobile">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-label-md-mobile">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-md text-label-md-mobile">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md-mobile">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for table rows
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // Subtle feedback if needed
+            });
+        });
+
+        // Hover effect for progress bars
+        document.querySelectorAll('.h-full').forEach(bar => {
+            bar.addEventListener('mouseenter', () => {
+                bar.classList.add('opacity-80');
+            });
+            bar.addEventListener('mouseleave', () => {
+                bar.classList.remove('opacity-80');
+            });
+        });
+    </script>
+</body></html>

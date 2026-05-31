@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Ops Console - Client Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .sidebar-active-indicator {
+            box-shadow: 0 0 15px rgba(0, 88, 190, 0.3);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e0e3e5;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#000000",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "status-trial": "#8B5CF6",
+                    "on-primary-fixed": "#131b2e",
+                    "on-error": "#ffffff",
+                    "on-background": "#191c1e",
+                    "surface-variant": "#e0e3e5",
+                    "status-urgent": "#B91C1C",
+                    "surface-container": "#eceef0",
+                    "tertiary-fixed": "#fcdeb5",
+                    "inverse-surface": "#2d3133",
+                    "surface-container-high": "#e6e8ea",
+                    "surface-bright": "#f7f9fb",
+                    "surface": "#f7f9fb",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "primary": "#000000",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "surface-container-lowest": "#ffffff",
+                    "status-payment-due": "#F59E0B",
+                    "error-container": "#ffdad6",
+                    "border-subtle": "#E2E8F0",
+                    "secondary-container": "#2170e4",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#565e74",
+                    "on-secondary-fixed-variant": "#004395",
+                    "inverse-on-surface": "#eff1f3",
+                    "status-suspended": "#64748B",
+                    "on-tertiary-container": "#98805d",
+                    "on-surface": "#191c1e",
+                    "inverse-primary": "#bec6e0",
+                    "status-blocked": "#EF4444",
+                    "on-secondary-container": "#fefcff",
+                    "outline": "#76777d",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#bec6e0",
+                    "surface-container-low": "#f2f4f6",
+                    "primary-fixed": "#dae2fd",
+                    "on-primary-container": "#7c839b",
+                    "background": "#f7f9fb",
+                    "tertiary-container": "#271901",
+                    "primary-container": "#131b2e",
+                    "surface-container-highest": "#e0e3e5",
+                    "status-completed": "#059669",
+                    "on-surface-variant": "#45464d",
+                    "secondary": "#0058be",
+                    "on-tertiary-fixed": "#271901",
+                    "sidebar-bg": "#0B0F19",
+                    "surface-dim": "#d8dadc",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "secondary-fixed": "#d8e2ff",
+                    "on-secondary-fixed": "#001a42",
+                    "outline-variant": "#c6c6cd",
+                    "status-active": "#10B981",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-margin": "32px",
+                    "base": "4px",
+                    "card-padding": "24px",
+                    "input-gap": "16px",
+                    "gutter": "24px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-md": ["Inter"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "display-lg": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- Sidebar Component (Mapped from JSON) -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg flex flex-col py-6 shadow-xl z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white leading-none">GVOS</h1>
+<p class="text-[10px] text-secondary font-bold tracking-widest uppercase mt-1">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Active State: Operations -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary sidebar-active-indicator" href="#">
+<span class="material-symbols-outlined">settings_suggest</span>
+<span class="font-label-md text-label-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-6 py-4">
+<button class="w-full py-3 bg-secondary text-white rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Instance
+            </button>
+</div>
+<div class="border-t border-white/10 mt-4 pt-4">
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation Bar (Mapped from JSON) -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface border-b border-outline-variant z-40 flex justify-between items-center px-gutter">
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-sm focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none w-80 transition-all" placeholder="Search clients, instances, or operations..." type="text"/>
+</div>
+<nav class="flex items-center gap-6 ml-8">
+<a class="text-secondary font-bold border-b-2 border-secondary h-16 flex items-center font-label-md text-label-md" href="#">Overview</a>
+<a class="text-on-surface-variant h-16 flex items-center font-label-md text-label-md hover:text-secondary transition-colors" href="#">Analytics</a>
+<a class="text-on-surface-variant h-16 flex items-center font-label-md text-label-md hover:text-secondary transition-colors" href="#">Audit Log</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 pr-4 border-r border-outline-variant">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-status-blocked rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined">history</span>
+</button>
+</div>
+<button class="px-5 py-2 bg-primary text-white rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">Deploy</button>
+<div class="flex items-center gap-3 pl-2">
+<img alt="User Profile" class="w-8 h-8 rounded-full border-2 border-white shadow-sm" data-alt="A professional close-up portrait of a senior system administrator in a high-tech corporate office environment. The subject is a man with a focused expression, wearing professional attire. The background is slightly blurred, showing soft blue and white server lights, reinforcing the command center aesthetic of institutional trust and operational precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYvquAsv7i72CIc3wUaYZEZ548MT4-hDWZLyOQkvHAtRjZ0k7UQdDmSrqS7Z8KTVZs0shsJQTqvSyG0bVOvZQjOLdwMhgA1ozlaWVqM6JLIjS1RaXQXKTjZ72_SMv0jsIAy07x6j1R1gw-cdd1UoZFjdnW0Sg3o3uknRMjcqI0-Rulg6FdRJSsgZKn3H6RsNuV0hIIoeiJ4XH9LppjZ2RMS1cWgXzbQV9fCfLQw_zYIkC8-HyLL_2df0mABjpZ4H1GQ-xcIPfxeg"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[280px] mt-16 p-gutter max-w-[1440px]">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 mb-6">
+<span class="text-on-surface-variant text-body-sm">Clients</span>
+<span class="material-symbols-outlined text-body-sm text-outline">chevron_right</span>
+<span class="text-on-surface text-body-sm font-semibold">Starlight Ventures Inc.</span>
+</div>
+<!-- Page Header / Profile Top -->
+<div class="flex justify-between items-start mb-8">
+<div class="flex gap-6 items-center">
+<div class="w-20 h-20 rounded-xl bg-surface-container-highest flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-display-lg text-secondary" style="font-variation-settings: 'FILL' 1;">corporate_fare</span>
+</div>
+<div>
+<div class="flex items-center gap-3">
+<h2 class="font-headline-lg text-headline-lg">Starlight Ventures Inc.</h2>
+<span class="px-3 py-1 bg-status-active/10 text-status-active rounded-full text-label-md font-semibold flex items-center gap-1">
+<span class="w-2 h-2 bg-status-active rounded-full"></span> Active
+                        </span>
+</div>
+<div class="flex gap-4 mt-1 text-on-surface-variant text-body-md">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm">business</span> Business Entity</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm">location_on</span> New York, USA</span>
+<span class="flex items-center gap-1 text-secondary font-semibold"><span class="material-symbols-outlined text-body-sm">verified</span> Verified Client</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-outline-variant rounded-lg text-on-surface font-label-md hover:bg-surface-container-high transition-colors">Actions</button>
+<button class="px-4 py-2 bg-secondary text-white rounded-lg font-label-md hover:opacity-90 transition-opacity">Edit Profile</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Key Metrics (Left Column) -->
+<div class="col-span-12 lg:col-span-8 grid grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<p class="text-on-surface-variant font-label-md mb-2">Satisfaction Score</p>
+<div class="flex items-end gap-3">
+<span class="font-headline-lg text-headline-lg text-secondary">9.4</span>
+<span class="text-status-active text-body-sm mb-2 flex items-center gap-1 font-semibold">
+<span class="material-symbols-outlined text-sm">trending_up</span> +0.2
+                        </span>
+</div>
+<div class="mt-4 h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[94%]"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<p class="text-on-surface-variant font-label-md mb-2">Billing Status</p>
+<div class="flex items-center gap-2">
+<span class="font-headline-lg text-headline-lg">$12,450</span>
+<span class="px-2 py-0.5 bg-status-payment-due/10 text-status-payment-due rounded text-[10px] font-bold uppercase tracking-wider">Due</span>
+</div>
+<p class="text-on-surface-variant text-body-sm mt-2">Next invoice: Oct 28</p>
+</div>
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<p class="text-on-surface-variant font-label-md mb-2">Open Complaints</p>
+<div class="flex items-center gap-3">
+<span class="font-headline-lg text-headline-lg">0</span>
+<span class="text-status-active text-body-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span> Perfect
+                        </span>
+</div>
+<p class="text-on-surface-variant text-body-sm mt-2">All resolved (4 total)</p>
+</div>
+</div>
+<!-- Talent & Management (Right Side - Vertical) -->
+<div class="col-span-12 lg:col-span-4 row-span-2 space-y-gutter">
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<h3 class="font-headline-md text-body-lg font-bold mb-6">Engagement Team</h3>
+<div class="space-y-6">
+<div>
+<p class="text-on-surface-variant font-label-md uppercase tracking-wider mb-3">Assigned Manager</p>
+<div class="flex items-center gap-3">
+<img alt="Assigned Manager" class="w-10 h-10 rounded-full" data-alt="A portrait of a senior account manager, looking approachable and professional, in a well-lit modern office space. The image is clean and high-contrast, fitting the 'Quiet Powerhouse' aesthetic. The background features subtle industrial design elements and corporate branding, rendered in soft neutral tones and vibrant blue accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAYKr2t0GqQHj3WZlzc_0z4-kH6-cg8YgkoCipwRuefmR99hWrGJv0Y9P_tHofQ01X-uwJf6lsQL-HdyZez1ggiS0PGdmt6fYANJ9qK2iqYGLmMj0PFlJdtqFIvK-IELMC8HV83Fi6_dIbVJof-cEyuXVNxtP-E6OS3X-__rmj_2HVs1IyQATFK4uyjNNCg0vzk6gWMfsSTwIMQKCQnhi4wmEnsfclnzFlmS6naqTs0R53-aaUXQ6yUtjK7A1-YA925a82LGISnA"/>
+<div>
+<p class="font-semibold text-body-md">Marcus Thorne</p>
+<p class="text-on-surface-variant text-body-sm">Lead Ops Director</p>
+</div>
+</div>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-md uppercase tracking-wider mb-3">Assigned Talents</p>
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-bold text-secondary text-xs">SA</div>
+<p class="text-body-sm font-medium">Sarah Jenkins <span class="text-on-surface-variant ml-1 font-normal">(DevOps)</span></p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">chat</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-bold text-secondary text-xs">KL</div>
+<p class="text-body-sm font-medium">Kevin Lee <span class="text-on-surface-variant ml-1 font-normal">(Security)</span></p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">chat</span>
+</div>
+<button class="w-full py-2 border border-dashed border-outline-variant rounded-lg text-body-sm text-secondary hover:bg-secondary/5 transition-colors">
+                                    + Assign New Talent
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-body-lg font-bold">Subscription</h3>
+<span class="text-secondary font-label-md hover:underline cursor-pointer">Upgrade</span>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant mb-4">
+<p class="text-label-md text-on-surface-variant uppercase tracking-wider">Current Plan</p>
+<p class="font-headline-md text-headline-md mt-1">Enterprise Plus</p>
+<p class="text-body-sm text-on-surface-variant mt-2">Unlimited Workspaces • 24/7 Support</p>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between text-body-sm">
+<span class="text-on-surface-variant">Billing cycle</span>
+<span class="font-medium">Monthly</span>
+</div>
+<div class="flex justify-between text-body-sm">
+<span class="text-on-surface-variant">Anniversary</span>
+<span class="font-medium">Dec 12, 2024</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tabs Navigation for Details -->
+<div class="col-span-12 lg:col-span-8">
+<div class="flex border-b border-outline-variant gap-8 mb-6">
+<button class="pb-4 text-secondary font-bold border-b-2 border-secondary font-label-md">Workspaces</button>
+<button class="pb-4 text-on-surface-variant font-medium font-label-md hover:text-secondary transition-colors">History</button>
+<button class="pb-4 text-on-surface-variant font-medium font-label-md hover:text-secondary transition-colors">Files</button>
+<button class="pb-4 text-on-surface-variant font-medium font-label-md hover:text-secondary transition-colors">Internal Notes</button>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<!-- Workspace Card -->
+<div class="bg-white p-6 rounded-xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex justify-between mb-4">
+<div class="w-12 h-12 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">cloud</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">open_in_new</span>
+</div>
+<h4 class="font-bold text-body-lg">Core Infrastructure</h4>
+<p class="text-on-surface-variant text-body-sm mt-1">Production Environment • AWS Region: us-east-1</p>
+<div class="mt-6 flex items-center justify-between">
+<span class="px-2 py-1 bg-status-active/10 text-status-active rounded text-[10px] font-bold uppercase">Healthy</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-surface-container text-[8px] flex items-center justify-center font-bold">+2</div>
+</div>
+</div>
+</div>
+<!-- Workspace Card -->
+<div class="bg-white p-6 rounded-xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex justify-between mb-4">
+<div class="w-12 h-12 rounded bg-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">open_in_new</span>
+</div>
+<h4 class="font-bold text-body-lg">Dev-Ops Pipeline</h4>
+<p class="text-on-surface-variant text-body-sm mt-1">CI/CD Management • GitHub Integrated</p>
+<div class="mt-6 flex items-center justify-between">
+<span class="px-2 py-1 bg-status-payment-due/10 text-status-payment-due rounded text-[10px] font-bold uppercase">Maintenance</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-surface-container text-[8px] flex items-center justify-center font-bold">+4</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Weekly Summary Timeline -->
+<div class="mt-10">
+<h3 class="font-headline-md text-body-lg font-bold mb-6">Weekly Performance History</h3>
+<div class="space-y-4">
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-4 flex items-center gap-6">
+<div class="w-12 text-center border-r border-outline-variant pr-6">
+<p class="text-label-md font-bold text-secondary">OCT</p>
+<p class="text-headline-md leading-none">14</p>
+</div>
+<div class="flex-1">
+<p class="font-semibold text-body-md">Infrastructure Audit Completed</p>
+<p class="text-on-surface-variant text-body-sm">All security patches applied. 99.99% uptime maintained across all regions.</p>
+</div>
+<div class="flex gap-4">
+<div class="text-right">
+<p class="text-label-md text-on-surface-variant uppercase">Success Rate</p>
+<p class="font-mono-sm text-status-active">100%</p>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">description</span></button>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-4 flex items-center gap-6">
+<div class="w-12 text-center border-r border-outline-variant pr-6">
+<p class="text-label-md font-bold text-secondary">OCT</p>
+<p class="text-headline-md leading-none">07</p>
+</div>
+<div class="flex-1">
+<p class="font-semibold text-body-md">Onboarding Phase IV</p>
+<p class="text-on-surface-variant text-body-sm">Final credentials handover. Team training for Vault usage finished.</p>
+</div>
+<div class="flex gap-4">
+<div class="text-right">
+<p class="text-label-md text-on-surface-variant uppercase">Success Rate</p>
+<p class="font-mono-sm text-status-active">98.2%</p>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">description</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Side Actions & Activity -->
+<div class="col-span-12 grid grid-cols-12 gap-gutter mt-6">
+<!-- Activity Feed -->
+<div class="col-span-12 lg:col-span-8 bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-body-lg font-bold">Recent Activity</h3>
+<button class="text-secondary font-label-md">View All Log</button>
+</div>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="mt-1">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<div class="w-px h-full bg-outline-variant mx-auto my-1"></div>
+</div>
+<div>
+<p class="text-body-sm"><span class="font-bold">Admin Deploy</span> initiated by <span class="text-secondary">Marcus Thorne</span></p>
+<p class="text-on-surface-variant text-label-md">2 hours ago • <span class="font-mono-sm">#TXN-90210</span></p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="mt-1">
+<div class="w-2 h-2 rounded-full bg-status-active"></div>
+<div class="w-px h-full bg-outline-variant mx-auto my-1"></div>
+</div>
+<div>
+<p class="text-body-sm"><span class="font-bold">Credential Rotation</span> successful for Vault: Starlight-Main</p>
+<p class="text-on-surface-variant text-label-md">Yesterday at 14:22</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="mt-1">
+<div class="w-2 h-2 rounded-full bg-status-payment-due"></div>
+</div>
+<div>
+<p class="text-body-sm"><span class="font-bold">Subscription Alert</span>: Card ending in 4242 expires next month</p>
+<p class="text-on-surface-variant text-label-md">Oct 14, 2024</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Admin Notes/Quick Actions -->
+<div class="col-span-12 lg:col-span-4 bg-primary-container p-card-padding rounded-xl border border-primary text-white shadow-xl relative overflow-hidden">
+<!-- Subtle background decoration -->
+<div class="absolute -right-10 -bottom-10 opacity-10">
+<span class="material-symbols-outlined text-[120px]">security</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-bold mb-4">Internal Admin Notes</h3>
+<div class="bg-white/5 border border-white/10 rounded-lg p-4 mb-6">
+<p class="text-body-sm text-surface-variant leading-relaxed">
+                            "Client is planning a major expansion in Q1 2025. Monitor their network bandwidth usage closely during the holiday season as they expect 4x traffic."
+                        </p>
+<div class="flex items-center gap-2 mt-4">
+<span class="text-[10px] text-on-primary-container uppercase font-bold px-2 py-1 bg-secondary/20 rounded">Confidential</span>
+<span class="text-[10px] text-surface-variant">Updated by Marcus T.</span>
+</div>
+</div>
+<p class="font-label-md uppercase tracking-widest text-secondary mb-4">Operational Safeguards</p>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-status-blocked/20 border border-status-blocked/30 hover:bg-status-blocked/40 text-status-blocked py-2 rounded font-label-md transition-all">Suspend Access</button>
+<button class="bg-white/10 border border-white/20 hover:bg-white/20 text-white py-2 rounded font-label-md transition-all">Export Data</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Logic Check: Main Destination Dashboard) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-105 transition-transform z-50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('nav a, .group').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                // Subtle feedback handled by Tailwind classes
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-[1.02]');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-[1.02]');
+        });
+    </script>
+</body></html>

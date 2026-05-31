@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | GVOS Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#45464d",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#d8e2ff",
+                    "sidebar-bg": "#0B0F19",
+                    "surface-container-low": "#f2f4f6",
+                    "status-completed": "#059669",
+                    "surface-container-highest": "#e0e3e5",
+                    "outline-variant": "#c6c6cd",
+                    "surface-dim": "#d8dadc",
+                    "on-background": "#191c1e",
+                    "on-primary-fixed": "#131b2e",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "primary-fixed": "#dae2fd",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "status-payment-due": "#F59E0B",
+                    "status-suspended": "#64748B",
+                    "inverse-primary": "#bec6e0",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#001a42",
+                    "surface-tint": "#565e74",
+                    "border-subtle": "#E2E8F0",
+                    "on-secondary-fixed-variant": "#004395",
+                    "on-tertiary-container": "#98805d",
+                    "on-surface": "#191c1e",
+                    "status-trial": "#8B5CF6",
+                    "on-tertiary-fixed": "#271901",
+                    "primary-container": "#131b2e",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-primary-container": "#7c839b",
+                    "status-urgent": "#B91C1C",
+                    "outline": "#76777d",
+                    "primary-fixed-dim": "#bec6e0",
+                    "status-active": "#10B981",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#2170e4",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#271901",
+                    "surface-container-high": "#e6e8ea",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#0058be",
+                    "surface-bright": "#f7f9fb",
+                    "tertiary": "#000000",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f7f9fb",
+                    "background": "#f7f9fb",
+                    "on-secondary": "#ffffff",
+                    "status-blocked": "#EF4444",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#fcdeb5",
+                    "error": "#ba1a1a",
+                    "surface-container": "#eceef0",
+                    "on-secondary-container": "#fefcff",
+                    "on-error-container": "#93000a",
+                    "primary": "#131b2e" 
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "input-gap": "16px",
+                    "container-margin": "32px",
+                    "card-padding": "24px",
+                    "base": "4px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Manrope", "sans-serif"],
+                    "body-lg": ["Manrope", "sans-serif"],
+                    "label-md": ["Manrope", "sans-serif"],
+                    "body-md": ["Manrope", "sans-serif"],
+                    "body-sm": ["Manrope", "sans-serif"],
+                    "headline-lg-mobile": ["Manrope", "sans-serif"],
+                    "display-lg": ["Manrope", "sans-serif"],
+                    "headline-lg": ["Manrope", "sans-serif"],
+                    "mono-sm": ["JetBrains Mono", "monospace"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .login-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased overflow-hidden">
+<main class="flex min-h-screen w-full">
+<!-- Left Section: Form -->
+<section class="flex flex-col justify-center items-center w-full lg:w-[42%] px-gutter relative z-10 bg-surface-container-lowest">
+<div class="w-full max-w-[400px] flex flex-col space-y-10">
+<!-- GVOS Logo and Brand -->
+<header class="flex flex-col space-y-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">GVOS</h1>
+</div>
+<div class="space-y-2">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight font-bold">Welcome Back</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Access your secure workspace and managed talent nodes.</p>
+</div>
+</header>
+<!-- Login Form -->
+<form class="flex flex-col space-y-input-gap" onsubmit="event.preventDefault();">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-wider" for="email">Business Email</label>
+<input class="w-full h-12 bg-surface-container-low border border-border-subtle rounded-lg px-4 font-body-md text-on-surface focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none" id="email" name="email" placeholder="name@company.com" type="email"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-wider" for="password">Security Key</label>
+<a class="font-label-md text-label-md text-primary hover:underline transition-all" href="#">Reset Access</a>
+</div>
+<div class="relative group">
+<input class="w-full h-12 bg-surface-container-low border border-border-subtle rounded-lg px-4 font-body-md text-on-surface focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none" id="password" name="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center space-x-3 py-2">
+<input class="w-5 h-5 rounded border-border-subtle text-primary focus:ring-primary" id="remember" type="checkbox"/>
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium" for="remember">Persistent session for 24 hours</label>
+</div>
+<button class="w-full h-14 bg-primary text-white font-headline-md text-[16px] rounded-lg flex items-center justify-center space-x-2 hover:bg-primary/95 transition-all active:scale-[0.98] shadow-lg shadow-primary/20" type="submit">
+<span>Initialize Session</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</form>
+<!-- Security Footer -->
+<footer class="pt-8 space-y-8">
+<div class="flex items-start space-x-3 bg-surface-container-low p-5 rounded-xl border border-border-subtle">
+<span class="material-symbols-outlined text-status-active text-[24px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div class="space-y-1">
+<p class="font-label-md text-label-md text-primary font-bold">Security Protocol Active</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                            You are accessing a GVOS Enterprise Node. All sessions are encrypted with AES-256 and monitored for compliance standards.
+                        </p>
+</div>
+</div>
+<div class="flex justify-between items-center text-outline">
+<p class="font-label-md text-[11px] uppercase tracking-widest font-bold">© 2024 GVOS Enterprise Ops</p>
+<div class="flex space-x-6">
+<a class="font-label-md text-[11px] uppercase tracking-widest font-bold hover:text-primary transition-colors" href="#">Legal</a>
+<a class="font-label-md text-[11px] uppercase tracking-widest font-bold hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+</div>
+</section>
+<!-- Right Section: Professional Workspace Illustration -->
+<section class="hidden lg:flex lg:w-[58%] relative overflow-hidden bg-primary">
+<!-- Abstract Illustration Overlay -->
+<div class="absolute inset-0 z-0">
+<img alt="Professional Secure Workspace" class="w-full h-full object-cover opacity-30" data-alt="High-end professional digital workspace showing abstract glowing network nodes and data streams in deep navy and electric blue tones. The mood is sophisticated, technical, and secure, suggesting a high-performance enterprise environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoIBaQSSPWObvbp2AXWbiTzroTJ7blZukYkFgB9h8Gs3L-J3jpjLkGmUYSU9YTjGORGTqDphyEwo9whThOml0gkvLo9tBb4SF92THphfGPeo5NEAobi0N-vM3_tVOVEwq5AJn08yUssZTB_aRTGIfUSdvtGnb9eiRZ0CmbbGkCZrEJN7Yi1Gclj6PkNdCRF-kqPFiPRYy9W6_Yy4z7kUBolvnPGaXBnIUZGeODujQcOnUOta7ED-kMXnrsxx8lTEJTSm-LQLO1UA"/>
+<div class="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-transparent"></div>
+</div>
+<div class="relative z-10 flex flex-col justify-between h-full w-full p-20">
+<div class="max-w-md space-y-6">
+<p class="font-display-lg text-[40px] text-white font-extrabold leading-tight tracking-tight">
+                    Powering the Global Virtual Workforce.
+                </p>
+<p class="font-body-lg text-white/70">
+                    The single pane of glass for managing cross-border virtual talent with institutional-grade security.
+                </p>
+</div>
+<div class="space-y-8">
+<!-- Status Cards -->
+<div class="grid grid-cols-2 gap-4">
+<div class="login-glass border border-white/10 rounded-2xl p-6 shadow-2xl">
+<div class="flex items-center space-x-3 mb-4">
+<span class="material-symbols-outlined text-secondary-fixed">hub</span>
+<span class="font-label-md text-white/60 uppercase tracking-widest text-[10px]">Infrastructure</span>
+</div>
+<p class="text-white font-headline-md text-xl">LHR-4 Node</p>
+<p class="text-status-active text-sm font-medium mt-1">Operational (99.9%)</p>
+</div>
+<div class="login-glass border border-white/10 rounded-2xl p-6 shadow-2xl">
+<div class="flex items-center space-x-3 mb-4">
+<span class="material-symbols-outlined text-secondary-fixed">shield_lock</span>
+<span class="font-label-md text-white/60 uppercase tracking-widest text-[10px]">Encryption</span>
+</div>
+<p class="text-white font-headline-md text-xl">AES-256</p>
+<p class="text-white/40 text-sm font-medium mt-1">Enterprise Standard</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-3">
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2UgrS3YfuLiNR-1BdsWYRKpPeWO-yn1V3rPFyjSBAZcZc8wBXK10-e0m3Ra9iPpkjc1STKtFUTPluOuKI2LXitvIS2bIWOuw5JXxhxvSH1Ak1AlKtgqHCDUX1qN_3GS-veAnqfOPYcx95SdqX-uWPXJ5o28WV4tNVRk40nZh41VC0WXuyJivUMTpU8c7hxDXGRILm99JU2WsebR-SCGmdVz-i0CNBd-JKhJ2ZCBEguwazDR17gYlSYia7A5YoNGYp-4jp9jt05g"/>
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOdXCV49qhP_qK_PvYqDG4Se4NJNsRUq0ndyJYpMkYzLujeD3WT1J61-ksrqwjC8VsbkFQZ9i82DZAdMjZTWkYWDDVGfmcsxcpQWMvZGLizeHqH-zx-euJ5xsTVP3WP63m98D47H61-wJ2PXD0OAXKaUwzq7k0GbauHM2mPvuu44MVdfCH4ickhv8PtUpq88pcZFpFpmm-u8M5BBL7QCCV0CTFSi1uLPQDou2Z53obonDU0ddWedcYxHqe2fWk2Vx9iT9KE6Zqag"/>
+<div class="w-10 h-10 rounded-full border-2 border-primary bg-secondary flex items-center justify-center text-[10px] font-bold text-white">+2.4k</div>
+</div>
+<p class="text-white/40 font-label-md text-[10px] uppercase tracking-widest">Enterprise Command Center v2.4</p>
+</div>
+</div>
+</div>
+<!-- Pattern Overlay -->
+<div class="absolute inset-0 pointer-events-none opacity-5" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 40px 40px;"></div>
+</section>
+</main>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('input:not([type="checkbox"])');
+        
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.classList.add('shadow-md');
+            });
+            
+            input.addEventListener('blur', () => {
+                input.classList.remove('shadow-md');
+            });
+        });
+
+        // Smooth reveal
+        const leftSection = document.querySelector('section:first-child');
+        leftSection.style.opacity = '0';
+        leftSection.style.transform = 'translateX(-10px)';
+        
+        setTimeout(() => {
+            leftSection.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+            leftSection.style.opacity = '1';
+            leftSection.style.transform = 'translateX(0)';
+        }, 100);
+    });
+</script>
+</body></html>

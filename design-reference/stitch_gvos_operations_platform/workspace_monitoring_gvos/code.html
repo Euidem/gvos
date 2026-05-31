@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS | Manager Workspace Monitoring</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-sidebar {
+            background: rgba(11, 15, 25, 0.98);
+            backdrop-filter: blur(12px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        @keyframes pulse-live {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .animate-live {
+            animation: pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "surface-container-low": "#f2f4f6",
+                "tertiary-fixed": "#fcdeb5",
+                "on-primary": "#ffffff",
+                "surface-tint": "#565e74",
+                "primary-fixed-dim": "#bec6e0",
+                "surface-dim": "#d8dadc",
+                "on-secondary-fixed": "#001a42",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#e6e8ea",
+                "status-blocked": "#EF4444",
+                "error-container": "#ffdad6",
+                "secondary-fixed-dim": "#adc6ff",
+                "status-active": "#10B981",
+                "on-surface-variant": "#45464d",
+                "on-primary-fixed": "#131b2e",
+                "on-tertiary-fixed": "#271901",
+                "sidebar-bg": "#0B0F19",
+                "background": "#f7f9fb",
+                "outline-variant": "#c6c6cd",
+                "primary-container": "#131b2e",
+                "on-primary-container": "#7c839b",
+                "border-subtle": "#E2E8F0",
+                "surface-container-highest": "#e0e3e5",
+                "on-primary-fixed-variant": "#3f465c",
+                "tertiary": "#000000",
+                "on-error-container": "#93000a",
+                "surface-bright": "#f7f9fb",
+                "on-secondary-container": "#fefcff",
+                "status-trial": "#8B5CF6",
+                "secondary-fixed": "#d8e2ff",
+                "inverse-surface": "#2d3133",
+                "on-background": "#191c1e",
+                "surface-container": "#eceef0",
+                "on-secondary-fixed-variant": "#004395",
+                "error": "#ba1a1a",
+                "primary": "#000000",
+                "on-secondary": "#ffffff",
+                "primary-fixed": "#dae2fd",
+                "status-completed": "#059669",
+                "on-tertiary-fixed-variant": "#574425",
+                "inverse-primary": "#bec6e0",
+                "status-payment-due": "#F59E0B",
+                "on-tertiary-container": "#98805d",
+                "secondary": "#0058be",
+                "inverse-on-surface": "#eff1f3",
+                "tertiary-fixed-dim": "#dec29a",
+                "on-error": "#ffffff",
+                "surface-variant": "#e0e3e5",
+                "surface": "#f7f9fb",
+                "tertiary-container": "#271901",
+                "on-surface": "#191c1e",
+                "status-urgent": "#B91C1C",
+                "secondary-container": "#2170e4",
+                "outline": "#76777d",
+                "on-tertiary": "#ffffff"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              "spacing": {
+                "input-gap": "16px",
+                "container-margin": "32px",
+                "card-padding": "24px",
+                "section-gap": "40px",
+                "gutter": "24px",
+                "base": "4px"
+              },
+              "fontFamily": {
+                "body-lg": ["Inter"],
+                "label-md": ["Inter"],
+                "mono-sm": ["JetBrains Mono"],
+                "headline-lg": ["Manrope"],
+                "body-md": ["Inter"],
+                "body-sm": ["Inter"],
+                "headline-md": ["Manrope"],
+                "display-lg": ["Manrope"],
+                "headline-lg-mobile": ["Manrope"]
+              },
+              "fontSize": {
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- Sidebar Component (Shared - SideNavBar) -->
+<aside class="w-[280px] h-full fixed left-0 top-0 flex flex-col glass-sidebar py-gutter px-4 z-50 hidden md:flex">
+<div class="mb-10 flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-secondary flex items-center justify-center text-on-secondary font-black text-headline-md">G</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed">GVOS Platform</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Active Tab: Workspace -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary-fixed-dim bg-white/10 border-l-4 border-secondary-fixed font-bold transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined">workspaces</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Talent Pool</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-white/10 pt-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<div class="mt-4 p-4 bg-white/5 rounded-xl flex items-center gap-3">
+<img alt="User Profile" class="h-10 w-10 rounded-full bg-surface-container-high" data-alt="A professional headshot of a corporate manager in a high-key setting, wearing professional attire. The lighting is soft and flattering against a clean, minimalist studio background, reflecting a sophisticated and authoritative GVOS command center aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBTe3Ea3FzZTXol_38tDwOH6pSKDtHmM_oUNYgdMakB3apyq5RtWDfT5fRD-iTptLhvBXdobeuMHGhcr975kMaboTlz-s4zPi4zRJdqgshsMKOKOLScRlSLLdlWnGSSfGcTV8yDpKC4e-MY_FaAl2cAorH55PMyK5dXbNZ8-0NlD5NFnAU8CpUzsayO0NXTaYAmYt4htlDgs4kAeIWL0gURpYfvyzctg0oiH4oLjOp0EkADcnE6HJBpHgqzlYLgYR75N_fbDrTng"/>
+<div class="overflow-hidden">
+<p class="font-label-md text-label-md text-white truncate">Marcus Sterling</p>
+<p class="text-[10px] text-on-primary-container truncate">Fleet Manager</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Bar Component (Shared - TopNavBar) -->
+<header class="flex items-center justify-between px-gutter h-16 w-full ml-0 md:ml-[280px] md:max-w-[calc(100%-280px)] bg-surface-container-lowest sticky top-0 z-40 shadow-sm border-b border-border-subtle">
+<div class="flex items-center gap-6">
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-1.5 text-body-sm w-64 focus:ring-2 focus:ring-secondary" placeholder="Search workspace..." type="text"/>
+</div>
+<nav class="hidden lg:flex items-center gap-6">
+<a class="font-label-md text-label-md text-secondary border-b-2 border-secondary font-bold pb-1" href="#">Workspace</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Messages</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Files</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-outline hover:bg-surface-container-low p-2 rounded-full transition-all">notifications</button>
+<button class="material-symbols-outlined text-outline hover:bg-surface-container-low p-2 rounded-full transition-all">security</button>
+<div class="h-8 w-px bg-border-subtle mx-2"></div>
+<button class="bg-secondary text-on-secondary px-4 py-1.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all">Clock In</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-0 md:ml-[280px] p-gutter min-h-screen pb-24 md:pb-gutter">
+<!-- Workspace Header Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div class="flex items-center gap-5">
+<div class="h-16 w-16 rounded-2xl bg-surface-container-high border border-border-subtle flex items-center justify-center relative overflow-hidden">
+<img alt="Workspace Logo" class="w-10 h-10" data-alt="A clean, minimalist logo of a tech startup, featuring an abstract rocket shape with sleek blue and white gradients. The aesthetic is modern and professional, fitting the GVOS corporate command center style, with a subtle depth effect against a light background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiQOH7ylkGVI81Fa6XM5sctqLtiphPrnHzIcK5wY6DB8CsJAhdIZ19fQRvIUzaBnFq-wT9HpFp0vUN9wR1YsBHe2g12G0dNsF9FQDw-X_JufE_-aO2LHj2wqz9R9HYIz1HTg2eha99K9W4rvJLqSTaRmrTeL4Fyt49KBntWycJLQuqfI8usjrpQq1rtGyE0mBYnp3rV1Q4vPEH66Wt7H-agtwiihlTX9snvHQ9Qqr5HQiIWmJ6TSwuSCeaclNa2CJYTwNrQvdWMg"/>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h2 class="font-headline-lg text-headline-lg text-primary">Project Orion Alpha</h2>
+<span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-active/10 text-status-active text-[10px] font-bold uppercase tracking-wider">
+<span class="h-2 w-2 rounded-full bg-status-active animate-live"></span>
+                            Live
+                        </span>
+</div>
+<p class="font-body-md text-on-surface-variant flex items-center gap-2">
+                        Client: <span class="font-bold text-primary">Stellar Dynamics Inc.</span>
+<span class="text-outline">•</span> 
+                        Talent: <span class="font-bold text-primary">Elias Vance</span>
+</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border-subtle bg-white text-secondary font-bold text-label-md hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+                    Join Chat
+                </button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-secondary text-on-secondary font-bold text-label-md hover:shadow-md transition-all">
+<span class="material-symbols-outlined text-[18px]">send</span>
+                    Message Specialist
+                </button>
+</div>
+</section>
+<!-- Performance Metrics Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-gutter">
+<!-- Satisfaction Score -->
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
+<div>
+<p class="font-label-md text-label-md text-outline uppercase tracking-tight mb-4">Satisfaction Score</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">4.9</span>
+<span class="text-on-surface-variant text-body-sm">/ 5.0</span>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-2 text-status-active">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="text-xs font-bold">+2.4% from last week</span>
+</div>
+</div>
+<!-- Completion Rate -->
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
+<div>
+<p class="font-label-md text-label-md text-outline uppercase tracking-tight mb-4">Completion Rate</p>
+<span class="font-headline-lg text-headline-lg text-primary">98.2%</span>
+</div>
+<div class="mt-4 h-2 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[98%] rounded-full"></div>
+</div>
+</div>
+<!-- Time Adherence -->
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
+<div>
+<p class="font-label-md text-label-md text-outline uppercase tracking-tight mb-4">Time Adherence</p>
+<span class="font-headline-lg text-headline-lg text-primary">96%</span>
+</div>
+<div class="mt-4 flex items-center gap-2 text-status-active">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="text-xs font-bold">On target</span>
+</div>
+</div>
+<!-- Active Session -->
+<div class="bg-primary-container p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-primary-container uppercase tracking-tight mb-4">Current Session</p>
+<span class="font-headline-lg text-headline-lg text-white font-mono-sm">06:42:15</span>
+</div>
+<div class="mt-4 flex items-center gap-2 text-on-primary-container">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="text-xs">Started 08:30 AM</span>
+</div>
+</div>
+</section>
+<!-- Main Workspace Interaction Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Real-time Activity Feed -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<section class="bg-white rounded-xl border border-border-subtle shadow-sm h-[600px] flex flex-col overflow-hidden">
+<div class="p-4 border-b border-border-subtle flex items-center justify-between bg-surface-container-lowest">
+<h3 class="font-headline-md text-body-md font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">history</span>
+                            Activity Feed
+                        </h3>
+<span class="text-xs text-outline">Real-time</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+<!-- Activity Item -->
+<div class="relative pl-6 border-l-2 border-border-subtle">
+<div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-secondary border-4 border-white"></div>
+<p class="text-xs text-outline mb-1">10:42 AM • Task Update</p>
+<p class="text-body-sm font-medium mb-2">Refined API endpoint architecture documentation.</p>
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">description</span>
+<span class="text-[11px] font-mono-sm truncate">api-docs-v2.pdf</span>
+</div>
+</div>
+<!-- Activity Item (Chat) -->
+<div class="relative pl-6 border-l-2 border-border-subtle">
+<div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-status-trial border-4 border-white"></div>
+<p class="text-xs text-outline mb-1">10:35 AM • Client Message</p>
+<div class="bg-status-trial/5 p-3 rounded-lg border border-status-trial/10">
+<p class="text-body-sm italic">"The initial load times are looking much better Elias, thanks for the optimization."</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="relative pl-6 border-l-2 border-border-subtle">
+<div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-status-active border-4 border-white"></div>
+<p class="text-xs text-outline mb-1">09:15 AM • Status Change</p>
+<p class="text-body-sm font-medium">Task: <span class="text-secondary">#422 Frontend Integration</span> moved to <span class="text-status-active font-bold">Review</span>.</p>
+</div>
+<!-- Activity Item -->
+<div class="relative pl-6 border-l-2 border-border-subtle">
+<div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-border-subtle border-4 border-white"></div>
+<p class="text-xs text-outline mb-1">08:30 AM • Session Start</p>
+<p class="text-body-sm">Work session initiated from San Francisco node.</p>
+</div>
+</div>
+</section>
+<!-- Manager Notes Section -->
+<section class="bg-tertiary-fixed/30 rounded-xl border border-tertiary-fixed/50 p-card-padding">
+<h3 class="font-headline-md text-body-md font-bold mb-4 flex items-center gap-2 text-on-tertiary-fixed">
+<span class="material-symbols-outlined">edit_note</span>
+                        Internal Manager Notes
+                    </h3>
+<textarea class="w-full bg-white/50 border-tertiary-fixed/30 rounded-lg text-body-sm p-3 focus:ring-secondary min-h-[120px]" placeholder="Add private documentation or concerns..."></textarea>
+<div class="mt-3 flex justify-between items-center">
+<span class="text-[10px] text-on-tertiary-fixed-variant">Private to admins only</span>
+<button class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-md text-xs font-bold hover:opacity-80 transition-all">Save Note</button>
+</div>
+</section>
+</div>
+<!-- Exact Time Logs Panel -->
+<div class="lg:col-span-8">
+<section class="bg-white rounded-xl border border-border-subtle shadow-sm flex flex-col h-full overflow-hidden">
+<div class="p-gutter border-b border-border-subtle flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h3 class="font-headline-md text-headline-md font-bold text-primary">Surveillance &amp; Precise Time Logs</h3>
+<p class="font-body-sm text-on-surface-variant">Validated activity timeline for the last 24 hours</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low text-body-sm font-medium hover:bg-surface-container-high transition-all">Export CSV</button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low text-body-sm font-medium hover:bg-surface-container-high transition-all">Audit Mode</button>
+</div>
+</div>
+<div class="flex-1 overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase">Timestamp</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase">Activity Type</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase">Screen Evidence</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase">Application</th>
+<th class="px-6 py-4 font-label-md text-label-md text-outline uppercase">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<!-- Log Row -->
+<tr class="hover:bg-surface-container-lowest transition-all group">
+<td class="px-6 py-5 font-mono-sm text-body-sm text-primary">11:15:22 AM</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-body-sm">Deep Focus Work</span>
+<span class="text-[11px] text-outline">VS Code • main.tsx</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="w-24 h-14 rounded border border-border-subtle bg-surface-container-high relative overflow-hidden group/thumb cursor-zoom-in">
+<img alt="Screenshot" class="w-full h-full object-cover" data-alt="A blurred high-fidelity screenshot of a modern code editor workspace with syntax-highlighted code. The image shows a professional development environment with multiple open files and a dark theme, reflecting deep focus work within the GVOS security framework." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_X5jAhD0m_AiISul2UBxXmMu59sg_78lrHN97-kbeDsOx1j5TX55EmvGLlsCcCEpDUQX20poxUbvetl6xv5rySMw6R7ROqjDgUTxglujKG7KEFO-LasjWoDDnZIs8VirHImPnVssOfCEcftS6wt4V-zXAPQWV-HNkdNks1WmwPZDZInrUy47McK7sWF7hIe82TCq3TzkQZl0ZhXZYOtFMN23L9H6rYRHgrseDQpVv3FDh4HA1O3txB05DMaJFIXamRzCa_QobeQ"/>
+<div class="absolute inset-0 bg-secondary/20 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-white text-sm">zoom_in</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 rounded bg-surface-container-high text-[10px] font-bold">VS CODE</span>
+</td>
+<td class="px-6 py-5">
+<span class="h-2 w-2 rounded-full bg-status-active inline-block"></span>
+<span class="ml-2 text-xs font-medium">Validated</span>
+</td>
+</tr>
+<!-- Log Row -->
+<tr class="hover:bg-surface-container-lowest transition-all">
+<td class="px-6 py-5 font-mono-sm text-body-sm text-primary">10:52:05 AM</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-body-sm">Research</span>
+<span class="text-[11px] text-outline">Chrome • Documentation</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="w-24 h-14 rounded border border-border-subtle bg-surface-container-high relative overflow-hidden group/thumb cursor-zoom-in">
+<img alt="Screenshot" class="w-full h-full object-cover" data-alt="A high-contrast screenshot of a technical documentation page, featuring white background and structured text blocks. The visual is captured in a slightly low-key lighting context, emphasizing clarity and operational precision as part of the GVOS audit logs." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArx7fJ_BoaUtKqaJxvCfXJM-q7WTAK6FehKhvfB5Bj4e5OFLc9x5XRqDEcQ9pbCcz661oC3TyJ8in_IByiSql54UxyxRamP7NiFmi-tuYSv-ywK9tw7UlMEkkYiKM2yPG9GqlV7jRN2Fa3Gs_a57eu-wWdqw0EyJoigNLH7ZD84o9ywtc_q22_eYdiyTEIa2IU3MSBqRefoot5A64mMIlHLuSBeqfnZ6uPHTRXNPFhmgaapN_ssU5zsTE4j0AwN-UI7j8Ri-2z9A"/>
+<div class="absolute inset-0 bg-secondary/20 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-white text-sm">zoom_in</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 rounded bg-surface-container-high text-[10px] font-bold">CHROME</span>
+</td>
+<td class="px-6 py-5">
+<span class="h-2 w-2 rounded-full bg-status-active inline-block"></span>
+<span class="ml-2 text-xs font-medium">Validated</span>
+</td>
+</tr>
+<!-- Log Row -->
+<tr class="hover:bg-surface-container-lowest transition-all">
+<td class="px-6 py-5 font-mono-sm text-body-sm text-primary">10:30:12 AM</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-body-sm">Client Meeting</span>
+<span class="text-[11px] text-outline">Zoom • Weekly Sync</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="w-24 h-14 rounded border border-border-subtle bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">videocam_off</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 rounded bg-surface-container-high text-[10px] font-bold">ZOOM</span>
+</td>
+<td class="px-6 py-5">
+<span class="h-2 w-2 rounded-full bg-status-active inline-block"></span>
+<span class="ml-2 text-xs font-medium">Validated</span>
+</td>
+</tr>
+<!-- Log Row (Suspicious/Needs Attention) -->
+<tr class="bg-error-container/20 hover:bg-error-container/30 transition-all">
+<td class="px-6 py-5 font-mono-sm text-body-sm text-error">09:45:12 AM</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-body-sm text-error">Low Activity detected</span>
+<span class="text-[11px] text-outline">Desktop • No focus</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="w-24 h-14 rounded border border-error/30 bg-white/50 flex items-center justify-center">
+<span class="material-symbols-outlined text-error">warning</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 rounded bg-error-container text-on-error-container text-[10px] font-bold">SYSTEM</span>
+</td>
+<td class="px-6 py-5">
+<span class="h-2 w-2 rounded-full bg-error inline-block"></span>
+<span class="ml-2 text-xs font-bold text-error">Alert</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-border-subtle bg-surface-container-lowest flex items-center justify-between">
+<p class="text-xs text-outline">Showing 1-15 of 240 logs</p>
+<div class="flex gap-2">
+<button class="p-1.5 rounded border border-border-subtle hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="p-1.5 rounded border border-border-subtle hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation for Mobile (Shared - BottomNavBar) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle shadow-lg md:hidden z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">workspaces</span>
+<span class="font-label-md text-[10px]">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-md text-[10px]">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-[10px]">Profile</span>
+</a>
+</nav>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simple log filtering or interaction simulation
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // In a real app, this would open the detailed log view
+                console.log('Log entry selected');
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[placeholder="Search workspace..."]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-secondary');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-secondary');
+        });
+    </script>
+</body></html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Invite Staff | GVOS Control Plane</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #0B0F19 0%, #131b2e 100%);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "status-payment-due": "#F59E0B",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "secondary": "#0058be",
+                        "status-urgent": "#B91C1C",
+                        "status-blocked": "#EF4444",
+                        "inverse-on-surface": "#eff1f3",
+                        "inverse-surface": "#2d3133",
+                        "sidebar-bg": "#0B0F19",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-tertiary-container": "#98805d",
+                        "status-active": "#10B981",
+                        "surface-dim": "#d8dadc",
+                        "on-primary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#271901",
+                        "on-primary-container": "#7c839b",
+                        "on-surface": "#191c1e",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "on-primary-fixed": "#131b2e",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-tint": "#565e74",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "secondary-container": "#2170e4",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-surface-variant": "#45464d",
+                        "surface-variant": "#e0e3e5",
+                        "inverse-primary": "#bec6e0",
+                        "status-completed": "#059669",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#131b2e",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-secondary-container": "#fefcff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-fixed": "#001a42",
+                        "status-suspended": "#64748B",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-fixed": "#dae2fd",
+                        "tertiary": "#000000",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f7f9fb",
+                        "status-trial": "#8B5CF6",
+                        "background": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary-fixed": "#271901",
+                        "on-secondary": "#ffffff",
+                        "border-subtle": "#E2E8F0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "input-gap": "16px",
+                        "gutter": "24px",
+                        "container-margin": "32px",
+                        "card-padding": "24px",
+                        "base": "4px",
+                        "section-gap": "40px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "body-lg": ["Inter"],
+                        "mono-sm": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg shadow-xl flex flex-col py-6 transition-all duration-200 ease-in-out z-50">
+<div class="px-6 mb-10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-secondary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-lg">admin_panel_settings</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white tracking-tight">GVOS</h1>
+<p class="font-label-md text-label-md text-on-primary-container opacity-60">Enterprise Ops</p>
+</div>
+</div>
+</div>
+<nav class="flex-grow flex flex-col gap-1">
+<!-- Settings is active as this is an administrative/setup task -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="settings_suggest">settings_suggest</span>
+<span class="font-label-md text-label-md">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5" href="#">
+<span class="material-symbols-outlined" data-icon="lan">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-4 mt-auto pt-6 border-t border-white/10 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface-container-lowest border-b border-outline-variant z-40">
+<div class="flex justify-between items-center px-gutter h-full">
+<div class="flex items-center gap-4 flex-grow">
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary">GVOS Control Plane</h2>
+<div class="relative w-96 ml-8">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-body-sm focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Search resources..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="history">history</span>
+</div>
+<button class="bg-secondary text-white px-6 py-2 rounded-lg font-label-md hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+                    Deploy
+                </button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+<img alt="User Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-secondary/20" data-alt="A professional headshot of a senior system administrator in a high-tech office environment. He has a focused expression, wearing modern glasses and a crisp charcoal polo shirt. The background is a softly blurred command center with blue glowing server racks and ambient tech lighting. The lighting is bright and clean, emphasizing corporate professionalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCUAlfRFVvHoGk5uUD4aOQ90E_m7vEC1eEyy5paFUEZ0H5W0n47txTMTsn1-MipqsXv45wIVcQwY-qYz1agVKPvH6aSgyPD4eFd1SYRjmVl7USnpiqxsP_cRlHNQjM2FI1IWiPUOqAdLeKP_kGz18XezU4MOoGzTXIWDdswX2rfdmLlMmwyt6jAB6xKoq2DzQrWuzUtzf7KaWF3Y8VlIt99OyCKB-_fX-w8JqtE9DE4MtKXEnbakJqwNaf3g2NN1YwWrFHN2R0hQ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[280px] pt-24 pb-12 px-gutter min-h-screen">
+<div class="max-w-[1100px] mx-auto">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 mb-6 text-on-surface-variant">
+<a class="font-label-md hover:text-secondary" href="#">Settings</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<a class="font-label-md hover:text-secondary" href="#">Team Management</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="font-label-md text-primary">Invite Staff</span>
+</nav>
+<div class="flex flex-col lg:flex-row gap-8">
+<!-- Form Section -->
+<div class="flex-grow lg:w-2/3">
+<div class="bg-surface-container-lowest p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<header class="mb-8">
+<h3 class="font-headline-lg text-headline-lg text-primary mb-2">Invite Team Member</h3>
+<p class="font-body-md text-on-surface-variant">Expand your operational capacity by adding new members to your secure instance.</p>
+</header>
+<form class="space-y-8">
+<!-- Email Input -->
+<div class="space-y-2">
+<label class="font-label-md text-primary flex items-center gap-1">
+                                    Email Address
+                                    <span class="text-status-blocked">*</span>
+</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">alternate_email</span>
+<input class="w-full pl-12 pr-4 py-3 rounded-lg border border-border-subtle focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition-all font-body-md bg-white" placeholder="colleague@company.com" type="email"/>
+</div>
+</div>
+<!-- Role Selector -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-input-gap">
+<div class="space-y-2">
+<label class="font-label-md text-primary">Department</label>
+<select class="w-full px-4 py-3 rounded-lg border border-border-subtle focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition-all font-body-md bg-white appearance-none cursor-pointer">
+<option>Engineering</option>
+<option>Security Operations</option>
+<option>Finance</option>
+<option>Human Resources</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-primary">Operational Role</label>
+<select class="w-full px-4 py-3 rounded-lg border border-border-subtle focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition-all font-body-md bg-white appearance-none cursor-pointer">
+<option>Observer</option>
+<option>Operator</option>
+<option>Lead Engineer</option>
+<option>Admin</option>
+</select>
+</div>
+</div>
+<!-- Permissions Grid -->
+<div class="space-y-4">
+<h4 class="font-label-md text-primary border-b border-outline-variant pb-2">Access Control List</h4>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<label class="group flex items-start gap-4 p-4 rounded-lg border border-border-subtle hover:bg-secondary/5 hover:border-secondary/20 transition-all cursor-pointer">
+<div class="mt-1">
+<input class="w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary transition-all" type="checkbox"/>
+</div>
+<div>
+<span class="block font-label-md text-primary group-hover:text-secondary">Workspace Access</span>
+<span class="block text-[11px] leading-tight text-on-surface-variant">View and manage assigned project threads.</span>
+</div>
+</label>
+<label class="group flex items-start gap-4 p-4 rounded-lg border border-border-subtle hover:bg-secondary/5 hover:border-secondary/20 transition-all cursor-pointer">
+<div class="mt-1">
+<input class="w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary transition-all" type="checkbox"/>
+</div>
+<div>
+<span class="block font-label-md text-primary group-hover:text-secondary">Billing Access</span>
+<span class="block text-[11px] leading-tight text-on-surface-variant">Access invoices and subscription seats.</span>
+</div>
+</label>
+<label class="group flex items-start gap-4 p-4 rounded-lg border border-border-subtle hover:bg-secondary/5 hover:border-secondary/20 transition-all cursor-pointer">
+<div class="mt-1">
+<input class="w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary transition-all" type="checkbox"/>
+</div>
+<div>
+<span class="block font-label-md text-primary group-hover:text-secondary">Report Access</span>
+<span class="block text-[11px] leading-tight text-on-surface-variant">Generate audit logs and KPI metrics.</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Form Actions -->
+<div class="flex items-center justify-end gap-4 pt-6 mt-8 border-t border-border-subtle">
+<button class="px-6 py-3 rounded-lg font-label-md text-primary hover:bg-surface-container-high transition-colors" type="button">Cancel</button>
+<button class="px-10 py-3 rounded-lg font-label-md bg-secondary text-white shadow-lg shadow-secondary/20 hover:opacity-90 active:scale-95 transition-all" type="submit">Send Invitation</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Info Section -->
+<div class="lg:w-1/3 flex flex-col gap-6">
+<!-- Policy Card -->
+<div class="bg-primary-container text-white p-card-padding rounded-xl relative overflow-hidden shadow-xl">
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-status-payment-due">security</span>
+<h4 class="font-headline-md text-[18px] font-bold">Company Email Rule</h4>
+</div>
+<p class="font-body-sm text-on-primary-container mb-6">
+                                For security compliance and unified identity management, all staff invitations MUST be issued to a corporate email address.
+                            </p>
+<div class="bg-white/5 border border-white/10 rounded-lg p-4 font-mono-sm text-secondary-fixed flex items-center justify-between">
+<span>Constraint:</span>
+<span class="font-bold">@company.com</span>
+</div>
+<p class="mt-6 text-[12px] opacity-60 leading-relaxed italic">
+                                * Private domains (gmail, outlook, etc.) will be automatically rejected by the GVOS Firewall.
+                            </p>
+</div>
+<!-- Decorative background element -->
+<div class="absolute -right-12 -bottom-12 w-48 h-48 bg-secondary/20 rounded-full blur-3xl"></div>
+</div>
+<!-- Illustration / Visual Anchor -->
+<div class="bg-white border border-border-subtle p-6 rounded-xl flex flex-col gap-4">
+<img alt="Team Collaboration" class="w-full h-48 object-cover rounded-lg" data-alt="A clean, high-key photograph of a collaborative professional meeting. A group of diverse professionals are gathered around a modern glass table in a minimalist office with large windows. They are looking at a sleek laptop screen, gesturing and smiling with confident energy. The aesthetic is corporate yet approachable, using a palette of white, light grays, and soft blue accents to mirror a premium SaaS environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-2EA0P78AEoaeIcC54Kcbq6N99Bxyj-z9LgDonlX0OrWeD1dC23VorqNUVuxUbMEl9eXOaTJZgGjugy3anY1ZUVpYP6XtKupnf-Pb8UUs9IxhtcM4lB8Yu9RIK-HnaScZwKju6yRDQKKLc_0YZR7nfSNvybEp0Q9w3AXmsMlxgZmIpbQ7JUQe8o1rRPMXHPa3t1LTwffatUMoUFu3q8luv6HjIH1XCenWka7PXhTQU-2SMtSE2M-ATLxk1bIC_QVtJ34sGspQLA"/>
+<div>
+<h5 class="font-label-md text-primary">Collaborative Governance</h5>
+<p class="text-body-sm text-on-surface-variant mt-1">
+                                GVOS enables multi-layered administrative hierarchy, ensuring that every team member has exactly the access they need.
+                            </p>
+</div>
+</div>
+<!-- Quick Links/Help -->
+<div class="bg-surface-container p-6 rounded-xl">
+<h5 class="font-label-md text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">lightbulb</span>
+                            Best Practices
+                        </h5>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-status-active text-sm mt-0.5">check_circle</span>
+                                Audit permissions quarterly
+                            </li>
+<li class="flex items-start gap-3 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-status-active text-sm mt-0.5">check_circle</span>
+                                Use SSO for enhanced security
+                            </li>
+<li class="flex items-start gap-3 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-status-active text-sm mt-0.5">check_circle</span>
+                                Define clear departmental roles
+                            </li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('focus', () => {
+                element.parentElement.classList.add('scale-[1.01]');
+            });
+            element.addEventListener('blur', () => {
+                element.parentElement.classList.remove('scale-[1.01]');
+            });
+        });
+
+        // Simple Form Submission Simulation
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Sending...';
+            btn.disabled = true;
+            btn.classList.add('opacity-70');
+
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-symbols-outlined">done_all</span> Invitation Sent';
+                btn.classList.replace('bg-secondary', 'bg-status-active');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.replace('bg-status-active', 'bg-secondary');
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-70');
+                }, 3000);
+            }, 1500);
+        });
+    </script>
+</body></html>

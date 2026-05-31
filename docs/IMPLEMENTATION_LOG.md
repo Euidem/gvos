@@ -7,6 +7,40 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-31 | UI Alignment | Stitch Source of Truth Documentation
+
+**What was done:** Feature development paused. Stitch UI export designated as the frontend source of truth. Documentation-only update — no code, no database, no routes changed.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `design-reference/stitch_gvos_operations_platform/` (67 folders) | Extracted Stitch export — each folder has code.html + screen.png |
+| `docs/UI_SOURCE_OF_TRUTH.md` | Maps every app route to its Stitch source folder; documents design token reference |
+| `docs/UI_CORRECTION_PLAN.md` | 7 correction batches with files to modify, Stitch sources, risk levels, test checklists |
+| `docs/FRONTEND_IMPLEMENTATION_RULES.md` | 15 frontend rules; Stitch as authority; no new layouts without Stitch source |
+| `docs/SEMI_AUTOMATED_TIME_TRACKING_PLAN.md` | Timer architecture plan (not implemented); reviews existing schema compatibility |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `docs/CURRENT_STATUS.md` | Added UI alignment status section; noted drift summary |
+| `docs/IMPLEMENTATION_LOG.md` | This entry |
+| `docs/KNOWN_ISSUES.md` | Added UI drift as known issue |
+
+**Key findings:**
+- Design tokens (colors, fonts) already match Stitch exactly
+- Sidebar structure is close but missing Quick Action button, user profile card, workspace switcher
+- Login needs major rework to match 2-col split-screen Stitch design
+- All dashboards have Phase banners not present in any Stitch screen
+- Talent dashboard missing Clock-In/Out timer widget
+- Workspace show page significantly simpler than Stitch workspace_monitoring_gvos
+- Time tracking needs timer widget UI (semi-automated plan documented separately)
+- Existing `workspace_time_logs` schema already supports timer (`started_at`, `ended_at`) but `status` enum needs `running` value for full semi-automated support
+
+---
+
 ### 2026-05-31 | Phase 7 | Time Tracking & Work Reports Foundation
 
 **What was done:** Full Phase 7 implementation — workspace time logging and weekly work reports. Includes two new DB migrations, two new models (with access helpers), two new controllers (8+7 methods), 8 Blade views (4 time log + 4 reports), two new Filament resources, AuditLogger wrappers (9 new), workspace/show and tasks/show view updates, dashboard Phase 7 notices for all 7 portals, and documentation updates.

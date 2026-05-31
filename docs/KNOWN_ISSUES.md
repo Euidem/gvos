@@ -9,7 +9,35 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ## Open Issues
 
-*No blocking issues at this time.*
+### 2026-05-31 | UI Alignment | Medium | UI has drifted from Stitch source of truth
+
+**Description:** Multiple portal screens have drifted from the Stitch UI export in layout, component composition, and page structure. Key deviations:
+1. Login page is single-column; Stitch uses 2-col split-screen layout.
+2. All 7 dashboards show "Phase X — Feature" banners not present in any Stitch screen.
+3. Sidebar is missing the Quick Action button, user profile card at bottom, and workspace switcher for talent.
+4. Header is missing Clock In button present in all Stitch portal headers.
+5. Talent dashboard has no Clock-In/Out timer widget (major difference from `talent_dashboard_gvos_1`).
+6. Workspace show page is a static card grid; Stitch `workspace_monitoring_gvos` is a rich monitoring screen.
+7. Time tracking page is a plain form table; Stitch shows a timer widget with live counting.
+8. Breadcrumbs used on most pages; Stitch uses page headers without breadcrumbs.
+
+**Impact:** Visual and UX inconsistency between built product and design intent.
+
+**Status:** Documented. UI correction plan created in `docs/UI_CORRECTION_PLAN.md`. No code changed yet.
+
+**Resolution plan:** Work through correction batches 1–6 as described in UI_CORRECTION_PLAN.md.
+
+---
+
+### 2026-05-31 | Time Tracking | Low | Timer status `running` not yet in schema
+
+**Description:** The semi-automated timer plan (see `docs/SEMI_AUTOMATED_TIME_TRACKING_PLAN.md`) requires a `running` value in the `workspace_time_logs.status` enum. Current enum is `draft, submitted, reviewed, approved, rejected`. When the timer is implemented, a migration to add `running` will be needed.
+
+**Impact:** None currently — timer is not implemented. Phase 7 is manual-only.
+
+**Status:** Documented. No migration needed yet.
+
+---
 
 ---
 

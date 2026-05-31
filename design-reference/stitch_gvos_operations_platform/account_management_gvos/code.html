@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS | Clients &amp; Companies Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#000000",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-container-highest": "#e0e3e5",
+                    "inverse-surface": "#2d3133",
+                    "inverse-primary": "#bec6e0",
+                    "on-background": "#191c1e",
+                    "surface-container-high": "#e6e8ea",
+                    "outline-variant": "#c6c6cd",
+                    "secondary": "#0058be",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "on-secondary-fixed-variant": "#004395",
+                    "tertiary-fixed": "#fcdeb5",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary": "#000000",
+                    "sidebar-bg": "#0B0F19",
+                    "outline": "#76777d",
+                    "primary-container": "#131b2e",
+                    "on-tertiary-container": "#98805d",
+                    "on-secondary-fixed": "#001a42",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "status-active": "#10B981",
+                    "tertiary-container": "#271901",
+                    "status-completed": "#059669",
+                    "surface-variant": "#e0e3e5",
+                    "on-primary-container": "#7c839b",
+                    "surface-dim": "#d8dadc",
+                    "surface-container": "#eceef0",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "border-subtle": "#E2E8F0",
+                    "primary-fixed": "#dae2fd",
+                    "status-payment-due": "#F59E0B",
+                    "on-surface-variant": "#45464d",
+                    "secondary-container": "#2170e4",
+                    "background": "#f7f9fb",
+                    "on-tertiary-fixed": "#271901",
+                    "surface-tint": "#565e74",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-secondary-container": "#fefcff",
+                    "surface-bright": "#f7f9fb",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#bec6e0",
+                    "status-urgent": "#B91C1C",
+                    "status-trial": "#8B5CF6",
+                    "on-surface": "#191c1e",
+                    "status-suspended": "#64748B",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#d8e2ff",
+                    "status-blocked": "#EF4444",
+                    "on-primary-fixed": "#131b2e",
+                    "surface-container-low": "#f2f4f6",
+                    "surface": "#f7f9fb",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-margin": "32px",
+                    "card-padding": "24px",
+                    "section-gap": "40px",
+                    "base": "4px",
+                    "input-gap": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Manrope"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "display-lg": ["Manrope"],
+                    "body-sm": ["Inter"],
+                    "headline-lg": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        .glass-active {
+            background: rgba(0, 88, 190, 0.1);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-sidebar-bg shadow-xl flex flex-col py-6 z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-white tracking-tight">GVOS</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+<!-- Dashboard Tab -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Operations Tab (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary/10 text-secondary border-l-4 border-secondary rounded-r-lg group" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings_suggest</span>
+<span class="font-label-md text-label-md">Operations</span>
+</a>
+<!-- Security Tab -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<!-- Vault Tab -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">lock</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+<!-- Network Tab -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">lan</span>
+<span class="font-label-md text-label-md">Network</span>
+</a>
+<!-- Settings Tab -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-4 mt-auto pt-6 border-t border-white/5 space-y-1">
+<button class="w-full mb-4 py-2 bg-secondary text-white rounded-lg font-label-md flex items-center justify-center gap-2 hover:bg-secondary/90 transition-all">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                New Instance
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-white transition-colors hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-[280px] h-screen flex flex-col relative">
+<!-- TopNavBar (Shared Component) -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+<div class="flex items-center gap-6">
+<span class="font-headline-md text-headline-md font-extrabold text-primary">GVOS Control Plane</span>
+<div class="relative w-80">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-body-sm focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Search clients, entities, or plan IDs..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 mr-4">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+</button>
+</div>
+<button class="px-5 py-2 bg-primary text-white rounded-lg font-label-md hover:bg-primary/90 transition-all cursor-pointer">
+                    Deploy
+                </button>
+<div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A clean, professional headshot of a senior system administrator in a high-tech corporate office. The lighting is crisp and natural, highlighting a focused yet approachable expression. The background is slightly blurred, showing a modern data center with blue glowing LEDs and minimalist metal furniture, embodying the Quiet Powerhouse aesthetic of the GVOS platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHVfaogrhH2mmCIaO8KnUYCkpNW8v1-gSGCmsNrUAEUYWa2U1BX3PlYUWyVLbT82ixz4E9pmMuZ06DnCGesxm4CAu44OVRH3UgGBHYAcVqoCD_3Zwi2zIj9_1Cw5jyYrwPeGj6h-WF8Z6WS-bLjO1BRJoY84t7v7Nls1yENyR9lMXvZQfZcsNBu2KLH339k5Jeyh2uP3BW8w0fI9_WV1pXEuAxEcPbmm8yWfhDTpK-ICHkdw9_1IjWGzMI8MP9QGyeAj6esDUT4w"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="flex-1 mt-16 p-gutter overflow-y-auto custom-scrollbar bg-background">
+<!-- Breadcrumbs & Header -->
+<div class="mb-8">
+<div class="flex items-center gap-2 text-label-md text-on-surface-variant/60 mb-2">
+<span>Admin</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span>Clients &amp; Companies</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Managed Accounts</h2>
+<p class="text-body-md text-on-surface-variant mt-1">Platform-wide overview of entity operational health and billing.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white border border-border-subtle rounded-lg text-body-sm font-semibold hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[18px]">ios_share</span>
+                            Export
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-white border border-border-subtle rounded-lg text-body-sm font-semibold hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+                            Message All
+                        </button>
+</div>
+</div>
+</div>
+<!-- Bento Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-8">
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<p class="text-label-md text-on-surface-variant/60 mb-2 uppercase tracking-wider">Total Revenue (ARR)</p>
+<div class="flex items-end gap-2">
+<span class="font-headline-md text-headline-md">$12.8M</span>
+<span class="text-status-active font-label-md flex items-center mb-1">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> 8.4%
+                        </span>
+</div>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<p class="text-label-md text-on-surface-variant/60 mb-2 uppercase tracking-wider">Active Entities</p>
+<div class="flex items-end gap-2">
+<span class="font-headline-md text-headline-md">1,402</span>
+<span class="text-on-surface-variant/60 font-label-md mb-1">+12 this week</span>
+</div>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<p class="text-label-md text-on-surface-variant/60 mb-2 uppercase tracking-wider">Avg. Satisfaction</p>
+<div class="flex items-end gap-2">
+<span class="font-headline-md text-headline-md">4.92</span>
+<span class="text-status-active font-label-md mb-1">Excellent</span>
+</div>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<p class="text-label-md text-on-surface-variant/60 mb-2 uppercase tracking-wider">Pending Renewals</p>
+<div class="flex items-end gap-2">
+<span class="font-headline-md text-headline-md">24</span>
+<span class="text-status-payment-due font-label-md flex items-center mb-1">
+<span class="material-symbols-outlined text-[16px] mr-1">warning</span> Action Req.
+                        </span>
+</div>
+</div>
+</div>
+<!-- Tab Navigation -->
+<div class="flex border-b border-border-subtle mb-6 gap-8">
+<button class="pb-4 font-label-md text-secondary border-b-2 border-secondary transition-all" id="tab-companies" onclick="switchTab('companies')">
+                    Companies (842)
+                </button>
+<button class="pb-4 font-label-md text-on-surface-variant hover:text-primary transition-all border-b-2 border-transparent" id="tab-individuals" onclick="switchTab('individuals')">
+                    Individual Clients (560)
+                </button>
+</div>
+<!-- Content Area: Tables -->
+<div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden" id="companies-view">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Company Name</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Departments</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Active Talent</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Billing Status</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-xs">V</div>
+<span class="font-semibold text-primary">Velocitech Corp.</span>
+</div>
+</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">12 Units</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">450 Nodes</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-status-active/10 text-status-active rounded-full text-[11px] font-bold uppercase tracking-wider">Active</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-secondary p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-secondary text-white flex items-center justify-center font-bold text-xs">N</div>
+<span class="font-semibold text-primary">Nexis Global</span>
+</div>
+</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">8 Units</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">210 Nodes</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-status-payment-due/10 text-status-payment-due rounded-full text-[11px] font-bold uppercase tracking-wider">Overdue</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-secondary p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-outline-variant text-white flex items-center justify-center font-bold text-xs">O</div>
+<span class="font-semibold text-primary">Oracle Dynamics</span>
+</div>
+</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">24 Units</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">1,120 Nodes</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-status-active/10 text-status-active rounded-full text-[11px] font-bold uppercase tracking-wider">Active</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-secondary p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-status-urgent text-white flex items-center justify-center font-bold text-xs">S</div>
+<span class="font-semibold text-primary">Synapse Lab</span>
+</div>
+</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">2 Units</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">45 Nodes</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-status-blocked/10 text-status-blocked rounded-full text-[11px] font-bold uppercase tracking-wider">Suspended</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-secondary p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden hidden" id="individuals-view">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Name</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Assigned Talent</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Satisfaction</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Subscription Plan</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<img alt="Alex Rivera" class="w-8 h-8 rounded-full border border-border-subtle" data-alt="A professional and modern corporate portrait of a female software architect in her late 30s. She is smiling confidently, wearing a sleek black blazer. The lighting is soft and artistic, with a subtle bokeh background of a high-tech innovation hub in a metropolitan setting. The image communicates reliability and high-level expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUYxphtc8tQGGM-JBEymmhxRLpwG2n1Y7fKuLlGesOhrqS3TJ437wYLCLBtXo8KC9b3Zt95ETpb0mto_G1aOkw_DqloKBX73zQJpWXyuWkzO5mJYY4UPVR1oIpt4UC3V3tVDUk4hvZFMkJAQmESfhY5qJDuRpuRm847v-4qq8F1ruxmr-EzPkWvLK1NXsiygzZNzPKCu_XZNWO0biyTXOJvNgkVmaojcy6ufTwj1hWqRrmD8GztRArXBSUyhmRpYt4JntpyCG2hQ"/>
+<span class="font-semibold text-primary">Alex Rivera</span>
+</div>
+</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">Lead DevOps Eng.</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-primary-container text-on-primary-container rounded-lg text-body-sm font-medium">Enterprise Elite</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-secondary p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<img alt="Marcus Thorne" class="w-8 h-8 rounded-full border border-border-subtle" data-alt="A striking portrait of a male data scientist in his 40s with a sharp, intelligent gaze. He is wearing a dark grey mock-neck sweater. The environment is a clean-lined modern workspace with ambient morning light streaming through large windows. The overall aesthetic is professional, sophisticated, and trustworthy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGh9mdXelfXJnT2jl-of-QeN5T8WyTKHIs92HFpOQP84AQDs8Tsb4_m9myR0AADnJ6mQ1vYHJaCHk8udA8omjTaR2OsaKf3jH0q979_pO2GyFyrX_0a-utY8-ASdQunbkGE4HeyrPMDDbIdcOBdK9ehQKmjeX_tXCXPZAxBwSul8QQaCX0eSxdhVExU6NfoFLuCNevMyMpXFUSo8wSa6pCnng4_XWY-xea8YXhzzuVtLUlNVikQT7z1Ys3B8fv2pNAEVL12Tb-tQ"/>
+<span class="font-semibold text-primary">Marcus Thorne</span>
+</div>
+</td>
+<td class="px-6 py-5 text-body-sm text-on-surface">Data Scientist (ML)</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-surface-container-high text-on-surface rounded-lg text-body-sm font-medium">Standard Plus</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-secondary p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination/Footer -->
+<div class="mt-6 flex justify-between items-center px-4">
+<span class="text-body-sm text-on-surface-variant/60">Showing 1-25 of 1,402 accounts</span>
+<div class="flex gap-2">
+<button class="p-2 border border-border-subtle rounded-lg hover:bg-surface-container-low transition-all disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="px-4 py-2 bg-secondary/10 text-secondary font-bold rounded-lg text-body-sm">1</button>
+<button class="px-4 py-2 hover:bg-surface-container-low rounded-lg text-body-sm transition-all">2</button>
+<button class="px-4 py-2 hover:bg-surface-container-low rounded-lg text-body-sm transition-all">3</button>
+<span class="px-2 self-center text-on-surface-variant/40">...</span>
+<button class="px-4 py-2 hover:bg-surface-container-low rounded-lg text-body-sm transition-all">56</button>
+<button class="p-2 border border-border-subtle rounded-lg hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Contextual Support) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all group z-50">
+<span class="material-symbols-outlined text-[28px] group-hover:rotate-12 transition-transform">add</span>
+</button>
+<script>
+        function switchTab(type) {
+            const companiesView = document.getElementById('companies-view');
+            const individualsView = document.getElementById('individuals-view');
+            const tabCompanies = document.getElementById('tab-companies');
+            const tabIndividuals = document.getElementById('tab-individuals');
+
+            if (type === 'companies') {
+                companiesView.classList.remove('hidden');
+                individualsView.classList.add('hidden');
+                tabCompanies.classList.add('text-secondary', 'border-secondary');
+                tabCompanies.classList.remove('text-on-surface-variant', 'border-transparent');
+                tabIndividuals.classList.remove('text-secondary', 'border-secondary');
+                tabIndividuals.classList.add('text-on-surface-variant', 'border-transparent');
+            } else {
+                companiesView.classList.add('hidden');
+                individualsView.classList.remove('hidden');
+                tabIndividuals.classList.add('text-secondary', 'border-secondary');
+                tabIndividuals.classList.remove('text-on-surface-variant', 'border-transparent');
+                tabCompanies.classList.remove('text-secondary', 'border-secondary');
+                tabCompanies.classList.add('text-on-surface-variant', 'border-transparent');
+            }
+        }
+
+        // Search highlight interaction
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-secondary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-secondary/20');
+        });
+    </script>
+</body></html>

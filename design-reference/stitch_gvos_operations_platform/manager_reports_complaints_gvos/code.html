@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reports &amp; Complaints Queue | GVOS</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "surface-container-low": "#f2f4f6",
+                  "tertiary-fixed": "#fcdeb5",
+                  "on-primary": "#ffffff",
+                  "surface-tint": "#565e74",
+                  "primary-fixed-dim": "#bec6e0",
+                  "surface-dim": "#d8dadc",
+                  "on-secondary-fixed": "#001a42",
+                  "surface-container-lowest": "#ffffff",
+                  "surface-container-high": "#e6e8ea",
+                  "status-blocked": "#EF4444",
+                  "error-container": "#ffdad6",
+                  "secondary-fixed-dim": "#adc6ff",
+                  "status-active": "#10B981",
+                  "on-surface-variant": "#45464d",
+                  "on-primary-fixed": "#131b2e",
+                  "on-tertiary-fixed": "#271901",
+                  "sidebar-bg": "#0B0F19",
+                  "background": "#f7f9fb",
+                  "outline-variant": "#c6c6cd",
+                  "primary-container": "#131b2e",
+                  "on-primary-container": "#7c839b",
+                  "border-subtle": "#E2E8F0",
+                  "surface-container-highest": "#e0e3e5",
+                  "on-primary-fixed-variant": "#3f465c",
+                  "tertiary": "#000000",
+                  "on-error-container": "#93000a",
+                  "surface-bright": "#f7f9fb",
+                  "on-secondary-container": "#fefcff",
+                  "status-trial": "#8B5CF6",
+                  "secondary-fixed": "#d8e2ff",
+                  "inverse-surface": "#2d3133",
+                  "on-background": "#191c1e",
+                  "surface-container": "#eceef0",
+                  "on-secondary-fixed-variant": "#004395",
+                  "error": "#ba1a1a",
+                  "primary": "#000000",
+                  "on-secondary": "#ffffff",
+                  "primary-fixed": "#dae2fd",
+                  "status-completed": "#059669",
+                  "on-tertiary-fixed-variant": "#574425",
+                  "inverse-primary": "#bec6e0",
+                  "status-payment-due": "#F59E0B",
+                  "on-tertiary-container": "#98805d",
+                  "status-suspended": "#64748B",
+                  "secondary": "#0058be",
+                  "inverse-on-surface": "#eff1f3",
+                  "tertiary-fixed-dim": "#dec29a",
+                  "on-error": "#ffffff",
+                  "surface-variant": "#e0e3e5",
+                  "surface": "#f7f9fb",
+                  "tertiary-container": "#271901",
+                  "on-surface": "#191c1e",
+                  "status-urgent": "#B91C1C",
+                  "secondary-container": "#2170e4",
+                  "outline": "#76777d",
+                  "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "input-gap": "16px",
+                  "container-margin": "32px",
+                  "card-padding": "24px",
+                  "section-gap": "40px",
+                  "gutter": "24px",
+                  "base": "4px"
+          },
+          "fontFamily": {
+                  "body-lg": ["Inter"],
+                  "label-md": ["Inter"],
+                  "mono-sm": ["JetBrains Mono"],
+                  "headline-lg": ["Manrope"],
+                  "body-md": ["Inter"],
+                  "body-sm": ["Inter"],
+                  "headline-md": ["Manrope"],
+                  "display-lg": ["Manrope"],
+                  "headline-lg-mobile": ["Manrope"]
+          },
+          "fontSize": {
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                  "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                  "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                  "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                  "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                  "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #E2E8F0;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- SideNavBar -->
+<aside class="w-[280px] h-full fixed left-0 top-0 bg-sidebar-bg flex flex-col py-gutter px-4 z-50">
+<div class="mb-10 px-2">
+<h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed">GVOS Platform</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">workspaces</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Talent Pool</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<!-- Active State Logic for Reports -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary-fixed-dim bg-white/10 border-l-4 border-secondary-fixed font-bold active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-4 border-t border-white/10">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[280px] h-screen flex flex-col relative">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between px-gutter h-16 w-full sticky top-0 z-40 bg-surface-container-lowest border-b border-border-subtle shadow-sm">
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-sm w-64 focus:ring-2 focus:ring-secondary transition-all" placeholder="Search reports or complaints..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden lg:flex items-center gap-6">
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Workspace</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Messages</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Files</a>
+</nav>
+<div class="h-6 w-px bg-border-subtle"></div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-outline">notifications</span>
+</button>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-border-subtle object-cover" data-alt="A professional headshot of a corporate manager in a high-tech office environment. The person has a friendly but authoritative expression, wearing a tailored navy blazer. The background shows a soft-focus modern office with glass partitions and subtle blue ambient lighting, maintaining a clean and premium corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2-kYnYq530ZkvYsdQpPxUwylow-LBuoPML69dK4lpnhI4ILTWsexILSKQVMSfBAz4Wu8NFyB7dlXQNkx0Voee0ry-71KZUjDdGPZDpwNdrqibZoCWW3jffclp1JZOpzbhQZD5SwmBWNC0o-XW4_-UecoOCjXux5sqE10FWJKWufUGTEwRVgnhAh-RQloKRbkMNQpa6J87rlPYEVBHDcMJZ1ui6UKTupebyC910948maPkIJ_1bx1SCHPPRd7eQs9nU9GUCSESnQ"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<section class="flex-1 overflow-hidden p-gutter grid grid-cols-12 gap-gutter">
+<!-- Left Column: Queues -->
+<div class="col-span-12 xl:col-span-8 flex flex-col gap-6 h-full overflow-y-auto custom-scrollbar pr-2">
+<!-- Section: Reports Review -->
+<div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden">
+<div class="px-card-padding py-4 border-b border-border-subtle flex justify-between items-center bg-surface-bright">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Pending Reports</h2>
+<p class="font-label-md text-label-md text-outline">Weekly deliverables requiring management sign-off</p>
+</div>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed-variant rounded-full font-label-md text-label-md">4 Pending</span>
+</div>
+<div class="divide-y divide-border-subtle">
+<!-- Report Row -->
+<div class="p-4 hover:bg-surface-container-low transition-all cursor-pointer group flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-secondary-fixed/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div>
+<h3 class="font-body-md text-primary font-bold">Q3 Logistics Efficiency Audit</h3>
+<p class="font-label-md text-label-md text-outline">Prepared by: Sarah Chen • Logistics Team</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="font-label-md text-label-md text-primary">Due in 4h</p>
+<p class="font-label-md text-label-md text-status-urgent">High Priority</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md transition-all">Review</button>
+</div>
+</div>
+<!-- Report Row -->
+<div class="p-4 hover:bg-surface-container-low transition-all cursor-pointer group flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-secondary-fixed/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">assessment</span>
+</div>
+<div>
+<h3 class="font-body-md text-primary font-bold">Talent Retention Weekly Summary</h3>
+<p class="font-label-md text-label-md text-outline">Prepared by: Marcus V. • HR Ops</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="font-label-md text-label-md text-primary">Due tomorrow</p>
+<p class="font-label-md text-label-md text-outline">Standard</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md transition-all">Review</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Complaints Queue -->
+<div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden flex-1">
+<div class="px-card-padding py-4 border-b border-border-subtle flex justify-between items-center bg-surface-bright sticky top-0">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Complaints Queue</h2>
+<p class="font-label-md text-label-md text-outline">Service tickets and talent disputes</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 rounded-full border border-border-subtle font-label-md text-label-md bg-white hover:bg-surface-container-low transition-all">All Tickets</button>
+<button class="px-3 py-1 rounded-full bg-status-urgent/10 text-status-urgent border border-status-urgent/20 font-label-md text-label-md">Urgent</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low/50 sticky top-[72px]">
+<tr>
+<th class="p-4 font-label-md text-label-md text-outline">ID</th>
+<th class="p-4 font-label-md text-label-md text-outline">SUBJECT</th>
+<th class="p-4 font-label-md text-label-md text-outline">TYPE</th>
+<th class="p-4 font-label-md text-label-md text-outline">URGENCY</th>
+<th class="p-4 font-label-md text-label-md text-outline">STATUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<tr class="hover:bg-surface-container-low transition-all cursor-pointer bg-secondary-fixed/5">
+<td class="p-4 font-mono-sm text-mono-sm text-secondary">#GV-8812</td>
+<td class="p-4">
+<p class="font-body-sm text-primary font-bold">Unresolved Billing Dispute</p>
+<p class="font-label-md text-label-md text-outline">Client: Apex Global</p>
+</td>
+<td class="p-4 font-label-md text-label-md text-on-surface">Financial</td>
+<td class="p-4">
+<span class="flex items-center gap-1 text-status-urgent font-bold">
+<span class="material-symbols-outlined text-[16px]">priority_high</span>
+                      Escalated
+                    </span>
+</td>
+<td class="p-4">
+<span class="px-2 py-0.5 bg-error-container text-on-error-container rounded font-label-md text-label-md">Critical</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-all cursor-pointer">
+<td class="p-4 font-mono-sm text-mono-sm text-secondary">#GV-8809</td>
+<td class="p-4">
+<p class="font-body-sm text-primary font-bold">Delayed Milestone Approval</p>
+<p class="font-label-md text-label-md text-outline">Talent: John Doe</p>
+</td>
+<td class="p-4 font-label-md text-label-md text-on-surface">Service</td>
+<td class="p-4">
+<span class="text-status-payment-due font-bold">Under Review</span>
+</td>
+<td class="p-4">
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded font-label-md text-label-md">In Progress</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-all cursor-pointer">
+<td class="p-4 font-mono-sm text-mono-sm text-secondary">#GV-8795</td>
+<td class="p-4">
+<p class="font-body-sm text-primary font-bold">Security Compliance Feedback</p>
+<p class="font-label-md text-label-md text-outline">Client: Zephyr Tech</p>
+</td>
+<td class="p-4 font-label-md text-label-md text-on-surface">Compliance</td>
+<td class="p-4">
+<span class="text-status-active font-bold">New</span>
+</td>
+<td class="p-4">
+<span class="px-2 py-0.5 bg-secondary-fixed text-on-secondary-fixed-variant rounded font-label-md text-label-md">Pending</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Column: Detail Preview -->
+<div class="col-span-12 xl:col-span-4 h-full flex flex-col bg-white rounded-xl border border-border-subtle shadow-lg overflow-hidden">
+<div class="p-6 border-b border-border-subtle bg-surface-container-lowest">
+<div class="flex justify-between items-start mb-4">
+<span class="font-mono-sm text-mono-sm text-secondary px-2 py-1 bg-secondary-fixed rounded">TICKET #GV-8812</span>
+<button class="text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary mb-2">Unresolved Billing Dispute</h2>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-status-urgent text-white rounded text-[10px] font-bold">ESCALATED</span>
+<span class="text-outline text-[12px]">Last updated: 14 mins ago</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+<!-- Evidence Section -->
+<section>
+<h4 class="font-label-md text-label-md text-outline uppercase tracking-wider mb-3">Evidence &amp; Attachments</h4>
+<div class="grid grid-cols-2 gap-3">
+<div class="group relative aspect-video bg-surface-container-high rounded-lg overflow-hidden border border-border-subtle cursor-pointer">
+<img class="w-full h-full object-cover transition-transform group-hover:scale-105" data-alt="A clean, close-up photograph of a professional financial statement document lying on a dark wooden desk. The document features clear charts, numerical data, and a corporate header. The lighting is soft and natural, emphasizing a realistic business audit environment with neutral tones and a professional mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBggvuhUiNLZRDlpOzA5JNkM6u5OaS_3nTUa5oiBOBgspz88XUSaTL_7viBDIx-v_89dRwJ48vx85wZ1br-369TmU9U6dtE5t2dHUzOPXHQPdGUw5Kigh2N-C8Cd3qC8SFpb1aMMPH0wOcPGha2BmP05SALrG037QA4luASoj6tZU1sa1wtJ34QQscnVsTlF_N8pIJLyMrVAcwMhP5UcN1mCncN4pfuQ89bbxAtM97OYgaL_5XfB00lVuXNTh7vS0wXJ2XLj4hDEw"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg border border-border-subtle flex flex-col justify-center">
+<p class="font-body-sm text-primary font-bold truncate">invoice_2281.pdf</p>
+<p class="font-label-md text-label-md text-outline">4.2 MB • PDF Document</p>
+</div>
+</div>
+</section>
+<!-- History/Internal Notes -->
+<section>
+<h4 class="font-label-md text-label-md text-outline uppercase tracking-wider mb-3">Internal Activity</h4>
+<div class="space-y-4 relative before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-border-subtle">
+<div class="pl-8 relative">
+<div class="absolute left-0 top-1 w-4 h-4 rounded-full bg-status-urgent border-4 border-white"></div>
+<p class="font-body-sm text-primary font-bold">Escalated to Manager</p>
+<p class="font-body-sm text-on-surface-variant italic">"Client disputes the surcharge on 'Urgent Processing' for the last batch."</p>
+<p class="font-label-md text-label-md text-outline mt-1">Today, 09:12 AM • System</p>
+</div>
+<div class="pl-8 relative">
+<div class="absolute left-0 top-1 w-4 h-4 rounded-full bg-outline-variant border-4 border-white"></div>
+<p class="font-body-sm text-primary">Comment added by Marcus V.</p>
+<p class="font-body-sm text-on-surface-variant">"Re-checking the timestamp on the request. It seems border-line."</p>
+<p class="font-label-md text-label-md text-outline mt-1">Today, 08:45 AM</p>
+</div>
+</div>
+</section>
+<!-- Action Input -->
+<section>
+<h4 class="font-label-md text-label-md text-outline uppercase tracking-wider mb-3">Add Internal Note</h4>
+<textarea class="w-full h-24 p-4 rounded-lg border border-border-subtle bg-surface-container-low text-body-sm focus:ring-2 focus:ring-secondary focus:border-transparent transition-all outline-none resize-none" placeholder="Type your observation here..."></textarea>
+</section>
+</div>
+<div class="p-6 border-t border-border-subtle bg-surface-container-lowest grid grid-cols-2 gap-3">
+<button class="px-4 py-2 border border-border-subtle rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-all">Request Revision</button>
+<button class="px-4 py-2 bg-secondary text-white rounded-lg font-label-md text-label-md shadow-md hover:bg-secondary-container transition-all active:scale-95">Resolve Complaint</button>
+<button class="col-span-2 px-4 py-3 bg-primary text-white rounded-lg font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-primary-container transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">send</span>
+            Approve &amp; Send Report
+          </button>
+</div>
+</div>
+</section>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle shadow-lg z-50">
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md-mobile">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-label-md-mobile">Tasks</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 active:scale-90 duration-150">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md-mobile">Reports</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md-mobile">Profile</span>
+</div>
+</nav>
+</main>
+<script>
+    // Lightweight atmospheric micro-interaction
+    document.querySelectorAll('tr').forEach(row => {
+      row.addEventListener('mouseenter', () => {
+        row.style.transform = 'translateX(4px)';
+        row.style.transition = 'transform 0.2s ease-out';
+      });
+      row.addEventListener('mouseleave', () => {
+        row.style.transform = 'translateX(0)';
+      });
+    });
+
+    // Mock Detail Loading
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+      row.addEventListener('click', () => {
+        // Highlight active row
+        rows.forEach(r => r.classList.remove('bg-secondary-fixed/10'));
+        row.classList.add('bg-secondary-fixed/10');
+      });
+    });
+  </script>
+</body></html>

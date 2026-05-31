@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Talent Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#000000",
+                    "status-urgent": "#B91C1C",
+                    "error-container": "#ffdad6",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e6e8ea",
+                    "on-surface": "#191c1e",
+                    "surface-container": "#eceef0",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-error": "#ffffff",
+                    "on-primary-container": "#7c839b",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "outline": "#76777d",
+                    "on-secondary": "#ffffff",
+                    "border-subtle": "#E2E8F0",
+                    "on-surface-variant": "#45464d",
+                    "on-secondary-fixed-variant": "#004395",
+                    "status-active": "#10B981",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#bec6e0",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "status-payment-due": "#F59E0B",
+                    "status-completed": "#059669",
+                    "outline-variant": "#c6c6cd",
+                    "on-tertiary-fixed": "#271901",
+                    "surface-container-highest": "#e0e3e5",
+                    "primary-fixed-dim": "#bec6e0",
+                    "inverse-on-surface": "#eff1f3",
+                    "status-blocked": "#EF4444",
+                    "surface-tint": "#565e74",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#191c1e",
+                    "primary": "#000000",
+                    "inverse-surface": "#2d3133",
+                    "on-secondary-container": "#fefcff",
+                    "surface-variant": "#e0e3e5",
+                    "status-suspended": "#64748B",
+                    "sidebar-bg": "#0B0F19",
+                    "background": "#f7f9fb",
+                    "primary-container": "#131b2e",
+                    "status-trial": "#8B5CF6",
+                    "secondary": "#0058be",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "tertiary-container": "#271901",
+                    "surface-bright": "#f7f9fb",
+                    "secondary-container": "#2170e4",
+                    "surface": "#f7f9fb",
+                    "on-tertiary-container": "#98805d",
+                    "on-primary-fixed": "#131b2e",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#fcdeb5",
+                    "on-secondary-fixed": "#001a42",
+                    "primary-fixed": "#dae2fd",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-dim": "#d8dadc",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#d8e2ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "card-padding": "24px",
+                    "gutter": "24px",
+                    "base": "4px",
+                    "section-gap": "40px",
+                    "input-gap": "16px",
+                    "container-margin": "32px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab-indicator {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md text-body-md min-h-screen pb-24">
+<!-- Header Section -->
+<header class="pt-8 px-gutter pb-4">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-on-surface-variant font-label-md text-label-md">Welcome back</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mt-1">Alexander Vance</h1>
+</div>
+<div class="relative">
+<img alt="User Profile" class="w-12 h-12 rounded-full border-2 border-surface-container-highest object-cover shadow-sm" data-alt="A professional headshot of a young male professional in a sharp navy suit, captured against a clean, modern architectural background with soft natural lighting. The image maintains a high-contrast corporate aesthetic with a neutral color palette, emphasizing precision and trust for a high-end fintech dashboard interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXgn7eEfTjJ55jz10EK7ae0HFKJxXG_rrRJIAQRnV6U1BzOlqsHQQmNsVtBiwF6oolznWi7V7_sh4Xp_iHXZNXGJsqfsN0dX7TZqbMQgnCCl8_Fg7sM4brJt0pXw7zuFJvtivobc6b5M_F5K9HiaOamSk3GoBnP35ZOI8jzvLUPUOJII-Mesh4uz-9cMhKiu8zY5K41K2cV_1TJntuwTrEF3q6uBQcSOb-1vzbpOaj58e8F8o0a3ivll33ElUPlcHWQbqmwcY0Yg"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-status-active border-2 border-white rounded-full"></span>
+</div>
+</div>
+</header>
+<!-- Clock In/Out Toggle -->
+<section class="px-gutter mb-8">
+<div class="bg-sidebar-bg p-4 rounded-xl flex items-center justify-between shadow-lg transition-all active:scale-95 cursor-pointer" id="statusToggle">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed/10 flex items-center justify-center" id="statusIconBg">
+<span class="material-symbols-outlined text-secondary-fixed" id="statusIcon">timer</span>
+</div>
+<div>
+<h3 class="text-white font-label-md text-label-md" id="statusTitle">Clocked Out</h3>
+<p class="text-white/60 text-[11px] uppercase tracking-wider" id="statusSubtitle">Tap to start shift</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono-sm text-mono-sm text-secondary-fixed-dim">00:00:00</span>
+<span class="material-symbols-outlined text-white/40">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Workspace Quick Switcher -->
+<section class="mb-8">
+<div class="px-gutter flex justify-between items-center mb-4">
+<h2 class="font-headline-md text-[18px] text-primary">Active Workspaces</h2>
+<button class="text-secondary font-label-md text-label-md">View All</button>
+</div>
+<div class="flex overflow-x-auto pb-4 px-gutter gap-4 no-scrollbar">
+<!-- Workspace Card 1 -->
+<div class="min-w-[280px] bg-surface-container-lowest p-5 rounded-xl border border-border-subtle shadow-sm flex-shrink-0">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary-fixed">token</span>
+</div>
+<span class="bg-status-trial/10 text-status-trial font-label-md text-[10px] px-2 py-1 rounded-full uppercase tracking-tighter">Premium</span>
+</div>
+<h3 class="font-headline-md text-[16px] text-primary mb-1">Quantum Systems</h3>
+<p class="text-on-surface-variant text-body-sm mb-4">Lead Dev Operations</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border border-white" data-alt="Close-up portrait of a diverse team member for a modern corporate application, bright studio lighting, minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvtJ7-uUuYPMdtSVtu6XaxViR_44xxp7Xe2tN8pDD7Tb8SSmR7esrJxtDuxRTuEBWLtR6sL1FhUBEnkudAeDQ5QJw6U9UTnMTar2odb2Ms3Uh_Ra4820qv8FGWqaj-Rv-AuLjcojGlSp_7H-TK3xwfNLV-hfe5SBBNpkvndpEUc9gpfLbHvyFSczOVYQfU0izobRemZyMrDRgtYQUTuOe6y7iv8Oa8-mNasPTW8KV1G0X0ht6TrIxX2cwOuN-7mKKxWnxqQQzRnA"/>
+<img class="w-6 h-6 rounded-full border border-white" data-alt="Professional portrait of a female executive with soft lighting and a clean background, conveying corporate trust and efficiency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpYqQUDbcVVmFbFFRyD4ZjmLOysjLvzAXHrRVWZH9z18sGsHHl90WXj9Ax5bSgoJJwcJJQ17s-4TJdjTN76IjfLvBw5vHH0XotK80nx8mGI6hU5_LqeL8nFYgwlR0jkknQvqCC3V7TmAHhVGdt3Op02YNGNUNVw4tm4qCo64M1HMyGdnW2AGnBb4M_5ulB93dQpRQEh9LEWiv8n8TxceheXAoWfSoMs5TV7QTxMUdrLLr__i0fniqdzoB5Unpf802GflzsuAnaKA"/>
+<div class="w-6 h-6 rounded-full bg-surface-container-high border border-white flex items-center justify-center text-[8px] font-bold">+4</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px]">arrow_forward</span>
+</div>
+</div>
+<!-- Workspace Card 2 -->
+<div class="min-w-[280px] glass-card p-5 rounded-xl flex-shrink-0">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">shield</span>
+</div>
+<span class="bg-status-active/10 text-status-active font-label-md text-[10px] px-2 py-1 rounded-full uppercase tracking-tighter">Active</span>
+</div>
+<h3 class="font-headline-md text-[16px] text-primary mb-1">Global Security</h3>
+<p class="text-on-surface-variant text-body-sm mb-4">Incident Monitoring</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border border-white" data-alt="Portrait of a young male professional for a high-end SaaS dashboard, featuring a minimalist background and cool-toned lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA00WmXhm3UH-aK86VL5jHIy55T-VSbzXpwzpPPX9JM0t9PiYJuZn4521pw3koBj3sbiK_Gukw99OXYOmhK1YC2gpXI8sfkh87FnIrGY7BM_yh0JYmYUS2LH7IBtcgRwu5L4G7HzoQJ3xU-a1TTZ-AqZLWwG-SSu-lwJLuz11WnY-lqaiE5vLRSgRcKCkNXDSPt0vcnOm1QqMLQyd4n8sVu__E6fAX7jZ1DI3bkWV_kfgtjULOYg22WWNakiNMUiy2x8qz5ngA_rw"/>
+<div class="w-6 h-6 rounded-full bg-surface-container-high border border-white flex items-center justify-center text-[8px] font-bold">+2</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px]">arrow_forward</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Today's Tasks -->
+<section class="px-gutter mb-12">
+<div class="flex justify-between items-center mb-4">
+<h2 class="font-headline-md text-[18px] text-primary">Today's Tasks</h2>
+<span class="bg-secondary/10 text-secondary font-label-md text-label-md px-2 py-1 rounded-lg">4 Pending</span>
+</div>
+<div class="space-y-3">
+<!-- Task Item 1 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border-l-4 border-status-urgent shadow-sm flex items-center gap-4">
+<div class="flex-grow">
+<h4 class="font-body-md font-bold text-primary">Infrastructure Audit</h4>
+<p class="text-body-sm text-on-surface-variant">Due in 2 hours</p>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant text-[18px]">check</span>
+</div>
+</div>
+<!-- Task Item 2 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border-l-4 border-status-payment-due shadow-sm flex items-center gap-4">
+<div class="flex-grow">
+<h4 class="font-body-md font-bold text-primary">Talent Pool Review</h4>
+<p class="text-body-sm text-on-surface-variant">Workspace: GVOS Platform</p>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant text-[18px]">check</span>
+</div>
+</div>
+<!-- Task Item 3 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border-l-4 border-status-suspended shadow-sm flex items-center gap-4 opacity-60">
+<div class="flex-grow">
+<h4 class="font-body-md font-bold text-primary line-through">Security Protocol Sync</h4>
+<p class="text-body-sm text-on-surface-variant">Completed at 09:12 AM</p>
+</div>
+<div class="w-8 h-8 rounded-full bg-status-active flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[18px]">check</span>
+</div>
+</div>
+</div>
+</section>
+<!-- FAB (Contextual for Home/Dashboard) -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-secondary text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform z-40">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+<!-- Bottom Navigation Bar (Shared Component: BottomNavBar) -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface border-t border-border-subtle flex justify-around items-center px-4 py-2 pb-safe z-50 shadow-lg md:hidden">
+<!-- Home Tab (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-[10px] mt-1">Home</span>
+</a>
+<!-- Tasks Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high p-2 transition-all" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-[10px] mt-1">Tasks</span>
+</a>
+<!-- Chat Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high p-2 transition-all" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-md text-[10px] mt-1">Chat</span>
+</a>
+<!-- Profile Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high p-2 transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-[10px] mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for Clock In/Out status
+        const statusToggle = document.getElementById('statusToggle');
+        const statusIconBg = document.getElementById('statusIconBg');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusSubtitle = document.getElementById('statusSubtitle');
+        
+        let isClockedIn = false;
+        let timerInterval;
+        let seconds = 0;
+
+        function updateTimerDisplay() {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            const display = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            statusToggle.querySelector('.font-mono-sm').textContent = display;
+        }
+
+        statusToggle.addEventListener('click', () => {
+            isClockedIn = !isClockedIn;
+            
+            if (isClockedIn) {
+                statusIconBg.classList.replace('bg-secondary-fixed/10', 'bg-status-active/20');
+                statusIcon.classList.replace('text-secondary-fixed', 'text-status-active');
+                statusIcon.textContent = 'pause';
+                statusTitle.textContent = 'Active Shift';
+                statusSubtitle.textContent = 'Clocked in at 09:00 AM';
+                statusToggle.classList.add('ring-2', 'ring-status-active/50');
+                
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    updateTimerDisplay();
+                }, 1000);
+            } else {
+                statusIconBg.classList.replace('bg-status-active/20', 'bg-secondary-fixed/10');
+                statusIcon.classList.replace('text-status-active', 'text-secondary-fixed');
+                statusIcon.textContent = 'timer';
+                statusTitle.textContent = 'Clocked Out';
+                statusSubtitle.textContent = 'Tap to start shift';
+                statusToggle.classList.remove('ring-2', 'ring-status-active/50');
+                
+                clearInterval(timerInterval);
+                seconds = 0;
+                updateTimerDisplay();
+            }
+        });
+
+        // Simple haptic-like scale effect on all clickable elements
+        document.querySelectorAll('a, button, [role="button"]').forEach(el => {
+            el.addEventListener('touchstart', () => el.classList.add('scale-95'));
+            el.addEventListener('touchend', () => el.classList.remove('scale-95'));
+        });
+    </script>
+</body></html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#000000",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-container-highest": "#e0e3e5",
+                    "inverse-surface": "#2d3133",
+                    "inverse-primary": "#bec6e0",
+                    "on-background": "#191c1e",
+                    "surface-container-high": "#e6e8ea",
+                    "outline-variant": "#c6c6cd",
+                    "secondary": "#0058be",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "on-secondary-fixed-variant": "#004395",
+                    "tertiary-fixed": "#fcdeb5",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary": "#000000",
+                    "sidebar-bg": "#0B0F19",
+                    "outline": "#76777d",
+                    "primary-container": "#131b2e",
+                    "on-tertiary-container": "#98805d",
+                    "on-secondary-fixed": "#001a42",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "status-active": "#10B981",
+                    "tertiary-container": "#271901",
+                    "status-completed": "#059669",
+                    "surface-variant": "#e0e3e5",
+                    "on-primary-container": "#7c839b",
+                    "surface-dim": "#d8dadc",
+                    "surface-container": "#eceef0",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "border-subtle": "#E2E8F0",
+                    "primary-fixed": "#dae2fd",
+                    "status-payment-due": "#F59E0B",
+                    "on-surface-variant": "#45464d",
+                    "secondary-container": "#2170e4",
+                    "background": "#f7f9fb",
+                    "on-tertiary-fixed": "#271901",
+                    "surface-tint": "#565e74",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-secondary-container": "#fefcff",
+                    "surface-bright": "#f7f9fb",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#bec6e0",
+                    "status-urgent": "#B91C1C",
+                    "status-trial": "#8B5CF6",
+                    "on-surface": "#191c1e",
+                    "status-suspended": "#64748B",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#d8e2ff",
+                    "status-blocked": "#EF4444",
+                    "on-primary-fixed": "#131b2e",
+                    "surface-container-low": "#f2f4f6",
+                    "surface": "#f7f9fb",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-margin": "32px",
+                    "card-padding": "24px",
+                    "section-gap": "40px",
+                    "base": "4px",
+                    "input-gap": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Manrope"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "display-lg": ["Manrope"],
+                    "body-sm": ["Inter"],
+                    "headline-lg": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+        .drag-over { border-color: #0058be; background-color: rgba(0, 88, 190, 0.05); }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-surface flex min-h-screen overflow-x-hidden">
+<!-- SideNavBar (Shared Component Anchor) -->
+<aside class="w-[280px] h-screen fixed left-0 top-0 bg-sidebar-bg flex flex-col py-gutter px-4 z-50">
+<div class="mb-10 px-4">
+<h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed">GVOS Platform</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-secondary-fixed-dim bg-white/10 border-l-4 border-secondary-fixed font-bold group scale-95" href="#">
+<span class="material-symbols-outlined">workspaces</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Talent Pool</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<div class="mt-6 flex items-center gap-3 px-4 pt-6 border-t border-white/10">
+<img alt="User Profile" class="w-8 h-8 rounded-full bg-surface-container-highest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_RFU6bo98LOannSVwva49kBkh1IXNnJEWN6QqPlP9zBU9LUnx6cdBih0h_dgByXtmonYG1ADVtgyUT_DBGg7JQelud0PdcWmq3Yk6c8j21pBAZ0odIJybJz-JcJV2_6Gl-P94H0nqD8ZDCPQcBn8jyOgFpuY7EF7OvkrX_3c6cX-voYe3L2qvO0sgRHVd8lFWpd2mGRwbY6u6hwfJDP87x1_SAIXUuiHY6Wccj1kBPvSpW4pioxlQ4HZs9YUFyAKrbMKc54dchw"/>
+<div class="overflow-hidden">
+<p class="font-label-md text-label-md text-white truncate">Marcus Sterling</p>
+<p class="text-[10px] text-on-primary-container truncate">Admin Account</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] flex-1 flex flex-col min-w-0">
+<!-- TopNavBar (Shared Component Anchor) -->
+<header class="sticky top-0 z-40 h-16 w-full flex items-center justify-between px-gutter bg-surface-container-lowest border-b border-border-subtle shadow-sm">
+<div class="flex items-center gap-6">
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex items-center gap-8">
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Workspace</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Messages</a>
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-all" href="#">Files</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 mr-4">
+<button class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined">security</span>
+</button>
+</div>
+<button class="hidden lg:flex items-center gap-2 px-4 py-2 bg-surface-container-low text-primary rounded-lg font-label-md text-label-md hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Create Task
+                </button>
+<button class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md shadow-sm hover:opacity-90 transition-all">
+                    Clock In
+                </button>
+</div>
+</header>
+<!-- Page Content: Create Task Screen -->
+<div class="flex-1 p-8 max-w-[1440px] mx-auto w-full">
+<div class="mb-8 flex items-center justify-between">
+<div>
+<nav class="flex items-center gap-2 text-outline mb-2">
+<span class="font-label-md text-label-md">Workspace</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="font-label-md text-label-md text-secondary">New Task</span>
+</nav>
+<h2 class="font-headline-lg text-headline-lg text-primary">Submit Work Request</h2>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 bg-white border border-border-subtle text-primary rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-all">
+                        Save as Draft
+                    </button>
+<button class="px-8 py-2.5 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md shadow-sm hover:opacity-95 transition-all">
+                        Submit Request
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-8">
+<!-- Main Form Section (Bento Grid Style) -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<!-- Basic Information Card -->
+<section class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="md:col-span-2">
+<label class="block font-label-md text-label-md text-outline mb-2">Task Title</label>
+<input class="w-full bg-white border border-border-subtle rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all font-body-md text-body-md" placeholder="e.g., Q4 Enterprise Security Audit" type="text"/>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-outline mb-2">Workspace</label>
+<div class="relative">
+<select class="w-full appearance-none bg-white border border-border-subtle rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all font-body-md text-body-md">
+<option>Infrastructure Operations</option>
+<option>Product Development</option>
+<option>Legal &amp; Compliance</option>
+<option>Marketing Operations</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-outline mb-2">Due Date</label>
+<div class="relative">
+<input class="w-full bg-white border border-border-subtle rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all font-body-md text-body-md" type="date"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">calendar_today</span>
+</div>
+</div>
+<div class="md:col-span-2">
+<label class="block font-label-md text-label-md text-outline mb-3">Priority Level</label>
+<div class="grid grid-cols-4 gap-3">
+<button class="priority-btn px-4 py-2.5 rounded-lg border border-border-subtle text-outline font-label-md text-label-md hover:bg-surface-container-low transition-all flex items-center justify-center gap-2" data-priority="low">
+<span class="w-2 h-2 rounded-full bg-status-suspended"></span>
+                                        Low
+                                    </button>
+<button class="priority-btn px-4 py-2.5 rounded-lg border border-border-subtle text-outline font-label-md text-label-md hover:bg-surface-container-low transition-all flex items-center justify-center gap-2" data-priority="medium">
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+                                        Medium
+                                    </button>
+<button class="priority-btn px-4 py-2.5 rounded-lg border-2 border-secondary bg-secondary/5 text-secondary font-label-md text-label-md transition-all flex items-center justify-center gap-2" data-priority="high">
+<span class="w-2 h-2 rounded-full bg-status-payment-due"></span>
+                                        High
+                                    </button>
+<button class="priority-btn px-4 py-2.5 rounded-lg border border-border-subtle text-outline font-label-md text-label-md hover:bg-surface-container-low transition-all flex items-center justify-center gap-2" data-priority="urgent">
+<span class="w-2 h-2 rounded-full bg-status-urgent"></span>
+                                        Urgent
+                                    </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Rich Text Description Card -->
+<section class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<label class="block font-label-md text-label-md text-outline mb-4">Detailed Description</label>
+<div class="border border-border-subtle rounded-lg overflow-hidden">
+<div class="bg-surface-container-low px-4 py-2 border-b border-border-subtle flex gap-4">
+<button class="p-1 hover:text-secondary"><span class="material-symbols-outlined text-[20px]">format_bold</span></button>
+<button class="p-1 hover:text-secondary"><span class="material-symbols-outlined text-[20px]">format_italic</span></button>
+<button class="p-1 hover:text-secondary"><span class="material-symbols-outlined text-[20px]">format_list_bulleted</span></button>
+<button class="p-1 hover:text-secondary"><span class="material-symbols-outlined text-[20px]">link</span></button>
+<div class="w-[1px] h-6 bg-border-subtle"></div>
+<button class="p-1 hover:text-secondary"><span class="material-symbols-outlined text-[20px]">code</span></button>
+</div>
+<textarea class="w-full px-4 py-3 outline-none focus:ring-0 font-body-md text-body-md resize-none border-none" placeholder="Please provide clear objectives, technical requirements, and any known constraints..." rows="8"></textarea>
+</div>
+</section>
+<!-- File Upload Section -->
+<section class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<label class="block font-label-md text-label-md text-outline mb-4">Supporting Attachments</label>
+<div class="border-2 border-dashed border-border-subtle rounded-xl p-10 flex flex-col items-center justify-center text-center transition-all cursor-pointer hover:bg-surface-container-low" id="drop-zone">
+<div class="w-16 h-16 bg-secondary/10 text-secondary rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[32px]">upload_file</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-primary mb-1">Drop files here to upload</h4>
+<p class="font-body-sm text-body-sm text-outline">Support for PDF, DOCX, ZIP, and images up to 50MB.</p>
+<input class="hidden" id="file-input" multiple="" type="file"/>
+</div>
+<!-- Uploaded Files List (Placeholder) -->
+<div class="mt-4 grid grid-cols-2 gap-3">
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest border border-border-subtle rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">description</span>
+<div>
+<p class="font-label-md text-label-md text-primary">Technical_Specs.pdf</p>
+<p class="text-[10px] text-outline">1.2 MB • Ready</p>
+</div>
+</div>
+<button class="text-outline hover:text-error transition-all"><span class="material-symbols-outlined text-[18px]">close</span></button>
+</div>
+</div>
+</section>
+</div>
+<!-- Sidebar Contextual Info -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Task Tips Section -->
+<div class="bg-secondary-fixed text-on-secondary-fixed-variant p-card-padding rounded-xl border border-secondary/10 shadow-sm">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined">lightbulb</span>
+<h3 class="font-label-md text-label-md uppercase tracking-wider">Expert Tips</h3>
+</div>
+<ul class="space-y-4">
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5">check_circle</span>
+<p class="font-body-sm text-body-sm">Define clear **Success Criteria** to speed up the approval and execution phase.</p>
+</li>
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5">check_circle</span>
+<p class="font-body-sm text-body-sm">Attach visual mockups or process diagrams for technical workspace requests.</p>
+</li>
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5">check_circle</span>
+<p class="font-body-sm text-body-sm">Urgent tasks are prioritized by the **Next-Available** qualified specialist.</p>
+</li>
+</ul>
+</div>
+<!-- Active Talent Context -->
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-label-md text-label-md text-outline">Available Specialists</h3>
+<span class="bg-status-active/10 text-status-active px-2 py-0.5 rounded-full text-[10px] font-bold">12 ONLINE</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<img alt="Talent Avatar" class="w-10 h-10 rounded-full bg-surface-container-high" data-alt="A professional headshot of a software developer specialist in a high-tech modern studio setting. The lighting is crisp and cool, emphasizing precision and expertise. The background is a blurred high-end office environment with soft blue and charcoal tones. The image projects institutional trust and technical mastery." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEr7M6xFYb8TV4L4wFFpVY2UInb5Y5rHLs1fxP9n2D3MSktknPNDq33iJ46SnSpkRJ6SFr1cCGk6WlZIizNm08uWsVhdJpxv85imU-4oSFIFJxEj4Cg18OLWxmfH2TDT9GZQAfscz1Ch1OQJD73szdVqr1tgOX-IqVmhptuvPwMJP4Qf1Rn0x-IHKf54udTmt3EprrRRnm4ojOwcSgYa9Yc20uIfRoXSrmFf31UXCruzEwDHMpAhMbTD3acd0vaoDuCEv24AmWdA"/>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-primary">Julian Draxler</p>
+<p class="text-[11px] text-outline">Lead Infrastructure Arch.</p>
+</div>
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+</div>
+<div class="flex items-center gap-3">
+<img alt="Talent Avatar" class="w-10 h-10 rounded-full bg-surface-container-high" data-alt="A portrait of a senior compliance and legal officer in a corporate professional environment. The mood is serious and authoritative, with warm ambient lighting reflecting a sophisticated office. The aesthetic is modern-corporate with a focus on trust and reliability. Minimalist office details are visible in the soft bokeh background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAceRDV7J72IAbrVvbEXK3GUosa5m95HIgj4jDwRWPB68Ufdy2KN23ab2LNxwu7dDHWEOOX-IbH41Ke45Q2sU8594MS3h97z1qu2OnKjLItyTq1KhvzOJGU6EBxKGWJiHsrZIKzqsWiDgO2KqQ1Dbj8BOb9r8_i4x3wQ_Hbtc_uskAjUbcvzigMFmtTD6aX7dJ_lWFS-0wHO1NFamKtQewNJ5Jgk_Yid1naBQOoiRYzS7eR4LYeGR7hUqeZoWRPCbS8_vQsdTfDaA"/>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-primary">Sarah Winston</p>
+<p class="text-[11px] text-outline">Compliance Specialist</p>
+</div>
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+</div>
+<div class="flex items-center gap-3">
+<img alt="Talent Avatar" class="w-10 h-10 rounded-full bg-surface-container-high" data-alt="A high-quality professional portrait of a marketing operations manager. The lighting is bright and energetic, suitable for a modern SaaS company branding. The individual is dressed in business casual attire. The color palette is clean, dominated by whites and soft gray tones with a hint of professional blue." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6EbNjB43_QIeqnlS5kmIhrHtKXF5C0NzWs21Z0LYnF05rHCAXhlnMC_pSIri3xESsEr5tpdfhA5pygkO_XeToI2jG48wcVKc2MpBSRxYtsHL-V5EUzano1PENjTCG0NG9uO3HFlrHhCMRCxZr3j3qLxUZOLRQ5j8tnp3HiFGI0DvIKN7EgUtiT6LZBdcr_cXYq6FcJdmdttTi-cZIdM-e63VOdc1Zo9f0su3rE9jCZBHqr2npTVXO5ROJ5f65jbZyhP9Lg-EWIA"/>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-primary">Mike Kim</p>
+<p class="text-[11px] text-outline">Operations Manager</p>
+</div>
+<div class="flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="text-[10px]">10m</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-border-subtle rounded-lg text-outline font-label-md text-label-md hover:bg-surface-container-low hover:text-primary transition-all">
+                            View Full Talent Pool
+                        </button>
+</div>
+<!-- Previous Task Reference -->
+<div class="bg-surface-container-low p-card-padding rounded-xl border border-border-subtle">
+<h3 class="font-label-md text-label-md text-outline mb-4">Related Recent Tasks</h3>
+<div class="space-y-3">
+<a class="block group" href="#">
+<p class="font-label-md text-label-md text-primary group-hover:text-secondary transition-all">Infrastructure Load Test</p>
+<p class="text-[10px] text-outline uppercase">Completed 2d ago</p>
+</a>
+<a class="block group" href="#">
+<p class="font-label-md text-label-md text-primary group-hover:text-secondary transition-all">SLA Agreement Update</p>
+<p class="text-[10px] text-outline uppercase text-status-active font-bold">In Progress</p>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle shadow-lg md:hidden z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 scale-90" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-[10px]">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-md text-[10px]">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-[10px]">Profile</span>
+</a>
+</nav>
+<script>
+        // Priority Selection Logic
+        const priorityBtns = document.querySelectorAll('.priority-btn');
+        priorityBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                priorityBtns.forEach(b => {
+                    b.classList.remove('border-2', 'border-secondary', 'bg-secondary/5', 'text-secondary');
+                    b.classList.add('border', 'border-border-subtle', 'text-outline');
+                });
+                btn.classList.add('border-2', 'border-secondary', 'bg-secondary/5', 'text-secondary');
+                btn.classList.remove('border', 'border-border-subtle', 'text-outline');
+            });
+        });
+
+        // Drag and Drop Logic
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            console.log('Files dropped:', files);
+            // In a real app, handle file uploads here
+        }, false);
+    </script>
+</body></html>

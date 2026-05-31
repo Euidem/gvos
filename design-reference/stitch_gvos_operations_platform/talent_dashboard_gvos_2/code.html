@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Talent Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-active {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+        }
+        body {
+            background-color: #f7f9fb;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#000000",
+                        "surface-container": "#eceef0",
+                        "on-surface-variant": "#45464d",
+                        "status-suspended": "#64748B",
+                        "primary-fixed-dim": "#bec6e0",
+                        "primary": "#000000",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#271901",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "on-background": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "sidebar-bg": "#0B0F19",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "status-completed": "#059669",
+                        "on-surface": "#191c1e",
+                        "on-primary-container": "#7c839b",
+                        "border-subtle": "#E2E8F0",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-tertiary-container": "#98805d",
+                        "on-secondary-container": "#fefcff",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-highest": "#e0e3e5",
+                        "inverse-primary": "#bec6e0",
+                        "status-payment-due": "#F59E0B",
+                        "outline-variant": "#c6c6cd",
+                        "surface-dim": "#d8dadc",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "primary-container": "#131b2e",
+                        "secondary": "#0058be",
+                        "status-urgent": "#B91C1C",
+                        "on-secondary-fixed": "#001a42",
+                        "on-tertiary-fixed": "#271901",
+                        "secondary-fixed": "#d8e2ff",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "status-trial": "#8B5CF6",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#76777d",
+                        "secondary-container": "#2170e4",
+                        "status-blocked": "#EF4444",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "background": "#f7f9fb",
+                        "status-active": "#10B981",
+                        "inverse-surface": "#2d3133"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "32px",
+                        "base": "4px",
+                        "card-padding": "24px",
+                        "input-gap": "16px",
+                        "section-gap": "40px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "mono-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Manrope"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Manrope"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-body-md text-on-surface bg-background">
+<!-- Desktop Sidebar -->
+<aside class="w-[280px] h-full fixed left-0 top-0 bg-sidebar-bg flex flex-col py-gutter px-4 z-50 hidden md:flex">
+<div class="mb-10 px-2">
+<h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed">GVOS Platform</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary-fixed-dim bg-white/10 border-l-4 border-secondary-fixed font-bold transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">workspaces</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Talent Pool</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-white/10 pt-4">
+<button class="w-full mb-4 py-2 px-4 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:opacity-90 transition-opacity">
+                Quick Action
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-[280px] min-h-screen pb-24 md:pb-12">
+<!-- Top Nav -->
+<header class="flex items-center justify-between px-gutter h-16 w-full sticky top-0 z-40 bg-surface-container-lowest shadow-sm border-b border-border-subtle">
+<div class="flex items-center gap-4">
+<div class="md:hidden">
+<span class="material-symbols-outlined text-primary">menu</span>
+</div>
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="pl-10 pr-4 py-1.5 rounded-full bg-surface-container-low border-none focus:ring-2 focus:ring-secondary text-body-sm w-64" placeholder="Search workspace..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center gap-4">
+<a class="text-outline font-label-md text-label-md hover:text-primary transition-all" href="#">Workspace</a>
+<a class="text-outline font-label-md text-label-md hover:text-primary transition-all" href="#">Messages</a>
+<a class="text-outline font-label-md text-label-md hover:text-primary transition-all" href="#">Files</a>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline hover:text-primary cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-outline hover:text-primary cursor-pointer">security</span>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container-high border border-border-subtle">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a person with a warm, confident expression. The lighting is bright and clean, characteristic of a high-end corporate portrait. They are set against a minimalist architectural background with subtle hints of blue and soft grey tones, perfectly aligning with a modern SaaS dashboard aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuSv-9GHcFCQL9u1Vzp4XeEfk1QGvZ-r8aH7QLjeR4fza1FXelD8LR1QC3ghEKOMdeerPSxGIDm9ejPfMfQWFyhIKVWlvu7hLVpORQn7frSfPIFLfrekob3Rjg6s-vBSdtWsreVV2rwt96gCHo3nOrE6PzicBen5BjuDr6xSYxfO2QAPmwUbAtOg5-pFnXZstR4acb6oYH1dgsTD7ytACs-lAfvurzfIk5QPAHvieNh7i1UcwY7Z1yCoFHdnMKjqLA6K4sSwguaA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="max-w-[1440px] mx-auto p-gutter space-y-section-gap">
+<!-- Header & Clock-In Widget -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Welcome back, Alex</h2>
+<p class="text-on-surface-variant font-body-md mt-1">You have 12 priority tasks remaining for today across 4 workspaces.</p>
+</div>
+<div class="bg-white p-4 rounded-xl border border-border-subtle shadow-sm flex items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-10 h-10 rounded-full bg-status-active/10 flex items-center justify-center text-status-active">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">timer</span>
+</div>
+<span class="absolute -top-1 -right-1 w-3 h-3 bg-status-active border-2 border-white rounded-full"></span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-outline uppercase tracking-wider">Status: Online</p>
+<p class="font-mono-sm text-mono-sm font-bold text-primary">04:12:30 Tracked Today</p>
+</div>
+</div>
+<button class="bg-secondary text-on-secondary px-6 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+                        Clock Out
+                    </button>
+</div>
+</section>
+<!-- Metrics Bento Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between group hover:border-secondary transition-colors cursor-default">
+<span class="font-label-md text-label-md text-outline mb-2">Today's Tasks</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg">18</span>
+<span class="text-status-active font-label-md text-label-md flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12%
+                        </span>
+</div>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between group hover:border-status-urgent transition-colors cursor-default">
+<span class="font-label-md text-label-md text-outline mb-2">Overdue</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-status-urgent">3</span>
+<span class="text-outline font-label-md text-label-md">-1 from yesterday</span>
+</div>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between group hover:border-status-blocked transition-colors cursor-default">
+<span class="font-label-md text-label-md text-outline mb-2">Blocked</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-status-blocked">1</span>
+<span class="text-outline font-label-md text-label-md">Awaiting feedback</span>
+</div>
+</div>
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-md text-label-md text-outline">Weekly Goal</span>
+<span class="font-label-md text-label-md text-primary">75%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 75%"></div>
+</div>
+<p class="font-label-md text-label-md text-outline mt-3">30 / 40 hours completed</p>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-section-gap">
+<!-- Left Column: Workspaces & Priorities -->
+<div class="lg:col-span-2 space-y-section-gap">
+<!-- Active Workspaces -->
+<div>
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-headline-md text-primary">Active Workspaces</h3>
+<button class="text-secondary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Workspace Card -->
+<div class="bg-white p-6 rounded-xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-secondary/5 rounded-full -mr-12 -mt-12"></div>
+<div class="flex items-start justify-between mb-4 relative z-10">
+<div class="h-12 w-12 rounded-lg bg-surface-container-low flex items-center justify-center font-bold text-secondary">ND</div>
+<span class="bg-secondary text-on-secondary text-[10px] font-bold px-2 py-1 rounded-full">4 UNREAD</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-sm mb-1">Nexus Dynamics</h4>
+<p class="text-outline font-body-sm text-xs mb-4">Operations &amp; Data Management</p>
+<div class="flex items-center gap-4 border-t border-border-subtle pt-4">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border-2 border-white" data-alt="A portrait of a smiling woman with glasses in a professional, bright office setting. The image is clean and corporate, featuring soft focus on the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2M5TLsQ4ys1PGKjh8pT6rYKvPx79FFYqbEcprC3pnqcxvuKayyVy-YFyvYUfmIP0WOHmE9j_XxgZCoZPRbePNZnndWZe6kS-hQTUU2eTRG4FGgSHLdtZ_T2dj-AaVLFLDOrV3d7UU9_4P2HfD3yazSBFRo6n-VG26WgHVOWaeupCpyKw-y6ggKWqkDpKOXCvG0zul9yUT4IIuUUMSCx0p0yJclNdnteZdIBUDKfMXs6Kc3WHKQN2azt_K1VuCGzPsU4WJpx7NsA"/>
+<img class="w-6 h-6 rounded-full border-2 border-white" data-alt="A professional headshot of a man in a crisp white shirt, looking directly at the camera with a neutral expression. High-key lighting and a blurred office background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJk7cdgbcdBd2FBWwgOcdBkiQXE6kU-tuYk8YTlfZjcOoIf0u7bu8cyMdO0PTZG9mRtE-LTBA32CnzWjNfVAMd2ojnhNx1_8U-dOPGf7ng93C5d2HBLw_N7yfJ2fn79TN2XfroG5eqzZvVA7dbgimqV1cBUCRNoe22GsFju_2gX3VEKpqhQsaRDJgl641L3yZ5UVdwCu6nD3khQNrXV_4cU3gllI7ywaYEKg2pkBmqJdE2HhJHa-02Gr5-71wdH6vteukcI21l3A"/>
+<div class="w-6 h-6 rounded-full bg-surface-container border-2 border-white flex items-center justify-center text-[8px] font-bold text-outline">+3</div>
+</div>
+<div class="flex items-center gap-1 text-outline font-label-md text-[11px]">
+<span class="material-symbols-outlined text-sm">assignment</span> 8 open tasks
+                                    </div>
+</div>
+</div>
+<!-- Workspace Card 2 -->
+<div class="bg-white p-6 rounded-xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-status-active/5 rounded-full -mr-12 -mt-12"></div>
+<div class="flex items-start justify-between mb-4 relative z-10">
+<div class="h-12 w-12 rounded-lg bg-surface-container-low flex items-center justify-center font-bold text-status-active">GV</div>
+<span class="bg-surface-container-low text-outline text-[10px] font-bold px-2 py-1 rounded-full">NO NEW</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-sm mb-1">Global Vision</h4>
+<p class="text-outline font-body-sm text-xs mb-4">Strategy Consulting Group</p>
+<div class="flex items-center gap-4 border-t border-border-subtle pt-4">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border-2 border-white" data-alt="A male professional with a friendly smile, photographed in a well-lit modern workspace with blue and grey accents. High-quality corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKV-EGQAQmV-Fjaqpmwm_rv_51vJniJO0fZNhdtN1pDHSDh28vjU_EFL5rgO319xfgP0_3JXfbybnTptlNTgtNWdV3tdrq_60BK5WIrKHVqMvU9bq5iBlGGs8Uv1HEznzJRr5XRAg4A_ax-4YNMOfSyKEJ-389asGiW2Y7KuJfe1iSmxZ_j5TdKcHwkKVrAF8gVc6Nijfh1TwbCtjEwUis7HXJDCb61LdplGGUWou-k_Cwp_qNYZh87QDX_St0BpBmJoa5EGBxgQ"/>
+<div class="w-6 h-6 rounded-full bg-surface-container border-2 border-white flex items-center justify-center text-[8px] font-bold text-outline">+1</div>
+</div>
+<div class="flex items-center gap-1 text-outline font-label-md text-[11px]">
+<span class="material-symbols-outlined text-sm">assignment</span> 12 open tasks
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Today's Priorities -->
+<div>
+<h3 class="font-headline-md text-headline-md text-primary mb-6">Today's Priorities</h3>
+<div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden">
+<div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex items-center justify-between">
+<span class="font-label-md text-label-md text-outline">Task Name</span>
+<div class="flex gap-12 mr-12 hidden md:flex">
+<span class="font-label-md text-label-md text-outline w-24">Workspace</span>
+<span class="font-label-md text-label-md text-outline w-20">Due Time</span>
+</div>
+</div>
+<div class="divide-y divide-border-subtle">
+<div class="p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border-2 border-outline group-hover:border-secondary flex items-center justify-center transition-colors"></div>
+<div>
+<p class="font-body-md text-primary text-sm font-medium">Reconcile Q3 Expenses</p>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-status-urgent/10 text-status-urgent font-bold uppercase tracking-tight">Priority</span>
+</div>
+</div>
+<div class="flex gap-12 items-center">
+<span class="font-label-md text-label-md text-outline w-24 hidden md:block">Nexus Dynamics</span>
+<span class="font-label-md text-label-md text-status-urgent w-20 hidden md:block">10:00 AM</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary">more_vert</span>
+</div>
+</div>
+<div class="p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border-2 border-outline group-hover:border-secondary flex items-center justify-center transition-colors"></div>
+<div>
+<p class="font-body-md text-primary text-sm font-medium">Schedule Board Meeting</p>
+</div>
+</div>
+<div class="flex gap-12 items-center">
+<span class="font-label-md text-label-md text-outline w-24 hidden md:block">Global Vision</span>
+<span class="font-label-md text-label-md text-outline w-20 hidden md:block">02:00 PM</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary">more_vert</span>
+</div>
+</div>
+<div class="p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border-2 border-outline group-hover:border-secondary flex items-center justify-center transition-colors"></div>
+<div>
+<p class="font-body-md text-primary text-sm font-medium">Draft Newsletter Copy</p>
+</div>
+</div>
+<div class="flex gap-12 items-center">
+<span class="font-label-md text-label-md text-outline w-24 hidden md:block">Nexus Dynamics</span>
+<span class="font-label-md text-label-md text-outline w-20 hidden md:block">04:30 PM</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary">more_vert</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Manager & Reports -->
+<div class="space-y-section-gap">
+<!-- Manager Card -->
+<div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+<h3 class="font-label-md text-label-md text-outline uppercase tracking-wider mb-4">Line Manager</h3>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-secondary-fixed">
+<img alt="Manager Portrait" class="w-full h-full object-cover" data-alt="A focused male executive with short dark hair, wearing a navy blazer over a clean white shirt. The background is a high-end corporate office with soft lighting, reflecting the GVOS design system's professional and authoritative atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy5BBEbQEELvOmgQtbzKBTiQnx5_smOpc9iCIPcSGB1jNTn8somsmdSFozVuKmH5S0eoAkH7edufo16EI-OD8usxi7zA9f75_5YPbgGo-DXUyr35ozgUsO2dhGP8NaYPpIpMoGqSefIbWjq6IAsfkpLvSfQkxNPMYUAYZWQ6jnWANgomQI1J00GxJGD0BjFtXn6VQg24iwS0OQ6Fw3jS9OwqoDjqVFpK-4zifaVz0norZojwlok1ebyjH2a5-mYB52oM24nUkxPQ"/>
+</div>
+<div>
+<h4 class="font-headline-md text-sm text-primary">Marcus Sterling</h4>
+<p class="text-outline text-xs">Director of Operations</p>
+</div>
+</div>
+<div class="space-y-3">
+<button class="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-border-subtle hover:bg-surface-container-low transition-all font-label-md text-label-md text-primary">
+<span class="material-symbols-outlined text-lg">chat</span> Message Marcus
+                            </button>
+<button class="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-border-subtle hover:bg-surface-container-low transition-all font-label-md text-label-md text-primary">
+<span class="material-symbols-outlined text-lg">calendar_today</span> Schedule Sync
+                            </button>
+</div>
+</div>
+<!-- Daily Report CTA -->
+<div class="bg-primary-container p-card-padding rounded-xl border border-secondary shadow-md text-on-primary relative overflow-hidden">
+<div class="absolute -right-8 -bottom-8 opacity-10">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+</div>
+<h3 class="font-headline-md text-sm text-white mb-2 relative z-10">Daily Report Pending</h3>
+<p class="text-on-primary-container text-xs mb-6 relative z-10 leading-relaxed">Ensure all billable hours are logged and task statuses updated before submission.</p>
+<button class="w-full py-3 bg-secondary text-white rounded-lg font-bold text-label-md hover:bg-secondary/90 transition-all relative z-10 flex items-center justify-center gap-2">
+                            Submit Report <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- Quick Support -->
+<div class="bg-surface-container-low p-card-padding rounded-xl border border-border-subtle text-center">
+<span class="material-symbols-outlined text-secondary mb-2">support_agent</span>
+<h4 class="font-label-md text-label-md text-primary mb-1">Need Help?</h4>
+<p class="text-[11px] text-outline mb-4">GVOS 24/7 Support is available for technical or payroll issues.</p>
+<a class="text-secondary font-bold text-[11px] uppercase tracking-widest hover:underline" href="#">Contact Support</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Mobile Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface border-t border-border-subtle shadow-lg md:hidden z-50">
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-[10px]">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-md text-[10px]">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-[10px]">Profile</span>
+</a>
+</nav>
+</main>
+<script>
+        // Micro-interaction for clocking out
+        document.querySelector('button.bg-secondary').addEventListener('click', function() {
+            if (this.innerText === 'Clock Out') {
+                this.innerText = 'Clock In';
+                this.classList.remove('bg-secondary');
+                this.classList.add('bg-status-active');
+            } else {
+                this.innerText = 'Clock Out';
+                this.classList.remove('bg-status-active');
+                this.classList.add('bg-secondary');
+            }
+        });
+
+        // Hover effect for metrics
+        const metrics = document.querySelectorAll('.grid > div.group');
+        metrics.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+                card.style.transition = 'transform 0.2s ease-out';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

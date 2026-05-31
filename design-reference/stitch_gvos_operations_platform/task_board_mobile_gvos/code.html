@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVOS Mobile Task Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#eceef0",
+                    "primary": "#000000",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e0e3e5",
+                    "primary-fixed": "#dae2fd",
+                    "status-suspended": "#64748B",
+                    "border-subtle": "#E2E8F0",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "on-secondary-fixed-variant": "#004395",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#c6c6cd",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "inverse-primary": "#bec6e0",
+                    "surface-variant": "#e0e3e5",
+                    "background": "#f7f9fb",
+                    "surface-dim": "#d8dadc",
+                    "primary-fixed-dim": "#bec6e0",
+                    "surface-bright": "#f7f9fb",
+                    "sidebar-bg": "#0B0F19",
+                    "surface-container-low": "#f2f4f6",
+                    "inverse-on-surface": "#eff1f3",
+                    "status-active": "#10B981",
+                    "inverse-surface": "#2d3133",
+                    "on-surface-variant": "#45464d",
+                    "status-trial": "#8B5CF6",
+                    "status-urgent": "#B91C1C",
+                    "tertiary": "#000000",
+                    "status-completed": "#059669",
+                    "secondary-fixed": "#d8e2ff",
+                    "secondary": "#0058be",
+                    "primary-container": "#131b2e",
+                    "outline": "#76777d",
+                    "tertiary-fixed": "#fcdeb5",
+                    "surface": "#f7f9fb",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-background": "#191c1e",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#271901",
+                    "surface-tint": "#565e74",
+                    "status-payment-due": "#F59E0B",
+                    "on-tertiary-fixed": "#271901",
+                    "secondary-container": "#2170e4",
+                    "on-surface": "#191c1e",
+                    "on-secondary-fixed": "#001a42",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-container": "#98805d",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-secondary-container": "#fefcff",
+                    "status-blocked": "#EF4444",
+                    "on-primary-container": "#7c839b",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e6e8ea",
+                    "on-primary-fixed": "#131b2e",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "input-gap": "16px",
+                    "container-margin": "32px",
+                    "gutter": "24px",
+                    "section-gap": "40px",
+                    "base": "4px",
+                    "card-padding": "24px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Manrope"],
+                    "body-md": ["Inter"],
+                    "mono-sm": ["JetBrains Mono"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Manrope"],
+                    "headline-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "mono-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .active-pill {
+            background-color: #0058be;
+            color: white;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-24">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-40 bg-surface-container-lowest dark:bg-surface-dim border-b border-border-subtle shadow-sm px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-black text-secondary">GVOS</span>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">Tasks</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-border-subtle">
+<img alt="User Avatar" data-alt="A close-up professional headshot of a middle-aged male executive with a confident expression. He is wearing a sharp charcoal suit and white shirt, set against a blurred high-end office background. The lighting is soft and cinematic, highlighting sophisticated corporate textures and a clean, high-contrast light-mode aesthetic suitable for an enterprise dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEFd81hsXQpZfSh5EVh4tRIx7qggtxXfg_zRr3Gee1ZC4pscgIC9D9qgJRh_DKsqT__LOegK-x2sy8CACNdoTHHPq2_J44GSCsEaOy6YdGF7zJjpH7-lUkB6A5kIu4Ao4vsyy09gN27M3xSTa9aoDAcF7EdIYZVrBUkiT34DVWGexLUWg8GnUDKN1weA-_Hk1XjxHigL60W8f3zCAnrPlfZEXGGfuODUBymUhSkuDewchPy_qW2CwGofxf_nJz4OBTgGgQSHqnSA"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-[1440px] mx-auto px-4 pt-4 flex flex-col gap-6">
+<!-- Overdue Alert Banner -->
+<div class="bg-error-container text-on-error-container p-4 rounded-xl flex items-start gap-3 shadow-sm border border-error/20">
+<span class="material-symbols-outlined text-error" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<p class="font-label-md text-label-md">3 Tasks Overdue</p>
+<p class="font-body-sm text-body-sm opacity-90">High priority operational tasks require immediate attention to maintain project velocity.</p>
+</div>
+</div>
+<!-- Search & Filter Area -->
+<div class="flex flex-col gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-secondary" data-icon="search">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-white border border-border-subtle rounded-xl focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all font-body-sm" placeholder="Search tasks, IDs, or talent..." type="text"/>
+</div>
+<div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2">
+<button class="whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md active-pill shadow-sm transition-all">All Tasks</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md bg-white border border-border-subtle text-on-surface-variant hover:border-secondary transition-all">Pending</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md bg-white border border-border-subtle text-on-surface-variant hover:border-secondary transition-all">In Progress</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md bg-white border border-border-subtle text-on-surface-variant hover:border-secondary transition-all">Blocked</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md bg-white border border-border-subtle text-on-surface-variant hover:border-secondary transition-all">Completed</button>
+</div>
+</div>
+<!-- Task List Stack -->
+<div class="flex flex-col gap-3">
+<!-- Task Card 1: Urgent/Overdue -->
+<div class="bg-white rounded-xl border border-border-subtle p-card-padding shadow-sm active:scale-[0.98] transition-transform">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Overdue</span>
+<button class="text-outline"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+<h3 class="font-headline-md text-headline-md-mobile text-primary mb-2">Q3 Security Audit Compliance</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Validate multi-factor authentication protocols across all enterprise workspace nodes.</p>
+<div class="flex items-center justify-between border-t border-border-subtle pt-4">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-md text-outline uppercase">Priority</span>
+<span class="font-label-md text-label-md text-status-urgent flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-status-urgent"></span> Urgent
+                            </span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-label-md text-outline uppercase">Due Date</span>
+<span class="font-label-md text-label-md text-error">Oct 24, 2023</span>
+</div>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-secondary overflow-hidden">
+<img alt="Talent Avatar" data-alt="A professional portrait of a tech-savvy female developer in a minimalist workspace. She is wearing modern glasses and a dark tech-fleece, looking towards the camera with a helpful smile. The background shows a hint of a clean, organized server room with soft blue neon accents, embodying the corporate precision and quiet powerhouse aesthetic of GVOS." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbW9_VdjrhZKs_jN5B1d-OEc9Nh1_X8qDubivh3WaVZEhmfmFK08Gh7JhBCt4xZfmkpbP-ja9BSpFuzn13d-j4nOKdAKxOtSILEsBQ96Jz1N3oFo_ayBKfjvlUTzd2-d2pVmyCvJeHdRDrsqGwxsrQjF6YNYSC6F7vyYQw1sFohn33JZOTR4vRRhKn4_l-YsisTFBBYe2fyuP-zd0GlX6Kfk4BacTh5EuVtH1bznzMKeJrCp9aejphbmfakOW5C_vJ7CFaiLkCKA"/>
+</div>
+</div>
+</div>
+<!-- Task Card 2: In Progress -->
+<div class="bg-white rounded-xl border border-border-subtle p-card-padding shadow-sm active:scale-[0.98] transition-transform">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">In Progress</span>
+<button class="text-outline"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+<h3 class="font-headline-md text-headline-md-mobile text-primary mb-2">Workspace API Integration</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Syncing payroll modules with the new Talent Pool database structure.</p>
+<div class="flex items-center justify-between border-t border-border-subtle pt-4">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-md text-outline uppercase">Priority</span>
+<span class="font-label-md text-label-md text-secondary flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Medium
+                            </span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-label-md text-outline uppercase">Due Date</span>
+<span class="font-label-md text-label-md text-on-surface">Oct 30, 2023</span>
+</div>
+</div>
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
+<img alt="Avatar" data-alt="A diverse male professional in a modern business-casual outfit, standing in a brightly lit architectural office space. The image is clean with high-key lighting and reflects a sophisticated, premium efficiency mood with a palette of whites and soft grays." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcs2abPLlm0VjVsAJ57agkMZROtiE6FWp-1PqN0KIHAZG_zS-J4_nujuv0XuUX4gO3eXj3-pdv9RJKJPBnFyjBXk3O-oWoZdrzlKDq0EdofiyAu_H8iMxrFIPU9lKG1djHsLKenGecH-qBHRcXQvcrguLHdzbmMInrU6OB8FQgnNxMiEX53qneIpOq-eP927pRx2WT9I8kSreHBnLFz81y3xS6pAX82S_3LRydfDy76N7NpLH_z0D-9dAgdVqId49aZnOmJHQ1xg"/>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border-2 border-white flex items-center justify-center text-[10px] font-bold">+2</div>
+</div>
+</div>
+</div>
+<!-- Task Card 3: Blocked -->
+<div class="bg-white rounded-xl border border-border-subtle p-card-padding shadow-sm active:scale-[0.98] transition-transform">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-surface-container-highest text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Blocked</span>
+<button class="text-outline"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+<h3 class="font-headline-md text-headline-md-mobile text-primary mb-2">Financial Report Generation</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Awaiting final approval on Q3 expense logs from the finance board.</p>
+<div class="flex items-center justify-between border-t border-border-subtle pt-4">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-md text-outline uppercase">Priority</span>
+<span class="font-label-md text-label-md text-status-suspended flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-status-suspended"></span> Low
+                            </span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-label-md text-outline uppercase">Due Date</span>
+<span class="font-label-md text-label-md text-on-surface">Nov 02, 2023</span>
+</div>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
+<img alt="Avatar" data-alt="A focused female corporate leader with an elegant but practical aesthetic, captured in a modern corporate setting with large glass windows and soft morning light. The color palette is composed of deep blues and crisp whites, projecting institutional trust and operational precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUQYDw-SG2_q_V_gsN4HzU9nu0LMw-JLpmnIKGApnRS30KO0Xy3yO62ukGsPmIXqeV5wjY61HjaiqbSa239yuy7QB3q6z6diQpdTJQ35TiDH9C2eGTVncv6gnApuEBU030pSpNy-20UxH0YmDLcVttbE2-L4kF613_tvsCh562jcbekGJEJVD73FElGLZQQXmNjwJHFxVIT7OuvoTYI7L4ugWwZEpd5CrVisgLP4UDOQOYdV1P6kg2hXnV38uZHq4KKVnjNp1F6A"/>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) -->
+<button class="fixed right-6 bottom-24 w-14 h-14 bg-secondary text-white rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform z-50">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface dark:bg-inverse-surface border-t border-border-subtle shadow-lg flex justify-around items-center px-4 py-2 pb-safe z-40 md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary py-2" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-md text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-2 px-6 shadow-sm active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="assignment" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span class="font-label-md text-[10px]">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary py-2" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="font-label-md text-[10px]">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary py-2" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-[10px]">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('.active-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                // Logic for filter switching could go here
+            });
+        });
+
+        // Toggle FAB scale on scroll
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            let st = window.pageYOffset || document.documentElement.scrollTop;
+            const fab = document.querySelector('.fixed.right-6.bottom-24');
+            if (st > lastScrollTop) {
+                fab.style.transform = 'scale(0.8)';
+                fab.style.opacity = '0.8';
+            } else {
+                fab.style.transform = 'scale(1)';
+                fab.style.opacity = '1';
+            }
+            lastScrollTop = st <= 0 ? 0 : st;
+        }, false);
+    </script>
+</body></html>
