@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-05-31
 **Current Phase:** Phase 7 — Time Tracking & Work Reports ✅ Complete
-**Current Activity:** UI Source of Truth Alignment (feature dev paused)
+**Current Activity:** UI Correction — Batch 1a Complete (shared portal shell aligned to Stitch)
 
 ---
 
@@ -948,3 +948,44 @@ Feature development is paused. The Stitch UI export has been designated as the f
 **No code was changed. No database was changed. Documentation only.**
 
 **Next step:** Begin Batch 1a (shared layout correction) when instructed.
+
+---
+
+## UI Correction — Batch 1a Complete (2026-05-31)
+
+**File modified:** `resources/views/components/layouts/gvos.blade.php`
+
+**Stitch reference used:** `manager_command_center_gvos`, `admin_overview_gvos`, `talent_dashboard_gvos_1`, `client_dashboard_gvos`, `business_admin_dashboard_gvos`
+
+**Changes made:**
+
+### Sidebar
+- Logo section: removed `border-b border-white/10` separator (Stitch has no border here); fixed font tokens to `font-headline-md text-headline-md font-bold text-secondary-fixed leading-none`; changed padding from `px-6 pt-6 pb-4` to `mb-8 px-2` pattern matching Stitch
+- Nav items: active state updated to exact Stitch class: `bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95`; inactive state corrected from `text-on-primary-container` to `text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5`; nav text changed from `text-xs font-semibold` to `font-label-md text-label-md`
+- Footer: added `border-t border-white/10` + `pt-gutter`; added **Quick Action button** (`bg-secondary text-on-secondary py-3 rounded-xl font-label-md hover:brightness-110`) linking to workspace.index
+- Footer: added **Settings link** (profile.show route) matching Stitch `settings` icon + label
+- Footer: added **Support placeholder** (disabled, opacity-40, cursor-not-allowed, "coming soon" tooltip)
+- Profile card: improved to exact Stitch `bg-white/5 rounded-xl` with avatar initial, name `font-label-md text-label-md text-white`, role `text-[10px] uppercase tracking-wider`
+- Sign out: moved into footer space, now uses `font-label-md text-label-md` with `logout` icon
+
+### Header
+- **Left**: replaced page title `h1` with `GVOS` bold brand text (`font-headline-md font-black text-secondary`) + search input (`rounded-full w-64 bg-surface-container-low`)
+- **Center**: added **Workspace / Messages / Files** nav links — Workspace active when `$workspaceActive`, Messages and Files link to workspace.index (universal workspace hub; no per-workspace context in shared layout)
+- **Right**: replaced user info display with **notifications bell** icon + vertical divider + **Clock In button** (`bg-secondary text-on-secondary px-4 py-2 rounded-lg`) linking to workspace.index
+
+### Clock In placeholder
+- Styled as Stitch blue button (matching `manager_command_center_gvos` header exactly)
+- Links to `/workspaces` with `title="Go to your workspace to log time"`
+- No timer logic — UI only as specified
+- Semi-automated timer is documented in `SEMI_AUTOMATED_TIME_TRACKING_PLAN.md` but not implemented
+
+### Preserved
+- `<!-- GVOS UI Visual Repair v3 active -->` marker comment ✅
+- Full CSS fallback block (all `.bg-sidebar-bg`, `.text-secondary-fixed`, etc.) ✅ (added `text-secondary-fixed-dim` and `active:scale-95`)
+- Hidden Tailwind safeguard div (updated to include all new dynamic classes) ✅
+- Tailwind CDN script order (config before CDN) ✅
+- `@csrf` in logout form ✅
+- All dashboard routes unaffected (layout only) ✅
+- No database changes ✅
+- No route changes ✅
+- `GetVirtual` does not appear anywhere ✅

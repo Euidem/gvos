@@ -119,6 +119,7 @@
            ──────────────────────────────────────────────────────────────────── */
         .bg-sidebar-bg{background-color:#0B0F19}
         .text-secondary-fixed{color:#d8e2ff}
+        .text-secondary-fixed-dim{color:#adc6ff}
         .text-on-primary-container{color:#7c839b}
         .bg-secondary-container{background-color:#2170e4}
         .text-on-secondary-container{color:#fefcff}
@@ -176,141 +177,222 @@
         .focus\:border-secondary:focus{border-color:#0058be}
         .hover\:brightness-110:hover{filter:brightness(1.1)}
         .active\:scale-\[0\.98\]:active{transform:scale(.98)}
+        .active\:scale-95:active{transform:scale(.95)}
         .hover\:bg-secondary\/10:hover{background-color:rgba(0,88,190,.1)}
     </style>
 </head>
-<body class="h-full font-sans antialiased" style="background-color:#f7f9fb">
+<body class="bg-background text-on-surface font-body-md h-full" style="background-color:#f7f9fb">
 <!-- GVOS UI Visual Repair v3 active -->
 
-{{-- Hidden div: ensure Tailwind CDN generates all dynamic nav classes --}}
-<div class="hidden bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed text-on-primary-container hover:text-secondary-fixed hover:bg-white/5 hover:brightness-110 shadow-card shadow-subtle bg-secondary text-on-secondary bg-surface-container-lowest border-border-subtle"></div>
+{{-- Hidden div: force Tailwind CDN to generate all dynamic classes used in nav active/inactive states --}}
+<div class="hidden
+    bg-white/10 border-l-4 border-secondary-fixed
+    text-secondary-fixed text-secondary-fixed-dim
+    text-on-primary-container text-on-surface-variant
+    hover:text-secondary-fixed hover:bg-white/5
+    hover:brightness-110 active:scale-95
+    shadow-card shadow-subtle
+    bg-secondary text-on-secondary
+    bg-surface-container-lowest border-border-subtle
+    font-label-md text-label-md font-headline-md text-headline-md
+    font-body-md text-body-md font-body-sm text-body-sm
+    transition-transform transition-colors"></div>
 
 <div class="min-h-screen flex">
 
-    {{-- ── Sidebar ──────────────────────────────────────────────────────── --}}
-    <aside class="w-[280px] text-white flex flex-col flex-shrink-0 min-h-screen" style="background-color:#0B0F19">
+    {{-- ── Sidebar (Stitch: w-[280px] fixed dark sidebar) ─────────────────── --}}
+    {{-- Note: flex-shrink-0 keeps 280px column without fixed positioning.    --}}
+    {{-- Visual Repair v3: inline style is the structural fallback for #0B0F19 --}}
+    <aside class="w-[280px] text-white flex flex-col flex-shrink-0 min-h-screen py-gutter px-4 z-50"
+           style="background-color:#0B0F19">
 
-        {{-- Logo --}}
-        <div class="px-6 pt-6 pb-4 border-b border-white/10">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-secondary-container rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-on-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">hub</span>
-                </div>
-                <div>
-                    <h1 class="font-bold text-secondary-fixed text-sm leading-tight tracking-tight">GVOS Platform</h1>
-                    <p class="text-[10px] text-on-primary-container mt-0.5 uppercase tracking-wider">Enterprise Ops</p>
-                </div>
+        {{-- ── Logo (Stitch: hub icon + GVOS Platform + Enterprise Ops, no border below) --}}
+        <div class="mb-8 px-2 flex items-center gap-3">
+            <div class="w-10 h-10 bg-secondary-container rounded-lg flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-on-secondary"
+                      style="font-variation-settings: 'FILL' 1; font-size: 20px;">hub</span>
+            </div>
+            <div>
+                <h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed leading-none">GVOS Platform</h1>
+                <p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
             </div>
         </div>
 
-        {{-- Navigation --}}
+        {{-- ── Navigation ───────────────────────────────────────────────────── --}}
         @php
             $dashboardActive = request()->is('/') || request()->is('*/dashboard');
             $workspaceActive = request()->routeIs('workspace.*');
             $profileActive   = request()->routeIs('profile.*');
         @endphp
 
-        <nav class="flex-1 px-4 py-6 space-y-1">
+        {{-- Stitch: active = bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95 --}}
+        {{-- Stitch: inactive = text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors --}}
+        <nav class="flex-1 space-y-1">
 
             <a href="{{ url('/') }}"
-               class="{{ $dashboardActive
-                    ? 'bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed font-bold'
-                    : 'text-on-primary-container hover:text-secondary-fixed hover:bg-white/5' }}
-                  flex items-center gap-3 px-3 py-3 rounded-lg transition-colors">
-                <span class="material-symbols-outlined flex-shrink-0" style="font-size: 20px;">dashboard</span>
-                <span class="text-xs font-semibold tracking-wide">Dashboard</span>
+               class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors
+                      {{ $dashboardActive
+                           ? 'bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95'
+                           : 'text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5' }}">
+                <span class="material-symbols-outlined" style="font-size: 20px;">dashboard</span>
+                <span class="font-label-md text-label-md">Dashboard</span>
             </a>
 
             <a href="{{ route('workspace.index') }}"
-               class="{{ $workspaceActive
-                    ? 'bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed font-bold'
-                    : 'text-on-primary-container hover:text-secondary-fixed hover:bg-white/5' }}
-                  flex items-center gap-3 px-3 py-3 rounded-lg transition-colors">
-                <span class="material-symbols-outlined flex-shrink-0" style="font-size: 20px;">workspaces</span>
-                <span class="text-xs font-semibold tracking-wide">Workspaces</span>
+               class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors
+                      {{ $workspaceActive
+                           ? 'bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95'
+                           : 'text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5' }}">
+                <span class="material-symbols-outlined" style="font-size: 20px;">workspaces</span>
+                <span class="font-label-md text-label-md">Workspaces</span>
             </a>
 
             <a href="{{ route('profile.show') }}"
-               class="{{ $profileActive
-                    ? 'bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed font-bold'
-                    : 'text-on-primary-container hover:text-secondary-fixed hover:bg-white/5' }}
-                  flex items-center gap-3 px-3 py-3 rounded-lg transition-colors">
-                <span class="material-symbols-outlined flex-shrink-0" style="font-size: 20px;">person</span>
-                <span class="text-xs font-semibold tracking-wide">My Profile</span>
+               class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors
+                      {{ $profileActive
+                           ? 'bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95'
+                           : 'text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5' }}">
+                <span class="material-symbols-outlined" style="font-size: 20px;">person</span>
+                <span class="font-label-md text-label-md">My Profile</span>
             </a>
 
         </nav>
 
-        {{-- User footer --}}
+        {{-- ── Sidebar footer (Stitch: border-t → Quick Action → Settings → Support → Profile card) --}}
         @auth
-        <div class="px-4 pt-4 pb-6 border-t border-white/10">
-            <div class="flex items-center gap-3 px-3 py-4 bg-white/5 rounded-xl mb-3">
-                <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary text-sm font-bold flex-shrink-0 border border-secondary-fixed/30">
+        <div class="mt-auto pt-gutter border-t border-white/10 space-y-1">
+
+            {{-- Quick Action button (Stitch: bg-secondary rounded-xl with add icon) --}}
+            {{-- Routes to workspace index as the primary action entry point --}}
+            <a href="{{ route('workspace.index') }}"
+               class="w-full flex items-center justify-center gap-2 bg-secondary text-on-secondary py-3 rounded-xl font-label-md text-label-md mb-5 hover:brightness-110 transition-all">
+                <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+                Quick Action
+            </a>
+
+            {{-- Settings → Profile in GVOS context --}}
+            <a href="{{ route('profile.show') }}"
+               class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors">
+                <span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
+                <span class="font-label-md text-label-md">Settings</span>
+            </a>
+
+            {{-- Support (placeholder — no support portal in scope yet) --}}
+            <div class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-surface-variant opacity-40 cursor-not-allowed select-none"
+                 title="Support portal coming soon">
+                <span class="material-symbols-outlined" style="font-size: 20px;">help</span>
+                <span class="font-label-md text-label-md">Support</span>
+            </div>
+
+            {{-- User profile card (Stitch: bg-white/5 rounded-xl, avatar initial, name, role) --}}
+            <div class="flex items-center gap-3 px-3 py-4 mt-3 bg-white/5 rounded-xl">
+                <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center
+                            text-on-secondary text-sm font-bold flex-shrink-0 border border-secondary-fixed/30">
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                 </div>
                 <div class="overflow-hidden flex-1 min-w-0">
-                    <p class="text-xs font-semibold text-white truncate">{{ auth()->user()->name }}</p>
+                    <p class="font-label-md text-label-md text-white truncate leading-snug">
+                        {{ auth()->user()->name }}
+                    </p>
                     <p class="text-[10px] text-on-primary-container truncate uppercase tracking-wider mt-0.5">
                         {{ str_replace('_', ' ', auth()->user()->getGvosRoleName()) }}
                     </p>
                 </div>
             </div>
-            <form method="POST" action="{{ route('logout') }}">
+
+            {{-- Sign out --}}
+            <form method="POST" action="{{ route('logout') }}" class="mt-1">
                 @csrf
                 <button type="submit"
-                        class="w-full text-left text-xs text-on-primary-container hover:text-white transition-colors py-2 px-3 flex items-center gap-2 rounded-lg hover:bg-white/5">
-                    <span class="material-symbols-outlined flex-shrink-0" style="font-size: 16px;">logout</span>
-                    Sign out
+                        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
+                               text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5
+                               transition-colors text-left">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+                    <span class="font-label-md text-label-md">Sign Out</span>
                 </button>
             </form>
+
         </div>
         @endauth
+
     </aside>
 
-    {{-- ── Main content ──────────────────────────────────────────────────── --}}
+    {{-- ── Main content column ─────────────────────────────────────────────── --}}
     <div class="flex-1 flex flex-col min-w-0">
 
-        {{-- Top bar --}}
-        <header class="sticky top-0 h-16 bg-surface-container-lowest border-b border-border-subtle shadow-sm px-8 flex items-center justify-between z-40">
-            {{-- Page title --}}
-            <h1 class="text-sm font-semibold text-on-surface">{{ $title }}</h1>
+        {{-- ── Top header (Stitch: h-16 surface-container-lowest, GVOS brand + search | nav + actions) --}}
+        <header class="sticky top-0 h-16 bg-surface-container-lowest border-b border-border-subtle shadow-sm
+                       px-gutter flex items-center justify-between z-40"
+                style="background-color:#ffffff">
 
+            {{-- Left: GVOS bold brand text + search bar --}}
+            <div class="flex items-center gap-8">
+                <span class="font-headline-md text-headline-md font-black text-secondary leading-none">GVOS</span>
+                <div class="relative hidden lg:block">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline"
+                          style="font-size: 18px;">search</span>
+                    <input type="text"
+                           class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 w-64
+                                  font-body-sm text-body-sm focus:ring-2 focus:ring-secondary transition-all outline-none"
+                           placeholder="Search workspace...">
+                </div>
+            </div>
+
+            {{-- Right: nav links + icons + Clock In --}}
             @auth
-            <div class="flex items-center gap-3">
-                {{-- Notification bell --}}
+            <div class="flex items-center gap-6">
+
+                {{-- Quick nav links (Stitch: Workspace active, Messages + Files as hints) --}}
+                <nav class="hidden md:flex items-center gap-5">
+                    <a href="{{ route('workspace.index') }}"
+                       class="font-label-md text-label-md transition-all pb-0.5
+                              {{ $workspaceActive
+                                   ? 'text-secondary border-b-2 border-secondary font-bold'
+                                   : 'text-outline hover:text-primary' }}">
+                        Workspace
+                    </a>
+                    {{-- Messages and Files route to workspace list — universal context not available in shared layout --}}
+                    <a href="{{ route('workspace.index') }}"
+                       class="font-label-md text-label-md text-outline hover:text-primary transition-all"
+                       title="Access messages from your workspace">
+                        Messages
+                    </a>
+                    <a href="{{ route('workspace.index') }}"
+                       class="font-label-md text-label-md text-outline hover:text-primary transition-all"
+                       title="Access files from your workspace">
+                        Files
+                    </a>
+                </nav>
+
+                {{-- Notifications bell --}}
                 <button type="button"
                         class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-all"
                         title="Notifications">
                     <span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
                 </button>
-                {{-- Security indicator --}}
-                <button type="button"
-                        class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-all"
-                        title="Security">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">security</span>
-                </button>
+
                 {{-- Vertical divider --}}
-                <div class="h-8 w-px bg-border-subtle mx-1"></div>
-                {{-- User avatar + info --}}
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-on-secondary text-xs font-bold flex-shrink-0">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
-                    <div class="hidden sm:block">
-                        <p class="text-xs font-semibold text-on-surface leading-tight">{{ auth()->user()->name }}</p>
-                        <p class="text-[10px] text-outline uppercase tracking-wide leading-tight mt-0.5">
-                            {{ str_replace('_', ' ', auth()->user()->getGvosRoleName()) }}
-                        </p>
-                    </div>
-                </div>
+                <div class="h-6 w-px bg-border-subtle"></div>
+
+                {{-- Clock In — UI placeholder (Stitch: bg-secondary text-on-secondary rounded-lg) --}}
+                {{-- Timer not yet implemented. Links to workspaces to provide context for time logging. --}}
+                <a href="{{ route('workspace.index') }}"
+                   class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md text-label-md
+                          hover:brightness-110 transition-all"
+                   title="Go to your workspace to log time">
+                    Clock In
+                </a>
+
             </div>
             @endauth
+
         </header>
 
-        {{-- Page content --}}
+        {{-- ── Page content --}}
         <main class="flex-1 p-8" style="background-color:#F8FAFC">
             {{ $slot }}
         </main>
+
     </div>
 
 </div>

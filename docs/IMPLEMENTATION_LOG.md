@@ -7,6 +7,43 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-31 | UI Correction Batch 1a | Shared Portal Shell — Stitch Alignment
+
+**What was done:** Updated the shared GVOS portal layout (`gvos.blade.php`) to match the Stitch `manager_command_center_gvos` shell structure. No database, routes, or business logic changed.
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `resources/views/components/layouts/gvos.blade.php` | Complete sidebar and header update to match Stitch shell |
+| `docs/CURRENT_STATUS.md` | Batch 1a completion noted |
+| `docs/IMPLEMENTATION_LOG.md` | This entry |
+| `docs/UI_CORRECTION_PLAN.md` | Batch 1a marked complete |
+
+**Sidebar changes:**
+- Logo: removed border separator; corrected font tokens (`font-headline-md text-headline-md font-bold text-secondary-fixed`)
+- Nav active class: `bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95`
+- Nav inactive class: `text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5`
+- Nav labels: corrected to `font-label-md text-label-md`
+- Added Quick Action button (`bg-secondary rounded-xl`) in sidebar footer → links to workspace.index
+- Added Settings link (→ profile.show) and Support placeholder (disabled)
+- User profile card: improved to exact Stitch `bg-white/5 rounded-xl` pattern
+- Sign out: now uses `font-label-md text-label-md` with logout icon in footer
+
+**Header changes:**
+- Left: GVOS bold brand (`font-headline-md font-black text-secondary`) + search bar (`rounded-full bg-surface-container-low`)
+- Center: Workspace / Messages / Files quick nav links (all route to workspace.index)
+- Right: notifications bell + vertical divider + Clock In button (UI placeholder only)
+
+**Clock In:**
+- Styled as Stitch blue button → links to `/workspaces`
+- No timer logic implemented — UI placeholder as specified
+- `title="Go to your workspace to log time"`
+
+**Preserved:** Visual Repair v3 comment, CSS fallback block, safeguard div, Tailwind CDN order, logout CSRF form, all route assumptions.
+
+---
+
 ### 2026-05-31 | UI Alignment | Stitch Source of Truth Documentation
 
 **What was done:** Feature development paused. Stitch UI export designated as the frontend source of truth. Documentation-only update — no code, no database, no routes changed.
