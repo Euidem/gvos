@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PaymentResource\Pages;
 use App\Models\Payment;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -146,6 +147,7 @@ class PaymentResource extends Resource
                     ->action(function (Payment $record, array $data) {
                         $record->confirm(auth()->id(), $data['notes'] ?? '');
                         AuditLogger::paymentConfirmed($record, ['confirmed_by' => auth()->id()]);
+                        app(NotificationService::class)->notifyPaymentRecorded($record->fresh(['workspace']), auth()->user());
                         Notification::make()->title('Payment confirmed.')->success()->send();
                     }),
 

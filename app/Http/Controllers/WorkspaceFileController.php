@@ -6,6 +6,7 @@ use App\Models\Workspace;
 use App\Models\WorkspaceFile;
 use App\Models\WorkspaceTask;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -119,6 +120,8 @@ class WorkspaceFileController extends Controller
         AuditLogger::workspaceFileUploaded($file, [
             'workspace_code' => $workspace->workspace_code,
         ]);
+
+        app(NotificationService::class)->notifyFileUploaded($file, $request->user());
 
         return $file;
     }

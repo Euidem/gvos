@@ -182,6 +182,43 @@ Phase 10 does not include a generated-password workflow. Admins and authorized w
 
 ---
 
+## Phase 11 Warnings / Notes
+
+### Phase 11 | Info | Email delivery depends on Laravel mail configuration
+
+Database notifications work without any mail provider. Email notifications are sent only when the user's preference enables email for that key and Laravel mail is configured. Production must configure:
+
+- `MAIL_MAILER`
+- `MAIL_HOST`
+- `MAIL_PORT`
+- `MAIL_USERNAME`
+- `MAIL_PASSWORD`
+- `MAIL_ENCRYPTION`
+- `MAIL_FROM_ADDRESS`
+- `MAIL_FROM_NAME`
+
+No mail secrets should be committed to Git.
+
+---
+
+### Phase 11 | Info | No real-time notification transport
+
+Phase 11 uses Laravel database notifications and standard page loads. There is no websocket, polling worker, push notification service, browser extension, or external paid notification provider.
+
+---
+
+### Phase 11 | Low | Notification delivery failures are logged and do not block business actions
+
+`NotificationService` catches database/mail delivery exceptions and logs a warning. This protects task, file, chat, report, billing, and trial flows from being interrupted by mail configuration problems, but failed email deliveries need server log review.
+
+---
+
+### Phase 11 | Info | Sensitive payloads are intentionally minimal
+
+Notification payloads store safe metadata only. They do not include vault secrets, raw file paths, payment raw payloads, internal invoice notes, manager notes, API keys, tokens, or internal admin-only notes.
+
+---
+
 ## Resolved Issues
 
 ### 2026-06-06 | Phase 9 | Low | Timer status `running` not yet in schema

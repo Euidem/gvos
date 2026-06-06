@@ -1,8 +1,8 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-06
-**Current Phase:** Phase 9 - Semi Automated Time Tracking - Complete
-**Current Activity:** Phase 9 implemented; billing foundation remains unchanged
+**Current Phase:** Phase 11 - Notifications and Email System Foundation - Complete
+**Current Activity:** Phase 11 implemented; billing, payment confirmation, and password vault encryption remain unchanged
 
 ---
 
@@ -1071,6 +1071,26 @@ billing_plan.created/updated, workspace_subscription.created/updated, invoice.cr
 - [x] Secrets are not shown in workspace cards, vault tables, Filament tables, audit logs, or access logs
 - [x] No billing database, payment confirmation, invoice status, payment gateway, payroll, browser extension, auto-login, screenshot, keystroke, or screen-monitoring logic added
 - [x] Stitch reference used: `password_vault_gvos`, adapted to keep lists metadata-only
+
+---
+
+## Phase 11 Status - Complete (2026-06-06)
+
+### Notifications and Email System Foundation
+- [x] Laravel database notification table added using the standard UUID notification schema
+- [x] `user_notification_preferences` table added for per-user in-app and email preferences
+- [x] `UserNotificationPreference` model added with Phase 11 notification keys and email defaults
+- [x] 10 Laravel notification classes added for tasks, comments, files, messages, time logs, reports, invoices, payments, and trial approval
+- [x] `NotificationService` added to resolve safe recipients, apply preferences, avoid duplicate recipients, and catch delivery failures
+- [x] Portal `/notifications` inbox added with unread-first list, mark-read, mark-all-read, action links, and empty state
+- [x] Portal `/settings/notifications` preferences page added with in-app and email toggles
+- [x] Shared GVOS layout notification bell now links to the inbox and shows unread count
+- [x] Task assignment, task status changes, task comments, file uploads, workspace messages, submitted time logs, published weekly reports, issued invoices, recorded/confirmed payments, and approved trials trigger notifications
+- [x] Email is preference controlled and uses Laravel mail configuration; chat/message, task comment, task status, and file upload email are disabled by default
+- [x] Filament read-only `UserNotificationPreferenceResource` added for admin visibility into user preferences
+- [x] Audit event `notification_preferences.updated` added; notification creation itself is not audit-spammed
+- [x] Notification payloads exclude vault secrets, raw storage paths, private payment payloads, internal admin notes, internal invoice notes, manager notes, tokens, and API keys
+- [x] No Phase 12 work, payroll, payment gateway integration, real-time websocket chat, billing calculation changes, payment confirmation logic changes, or vault encryption changes
 
 ---
 

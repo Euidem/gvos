@@ -137,6 +137,12 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(WorkspaceVaultAccessLog::class);
     }
 
+    /** Notification delivery preferences for this user. */
+    public function notificationPreferences(): HasMany
+    {
+        return $this->hasMany(UserNotificationPreference::class);
+    }
+
     // ── Phase 7 relationships ────────────────────────────────────────────
 
     /** Time logs submitted by this user. */

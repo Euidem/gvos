@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Workspace;
 use App\Models\WorkspaceWeeklyReport;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class WorkspaceWeeklyReportController extends Controller
@@ -130,6 +131,10 @@ class WorkspaceWeeklyReportController extends Controller
             'workspace_code' => $workspace->workspace_code,
         ]);
 
+        if ($report->status === 'published') {
+            app(NotificationService::class)->notifyWeeklyReportPublished($report, $request->user());
+        }
+
         return redirect()
             ->route('workspace.reports.show', [$workspace, $report])
             ->with('success', 'Weekly report saved.');
@@ -220,6 +225,8 @@ class WorkspaceWeeklyReportController extends Controller
             'status'          => 'nullable|in:draft,submitted,approved,published',
         ]);
 
+        $oldStatus = $report->status;
+
         // When publishing, set published_at
         $publishedAt = $report->published_at;
         if (($validated['status'] ?? '') === 'published' && ! $publishedAt) {
@@ -246,6 +253,15 @@ class WorkspaceWeeklyReportController extends Controller
             'workspace_code' => $workspace->workspace_code,
             'updated_by'     => $user->id,
         ]);
+
+        if ($oldStatus !== 'published' && $report->status === 'published') {
+            AuditLogger::weeklyReportPublished($report, [
+                'workspace_code' => $workspace->workspace_code,
+                'published_by' => $user->id,
+            ]);
+
+            app(NotificationService::class)->notifyWeeklyReportPublished($report, $user);
+        }
 
         return redirect()
             ->route('workspace.reports.show', [$workspace, $report])

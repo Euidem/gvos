@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Workspace;
 use App\Models\WorkspaceTimeLog;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class WorkspaceTimeLogController extends Controller
@@ -175,6 +176,10 @@ class WorkspaceTimeLogController extends Controller
             'workspace_code' => $workspace->workspace_code,
         ]);
 
+        if ($timeLog->status === 'submitted') {
+            app(NotificationService::class)->notifyTimeLogSubmitted($timeLog, $request->user());
+        }
+
         return redirect()
             ->route('workspace.time-logs.show', [$workspace, $timeLog])
             ->with('success', 'Time log saved.');
@@ -331,12 +336,17 @@ class WorkspaceTimeLogController extends Controller
             $update['client_visible_summary'] = $validated['client_visible_summary'] ?? $timeLog->client_visible_summary;
         }
 
+        $oldStatus = $timeLog->status;
         $timeLog->update($update);
 
         AuditLogger::timeLogUpdated($timeLog, [
             'workspace_code' => $workspace->workspace_code,
             'updated_by'     => $user->id,
         ]);
+
+        if ($oldStatus !== 'submitted' && $timeLog->status === 'submitted') {
+            app(NotificationService::class)->notifyTimeLogSubmitted($timeLog, $user);
+        }
 
         return redirect()
             ->route('workspace.time-logs.show', [$workspace, $timeLog])

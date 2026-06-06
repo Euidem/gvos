@@ -8,6 +8,7 @@ use App\Models\LeadRequest;
 use App\Models\Trial;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -443,6 +444,8 @@ class LeadRequestResource extends Resource
                             'from' => $old,
                             'to'   => 'trial_approved',
                         ]);
+
+                        app(NotificationService::class)->notifyTrialApproved($trial, auth()->user());
 
                         Notification::make()
                             ->title('Trial approved')

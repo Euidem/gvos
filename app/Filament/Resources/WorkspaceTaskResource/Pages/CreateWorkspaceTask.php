@@ -5,6 +5,7 @@ namespace App\Filament\Resources\WorkspaceTaskResource\Pages;
 use App\Filament\Resources\WorkspaceTaskResource;
 use App\Models\WorkspaceTask;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateWorkspaceTask extends CreateRecord
@@ -29,5 +30,9 @@ class CreateWorkspaceTask extends CreateRecord
         AuditLogger::workspaceTaskCreated($this->record, [
             'source' => 'filament',
         ]);
+
+        if ($this->record->assigned_to_user_id) {
+            app(NotificationService::class)->notifyTaskAssigned($this->record->fresh(['assignedTo', 'workspace']), auth()->user());
+        }
     }
 }

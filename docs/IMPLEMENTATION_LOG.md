@@ -7,6 +7,39 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-06 | Phase 11 | Notifications and Email System Foundation
+
+**What was done:** Implemented the Phase 11 notification foundation using Laravel database and mail notifications. Users can view notifications in the portal, mark them read, and control in-app/email preferences per notification type. Notification delivery is routed through `NotificationService`, which resolves recipients, checks preferences, avoids duplicate recipients, and catches delivery failures so business actions continue.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_06_06_000004_create_notifications_table.php` | Standard Laravel database notifications table |
+| `database/migrations/2026_06_06_000005_create_user_notification_preferences_table.php` | Per-user in-app/email preference table |
+| `app/Models/UserNotificationPreference.php` | Preference model and Phase 11 notification key definitions |
+| `app/Notifications/*.php` | 10 safe Laravel notification classes plus base `GvosNotification` |
+| `app/Services/NotificationService.php` | Recipient resolution, preference checks, channel dispatch, failure protection |
+| `app/Http/Controllers/NotificationController.php` | Inbox, mark-read, mark-all-read, and preference settings actions |
+| `resources/views/notifications/index.blade.php` | Portal notification inbox |
+| `resources/views/settings/notifications.blade.php` | Portal notification preferences |
+| `app/Filament/Resources/UserNotificationPreferenceResource.php` and page | Read-only admin visibility into user notification preferences |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `routes/web.php` | Added notification inbox and settings routes |
+| `app/Models/User.php` | Added notificationPreferences relationship |
+| `app/Services/AuditLogger.php` | Added `notification_preferences.updated` wrapper |
+| `resources/views/components/layouts/gvos.blade.php` | Notification bell links to inbox and shows unread count |
+| Workspace task/chat/file/time/report controllers | Added safe notification trigger calls |
+| Invoice, payment, lead request, and task Filament resources/pages | Added notification trigger calls for issued invoices, payments, trial approvals, and admin task assignment/status changes |
+
+**Preserved:** No Phase 12 work, no billing calculation changes, no payment confirmation logic changes, no password vault encryption changes, no vault secret exposure, no payroll, no payment gateway integration, no real-time websocket chat, and no external paid service dependency. Production email delivery depends on standard Laravel `MAIL_*` environment variables.
+
+---
+
 ### 2026-06-06 | Phase 10 | Password Vault Foundation
 
 **What was done:** Implemented the Phase 10 password vault foundation for workspace-scoped credentials. Secrets are stored with Laravel encryption, hidden from list/dashboard/admin tables, and revealed only through a logged portal JSON endpoint when the current workspace role is allowed.

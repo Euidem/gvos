@@ -7,6 +7,7 @@ use App\Models\Workspace;
 use App\Models\WorkspaceTask;
 use App\Models\WorkspaceTaskComment;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -178,6 +179,10 @@ class WorkspaceTaskController extends Controller
             'title'        => $task->title,
         ]);
 
+        if ($task->assigned_to_user_id) {
+            app(NotificationService::class)->notifyTaskAssigned($task, $user);
+        }
+
         return redirect()
             ->route('workspace.tasks.show', [$workspace, $task])
             ->with('success', 'Task created successfully.');
@@ -311,12 +316,18 @@ class WorkspaceTaskController extends Controller
             'changes'      => array_keys($validated),
         ]);
 
-        if ($oldAssignee !== $task->fresh()->assigned_to_user_id) {
+        $freshTask = $task->fresh(['assignedTo', 'workspace']);
+
+        if ($oldAssignee !== $freshTask->assigned_to_user_id) {
             AuditLogger::workspaceTaskAssigned($task, [
                 'workspace_id'    => $workspace->id,
                 'old_assignee_id' => $oldAssignee,
-                'new_assignee_id' => $task->fresh()->assigned_to_user_id,
+                'new_assignee_id' => $freshTask->assigned_to_user_id,
             ]);
+
+            if ($freshTask->assigned_to_user_id) {
+                app(NotificationService::class)->notifyTaskAssigned($freshTask, $user);
+            }
         }
 
         return redirect()
@@ -348,7 +359,7 @@ class WorkspaceTaskController extends Controller
 
         $visibility = $validated['visibility'] ?? 'public';
 
-        WorkspaceTaskComment::create([
+        $comment = WorkspaceTaskComment::create([
             'workspace_task_id' => $task->id,
             'user_id'           => $user->id,
             'comment'           => $validated['comment'],
@@ -364,6 +375,8 @@ class WorkspaceTaskController extends Controller
                 'workspace_id' => $workspace->id,
             ]);
         }
+
+        app(NotificationService::class)->notifyTaskCommentAdded($comment, $user);
 
         return back()->with('success', 'Comment added.');
     }
@@ -565,6 +578,8 @@ class WorkspaceTaskController extends Controller
         AuditLogger::workspaceTaskStatusChanged($task, $fromStatus, $newStatus, [
             'workspace_id' => $workspace->id,
         ]);
+
+        app(NotificationService::class)->notifyTaskStatusChanged($task->fresh(['workspace', 'createdBy', 'assignedTo']), $fromStatus, $newStatus, $user);
 
         $label = WorkspaceTask::statusLabels()[$newStatus] ?? $newStatus;
 

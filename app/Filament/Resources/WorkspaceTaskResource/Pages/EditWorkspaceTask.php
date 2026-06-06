@@ -4,6 +4,7 @@ namespace App\Filament\Resources\WorkspaceTaskResource\Pages;
 
 use App\Filament\Resources\WorkspaceTaskResource;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -39,6 +40,13 @@ class EditWorkspaceTask extends EditRecord
                 $changes['status']['to'] ?? 'unknown',
                 ['source' => 'filament']
             );
+
+            app(NotificationService::class)->notifyTaskStatusChanged(
+                $this->record->fresh(['workspace', 'createdBy', 'assignedTo']),
+                $changes['status']['from'] ?? 'unknown',
+                $changes['status']['to'] ?? 'unknown',
+                auth()->user()
+            );
         }
 
         // Assignment change
@@ -48,6 +56,11 @@ class EditWorkspaceTask extends EditRecord
                 'old_assignee_id' => $changes['assigned_to_user_id']['from'],
                 'new_assignee_id' => $changes['assigned_to_user_id']['to'],
             ]);
+
+            $freshTask = $this->record->fresh(['assignedTo', 'workspace']);
+            if ($freshTask->assigned_to_user_id) {
+                app(NotificationService::class)->notifyTaskAssigned($freshTask, auth()->user());
+            }
         }
 
         if (! empty($changes)) {

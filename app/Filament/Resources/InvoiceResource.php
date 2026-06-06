@@ -6,6 +6,7 @@ use App\Filament\Resources\InvoiceResource\Pages;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -223,6 +224,7 @@ class InvoiceResource extends Resource
                         $record->save();
                         $record->update(['status' => 'issued']);
                         AuditLogger::invoiceIssued($record, ['actioned_by' => auth()->id()]);
+                        app(NotificationService::class)->notifyInvoiceIssued($record->fresh(['workspace']), auth()->user());
                         Notification::make()->title('Invoice issued.')->success()->send();
                     }),
 

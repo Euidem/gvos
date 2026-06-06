@@ -418,12 +418,52 @@ All vault routes require `auth` + `check.status`. Access is enforced in `Workspa
 
 ---
 
+## Phase 11 - Notifications Access Control
+
+### Portal Notification Routes
+
+All notification routes require `auth` + `check.status`.
+
+| Route | Access |
+|-------|--------|
+| `GET /notifications` | Authenticated user sees only their own notifications |
+| `POST /notifications/{id}/read` | Authenticated user can mark only their own notification as read |
+| `POST /notifications/read-all` | Authenticated user marks only their own unread notifications as read |
+| `GET /settings/notifications` | Authenticated user sees only their own preferences |
+| `PUT /settings/notifications` | Authenticated user updates only their own preferences |
+
+### Recipient Rules
+
+- Task assignment notifies the assigned user.
+- Task status changes notify relevant workspace managers/admins, task creator/assignee, and client-side users only for review-facing statuses.
+- Internal task comments, internal messages, and internal files notify only admin/workspace_admin/manager recipients.
+- Public workspace messages notify workspace members except the sender; email is disabled by default.
+- Time log submissions notify managers/workspace admins, not clients.
+- Published weekly reports notify client-side workspace users.
+- Issued invoices notify client-side workspace users.
+- Recorded/confirmed payments notify client-side workspace users and non-actor system admins where appropriate.
+- Trial approval notifies the active lead user.
+
+### Payload Safety
+
+- Notification payloads contain only safe metadata: title, message, action_url, workspace_id, related_type, related_id, level, notification_key.
+- Notification payloads do not include vault secrets, raw file paths, payment raw_payload, internal admin notes, internal invoice notes, manager notes, tokens, or API keys.
+- Action URLs are generated only for recipients who should be able to access the target route.
+
+### Phase 11 Filament Resource
+
+| Resource | View | Create | Edit | Delete |
+|----------|------|--------|------|--------|
+| UserNotificationPreferenceResource | super_admin, ops_admin | no | no | no |
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
 - Phase 2 Filament navigation group: "People & Organizations" (sort positions 1–5).
 - Phase 3 Filament navigation group: "Leads & Trials" (sort positions 1–3).
-- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5). Phase 7 adds WorkspaceTimeLogResource (sort 7) and WorkspaceWeeklyReportResource (sort 8). Phase 8 adds "Billing" resources: Billing Plans, Subscriptions, Invoices, Payments. Phase 10 adds WorkspaceVaultItemResource (sort 9) and WorkspaceVaultAccessLogResource (sort 10) under Workspace.
+- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5). Phase 7 adds WorkspaceTimeLogResource (sort 7) and WorkspaceWeeklyReportResource (sort 8). Phase 8 adds "Billing" resources: Billing Plans, Subscriptions, Invoices, Payments. Phase 10 adds WorkspaceVaultItemResource (sort 9) and WorkspaceVaultAccessLogResource (sort 10) under Workspace. Phase 11 adds UserNotificationPreferenceResource under User Management (sort 2).
 - Always enforce on server — never rely on front-end hiding alone.
 - Business client staff permissions are per-user, managed by Business Client Admin (Phase 4+).
 - GetVirtual brand name must not appear in any visible app UI (screens, panels, dashboards, notices). Internal documentation only.

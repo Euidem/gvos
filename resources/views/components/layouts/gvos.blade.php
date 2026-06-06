@@ -345,6 +345,7 @@
                 $headerTimerUrl = $headerActiveTimer?->workspace
                     ? route('workspace.time-logs.show', [$headerActiveTimer->workspace, $headerActiveTimer])
                     : (auth()->user()->hasRole('talent') ? route('talent.dashboard') : route('workspace.index'));
+                $notificationUnreadCount = auth()->user()->unreadNotifications()->count();
             @endphp
             <div class="flex items-center gap-6">
 
@@ -371,11 +372,16 @@
                 </nav>
 
                 {{-- Notifications bell --}}
-                <button type="button"
-                        class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-all"
+                <a href="{{ route('notifications.index') }}"
+                        class="relative p-2 text-outline hover:bg-surface-container-low rounded-full transition-all"
                         title="Notifications">
                     <span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
-                </button>
+                    @if ($notificationUnreadCount > 0)
+                        <span class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-status-blocked px-1.5 text-[10px] font-bold leading-none text-white">
+                            {{ $notificationUnreadCount > 9 ? '9+' : $notificationUnreadCount }}
+                        </span>
+                    @endif
+                </a>
 
                 {{-- Vertical divider --}}
                 <div class="h-6 w-px bg-border-subtle"></div>

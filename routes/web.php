@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadRequestController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceFileController;
@@ -47,6 +48,13 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/profile',  [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profile',  [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+
+    Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('settings.notifications');
+    Route::put('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('settings.notifications.update');
 });
 
 // ── Workspace routes (all authenticated, active users) ────────────────────

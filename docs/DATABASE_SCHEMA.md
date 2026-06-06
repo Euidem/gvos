@@ -194,6 +194,8 @@ Phase 9 actions: `workspace_time_tracker.started`, `workspace_time_tracker.stopp
 
 Phase 10 actions: `workspace_vault_item.created`, `workspace_vault_item.updated`, `workspace_vault_item.archived`, `workspace_vault_item.restored`, `workspace_vault_item.secret_revealed`, `workspace_vault_item.access_logs_viewed`
 
+Phase 11 actions: `notification_preferences.updated`
+
 ---
 
 ## Phase 3 Tables (live)
@@ -704,9 +706,47 @@ Metadata-only vault activity log. Never stores plaintext secrets.
 
 ---
 
+## Phase 11 Tables (live)
+
+### notifications
+Laravel database notifications table for in-app GVOS notifications.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | Standard Laravel notification UUID |
+| type | string | Notification class name |
+| notifiable_type | string | Morph target type, usually `App\Models\User` |
+| notifiable_id | bigint | User ID |
+| data | json | Safe payload only: title, message, action_url, workspace_id, related_type, related_id, level, notification_key |
+| read_at | timestamp nullable | Set when user marks notification read |
+| created_at / updated_at | timestamps | |
+| INDEX | notifiable_type, notifiable_id | via `morphs` |
+
+### user_notification_preferences
+Per-user notification channel preferences.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| user_id | FK users | cascadeOnDelete |
+| notification_key | string(100) | task_assigned, task_status_changed, task_comment_added, file_uploaded, workspace_message, time_log_submitted, weekly_report_published, invoice_issued, payment_recorded, trial_approved |
+| in_app_enabled | boolean | default true |
+| email_enabled | boolean | default true at DB level; app defaults disable email for noisy keys until user opts in |
+| created_at / updated_at | timestamps | |
+| UNIQUE | user_id + notification_key | one preference row per key per user |
+
+#### Notification Payload Safety
+- Payloads intentionally exclude vault secrets, raw storage paths, payment raw payloads, internal admin notes, internal invoice notes, manager notes, tokens, and API keys.
+- Chat/message, task comment, task status, and file upload email are disabled by default to reduce noise.
+- Database notifications continue to work even when mail is not configured.
+
+---
+
 ## Key Relationships
 
 - `users` → many roles (via Spatie model_has_roles)
+- `users` → many `notifications` via Laravel Notifiable trait (Phase 11)
+- `users` → many `user_notification_preferences` (Phase 11)
 - `users` → one `user_profile` (Phase 1)
 - `users` → one `talent_profile` (Phase 2, talent role)
 - `users` → one `manager_profile` (Phase 2, line_manager role)
@@ -736,3 +776,4 @@ Metadata-only vault activity log. Never stores plaintext secrets.
 - `audit_logs` has no `updated_at` and model boot() blocks updates/deletes.
 - `companies` uses soft deletes (`deleted_at`).
 - Encrypted columns (vault) use Laravel encrypted casts / encryption helpers (Phase 10).
+- Production email notifications require standard Laravel `MAIL_*` configuration; no mail secrets are committed.

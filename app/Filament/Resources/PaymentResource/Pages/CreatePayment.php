@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PaymentResource\Pages;
 use App\Filament\Resources\PaymentResource;
 use App\Models\Invoice;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreatePayment extends CreateRecord
@@ -33,6 +34,10 @@ class CreatePayment extends CreateRecord
         if ($this->record->status === 'confirmed') {
             $this->record->confirm(auth()->id(), $this->record->confirmation_notes ?? '');
             AuditLogger::paymentConfirmed($this->record, ['confirmed_by' => auth()->id()]);
+            app(NotificationService::class)->notifyPaymentRecorded($this->record->fresh(['workspace']), auth()->user());
+            return;
         }
+
+        app(NotificationService::class)->notifyPaymentRecorded($this->record, auth()->user());
     }
 }

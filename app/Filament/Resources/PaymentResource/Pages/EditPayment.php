@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PaymentResource\Pages;
 use App\Filament\Resources\PaymentResource;
 use App\Models\Invoice;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Filament\Resources\Pages\EditRecord;
 
 class EditPayment extends EditRecord
@@ -38,6 +39,7 @@ class EditPayment extends EditRecord
         if ($this->oldStatus !== 'confirmed' && $this->record->status === 'confirmed') {
             $this->record->confirm(auth()->id(), $this->record->confirmation_notes ?? '');
             AuditLogger::paymentConfirmed($this->record, ['confirmed_by' => auth()->id()]);
+            app(NotificationService::class)->notifyPaymentRecorded($this->record->fresh(['workspace']), auth()->user());
             return;
         }
 

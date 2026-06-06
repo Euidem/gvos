@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Workspace;
 use App\Models\WorkspaceMessage;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class WorkspaceMessageController extends Controller
@@ -105,6 +106,8 @@ class WorkspaceMessageController extends Controller
         AuditLogger::workspaceMessageCreated($message, [
             'workspace_code' => $workspace->workspace_code,
         ]);
+
+        app(NotificationService::class)->notifyWorkspaceMessage($message, $request->user());
 
         return redirect()
             ->route('workspace.chat.index', $workspace)

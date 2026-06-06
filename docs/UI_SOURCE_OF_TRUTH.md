@@ -67,6 +67,13 @@ Before editing any Blade view:
 |-----------|-------------------|----------------------|-----------------|----------------|-------|
 | Workspace settings | Not yet implemented | `workspace_settings_gvos` | Exact | Not implemented | Placeholder. |
 
+### Notifications and Settings
+
+| App Route | Current Blade View | Stitch Source Folder | Fidelity Target | Current Status | Notes |
+|-----------|-------------------|----------------------|-----------------|----------------|-------|
+| `/notifications` | `resources/views/notifications/index.blade.php` | `workspace_monitoring_gvos` + `client_dashboard_gvos` | Reference | Phase 11 foundation built | No dedicated Stitch notification screen; uses GVOS shell, card list, badges, and action-button patterns. |
+| `/settings/notifications` | `resources/views/settings/notifications.blade.php` | `workspace_settings_gvos` + `profile/edit` pattern | Reference | Phase 11 foundation built | No dedicated Stitch notification settings screen; uses GVOS shell and compact settings rows. |
+
 ### Admin / Operations Management Screens (Filament)
 
 | Feature | Current Implementation | Stitch Source Folder | Fidelity Target | Current Status | Notes |

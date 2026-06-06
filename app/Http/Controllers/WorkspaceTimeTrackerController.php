@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Workspace;
 use App\Models\WorkspaceTimeLog;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -208,6 +209,10 @@ class WorkspaceTimeTrackerController extends Controller
 
         AuditLogger::timeTrackerStopped($timeLog);
 
+        if ($timeLog->status === 'submitted') {
+            app(NotificationService::class)->notifyTimeLogSubmitted($timeLog, $request->user());
+        }
+
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => 'Timer stopped.',
@@ -257,6 +262,8 @@ class WorkspaceTimeTrackerController extends Controller
         ]);
 
         AuditLogger::timeTrackerCompleted($timeLog);
+
+        app(NotificationService::class)->notifyTimeLogSubmitted($timeLog, $request->user());
 
         if ($request->expectsJson()) {
             return response()->json([

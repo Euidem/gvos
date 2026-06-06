@@ -1310,4 +1310,61 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] No payment gateway button, payroll UI, auto-login, browser extension, screenshot capture, keystroke capture, or screen-monitoring UI appears
 - [ ] No visible UI contains `GetVirtual`
 
+---
+
+## Phase 11 - Notifications and Email System Foundation
+
+Run after `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### Migrations and Routes
+- [ ] `php artisan migrate` runs without error on cPanel
+- [ ] `notifications` table exists with UUID id, type, notifiable morphs, data, read_at, timestamps
+- [ ] `user_notification_preferences` table exists with user_id, notification_key, in_app_enabled, email_enabled
+- [ ] `php artisan route:list` shows `notifications.index`
+- [ ] `php artisan route:list` shows `notifications.read`
+- [ ] `php artisan route:list` shows `notifications.read-all`
+- [ ] `php artisan route:list` shows `settings.notifications`
+- [ ] `php artisan route:list` shows `settings.notifications.update`
+
+### Portal Notification UI
+- [ ] Header notification bell links to `/notifications`
+- [ ] Header notification bell shows unread count when unread notifications exist
+- [ ] `/notifications` loads for authenticated users
+- [ ] Notifications show unread first, title, message, date, action button, and mark-read action
+- [ ] Mark one notification as read works
+- [ ] Mark all as read works
+- [ ] Empty notification state displays when no notifications exist
+- [ ] User cannot mark another user's notification as read
+
+### Preference UI
+- [ ] `/settings/notifications` loads
+- [ ] User can toggle in-app and email preferences for all 10 notification keys
+- [ ] Saving preferences creates or updates `user_notification_preferences` rows
+- [ ] `notification_preferences.updated` audit event fires
+- [ ] Chat/message, task comment, task status, and file upload email are disabled by default
+- [ ] Important notifications have email enabled by default when no preference row exists
+
+### Trigger Tests
+- [ ] Creating or assigning a task creates a notification for the assigned user
+- [ ] Changing task status creates notifications for relevant recipients
+- [ ] Adding a task comment creates a notification without including comment body in payload
+- [ ] Uploading a file creates a notification without exposing raw storage path
+- [ ] Posting a workspace chat message creates in-app notifications but does not spam email by default
+- [ ] Submitting a time log notifies manager/workspace admin and does not notify clients
+- [ ] Completing a timer as submitted notifies manager/workspace admin
+- [ ] Publishing a weekly report notifies client-side workspace users
+- [ ] Issuing an invoice notifies client-side workspace users
+- [ ] Recording or confirming a payment notifies client-side users and relevant non-actor admins
+- [ ] Approving a trial notifies the active lead user
+
+### Safety and Regression
+- [ ] Notification payloads do not contain vault secrets
+- [ ] Notification payloads do not contain payment raw_payload
+- [ ] Notification payloads do not contain internal invoice notes or manager notes
+- [ ] Notification payloads do not contain raw file paths
+- [ ] Existing tasks, chat, files, time logs, reports, billing, and vault routes still work
+- [ ] Email notifications do not break the app when mail is not configured
+- [ ] No payment gateway, payroll, real-time websocket chat, screenshot capture, keystroke capture, screen monitoring, auto-login, or browser extension UI appears
+- [ ] No visible UI contains `GetVirtual`
+
 ## Phase 12 — Launch Readiness (planned)

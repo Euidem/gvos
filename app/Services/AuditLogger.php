@@ -82,6 +82,11 @@ class AuditLogger
         self::log('user.profile_updated', $user, $changes);
     }
 
+    public static function notificationPreferencesUpdated(Model $user, array $changes = []): void
+    {
+        self::log('notification_preferences.updated', $user, $changes);
+    }
+
     public static function login(Model $user): void
     {
         self::log('user.login', $user, ['email' => $user->email ?? null]);
