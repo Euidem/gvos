@@ -1054,6 +1054,26 @@ billing_plan.created/updated, workspace_subscription.created/updated, invoice.cr
 
 ---
 
+## Phase 10 Status — Complete (2026-06-06)
+
+### Password Vault Foundation
+- [x] `workspace_vault_items` migration created for workspace-scoped encrypted credentials
+- [x] `workspace_vault_access_logs` migration created for metadata-only vault activity logs
+- [x] `WorkspaceVaultItem` model added with encrypted `secret_value` cast and hidden secret serialization
+- [x] `WorkspaceVaultAccessLog` model added with create/update/archive/reveal/copy/log-view action labels
+- [x] Workspace relationships added for vault items and vault access logs
+- [x] Portal vault routes added under `/workspaces/{workspace}/vault`
+- [x] Portal vault list, create, edit, detail, reveal/copy, archive, and access log pages added
+- [x] Workspace detail password vault card is active only when the user can create vault items or has visible assigned vault items
+- [x] Filament `WorkspaceVaultItemResource` added for admin create/edit/archive/restore without exposing stored secrets
+- [x] Filament `WorkspaceVaultAccessLogResource` added as read-only oversight for vault access metadata
+- [x] Audit wrappers added for vault create/update/archive/restore/reveal/access-log viewing
+- [x] Secrets are not shown in workspace cards, vault tables, Filament tables, audit logs, or access logs
+- [x] No billing database, payment confirmation, invoice status, payment gateway, payroll, browser extension, auto-login, screenshot, keystroke, or screen-monitoring logic added
+- [x] Stitch reference used: `password_vault_gvos`, adapted to keep lists metadata-only
+
+---
+
 ## UI Correction — Batch 1a Complete (2026-05-31)
 
 **File modified:** `resources/views/components/layouts/gvos.blade.php`

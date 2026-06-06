@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 9 migrations created and active
+## Status: Phase 10 migrations created and active
 
 ---
 
@@ -191,6 +191,8 @@ Phase 7 actions: `time_log.created`, `time_log.updated`, `time_log.reviewed`, `t
 Phase 8 actions: `billing_plan.created`, `billing_plan.updated`, `workspace_subscription.created`, `workspace_subscription.updated`, `invoice.created`, `invoice.updated`, `invoice.issued`, `invoice.cancelled`, `invoice.marked_paid`, `payment.recorded`, `payment.confirmed`, `payment.failed_or_cancelled`
 
 Phase 9 actions: `workspace_time_tracker.started`, `workspace_time_tracker.stopped`, `workspace_time_tracker.completed`
+
+Phase 10 actions: `workspace_vault_item.created`, `workspace_vault_item.updated`, `workspace_vault_item.archived`, `workspace_vault_item.restored`, `workspace_vault_item.secret_revealed`, `workspace_vault_item.access_logs_viewed`
 
 ---
 
@@ -649,6 +651,59 @@ Provider enum is designed to be extended. `raw_payload` JSON field accepts gatew
 
 ---
 
+## Phase 10 Tables (live)
+
+### workspace_vault_items
+Encrypted credential records scoped to a workspace.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| created_by | FK users nullable | nullOnDelete |
+| updated_by | FK users nullable | nullOnDelete |
+| title | string | Credential display name |
+| category | string nullable | login, server, app, api_key, email, social_media, billing, other |
+| login_url | string(2048) nullable | Optional login URL |
+| username | string nullable | Username/email only; not secret |
+| secret_value | text encrypted | Encrypted by `WorkspaceVaultItem` model cast |
+| notes | text nullable | Context only; do not store additional secrets here |
+| visibility | string | restricted, workspace_admins, assigned_users |
+| status | string | active, archived |
+| allowed_roles | json nullable | Explicit reveal/access roles |
+| allowed_user_ids | json nullable | Explicit reveal/access users |
+| last_revealed_at | timestamp nullable | Updated on reveal/copy |
+| last_revealed_by | FK users nullable | nullOnDelete |
+| timestamps + softDeletes | | |
+| INDEX | (workspace_id, status) | |
+| INDEX | (workspace_id, visibility) | |
+
+### workspace_vault_access_logs
+Metadata-only vault activity log. Never stores plaintext secrets.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_vault_item_id | FK workspace_vault_items | cascadeOnDelete |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| user_id | FK users nullable | nullOnDelete |
+| action | string(100) | created, updated, archived, restored, viewed_metadata, revealed_secret, copied_secret, viewed_logs |
+| ip_address | string(45) nullable | IPv4/IPv6 |
+| user_agent | text nullable | |
+| metadata | json nullable | Source/action metadata only, no secret values |
+| created_at | timestamp | useCurrent |
+| INDEX | (workspace_id, action) | |
+| INDEX | (workspace_vault_item_id, action) | |
+
+#### Vault Secret Handling
+- `WorkspaceVaultItem.secret_value` uses Laravel's encrypted cast.
+- `secret_value` is hidden from model array/JSON serialization.
+- Portal and Filament list/table views show metadata only.
+- Reveals and copies update `last_revealed_at`, `last_revealed_by`, `workspace_vault_access_logs`, and `audit_logs`.
+- No auto-login, browser extension, screenshot, keystroke, screen monitoring, payroll, or billing automation is attached to the vault.
+
+---
+
 ## Key Relationships
 
 - `users` → many roles (via Spatie model_has_roles)
@@ -670,6 +725,7 @@ Provider enum is designed to be extended. `raw_payload` JSON field accepts gatew
 - `workspace_tasks` → many `workspace_task_comments` (Phase 5)
 - `workspaces` → many `messages`, `files`, `time_logs` (Phase 6/7)
 - `workspaces` → one active `subscription` → many `invoices` (Phase 8)
+- `workspaces` → many `workspace_vault_items` → many `workspace_vault_access_logs` (Phase 10)
 
 ---
 
@@ -679,4 +735,4 @@ Provider enum is designed to be extended. `raw_payload` JSON field accepts gatew
 - All timestamps store UTC; display in user's `timezone` field.
 - `audit_logs` has no `updated_at` and model boot() blocks updates/deletes.
 - `companies` uses soft deletes (`deleted_at`).
-- Encrypted columns (vault) use Laravel's `encrypt()`/`decrypt()` helpers (Phase 10).
+- Encrypted columns (vault) use Laravel encrypted casts / encryption helpers (Phase 10).

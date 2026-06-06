@@ -35,6 +35,15 @@
             // Talent does not see billing
             $canSeeBilling = ! in_array($effectiveRole, ['talent', 'assigned_user', 'observer', 'none'], true);
 
+            // Phase 10 — Password Vault
+            $vaultRole      = $workspace->resolveUserWorkspaceRole($user);
+            $canCreateVault = \App\Models\WorkspaceVaultItem::canCreateForRole($vaultRole);
+            $vaultItemCount = \App\Models\WorkspaceVaultItem::queryForUser($workspace, $user, $vaultRole)
+                ->active()
+                ->count();
+            $canSeeVault = \App\Models\WorkspaceVaultItem::canUseVaultRole($vaultRole)
+                && ($canCreateVault || $vaultItemCount > 0);
+
             $statusColors = [
                 'active'    => 'bg-status-active/10 text-status-active border border-status-active/20',
                 'pending'   => 'bg-status-payment-due/10 text-status-payment-due border border-status-payment-due/20',
@@ -459,7 +468,7 @@
             </a>
         </div>
 
-        {{-- ── Billing (Phase 8 — active) + Password Vault (placeholder) ── --}}
+        {{-- ── Billing (Phase 8 — active) + Password Vault (Phase 10 — active when allowed) ── --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             {{-- Billing card — active for non-talent roles, hidden for talent/observer --}}
@@ -529,18 +538,30 @@
                 </div>
             @endif
 
-            {{-- Password Vault — still placeholder --}}
-            <div class="bg-white rounded-xl border border-dashed border-border-subtle p-5 opacity-50 cursor-not-allowed">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined text-outline" style="font-size: 18px;">lock</span>
+            @if ($canSeeVault)
+                <a href="{{ route('workspace.vault.index', $workspace) }}"
+                   class="bg-white rounded-xl border border-border-subtle shadow-card p-6 hover:border-secondary/30 hover:shadow-card transition-all group">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform"
+                                 style="background-color:rgba(0,88,190,.06);">
+                                <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">lock</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-on-surface">Password Vault</h3>
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                              style="background:rgba(0,88,190,.06);color:#0058be;">
+                            {{ $vaultItemCount }} {{ Str::plural('item', $vaultItemCount) }}
+                        </span>
                     </div>
-                    <div>
-                        <p class="text-sm font-semibold text-on-surface-variant">Password Vault</p>
-                        <p class="text-xs text-outline mt-0.5">Coming in a later phase</p>
-                    </div>
-                </div>
-            </div>
+                    <p class="text-xs text-outline leading-relaxed">
+                        Store and access approved workspace credentials with logged reveal activity.
+                    </p>
+                    <p class="text-xs font-semibold mt-3 group-hover:underline transition-all" style="color:#0058be;">
+                        Open Vault →
+                    </p>
+                </a>
+            @endif
         </div>
 
         {{-- ── Back link ─────────────────────────────────────────────────── --}}

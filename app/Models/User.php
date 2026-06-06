@@ -125,6 +125,18 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(WorkspaceFile::class, 'uploaded_by_user_id');
     }
 
+    /** Vault items created by this user. */
+    public function createdVaultItems(): HasMany
+    {
+        return $this->hasMany(WorkspaceVaultItem::class, 'created_by');
+    }
+
+    /** Vault access events performed by this user. */
+    public function workspaceVaultAccessLogs(): HasMany
+    {
+        return $this->hasMany(WorkspaceVaultAccessLog::class);
+    }
+
     // ── Phase 7 relationships ────────────────────────────────────────────
 
     /** Time logs submitted by this user. */

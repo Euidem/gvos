@@ -646,4 +646,47 @@ class AuditLogger
             'status'            => $payment->status ?? null,
         ], $extra));
     }
+
+    // ── Phase 10: Password Vault wrappers ───────────────────────────────────
+
+    private static function vaultContext(Model $vaultItem, array $extra = []): array
+    {
+        return array_merge([
+            'workspace_id' => $vaultItem->workspace_id ?? null,
+            'vault_item_id' => $vaultItem->id ?? null,
+            'title' => $vaultItem->title ?? null,
+            'visibility' => $vaultItem->visibility ?? null,
+            'status' => $vaultItem->status ?? null,
+        ], $extra);
+    }
+
+    public static function workspaceVaultItemCreated(Model $vaultItem, array $extra = []): void
+    {
+        self::log('workspace_vault_item.created', $vaultItem, self::vaultContext($vaultItem, $extra));
+    }
+
+    public static function workspaceVaultItemUpdated(Model $vaultItem, array $extra = []): void
+    {
+        self::log('workspace_vault_item.updated', $vaultItem, self::vaultContext($vaultItem, $extra));
+    }
+
+    public static function workspaceVaultItemArchived(Model $vaultItem, array $extra = []): void
+    {
+        self::log('workspace_vault_item.archived', $vaultItem, self::vaultContext($vaultItem, $extra));
+    }
+
+    public static function workspaceVaultItemRestored(Model $vaultItem, array $extra = []): void
+    {
+        self::log('workspace_vault_item.restored', $vaultItem, self::vaultContext($vaultItem, $extra));
+    }
+
+    public static function workspaceVaultSecretRevealed(Model $vaultItem, array $extra = []): void
+    {
+        self::log('workspace_vault_item.secret_revealed', $vaultItem, self::vaultContext($vaultItem, $extra));
+    }
+
+    public static function workspaceVaultAccessLogsViewed(Model $vaultItem, array $extra = []): void
+    {
+        self::log('workspace_vault_item.access_logs_viewed', $vaultItem, self::vaultContext($vaultItem, $extra));
+    }
 }

@@ -230,16 +230,16 @@ GVOS is built in 13 phases (Phase 0–12). Each phase has a clear deliverable an
 ---
 
 ## Phase 10 — Vault and Security Hardening
-**Status:** Not started
+**Status:** Password vault foundation complete; security hardening items not started
 **Depends on:** Phase 9 approved
 
 ### Deliverables
-- [ ] Encrypted vault per workspace
-- [ ] Client adds credentials to vault
-- [ ] Access grant system (grant to talent)
-- [ ] Talent can reveal granted credentials
-- [ ] Reveal log per credential
-- [ ] AES-256 encryption implementation review
+- [x] Encrypted vault per workspace
+- [x] Client adds credentials to vault
+- [x] Access grant system (grant to talent)
+- [x] Talent can reveal granted credentials
+- [x] Reveal log per credential
+- [ ] AES-256 encryption implementation review (Laravel encrypted cast in use; formal review pending)
 - [ ] 2FA implementation (admin accounts minimum)
 - [ ] Audit log export
 - [ ] Security header configuration

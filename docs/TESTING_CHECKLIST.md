@@ -1166,7 +1166,7 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] Existing weekly reports still load
 - [ ] No live gateway payment button appears anywhere
 - [ ] No payroll UI appears anywhere
-- [ ] No password vault implementation appears beyond placeholder
+- [ ] Password vault exists only as the Phase 10 vault module after Phase 10 deployment; billing flows do not depend on it
 - [ ] No visible UI contains `GetVirtual`
 
 ---
@@ -1228,7 +1228,86 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] Existing weekly reports still work
 - [ ] Existing billing invoice/payment confirmation flows still work
 - [ ] No billing database or payment logic changes are present
-- [ ] No screenshots, keystrokes, screen monitoring, payroll, password vault, or billing automation appears
+- [ ] No screenshots, keystrokes, screen monitoring, payroll, or billing automation appears; password vault appears only as the Phase 10 module after Phase 10 deployment
+- [ ] No visible UI contains `GetVirtual`
+
+---
+
+## Phase 10 — Password Vault Foundation
+
+Run after `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### Migrations and Models
+- [ ] `php artisan migrate` runs without error on cPanel
+- [ ] `workspace_vault_items` table exists with encrypted secret storage fields and soft deletes
+- [ ] `workspace_vault_access_logs` table exists with action, IP, user agent, metadata, and created_at
+- [ ] `WorkspaceVaultItem.secret_value` is encrypted at rest and not visible as plaintext in DB rows
+- [ ] `WorkspaceVaultItem` array/JSON output does not include `secret_value`
+
+### Portal Vault Routes
+- [ ] `php artisan route:list` shows `workspace.vault.index`
+- [ ] `php artisan route:list` shows `workspace.vault.create`
+- [ ] `php artisan route:list` shows `workspace.vault.store`
+- [ ] `php artisan route:list` shows `workspace.vault.show`
+- [ ] `php artisan route:list` shows `workspace.vault.edit`
+- [ ] `php artisan route:list` shows `workspace.vault.update`
+- [ ] `php artisan route:list` shows `workspace.vault.reveal`
+- [ ] `php artisan route:list` shows `workspace.vault.archive`
+- [ ] `php artisan route:list` shows `workspace.vault.access-logs`
+
+### Portal Vault UX
+- [ ] Workspace detail page shows Password Vault card only when the user can create vault items or has visible assigned items
+- [ ] Vault index shows metadata only: title, category, username, URL, visibility, status, last revealed
+- [ ] Vault index does not show plaintext secret values
+- [ ] Authorized creator/admin/manager/client admin can create a vault item
+- [ ] Edit form does not prefill the existing secret
+- [ ] Leaving secret blank on edit preserves the current encrypted secret
+- [ ] Entering a new secret on edit rotates the stored secret
+- [ ] Archive action changes status to `archived`; it does not hard-delete the record
+- [ ] Secret detail page hides the secret by default
+- [ ] Reveal button returns and displays the secret only for allowed users
+- [ ] Copy button copies the secret only for allowed users
+- [ ] Reveal and copy actions create `workspace_vault_access_logs` rows
+- [ ] Access logs page shows metadata only and never shows plaintext secrets
+
+### Access Control
+- [ ] Super Admin / Operations Admin can view and manage all vault items through portal access as `admin`
+- [ ] Workspace Admin can manage workspace vault items
+- [ ] Manager can manage vault items and reveal only workspace-admin-visible, own-created, or explicitly assigned items
+- [ ] Client Admin can create items and manage/reveal own-created or explicitly assigned items
+- [ ] Client Staff cannot create, edit, archive, or view logs
+- [ ] Talent and assigned users can only view/reveal explicitly assigned items
+- [ ] Observer receives 403 on vault routes
+- [ ] Non-member receives 403 on vault routes
+- [ ] Allowed user assignment rejects users outside the workspace member/primary team/task-assignee set
+
+### Filament Vault Resources
+- [ ] `/admin/workspace-vault-items` loads under Workspace navigation
+- [ ] Admin can create a vault item in Filament
+- [ ] Filament vault item table does not show `secret_value`
+- [ ] Filament edit form does not prefill the existing secret
+- [ ] Blank secret on edit preserves the current value
+- [ ] Filament Archive action changes status to `archived`
+- [ ] Filament Restore action changes status to `active`
+- [ ] `/admin/workspace-vault-access-logs` loads as read-only
+- [ ] Filament access log table shows item, workspace, user, action, IP, and timestamp only
+- [ ] No delete action appears on vault items or access logs
+
+### Audit and Regression
+- [ ] `workspace_vault_item.created` fires on vault item creation
+- [ ] `workspace_vault_item.updated` fires on vault item update
+- [ ] `workspace_vault_item.archived` fires on archive
+- [ ] `workspace_vault_item.restored` fires on restore
+- [ ] `workspace_vault_item.secret_revealed` fires on reveal/copy
+- [ ] `workspace_vault_item.access_logs_viewed` fires when logs are viewed
+- [ ] Audit log context does not include plaintext secrets
+- [ ] Existing workspace tasks still load
+- [ ] Existing workspace chat still loads
+- [ ] Existing workspace files still load
+- [ ] Existing time logs and timer controls still load
+- [ ] Existing weekly reports still load
+- [ ] Existing billing invoice/payment confirmation flows still work
+- [ ] No payment gateway button, payroll UI, auto-login, browser extension, screenshot capture, keystroke capture, or screen-monitoring UI appears
 - [ ] No visible UI contains `GetVirtual`
 
 ## Phase 12 — Launch Readiness (planned)

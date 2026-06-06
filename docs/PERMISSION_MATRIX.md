@@ -384,12 +384,46 @@ All billing routes require `auth` + `check.status`. Access is enforced in `Works
 
 ---
 
+## Phase 10 — Password Vault Access Control
+
+### Portal Vault Routes (`workspaces/{workspace}/vault/...`)
+
+All vault routes require `auth` + `check.status`. Access is enforced in `WorkspaceVaultController` using `Workspace::resolveUserWorkspaceRole()` and `WorkspaceVaultItem` access helpers.
+
+| Action | admin | workspace_admin | manager | client_admin | client_staff | talent / assigned_user | observer / none |
+|--------|-------|-----------------|---------|--------------|--------------|------------------------|-----------------|
+| Vault index | all workspace items | all workspace items | all workspace items | own + explicitly allowed | explicitly allowed only | explicitly allowed only | 403 |
+| Create item | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Edit item | ✅ | ✅ | ✅ | own created only | ❌ | ❌ | ❌ |
+| Archive item | ✅ | ✅ | ✅ | own created only | ❌ | ❌ | ❌ |
+| View metadata | ✅ | ✅ | ✅ | own + explicitly allowed | explicitly allowed only | explicitly allowed only | ❌ |
+| Reveal/copy secret | ✅ logged | ✅ logged | workspace_admins/own/explicit only, logged | own/explicit only, logged | explicit only, logged | explicit only, logged | ❌ |
+| View access logs | ✅ | ✅ | ✅ | own created only | ❌ | ❌ | ❌ |
+
+### Vault Visibility Rules
+
+- `secret_value` is encrypted and hidden from model serialization.
+- Vault list, workspace cards, dashboards, Filament tables, audit logs, and access logs never display plaintext secrets.
+- Reveal and copy actions are POST-only and log both `workspace_vault_access_logs` and `audit_logs`.
+- Allowed user IDs must belong to the workspace member/primary team/task-assignee set.
+- Client staff, talent, and assigned users can only access items through explicit role or user assignment.
+- No auto-login, browser extension, password injection, screenshot capture, keystroke capture, or screen monitoring exists in Phase 10.
+
+### Phase 10 Filament Resources (Workspace nav group)
+
+| Resource | View | Create | Edit | Operational actions | Delete |
+|----------|------|--------|------|---------------------|--------|
+| WorkspaceVaultItemResource | super_admin, ops_admin | super_admin, ops_admin | super_admin, ops_admin | Archive, restore | ❌ |
+| WorkspaceVaultAccessLogResource | super_admin, ops_admin | ❌ | ❌ | Read-only | ❌ |
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
 - Phase 2 Filament navigation group: "People & Organizations" (sort positions 1–5).
 - Phase 3 Filament navigation group: "Leads & Trials" (sort positions 1–3).
-- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5). Phase 7 adds WorkspaceTimeLogResource (sort 7) and WorkspaceWeeklyReportResource (sort 8). Phase 8 adds "Billing" resources: Billing Plans, Subscriptions, Invoices, Payments.
+- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5). Phase 7 adds WorkspaceTimeLogResource (sort 7) and WorkspaceWeeklyReportResource (sort 8). Phase 8 adds "Billing" resources: Billing Plans, Subscriptions, Invoices, Payments. Phase 10 adds WorkspaceVaultItemResource (sort 9) and WorkspaceVaultAccessLogResource (sort 10) under Workspace.
 - Always enforce on server — never rely on front-end hiding alone.
 - Business client staff permissions are per-user, managed by Business Client Admin (Phase 4+).
 - GetVirtual brand name must not appear in any visible app UI (screens, panels, dashboards, notices). Internal documentation only.

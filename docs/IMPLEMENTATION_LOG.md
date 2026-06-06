@@ -7,6 +7,46 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-06 | Phase 10 | Password Vault Foundation
+
+**What was done:** Implemented the Phase 10 password vault foundation for workspace-scoped credentials. Secrets are stored with Laravel encryption, hidden from list/dashboard/admin tables, and revealed only through a logged portal JSON endpoint when the current workspace role is allowed.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_06_06_000002_create_workspace_vault_items_table.php` | Creates encrypted workspace vault item records |
+| `database/migrations/2026_06_06_000003_create_workspace_vault_access_logs_table.php` | Creates metadata-only vault access log records |
+| `app/Models/WorkspaceVaultItem.php` | Vault item model, labels, encryption cast, access helpers, and relationships |
+| `app/Models/WorkspaceVaultAccessLog.php` | Vault access log model and action labels |
+| `app/Http/Controllers/WorkspaceVaultController.php` | Portal vault CRUD, reveal/copy, archive, and access log actions |
+| `resources/views/workspace/vault/*.blade.php` | Portal vault index/create/edit/show/access log views |
+| `app/Filament/Resources/WorkspaceVaultItemResource.php` and pages | Filament admin vault item management |
+| `app/Filament/Resources/WorkspaceVaultAccessLogResource.php` and page | Filament read-only vault access log oversight |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `routes/web.php` | Added nested workspace vault routes |
+| `app/Models/Workspace.php` | Added vault item and vault access log relationships |
+| `app/Models/User.php` | Added vault creator and access log relationships |
+| `app/Services/AuditLogger.php` | Added vault audit wrappers without secret values |
+| `resources/views/workspace/show.blade.php` | Replaced password vault placeholder with role-gated active vault card |
+| `docs/CURRENT_STATUS.md` | Phase 10 completion noted |
+| `docs/DATABASE_SCHEMA.md` | Vault schema documented |
+| `docs/PERMISSION_MATRIX.md` | Vault access rules documented |
+| `docs/TESTING_CHECKLIST.md` | Phase 10 validation checklist added |
+| `docs/KNOWN_ISSUES.md` | Phase 10 notes documented |
+| `docs/UI_SOURCE_OF_TRUTH.md` | Password vault source map updated from future placeholder to Phase 10 foundation |
+| `docs/BUILD_PHASES.md` | Phase 10 vault foundation deliverables marked complete; hardening items left pending |
+
+**Stitch reference used:** `password_vault_gvos`, adapted so vault tables remain metadata-only and secret reveal occurs only on the item detail page.
+
+**Preserved:** No Phase 11 work, no payment gateway integration, no payroll, no billing database changes, no payment confirmation logic changes, no invoice status changes, no browser extension, no auto-login, no screenshots, no keystrokes, no screen monitoring, and no secrets in list or dashboard surfaces.
+
+---
+
 ### 2026-06-06 | Phase 9 | Semi Automated Time Tracking
 
 **What was done:** Implemented semi automated time tracking using server-stamped start/stop/complete actions. Timers use the existing `workspace_time_logs` table with a new `running` status, save `started_at` at clock-in, save `ended_at` and `duration_minutes` at clock-out/complete, and show live elapsed time in Blade as display-only JavaScript.

@@ -156,6 +156,32 @@ Running, stopped, submitted, reviewed, and approved time logs remain operational
 
 ---
 
+## Phase 10 Warnings / Notes
+
+### Phase 10 | Info | Vault secrets depend on the Laravel APP_KEY
+
+`workspace_vault_items.secret_value` uses Laravel encryption. If `APP_KEY` is changed after secrets are stored, existing secrets will not decrypt. Keep the production `APP_KEY` stable and backed up before storing live credentials.
+
+---
+
+### Phase 10 | Info | No auto-login, browser extension, or credential injection
+
+The vault stores encrypted workspace credentials and supports logged reveal/copy actions only. It does not fill login forms, install browser extensions, perform auto-login, or inject credentials into third-party sites.
+
+---
+
+### Phase 10 | Info | Access logs are metadata-only
+
+`workspace_vault_access_logs` record who viewed metadata, revealed, copied, archived, restored, or viewed logs. They intentionally do not store plaintext secrets or credential payloads.
+
+---
+
+### Phase 10 | Low | No built-in password generator yet
+
+Phase 10 does not include a generated-password workflow. Admins and authorized workspace users must enter secret values manually. A generator can be added later without changing the core vault schema.
+
+---
+
 ## Resolved Issues
 
 ### 2026-06-06 | Phase 9 | Low | Timer status `running` not yet in schema

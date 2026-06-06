@@ -10,6 +10,7 @@ use App\Http\Controllers\WorkspaceTaskController;
 use App\Http\Controllers\WorkspaceBillingController;
 use App\Http\Controllers\WorkspaceTimeLogController;
 use App\Http\Controllers\WorkspaceTimeTrackerController;
+use App\Http\Controllers\WorkspaceVaultController;
 use App\Http\Controllers\WorkspaceWeeklyReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -87,6 +88,19 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::get('/',                        [WorkspaceBillingController::class, 'index'])->name('index');
         Route::get('/invoices/{invoice}',      [WorkspaceBillingController::class, 'showInvoice'])->name('invoice');
         Route::get('/payments',                [WorkspaceBillingController::class, 'payments'])->name('payments');
+    });
+
+    // ── Workspace password vault routes (Phase 10) ──────────────────────────
+    Route::prefix('workspaces/{workspace}/vault')->name('workspace.vault.')->group(function () {
+        Route::get('/',                         [WorkspaceVaultController::class, 'index'])->name('index');
+        Route::get('/create',                   [WorkspaceVaultController::class, 'create'])->name('create');
+        Route::post('/',                        [WorkspaceVaultController::class, 'store'])->name('store');
+        Route::get('/{vaultItem}',              [WorkspaceVaultController::class, 'show'])->name('show');
+        Route::get('/{vaultItem}/edit',         [WorkspaceVaultController::class, 'edit'])->name('edit');
+        Route::put('/{vaultItem}',              [WorkspaceVaultController::class, 'update'])->name('update');
+        Route::post('/{vaultItem}/reveal',      [WorkspaceVaultController::class, 'reveal'])->name('reveal');
+        Route::post('/{vaultItem}/archive',     [WorkspaceVaultController::class, 'archive'])->name('archive');
+        Route::get('/{vaultItem}/access-logs',  [WorkspaceVaultController::class, 'accessLogs'])->name('access-logs');
     });
 
     // ── Workspace time log routes (Phase 7) ───────────────────────────────

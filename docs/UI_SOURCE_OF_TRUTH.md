@@ -93,7 +93,7 @@ Before editing any Blade view:
 | Feature | Current Blade View | Stitch Source Folder | Fidelity Target | Current Status | Notes |
 |---------|-------------------|----------------------|-----------------|----------------|-------|
 | Billing | Not built | `billing_invoices_gvos` + `global_billing_overview_gvos` | Exact | Not started | Do not build yet. |
-| Password vault | Not built | `password_vault_gvos` | Exact | Not started | Do not build yet. |
+| Password vault | `resources/views/workspace/vault/*.blade.php` | `password_vault_gvos` | Reference | Phase 10 foundation built | Adapted to keep vault tables metadata-only; plaintext reveal happens only on the item detail page after access logging. |
 
 ### Mobile Variants (Reference only — not priority)
 

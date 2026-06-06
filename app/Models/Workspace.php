@@ -346,4 +346,16 @@ class Workspace extends Model
     {
         return $this->hasMany(Payment::class)->orderByDesc('created_at');
     }
+
+    // ── Phase 10 — Password Vault relationships ─────────────────────────────
+
+    public function vaultItems(): HasMany
+    {
+        return $this->hasMany(WorkspaceVaultItem::class)->orderBy('title');
+    }
+
+    public function vaultAccessLogs(): HasMany
+    {
+        return $this->hasMany(WorkspaceVaultAccessLog::class)->orderByDesc('created_at');
+    }
 }
