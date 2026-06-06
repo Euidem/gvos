@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-06-06
 **Current Phase:** Phase 7 — Time Tracking & Work Reports ✅ Complete
-**Current Activity:** Phase 8 — Billing Foundation ✅ Complete; invoice detail layout corrected
+**Current Activity:** Phase 8 — Billing Foundation ✅ Complete; invoice detail and admin invoice form layouts corrected
 
 ---
 
@@ -996,7 +996,7 @@ Feature development is paused. The Stitch UI export has been designated as the f
 ### PART H — Filament Resources (4 new, nav group "Billing")
 - `BillingPlanResource` (sort 1) — create/edit/archive; status badge; cycle/currency filters
 - `WorkspaceSubscriptionResource` (sort 2) — create/edit; status/currency/workspace filters; next_billing_date column
-- `InvoiceResource` (sort 3) — create/edit + Issue / Mark Paid / Cancel inline actions; repeater for invoice items; status/workspace/currency/due_date filters
+- `InvoiceResource` (sort 3) — create/edit + Issue / Mark Paid / Cancel inline actions; sectioned create/edit form with invoice identity, invoice items, totals below items, notes; status/workspace/currency/due_date filters
 - `PaymentResource` (sort 4) — record/edit pending + Confirm / Cancel inline actions with confirmation notes form; provider/status/currency/workspace filters
 
 ### PART I — Invoice Number Format
@@ -1026,6 +1026,13 @@ billing_plan.created/updated, workspace_subscription.created/updated, invoice.cr
 - [x] A simple print button was added with `window.print()`
 - [x] No billing database, migration, calculation, payment confirmation, status, or permission logic changed
 - [x] Stitch reference used: `billing_invoices_gvos`
+
+### Phase 8 Admin Invoice Form Layout Correction (2026-06-06)
+- [x] `app/Filament/Resources/InvoiceResource.php` form reorganized into Invoice Identity, Invoice Items, Totals and Payment Summary, and Notes sections
+- [x] Totals now appear below invoice items in the admin create/edit form
+- [x] Totals section includes helper text: totals are calculated from invoice items and payment records where available
+- [x] Discount and tax remain editable; manual invoice total behavior is preserved
+- [x] No database, migration, billing calculation, payment confirmation, invoice status, permission, or portal changes
 
 ---
 

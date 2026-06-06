@@ -61,76 +61,98 @@ class InvoiceResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('invoice_number')
-                ->label('Invoice Number')
-                ->placeholder('Auto-generated if blank')
-                ->maxLength(50),
-
-            Forms\Components\Select::make('workspace_id')
-                ->relationship('workspace', 'name')
-                ->searchable()->required(),
-
-            Forms\Components\Select::make('workspace_subscription_id')
-                ->relationship('subscription', 'id')
-                ->label('Subscription')
-                ->searchable()->nullable(),
-
-            Forms\Components\Select::make('client_profile_id')
-                ->relationship('clientProfile', 'id')
-                ->label('Client Profile')
-                ->searchable()->nullable(),
-
-            Forms\Components\Select::make('company_id')
-                ->relationship('company', 'name')
-                ->searchable()->nullable(),
-
-            Forms\Components\Select::make('currency')
-                ->options(['USD' => 'USD', 'GBP' => 'GBP', 'EUR' => 'EUR', 'NGN' => 'NGN', 'CAD' => 'CAD'])
-                ->default('USD')->required(),
-
-            Forms\Components\TextInput::make('subtotal')
-                ->numeric()->minValue(0)->default(0),
-            Forms\Components\TextInput::make('discount_amount')
-                ->numeric()->minValue(0)->default(0),
-            Forms\Components\TextInput::make('tax_amount')
-                ->numeric()->minValue(0)->default(0),
-            Forms\Components\TextInput::make('total_amount')
-                ->numeric()->minValue(0)->required(),
-            Forms\Components\TextInput::make('amount_paid')
-                ->numeric()->minValue(0)->default(0),
-            Forms\Components\TextInput::make('balance_due')
-                ->numeric()->minValue(0)->default(0),
-
-            Forms\Components\Select::make('status')
-                ->options(Invoice::statusLabels())
-                ->default('draft')->required(),
-
-            Forms\Components\DatePicker::make('issue_date')->default(now())->required(),
-            Forms\Components\DatePicker::make('due_date')->nullable(),
-
-            Forms\Components\Textarea::make('notes')->rows(2)->nullable(),
-            Forms\Components\Textarea::make('internal_notes')
-                ->rows(2)->nullable()
-                ->helperText('Not visible to clients'),
-
-            // Inline invoice items
-            Forms\Components\Repeater::make('items')
-                ->relationship('items')
+            Forms\Components\Section::make('Invoice Identity')
                 ->schema([
-                    Forms\Components\TextInput::make('description')->required()->columnSpan(2),
-                    Forms\Components\Select::make('item_type')
-                        ->options(InvoiceItem::typeLabels())
-                        ->default('subscription')->required(),
-                    Forms\Components\TextInput::make('quantity')
-                        ->numeric()->default(1)->minValue(0.0001)->required(),
-                    Forms\Components\TextInput::make('unit_amount')
-                        ->numeric()->default(0)->required(),
-                    Forms\Components\TextInput::make('total_amount')
-                        ->numeric()->default(0)->helperText('Auto-calculated if 0'),
+                    Forms\Components\TextInput::make('invoice_number')
+                        ->label('Invoice Number')
+                        ->placeholder('Auto-generated if blank')
+                        ->maxLength(50),
+
+                    Forms\Components\Select::make('workspace_id')
+                        ->relationship('workspace', 'name')
+                        ->searchable()->required(),
+
+                    Forms\Components\Select::make('workspace_subscription_id')
+                        ->relationship('subscription', 'id')
+                        ->label('Subscription')
+                        ->searchable()->nullable(),
+
+                    Forms\Components\Select::make('client_profile_id')
+                        ->relationship('clientProfile', 'id')
+                        ->label('Client Profile')
+                        ->searchable()->nullable(),
+
+                    Forms\Components\Select::make('company_id')
+                        ->relationship('company', 'name')
+                        ->searchable()->nullable(),
+
+                    Forms\Components\Select::make('currency')
+                        ->options(['USD' => 'USD', 'GBP' => 'GBP', 'EUR' => 'EUR', 'NGN' => 'NGN', 'CAD' => 'CAD'])
+                        ->default('USD')->required(),
+
+                    Forms\Components\Select::make('status')
+                        ->options(Invoice::statusLabels())
+                        ->default('draft')->required(),
+
+                    Forms\Components\DatePicker::make('issue_date')->default(now())->required(),
+                    Forms\Components\DatePicker::make('due_date')->nullable(),
                 ])
-                ->columns(3)
-                ->defaultItems(0)
-                ->collapsible(),
+                ->columns(3),
+
+            Forms\Components\Section::make('Invoice Items')
+                ->schema([
+                    Forms\Components\Repeater::make('items')
+                        ->relationship('items')
+                        ->schema([
+                            Forms\Components\TextInput::make('description')->required()->columnSpan(2),
+                            Forms\Components\Select::make('item_type')
+                                ->options(InvoiceItem::typeLabels())
+                                ->default('subscription')->required(),
+                            Forms\Components\TextInput::make('quantity')
+                                ->numeric()->default(1)->minValue(0.0001)->required(),
+                            Forms\Components\TextInput::make('unit_amount')
+                                ->numeric()->default(0)->required(),
+                            Forms\Components\TextInput::make('total_amount')
+                                ->numeric()->default(0)->helperText('Auto-calculated if 0'),
+                        ])
+                        ->columns(3)
+                        ->defaultItems(0)
+                        ->collapsible()
+                        ->columnSpanFull(),
+                ]),
+
+            Forms\Components\Section::make('Totals and Payment Summary')
+                ->description('Totals are calculated from invoice items and payment records where available.')
+                ->schema([
+                    Forms\Components\TextInput::make('subtotal')
+                        ->numeric()->minValue(0)->default(0)
+                        ->helperText('Calculated from invoice items when line items exist.'),
+                    Forms\Components\TextInput::make('discount_amount')
+                        ->numeric()->minValue(0)->default(0)
+                        ->helperText('Editable adjustment applied before tax.'),
+                    Forms\Components\TextInput::make('tax_amount')
+                        ->numeric()->minValue(0)->default(0)
+                        ->helperText('Editable tax amount added after discount.'),
+                    Forms\Components\TextInput::make('total_amount')
+                        ->numeric()->minValue(0)->required()
+                        ->helperText('Recalculated on save when invoice items or subtotal are available.'),
+                    Forms\Components\TextInput::make('amount_paid')
+                        ->numeric()->minValue(0)->default(0)
+                        ->helperText('Updated by confirmed payments or manual payment actions.'),
+                    Forms\Components\TextInput::make('balance_due')
+                        ->numeric()->minValue(0)->default(0)
+                        ->helperText('Recalculated from total amount minus amount paid.'),
+                ])
+                ->columns(3),
+
+            Forms\Components\Section::make('Notes')
+                ->schema([
+                    Forms\Components\Textarea::make('notes')->rows(2)->nullable(),
+                    Forms\Components\Textarea::make('internal_notes')
+                        ->rows(2)->nullable()
+                        ->helperText('Not visible to clients'),
+                ])
+                ->columns(1),
         ]);
     }
 

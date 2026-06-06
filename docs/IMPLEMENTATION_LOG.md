@@ -7,6 +7,23 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-06 | Phase 8 UI Correction | Admin invoice form layout
+
+**What was done:** Reorganized the Filament `InvoiceResource` create/edit form into a standard invoice flow: invoice identity first, invoice items second, totals and payment summary below the items, and notes last.
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `app/Filament/Resources/InvoiceResource.php` | Sectioned the shared create/edit form into Invoice Identity, Invoice Items, Totals and Payment Summary, and Notes |
+| `docs/CURRENT_STATUS.md` | Noted admin invoice form layout correction |
+| `docs/IMPLEMENTATION_LOG.md` | This entry |
+| `docs/TESTING_CHECKLIST.md` | Added admin invoice create/edit layout validation items |
+
+**Preserved:** No database changes, migrations, billing calculations, payment confirmation logic, invoice/payment status logic, portal invoice detail changes, permissions, gateway integration, or Phase 9 work.
+
+---
+
 ### 2026-06-06 | Phase 8 UI Correction | Invoice detail layout
 
 **What was done:** Reorganized `resources/views/workspace/billing/show-invoice.blade.php` into a standard professional invoice layout. The page now flows as header, bill-to and metadata, invoice items, right-aligned totals directly below items, payment history, notes, and payment instructions.

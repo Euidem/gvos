@@ -1095,6 +1095,12 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] Subscription status, next billing date, and grace period save correctly
 - [ ] `/admin/invoices` loads
 - [ ] Admin creates an invoice with at least one line item
+- [ ] Admin invoice create form shows sections in this order: Invoice Identity, Invoice Items, Totals and Payment Summary, Notes
+- [ ] Admin invoice edit form uses the same section order as create
+- [ ] Totals and payment fields appear below the invoice items repeater
+- [ ] Totals section helper text says totals are calculated from invoice items and payment records where available
+- [ ] Discount amount and tax amount remain editable
+- [ ] Existing manual total behavior is preserved for invoices without line items
 - [ ] Invoice number auto-generates as `GVOS-INV-YYYYMM-0001`
 - [ ] Invoice totals and balance due recalculate from line items
 - [ ] Issue invoice action changes status from `draft` to `issued`
