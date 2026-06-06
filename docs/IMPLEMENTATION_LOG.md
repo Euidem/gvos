@@ -7,6 +7,25 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-06 | Phase 8 UI Correction | Invoice detail layout
+
+**What was done:** Reorganized `resources/views/workspace/billing/show-invoice.blade.php` into a standard professional invoice layout. The page now flows as header, bill-to and metadata, invoice items, right-aligned totals directly below items, payment history, notes, and payment instructions.
+
+**Stitch reference used:** `billing_invoices_gvos`.
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `resources/views/workspace/billing/show-invoice.blade.php` | Rebuilt invoice detail layout; added print button; kept totals below items; separated client-visible and internal notes |
+| `docs/CURRENT_STATUS.md` | Noted invoice detail layout correction |
+| `docs/IMPLEMENTATION_LOG.md` | This entry |
+| `docs/TESTING_CHECKLIST.md` | Added invoice detail layout validation items |
+
+**Preserved:** No database changes, migrations, billing calculations, payment confirmation logic, invoice/payment status logic, permissions, payroll, gateway integration, password vault, or Phase 9 work.
+
+---
+
 ### 2026-05-31 | Phase 8 | Billing Foundation
 
 **What was done:** Phase 8 billing foundation. 5 new migrations, 5 new models, 1 controller (3 methods), 3 portal views, 4 Filament resources (12 pages), 12 AuditLogger wrappers, workspace/show billing card activated, dashboard updates. No live payment gateway. No payroll. Manual payment confirmation only.

@@ -1,8 +1,8 @@
 # GVOS — Current Status
 
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-06
 **Current Phase:** Phase 7 — Time Tracking & Work Reports ✅ Complete
-**Current Activity:** Phase 8 — Billing Foundation ✅ Complete
+**Current Activity:** Phase 8 — Billing Foundation ✅ Complete; invoice detail layout corrected
 
 ---
 
@@ -985,7 +985,7 @@ Feature development is paused. The Stitch UI export has been designated as the f
 
 ### PART F — Portal Billing Views (3 new)
 - `workspace/billing/index.blade.php` — subscription status card (with payment_due warning), invoice table with status badges, recent payments, payment instructions placeholder
-- `workspace/billing/show-invoice.blade.php` — invoice header, line items table, totals summary, payment history, internal_notes hidden from clients, payment instructions placeholder for clients
+- `workspace/billing/show-invoice.blade.php` — professional invoice detail layout with invoice header, bill-to/metadata section, item table, right-aligned totals directly below items, payment history, notes, protected internal_notes, and payment instructions placeholder
 - `workspace/billing/payments.blade.php` — paginated payment history with status badges; confirmation notes visible only to internal roles
 
 ### PART G — workspace/show.blade.php updated
@@ -1016,6 +1016,16 @@ billing_plan.created/updated, workspace_subscription.created/updated, invoice.cr
 - Operations Admin: outstanding invoices action item added
 - Individual Client: Billing quick link card with outstanding balance
 - Business Client Admin: Billing quick link card with outstanding balance
+
+### Phase 8 Invoice Detail Layout Correction (2026-06-06)
+- [x] `resources/views/workspace/billing/show-invoice.blade.php` reorganized to read like a standard professional invoice
+- [x] Totals now appear directly below the invoice items table in this order: subtotal, discount, tax, total amount, amount paid, balance due
+- [x] Total amount and balance due are visually emphasized; money values are right-aligned
+- [x] Payment history now uses a clean table with payment reference, provider, amount, status, and paid-at date
+- [x] Client-visible notes and internal notes are separated; internal notes remain protected by the existing `$canViewInternal` gate
+- [x] A simple print button was added with `window.print()`
+- [x] No billing database, migration, calculation, payment confirmation, status, or permission logic changed
+- [x] Stitch reference used: `billing_invoices_gvos`
 
 ---
 

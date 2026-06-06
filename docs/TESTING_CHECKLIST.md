@@ -1115,6 +1115,15 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] Billing card shows outstanding balance from issued/partial/overdue invoices
 - [ ] `/workspaces/{workspace}/billing` shows subscription summary, invoices, payments, and payment instructions placeholder
 - [ ] `/workspaces/{workspace}/billing/invoices/{invoice}` shows invoice items, totals, notes, and payment history
+- [ ] Invoice detail page header shows GVOS Invoice, invoice number, status badge, Back to Billing button, and Print button
+- [ ] Invoice detail page shows bill-to/client details, workspace name, company when available, issue date, due date, subscription/billing cycle, and currency
+- [ ] Invoice items table shows description, item type, quantity, unit amount, and total amount
+- [ ] Totals section sits directly below the invoice items table
+- [ ] Totals display in this order: subtotal, discount, tax, total amount, amount paid, balance due
+- [ ] Total amount is emphasized and balance due is visually clear
+- [ ] Money values are right-aligned on desktop and remain readable on mobile
+- [ ] Payment history table shows payment reference, provider, amount, status, and paid-at date
+- [ ] Print button calls `window.print()` and does not generate a PDF
 - [ ] `/workspaces/{workspace}/billing/payments` shows payment history and empty state when none exist
 
 ### Access Control
