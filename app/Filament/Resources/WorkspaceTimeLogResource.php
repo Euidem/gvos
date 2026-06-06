@@ -40,12 +40,12 @@ class WorkspaceTimeLogResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return auth()->user()->hasAnyRole(['super_admin', 'operations_admin']);
+        return false;
     }
 
     public static function canDelete(Model $record): bool
     {
-        return auth()->user()->hasAnyRole(['super_admin', 'operations_admin']);
+        return false;
     }
 
     // ── Table ─────────────────────────────────────────────────────────────
@@ -124,16 +124,8 @@ class WorkspaceTimeLogResource extends Resource
                     ->options(WorkspaceTimeLog::visibilityLabels()),
             ])
             ->defaultSort('log_date', 'desc')
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->actions([])
+            ->bulkActions([]);
     }
 
     // ── Form (for view/edit in admin) ─────────────────────────────────────

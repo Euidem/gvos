@@ -219,7 +219,51 @@ Notification payloads store safe metadata only. They do not include vault secret
 
 ---
 
+## Phase 12 Warnings / Notes
+
+### Phase 12 | Info | Local PHP validation is unavailable on the workstation
+
+PHP is not installed on the local build workstation, so artisan checks must be run on cPanel after pulling the Phase 12 commit. Required commands are documented in `docs/TESTING_CHECKLIST.md`.
+
+---
+
+### Phase 12 | Info | No schema changes were required during stabilization
+
+The Phase 12 audit did not add migrations or alter pushed migrations. Billing totals, payment confirmation, invoice status logic, and vault encryption remain unchanged.
+
+---
+
 ## Resolved Issues
+
+### 2026-06-06 | Phase 12 | High | Portal task assignment could grant workspace access to arbitrary users
+
+**Description:** Portal task create/edit validation accepted any existing `users.id` as `assigned_to_user_id`. Because task assignment is one workspace access signal, a crafted request could assign a task to a non-workspace user and create an unintended access path.
+
+**Resolution:** Portal task create/edit now requires the assignee to already be in the workspace active-member or primary-team set. Non-workspace assignees receive a validation error.
+
+**Status:** Resolved.
+
+---
+
+### 2026-06-06 | Phase 12 | Medium | Filament Time Logs exposed actions without registered pages
+
+**Description:** `WorkspaceTimeLogResource` registered only an index page but displayed view/edit/delete actions. This could produce broken admin actions and also conflicted with the requirement that running logs are not edited or deleted incorrectly from the admin list.
+
+**Resolution:** The Filament Time Logs resource is read-only in Phase 12. View/edit/delete table actions and bulk delete were removed.
+
+**Status:** Resolved.
+
+---
+
+### 2026-06-06 | Phase 12 | Low | Notification mark-all-read loaded all unread notifications
+
+**Description:** `NotificationController::markAllRead()` loaded the current user's unread notification collection before marking it read, which was unnecessary work for accounts with many unread notifications.
+
+**Resolution:** The action now performs one current-user-scoped database update on unread notifications.
+
+**Status:** Resolved.
+
+---
 
 ### 2026-06-06 | Phase 9 | Low | Timer status `running` not yet in schema
 

@@ -137,13 +137,13 @@ class WorkspaceFileController extends Controller
         $canUpload   = $this->canUpload($role);
         $seeInternal = $this->canViewInternal($role);
 
-        $filesQuery = $workspace->files()->with('uploadedBy');
+        $filesQuery = $workspace->files()->with(['uploadedBy', 'task']);
 
         if (! $seeInternal) {
             $filesQuery->where('visibility', 'public');
         }
 
-        $files = $filesQuery->get();
+        $files = $filesQuery->paginate(20)->withQueryString();
 
         $categoryLabels = WorkspaceFile::categoryLabels();
         $allowedMimes   = WorkspaceFile::allowedMimes();

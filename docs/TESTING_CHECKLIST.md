@@ -1368,3 +1368,44 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] No visible UI contains `GetVirtual`
 
 ## Phase 12 — Launch Readiness (planned)
+
+## Phase 12 - Stabilization, QA, Access Audit and Bug Fix Pass
+
+Run after `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### Required Artisan Checks
+- [ ] `php artisan migrate` runs without error
+- [ ] `php artisan optimize:clear` runs without error
+- [ ] `php artisan permission:cache-reset` runs without error
+- [ ] `php artisan route:list` loads without route errors
+- [ ] `php artisan route:list --name=vault` shows vault routes
+- [ ] `php artisan route:list --name=notification` shows notification routes
+- [ ] `php artisan route:list --name=time-tracker` shows timer routes
+- [ ] `php artisan route:list --name=billing` shows billing routes
+
+### Access and Permission Regression
+- [ ] Portal task create rejects an assignee who is not an active workspace member or primary team user
+- [ ] Portal task edit rejects changing assignee to a non-workspace user
+- [ ] Existing valid task assignment to active workspace members still saves
+- [ ] Talent cannot access workspace billing routes
+- [ ] Clients cannot see running timers, internal time details, manager notes, invoice internal notes, or payment confirmation notes
+- [ ] Non-members receive 403/404 on nested workspace routes
+- [ ] Users can mark only their own notifications read
+- [ ] Vault reveal is POST-only, workspace-scoped, permission-checked, and logs metadata only
+
+### Module Regression
+- [ ] Admin invoice create/edit form still shows totals below invoice items
+- [ ] Invoice issue action still sends safe notifications
+- [ ] Payment confirmation still updates invoice `amount_paid`, `balance_due`, and status
+- [ ] One running timer per user is still enforced
+- [ ] Completing a timer still requires `work_summary`
+- [ ] Filament Time Logs table loads and has no view/edit/delete actions
+- [ ] File library loads with pagination and downloads still work
+- [ ] Chat loads the latest messages in readable order
+- [ ] Notification mark-all-read marks the current user's unread notifications only
+
+### Branding and Safety
+- [ ] No visible UI contains `GetVirtual`
+- [ ] No visible payment gateway, payroll, browser extension, auto-login, screenshot capture, keystroke tracking, or screen-monitoring UI appears
+- [ ] Notification payloads do not contain vault secrets, raw file paths, payment raw payloads, internal invoice notes, manager notes, tokens, or API keys
+- [ ] No new database migrations were added for Phase 12

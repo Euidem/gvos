@@ -7,6 +7,24 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-06 | Phase 12 | Stabilization, QA, Access Audit and Bug Fix Pass
+
+**What was done:** Audited the Phase 8 billing foundation, Phase 9 timer flow, Phase 10 password vault, and Phase 11 notifications for migration safety, route protection, workspace ownership checks, role boundaries, billing visibility, timer behavior, vault secret handling, notification payload privacy, visible branding, error handling, and simple query/performance risks.
+
+**Bugs fixed:**
+
+| Area | Fix |
+|------|-----|
+| Tasks | Portal task create/edit now rejects assignees who do not already belong to the workspace member or primary-team set, preventing task assignment from granting arbitrary workspace access |
+| Time logs | Filament `WorkspaceTimeLogResource` is now read-only; broken view/edit/delete actions were removed because only the index page exists and running logs should not be mutated from the admin list |
+| Notifications | Mark-all-read now performs one current-user-scoped database update instead of loading all unread notification models |
+| Chat | Workspace chat now fetches the most recent 100 messages and then displays them oldest-first |
+| Files | Workspace file library now eager-loads linked tasks and paginates the file list |
+
+**Preserved:** No database migrations, no schema changes, no billing calculation changes, no payment confirmation changes, no invoice status logic changes, no vault encryption changes, no payment gateway, no payroll, no browser extension, no screenshots, no keystroke tracking, no screen monitoring, and no new product feature phase.
+
+---
+
 ### 2026-06-06 | Phase 11 | Notifications and Email System Foundation
 
 **What was done:** Implemented the Phase 11 notification foundation using Laravel database and mail notifications. Users can view notifications in the portal, mark them read, and control in-app/email preferences per notification type. Notification delivery is routed through `NotificationService`, which resolves recipients, checks preferences, avoids duplicate recipients, and catches delivery failures so business actions continue.

@@ -19,7 +19,7 @@
                 <span class="material-symbols-outlined text-secondary" style="font-size: 22px;">folder_open</span>
                 File Library
             </h2>
-            <p class="text-xs text-outline mt-0.5">{{ $workspace->workspace_code }} &middot; {{ $files->count() }} file{{ $files->count() !== 1 ? 's' : '' }}</p>
+            <p class="text-xs text-outline mt-0.5">{{ $workspace->workspace_code }} &middot; {{ $files->total() }} file{{ $files->total() !== 1 ? 's' : '' }}</p>
         </div>
         <div class="flex items-center gap-2">
             <a href="{{ route('workspace.chat.index', $workspace) }}"
@@ -298,6 +298,12 @@
                     </div>
                     @endforeach
                 </div>
+
+                @if ($files->hasPages())
+                    <div class="mt-5">
+                        {{ $files->links() }}
+                    </div>
+                @endif
             @endif
         </div>
     </div>

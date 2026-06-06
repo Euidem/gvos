@@ -10,6 +10,7 @@ use App\Services\AuditLogger;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class WorkspaceTaskController extends Controller
 {
@@ -78,6 +79,38 @@ class WorkspaceTaskController extends Controller
     private function isAdminOrManager(string $role): bool
     {
         return in_array($role, ['admin', 'workspace_admin', 'manager'], true);
+    }
+
+    /**
+     * Users who can safely be assigned from the portal without creating a new
+     * workspace-access path. Admins may still manage unusual assignments from
+     * Filament, but portal forms should not grant access to arbitrary users.
+     */
+    private function workspaceAssignableUserIds(Workspace $workspace): array
+    {
+        $memberIds = $workspace->activeMembers()->pluck('user_id');
+        $primaryIds = collect([$workspace->primary_manager_id, $workspace->primary_talent_id])->filter();
+
+        return $memberIds
+            ->merge($primaryIds)
+            ->map(fn ($id): int => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function ensureAssigneeBelongsToWorkspace(Workspace $workspace, ?int $userId): void
+    {
+        if (! $userId) {
+            return;
+        }
+
+        if (! in_array($userId, $this->workspaceAssignableUserIds($workspace), true)) {
+            throw ValidationException::withMessages([
+                'assigned_to_user_id' => 'Assigned user must already belong to this workspace.',
+            ]);
+        }
     }
 
     // ── Controller actions ────────────────────────────────────────────────
@@ -166,6 +199,11 @@ class WorkspaceTaskController extends Controller
         if (! $isAdminOrManager) {
             unset($validated['internal_notes']);
         }
+
+        $this->ensureAssigneeBelongsToWorkspace(
+            $workspace,
+            isset($validated['assigned_to_user_id']) ? (int) $validated['assigned_to_user_id'] : null,
+        );
 
         $task = WorkspaceTask::create(array_merge($validated, [
             'workspace_id'       => $workspace->id,
@@ -307,6 +345,11 @@ class WorkspaceTaskController extends Controller
         if (! $isAdminOrManager) {
             unset($validated['internal_notes']);
         }
+
+        $this->ensureAssigneeBelongsToWorkspace(
+            $workspace,
+            isset($validated['assigned_to_user_id']) ? (int) $validated['assigned_to_user_id'] : null,
+        );
 
         $oldAssignee = $task->assigned_to_user_id;
         $task->update($validated);

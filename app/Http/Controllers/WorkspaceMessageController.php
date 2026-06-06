@@ -65,9 +65,11 @@ class WorkspaceMessageController extends Controller
 
         // Last 100 messages, oldest first for reading order
         $messages = $messagesQuery
-            ->orderBy('created_at', 'asc')
+            ->orderByDesc('created_at')
             ->limit(100)
-            ->get();
+            ->get()
+            ->sortBy('created_at')
+            ->values();
 
         return view('workspace.chat.index', compact(
             'workspace', 'messages', 'role', 'canPost', 'seeInternal'

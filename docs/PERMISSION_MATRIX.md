@@ -458,6 +458,17 @@ All notification routes require `auth` + `check.status`.
 
 ---
 
+## Phase 12 - Stabilization Audit Notes
+
+- Portal task create/edit forms now require `assigned_to_user_id` to already belong to the workspace active-member or primary-team set. This prevents task assignment from becoming an arbitrary workspace-access grant.
+- Filament `WorkspaceTimeLogResource` is read-only in Phase 12. Super Admin and Operations Admin can inspect the table, but create/edit/delete actions are disabled from that resource.
+- Notification mark-read routes remain current-user scoped. Mark-all-read now uses a current-user unread notification query update instead of loading all unread models.
+- Workspace file lists remain workspace/visibility filtered and are paginated. Linked task data is eager-loaded to avoid per-row task lookups.
+- Workspace chat remains workspace/visibility filtered and is capped to the latest 100 messages.
+- No Phase 12 change loosens billing, vault, timer, notification, file, chat, task, or report access.
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
