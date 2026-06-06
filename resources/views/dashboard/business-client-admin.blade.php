@@ -18,6 +18,12 @@
     $publishedReports     = \App\Models\WorkspaceWeeklyReport::whereIn('workspace_id', $clientWorkspaceIds)
         ->where('status', 'published')->count();
 
+    // Phase 8 billing
+    $outstandingBalance = \App\Models\Invoice::whereIn('workspace_id', $clientWorkspaceIds)
+        ->whereIn('status', ['issued', 'partially_paid', 'overdue'])
+        ->sum('balance_due');
+    $billingWorkspaceId = $clientWorkspaceIds->first();
+
     $companyName = $company?->name ?? 'Your Company';
     $name = $profile?->first_name ?? $user->name ?? 'there';
 @endphp
@@ -191,10 +197,15 @@
 
 {{-- ── Quick links ─────────────────────────────────────────────────────── --}}
 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    @php
+        $billingWorkspace = $billingWorkspaceId ? \App\Models\Workspace::find($billingWorkspaceId) : null;
+    @endphp
     @foreach ([
-        ['label' => 'Chat',       'icon' => 'forum',       'color' => '#8B5CF6', 'route' => route('workspace.index')],
-        ['label' => 'Files',      'icon' => 'folder_open', 'color' => '#0058be', 'route' => route('workspace.index')],
-        ['label' => 'Reports',    'icon' => 'summarize',   'color' => '#10B981', 'route' => route('workspace.index')],
+        ['label' => 'Chat',       'icon' => 'forum',        'color' => '#8B5CF6', 'route' => route('workspace.index')],
+        ['label' => 'Files',      'icon' => 'folder_open',  'color' => '#0058be', 'route' => route('workspace.index')],
+        ['label' => 'Reports',    'icon' => 'summarize',    'color' => '#10B981', 'route' => route('workspace.index')],
+        ['label' => 'Billing',    'icon' => 'receipt_long', 'color' => $outstandingBalance > 0 ? '#F59E0B' : '#0058be',
+                                  'route' => $billingWorkspace ? route('workspace.billing.index', $billingWorkspace) : route('workspace.index')],
     ] as $card)
     <a href="{{ $card['route'] }}"
        class="bg-white p-4 rounded-xl border border-border-subtle shadow-sm hover:border-secondary/30 hover:shadow-md transition-all group">

@@ -25,8 +25,10 @@
     $messageTotal = \App\Models\WorkspaceMessage::count();
     $fileTotal    = \App\Models\WorkspaceFile::count();
 
-    $timePending  = \App\Models\WorkspaceTimeLog::where('status', 'submitted')->count();
-    $reportsDraft = \App\Models\WorkspaceWeeklyReport::where('status', 'submitted')->count();
+    $timePending        = \App\Models\WorkspaceTimeLog::where('status', 'submitted')->count();
+    $reportsDraft       = \App\Models\WorkspaceWeeklyReport::where('status', 'submitted')->count();
+    $invoiceOutstanding = \App\Models\Invoice::whereIn('status', ['issued', 'partially_paid', 'overdue'])->count();
+    $invoiceOverdue     = \App\Models\Invoice::where('status', 'overdue')->count();
 
     $name = $profile?->first_name ?? $user->name ?? 'there';
 @endphp
@@ -163,6 +165,19 @@
                 <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $messageTotal + $fileTotal }}</h4>
             </div>
             <a href="/admin/workspace-messages" class="text-secondary font-label-md text-label-md hover:underline">View</a>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">
+            <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                 style="background:rgba(245,158,11,0.08)">
+                <span class="material-symbols-outlined text-status-payment-due" style="font-size:20px;">receipt_long</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-label-md text-label-md text-outline">Outstanding Invoices</p>
+                <h4 class="font-headline-md text-headline-md {{ $invoiceOutstanding > 0 ? 'text-status-payment-due' : 'text-primary' }} font-bold">
+                    {{ $invoiceOutstanding }}
+                </h4>
+            </div>
+            <a href="/admin/invoices" class="text-secondary font-label-md text-label-md hover:underline">View</a>
         </div>
     </div>
 </div>

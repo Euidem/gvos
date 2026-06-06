@@ -44,4 +44,16 @@ class Company extends Model
     {
         return $this->hasMany(Workspace::class);
     }
+
+    // ── Phase 8 billing ───────────────────────────────────────────────────
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(WorkspaceSubscription::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

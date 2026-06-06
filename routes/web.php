@@ -7,6 +7,7 @@ use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceFileController;
 use App\Http\Controllers\WorkspaceMessageController;
 use App\Http\Controllers\WorkspaceTaskController;
+use App\Http\Controllers\WorkspaceBillingController;
 use App\Http\Controllers\WorkspaceTimeLogController;
 use App\Http\Controllers\WorkspaceWeeklyReportController;
 use Illuminate\Support\Facades\Route;
@@ -77,6 +78,13 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/',                     [WorkspaceFileController::class, 'store'])->name('store');
         Route::get('/{file}/download',       [WorkspaceFileController::class, 'download'])->name('download');
         Route::delete('/{file}',             [WorkspaceFileController::class, 'destroy'])->name('destroy');
+    });
+
+    // ── Workspace billing routes (Phase 8) ───────────────────────────────
+    Route::prefix('workspaces/{workspace}/billing')->name('workspace.billing.')->group(function () {
+        Route::get('/',                        [WorkspaceBillingController::class, 'index'])->name('index');
+        Route::get('/invoices/{invoice}',      [WorkspaceBillingController::class, 'showInvoice'])->name('invoice');
+        Route::get('/payments',                [WorkspaceBillingController::class, 'payments'])->name('payments');
     });
 
     // ── Workspace time log routes (Phase 7) ───────────────────────────────

@@ -38,4 +38,16 @@ class ClientProfile extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    // ── Phase 8 billing ───────────────────────────────────────────────────
+
+    public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WorkspaceSubscription::class);
+    }
+
+    public function invoices(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

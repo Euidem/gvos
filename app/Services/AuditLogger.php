@@ -496,4 +496,113 @@ class AuditLogger
             'to'           => $to,
         ], $extra));
     }
+
+    // ── Phase 8: Billing wrappers ─────────────────────────────────────────
+
+    public static function billingPlanCreated(Model $plan, array $extra = []): void
+    {
+        self::log('billing_plan.created', $plan, array_merge([
+            'name'     => $plan->name ?? null,
+            'currency' => $plan->currency ?? null,
+            'amount'   => $plan->amount ?? null,
+        ], $extra));
+    }
+
+    public static function billingPlanUpdated(Model $plan, array $extra = []): void
+    {
+        self::log('billing_plan.updated', $plan, array_merge([
+            'name'   => $plan->name ?? null,
+            'status' => $plan->status ?? null,
+        ], $extra));
+    }
+
+    public static function subscriptionCreated(Model $sub, array $extra = []): void
+    {
+        self::log('workspace_subscription.created', $sub, array_merge([
+            'workspace_id' => $sub->workspace_id ?? null,
+            'amount'       => $sub->amount ?? null,
+            'currency'     => $sub->currency ?? null,
+            'status'       => $sub->status ?? null,
+        ], $extra));
+    }
+
+    public static function subscriptionUpdated(Model $sub, array $extra = []): void
+    {
+        self::log('workspace_subscription.updated', $sub, array_merge([
+            'workspace_id' => $sub->workspace_id ?? null,
+            'status'       => $sub->status ?? null,
+        ], $extra));
+    }
+
+    public static function invoiceCreated(Model $invoice, array $extra = []): void
+    {
+        self::log('invoice.created', $invoice, array_merge([
+            'invoice_number' => $invoice->invoice_number ?? null,
+            'workspace_id'   => $invoice->workspace_id ?? null,
+            'total_amount'   => $invoice->total_amount ?? null,
+            'currency'       => $invoice->currency ?? null,
+        ], $extra));
+    }
+
+    public static function invoiceUpdated(Model $invoice, array $extra = []): void
+    {
+        self::log('invoice.updated', $invoice, array_merge([
+            'invoice_number' => $invoice->invoice_number ?? null,
+            'status'         => $invoice->status ?? null,
+        ], $extra));
+    }
+
+    public static function invoiceIssued(Model $invoice, array $extra = []): void
+    {
+        self::log('invoice.issued', $invoice, array_merge([
+            'invoice_number' => $invoice->invoice_number ?? null,
+            'workspace_id'   => $invoice->workspace_id ?? null,
+            'total_amount'   => $invoice->total_amount ?? null,
+        ], $extra));
+    }
+
+    public static function invoiceCancelled(Model $invoice, array $extra = []): void
+    {
+        self::log('invoice.cancelled', $invoice, array_merge([
+            'invoice_number' => $invoice->invoice_number ?? null,
+            'workspace_id'   => $invoice->workspace_id ?? null,
+        ], $extra));
+    }
+
+    public static function invoiceMarkedPaid(Model $invoice, array $extra = []): void
+    {
+        self::log('invoice.marked_paid', $invoice, array_merge([
+            'invoice_number' => $invoice->invoice_number ?? null,
+            'workspace_id'   => $invoice->workspace_id ?? null,
+            'total_amount'   => $invoice->total_amount ?? null,
+        ], $extra));
+    }
+
+    public static function paymentRecorded(Model $payment, array $extra = []): void
+    {
+        self::log('payment.recorded', $payment, array_merge([
+            'payment_reference' => $payment->payment_reference ?? null,
+            'workspace_id'      => $payment->workspace_id ?? null,
+            'amount'            => $payment->amount ?? null,
+            'currency'          => $payment->currency ?? null,
+            'provider'          => $payment->provider ?? null,
+        ], $extra));
+    }
+
+    public static function paymentConfirmed(Model $payment, array $extra = []): void
+    {
+        self::log('payment.confirmed', $payment, array_merge([
+            'payment_reference' => $payment->payment_reference ?? null,
+            'workspace_id'      => $payment->workspace_id ?? null,
+            'amount'            => $payment->amount ?? null,
+        ], $extra));
+    }
+
+    public static function paymentFailedOrCancelled(Model $payment, array $extra = []): void
+    {
+        self::log('payment.failed_or_cancelled', $payment, array_merge([
+            'payment_reference' => $payment->payment_reference ?? null,
+            'status'            => $payment->status ?? null,
+        ], $extra));
+    }
 }

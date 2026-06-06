@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 7 migrations created and active
+## Status: Phase 8 migrations created and active
 
 ---
 
@@ -509,8 +509,130 @@ Clients see only `published` reports. Talents see `submitted`, `approved`, `publ
 
 ---
 
-### subscriptions / invoices (Phase 8)
-See billing schema in `BILLING_RULES.md`
+---
+
+## Phase 8 Tables (live)
+
+### billing_plans
+Reusable subscription templates. Plans can be assigned to workspace subscriptions.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| name | string | |
+| code | string nullable unique | Short identifier |
+| description | text nullable | |
+| currency | enum | USD, GBP, EUR, NGN, CAD |
+| amount | decimal(10,2) | |
+| billing_cycle | enum | bi_weekly, monthly, one_time |
+| included_talents | integer | default 1 |
+| included_hours_per_week | integer nullable | |
+| status | enum | active, inactive, archived |
+| notes | text nullable | |
+| timestamps + softDeletes | | |
+
+### workspace_subscriptions
+Active billing relationship between a workspace and a billing plan.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| billing_plan_id | FK billing_plans nullable | nullOnDelete |
+| client_profile_id | FK client_profiles nullable | |
+| company_id | FK companies nullable | |
+| currency | enum | |
+| amount | decimal(10,2) | override or copy from plan |
+| billing_cycle | enum | bi_weekly, monthly, one_time |
+| status | enum | trial, active, payment_due, overdue, suspended, cancelled, ended |
+| starts_at | date nullable | |
+| next_billing_date | date nullable | |
+| ends_at | date nullable | |
+| last_paid_at | timestamp nullable | updated on payment confirm |
+| grace_ends_at | timestamp nullable | |
+| notes | text nullable | |
+| timestamps + softDeletes | | |
+| INDEX | (workspace_id, status) | |
+
+### invoices
+Client-facing billing documents.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| invoice_number | string unique | Auto: GVOS-INV-YYYYMM-XXXX |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| workspace_subscription_id | FK nullable | nullOnDelete |
+| client_profile_id | FK nullable | |
+| company_id | FK nullable | |
+| currency | enum | |
+| subtotal | decimal(10,2) | |
+| discount_amount | decimal(10,2) | default 0 |
+| tax_amount | decimal(10,2) | default 0 |
+| total_amount | decimal(10,2) | |
+| amount_paid | decimal(10,2) | default 0 |
+| balance_due | decimal(10,2) | total_amount - amount_paid |
+| status | enum | draft, issued, partially_paid, paid, overdue, cancelled, void |
+| issue_date | date | |
+| due_date | date nullable | |
+| paid_at | timestamp nullable | set when fully paid |
+| notes | text nullable | client-visible |
+| internal_notes | text nullable | admin/manager only |
+| timestamps + softDeletes | | |
+| INDEX | (workspace_id, status) | |
+
+### invoice_items
+Line items within an invoice.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| invoice_id | FK invoices | cascadeOnDelete |
+| description | string | |
+| quantity | decimal(10,4) | default 1 |
+| unit_amount | decimal(10,2) | |
+| total_amount | decimal(10,2) | auto: quantity × unit_amount |
+| item_type | enum | subscription, extra_hours, setup_fee, adjustment, other |
+| timestamps | | |
+
+### payments
+Payment records (manual and gateway-ready).
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| payment_reference | string nullable unique | Auto: GVOS-PAY-XXXXXXXXXX |
+| invoice_id | FK invoices nullable | nullOnDelete |
+| workspace_id | FK workspaces nullable | |
+| workspace_subscription_id | FK nullable | |
+| provider | enum | manual, bank_transfer, fincra, flutterwave, paystack, stripe, other |
+| provider_reference | string nullable | gateway transaction ID |
+| currency | enum | |
+| amount | decimal(10,2) | |
+| status | enum | pending, confirmed, failed, reversed, cancelled |
+| paid_at | timestamp nullable | |
+| confirmed_by_user_id | FK users nullable | admin who confirmed |
+| confirmation_notes | text nullable | |
+| raw_payload | json nullable | gateway webhook data |
+| timestamps + softDeletes | | |
+| INDEX | (invoice_id, status) | |
+| INDEX | (workspace_id, status) | |
+
+#### Payment Confirmation Flow
+1. `Payment::confirm(userId, notes)` is idempotent once confirmed_by_user_id and paid_at are set.
+2. → status=confirmed, paid_at=now(), confirmed_by_user_id=userId.
+3. → if linked to an invoice, inherit missing workspace/subscription references from that invoice.
+4. → `Invoice::applyPayment(amount)` → amount_paid += amount; recalc balance_due.
+5. → if balance_due ≤ 0: invoice status=paid, paid_at=now(); else: partially_paid.
+6. → if subscription linked and was payment_due/overdue/suspended: status=active, last_paid_at=now().
+
+#### Invoice Total Recalculation
+Invoice totals are recalculated from line items when available. Manual invoices without line items preserve the manually entered total and only refresh balance_due from total_amount - amount_paid.
+
+---
+
+### subscriptions / invoices — future gateway integration
+Provider enum is designed to be extended. `raw_payload` JSON field accepts gateway webhook data. No gateway is integrated yet.
 
 ---
 

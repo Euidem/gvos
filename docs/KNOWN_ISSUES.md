@@ -119,6 +119,32 @@ When a manager sets `visibility = client_summary`, the `client_visible_summary` 
 
 ---
 
+## Phase 8 Warnings / Notes
+
+### Phase 8 | Info | Billing is provider agnostic, no live payment gateway yet
+
+The `payments.provider` and `payments.raw_payload` fields are ready for future Fincra, Flutterwave, Paystack, Stripe, bank transfer, or other integrations. Phase 8 does not collect live payments, create checkout links, process webhooks, or verify gateway transactions.
+
+---
+
+### Phase 8 | Info | Payments are manual admin-confirmed records
+
+Admins can record and confirm manual payments in Filament. Confirming a payment updates the linked invoice balance and can reactivate a linked subscription from payment_due/overdue/suspended. There is no automatic reconciliation against bank statements or gateway events yet.
+
+---
+
+### Phase 8 | Low | No automated recurring billing job
+
+Subscriptions store billing cycle, next billing date, grace period, and status, but there is no scheduled job that automatically creates invoices, advances next_billing_date, or marks overdue accounts. Admins must create invoices and update subscription statuses manually for now.
+
+---
+
+### Phase 8 | Low | Subscription access control is not fully automated
+
+Billing status is visible in the portal, but workspace access is not automatically suspended when a subscription becomes overdue or suspended. Account/workspace suspension logic should be added only when the business rules for grace periods and client exceptions are final.
+
+---
+
 ## Resolved Issues
 
 ### 2026-05-27 | Phase 0 | Info | PHP/Composer/Node.js not installed on build machine

@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-05-31
 **Current Phase:** Phase 7 — Time Tracking & Work Reports ✅ Complete
-**Current Activity:** UI Correction — Batch 2 Complete (all 8 dashboards rebuilt to Stitch layouts)
+**Current Activity:** Phase 8 — Billing Foundation ✅ Complete
 
 ---
 
@@ -920,7 +920,7 @@ Expanded the workspace role model from 4 values (client/talent/manager/observer)
 4. Verify weekly report flow: create → submit → approve → publish; client sees only published
 5. Verify task show page time log sidebar renders correctly
 6. Verify Filament: WorkspaceTimeLogResource and WorkspaceWeeklyReportResource appear under Workspace nav group, sort 7 and 8
-7. Phase 8 is NOT yet started — do not proceed without explicit instruction
+7. Phase 8 billing foundation is implemented; run the Phase 8 checklist before starting Phase 9
 
 ---
 
@@ -947,7 +947,75 @@ Feature development is paused. The Stitch UI export has been designated as the f
 
 **No code was changed. No database was changed. Documentation only.**
 
-**Next step:** Batch 3 — Workspace core pages (workspace show, task board, task detail).
+**Next step:** Phase 9 (not started). UI Batch 3 also available when instructed.
+
+---
+
+## Phase 8 Status — Complete ✅ (2026-05-31)
+
+### PART A — Database Migrations (5 new tables)
+- [x] `billing_plans` — name, code, currency, amount, billing_cycle, included_talents, status, softDeletes
+- [x] `workspace_subscriptions` — workspace_id FK, billing_plan_id FK, currency, amount, billing_cycle, status (trial/active/payment_due/overdue/suspended/cancelled/ended), starts_at, next_billing_date, grace_ends_at, softDeletes
+- [x] `invoices` — invoice_number unique, workspace_id FK, workspace_subscription_id FK nullable, currency, subtotal/discount/tax/total/amount_paid/balance_due, status (draft/issued/partially_paid/paid/overdue/cancelled/void), issue_date, due_date, internal_notes, softDeletes
+- [x] `invoice_items` — invoice_id FK, description, quantity, unit_amount, total_amount, item_type enum
+- [x] `payments` — payment_reference unique, invoice_id FK nullable, workspace_id FK nullable, provider enum (manual/bank_transfer/fincra/flutterwave/paystack/stripe/other), currency, amount, status, paid_at, confirmed_by_user_id FK, raw_payload json, softDeletes
+
+### PART B — Models (5 new, 3 updated)
+- [x] `BillingPlan` — SoftDeletes; cycleLabels(), formattedAmount(); hasMany subscriptions
+- [x] `WorkspaceSubscription` — SoftDeletes; statusLabel(), formattedAmount(), isActive(), requiresPayment(); relationships: workspace, billingPlan, clientProfile, company, invoices, payments
+- [x] `Invoice` — SoftDeletes; auto-generate invoice_number on create (GVOS-INV-YYYYMM-XXXX); recalculateTotals(), applyPayment(); hasMany items, payments
+- [x] `InvoiceItem` — auto-calculate total_amount from quantity × unit_amount; belongsTo invoice; refreshes parent invoice totals after item changes
+- [x] `Payment` — SoftDeletes; auto-generate payment_reference; idempotent confirm() method: sets confirmed, updates invoice amount_paid/balance_due/status, updates subscription; relationships: invoice, workspace, subscription, confirmedBy
+- [x] `Workspace.php` — added subscriptions(), activeSubscription(), invoices(), payments()
+- [x] `ClientProfile.php` — added subscriptions(), invoices()
+- [x] `Company.php` — added subscriptions(), invoices()
+
+### PART C — Billing Permissions
+- Admin/Ops Admin: manage all billing resources in Filament; destructive deletes disabled in favour of archive/cancel/confirm status actions
+- Workspace Admin/Manager: view subscription + invoice status for their workspace (portal only)
+- Client Admin/Individual Client: view invoices + payment status (portal); cannot edit
+- Client Staff: read-only view if workspace accessible
+- Talent: CANNOT access billing (403 in controller; hidden in workspace/show)
+
+### PART D/E — Routes + Controller (3 new routes)
+- `GET /workspaces/{workspace}/billing` → `workspace.billing.index`
+- `GET /workspaces/{workspace}/billing/invoices/{invoice}` → `workspace.billing.invoice`
+- `GET /workspaces/{workspace}/billing/payments` → `workspace.billing.payments`
+- `WorkspaceBillingController` — index, showInvoice, payments; canViewBilling() helper excludes talent/assigned_user/observer
+
+### PART F — Portal Billing Views (3 new)
+- `workspace/billing/index.blade.php` — subscription status card (with payment_due warning), invoice table with status badges, recent payments, payment instructions placeholder
+- `workspace/billing/show-invoice.blade.php` — invoice header, line items table, totals summary, payment history, internal_notes hidden from clients, payment instructions placeholder for clients
+- `workspace/billing/payments.blade.php` — paginated payment history with status badges; confirmation notes visible only to internal roles
+
+### PART G — workspace/show.blade.php updated
+- Billing card now ACTIVE for non-talent roles — shows subscription status badge, amount/cycle, next billing date, outstanding balance
+- Talent/assigned_user/observer see a disabled placeholder
+- Password Vault remains as dashed placeholder
+
+### PART H — Filament Resources (4 new, nav group "Billing")
+- `BillingPlanResource` (sort 1) — create/edit/archive; status badge; cycle/currency filters
+- `WorkspaceSubscriptionResource` (sort 2) — create/edit; status/currency/workspace filters; next_billing_date column
+- `InvoiceResource` (sort 3) — create/edit + Issue / Mark Paid / Cancel inline actions; repeater for invoice items; status/workspace/currency/due_date filters
+- `PaymentResource` (sort 4) — record/edit pending + Confirm / Cancel inline actions with confirmation notes form; provider/status/currency/workspace filters
+
+### PART I — Invoice Number Format
+`GVOS-INV-YYYYMM-0001` — auto-generated in `Invoice::booted()` if blank; increments per-month from existing records
+
+### PART J — Payment/Invoice Status Flow
+1. `Payment::confirm(userId, notes)` → sets status=confirmed, paid_at=now()
+2. → calls `Invoice::applyPayment(amount)` → increments amount_paid, recalculates balance_due
+3. → if balance_due ≤ 0: status=paid, paid_at=now(); else: status=partially_paid
+4. → if subscription linked: last_paid_at=now(); if payment_due/overdue/suspended → status=active
+
+### PART K — AuditLogger (12 new wrappers)
+billing_plan.created/updated, workspace_subscription.created/updated, invoice.created/updated/issued/cancelled/marked_paid, payment.recorded/confirmed/failed_or_cancelled
+
+### PART L — Dashboard Updates
+- Super Admin: 4 billing count cards (total invoices, outstanding, paid, payments confirmed)
+- Operations Admin: outstanding invoices action item added
+- Individual Client: Billing quick link card with outstanding balance
+- Business Client Admin: Billing quick link card with outstanding balance
 
 ---
 

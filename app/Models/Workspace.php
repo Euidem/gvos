@@ -322,4 +322,28 @@ class Workspace extends Model
     {
         return $this->hasMany(WorkspaceWeeklyReport::class)->orderByDesc('week_start_date');
     }
+
+    // ── Phase 8 — Billing relationships ──────────────────────────────────
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(WorkspaceSubscription::class)->orderByDesc('created_at');
+    }
+
+    public function activeSubscription(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(WorkspaceSubscription::class)
+            ->whereIn('status', ['trial', 'active', 'payment_due', 'overdue'])
+            ->latestOfMany();
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class)->orderByDesc('issue_date');
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class)->orderByDesc('created_at');
+    }
 }

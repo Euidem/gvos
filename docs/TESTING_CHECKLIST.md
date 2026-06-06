@@ -1074,5 +1074,84 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 
 ---
 
-## Phase 8 — Billing (planned)
+## Phase 8 — Billing Foundation
+
+Run after `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### Migrations
+- [ ] `php artisan migrate` runs without error on cPanel
+- [ ] `billing_plans` table exists with currency, amount, billing_cycle, status, and soft deletes
+- [ ] `workspace_subscriptions` table exists with workspace, plan, billing dates, status, and grace fields
+- [ ] `invoices` table exists with `invoice_number`, totals, payment fields, status, and soft deletes
+- [ ] `invoice_items` table exists and links to invoices
+- [ ] `payments` table exists with provider, provider_reference, status, confirmation fields, raw_payload, and soft deletes
+
+### Filament Billing Resources
+- [ ] `/admin/billing-plans` loads under Billing navigation
+- [ ] Admin creates a billing plan with `bi_weekly` cycle
+- [ ] Admin archives a billing plan; status changes to `archived`
+- [ ] `/admin/workspace-subscriptions` loads
+- [ ] Admin creates a subscription for a workspace and optional plan
+- [ ] Subscription status, next billing date, and grace period save correctly
+- [ ] `/admin/invoices` loads
+- [ ] Admin creates an invoice with at least one line item
+- [ ] Invoice number auto-generates as `GVOS-INV-YYYYMM-0001`
+- [ ] Invoice totals and balance due recalculate from line items
+- [ ] Issue invoice action changes status from `draft` to `issued`
+- [ ] Mark Paid action marks invoice paid, sets `paid_at`, and clears balance
+- [ ] Cancel action cancels draft/issued invoices
+- [ ] `/admin/payments` loads
+- [ ] Admin records a manual payment linked to an invoice
+- [ ] Confirm payment action marks payment confirmed
+- [ ] Confirmed payment increments invoice `amount_paid`
+- [ ] Partial payment changes invoice to `partially_paid`
+- [ ] Full payment changes invoice to `paid`, sets `paid_at`, and clears balance
+- [ ] Linked subscription receives `last_paid_at`; payment_due/overdue/suspended returns to active
+
+### Portal Billing Views
+- [ ] Workspace detail page shows active Billing card for admin/manager/client roles
+- [ ] Billing card shows subscription status if present
+- [ ] Billing card shows next billing date if present
+- [ ] Billing card shows outstanding balance from issued/partial/overdue invoices
+- [ ] `/workspaces/{workspace}/billing` shows subscription summary, invoices, payments, and payment instructions placeholder
+- [ ] `/workspaces/{workspace}/billing/invoices/{invoice}` shows invoice items, totals, notes, and payment history
+- [ ] `/workspaces/{workspace}/billing/payments` shows payment history and empty state when none exist
+
+### Access Control
+- [ ] Client admin can view billing for their own workspace
+- [ ] Individual client can view billing for their own workspace
+- [ ] Business client staff can view billing if they have workspace access
+- [ ] Client cannot see invoice `internal_notes`
+- [ ] Client cannot see internal payment confirmation notes
+- [ ] Talent receives 403 on billing routes
+- [ ] Observer receives 403 on billing routes
+- [ ] Non-member receives 403 on billing routes
+- [ ] Invoice detail route rejects invoices from another workspace using integer FK comparison
+
+### Dashboard Updates
+- [ ] Super Admin dashboard shows total invoices, outstanding invoices, paid invoices, and confirmed payments total
+- [ ] Operations Admin dashboard shows outstanding billing action item
+- [ ] Individual Client dashboard shows billing quick link and outstanding balance
+- [ ] Business Client Admin dashboard shows billing quick link and outstanding balance
+- [ ] Talent dashboard does not show billing
+
+### Audit Log Verification
+- [ ] `billing_plan.created` fires on plan creation
+- [ ] `billing_plan.updated` fires on plan edit/archive
+- [ ] `workspace_subscription.created` fires on subscription creation
+- [ ] `workspace_subscription.updated` fires on subscription edit
+- [ ] `invoice.created`, `invoice.updated`, `invoice.issued`, `invoice.cancelled`, `invoice.marked_paid` fire as expected
+- [ ] `payment.recorded`, `payment.confirmed`, `payment.failed_or_cancelled` fire as expected
+
+### Regression Checks
+- [ ] Existing workspace tasks still load
+- [ ] Existing workspace chat still loads
+- [ ] Existing workspace files still load
+- [ ] Existing time logs still load
+- [ ] Existing weekly reports still load
+- [ ] No live gateway payment button appears anywhere
+- [ ] No payroll UI appears anywhere
+- [ ] No password vault implementation appears beyond placeholder
+- [ ] No visible UI contains `GetVirtual`
+
 ## Phase 12 — Launch Readiness (planned)

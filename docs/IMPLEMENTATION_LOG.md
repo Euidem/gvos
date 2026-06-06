@@ -7,6 +7,58 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-05-31 | Phase 8 | Billing Foundation
+
+**What was done:** Phase 8 billing foundation. 5 new migrations, 5 new models, 1 controller (3 methods), 3 portal views, 4 Filament resources (12 pages), 12 AuditLogger wrappers, workspace/show billing card activated, dashboard updates. No live payment gateway. No payroll. Manual payment confirmation only.
+
+**Completion/hardening pass:** Dirty worktree inspection found Phase 8 mostly implemented but uncommitted. The pass preserved all existing Phase 8 files, then tightened invoice total recalculation, payment confirmation idempotency, billing Filament audit hooks, non-destructive archive/cancel/confirm actions, portal payment instructions, internal-only confirmation notes, and Phase 8 permission/testing/known-issue documentation.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_05_31_000001_create_billing_plans_table.php` | billing_plans table |
+| `database/migrations/2026_05_31_000002_create_workspace_subscriptions_table.php` | workspace_subscriptions table |
+| `database/migrations/2026_05_31_000003_create_invoices_table.php` | invoices table with invoice_number auto-gen |
+| `database/migrations/2026_05_31_000004_create_invoice_items_table.php` | invoice_items table |
+| `database/migrations/2026_05_31_000005_create_payments_table.php` | payments table with provider enum |
+| `app/Models/BillingPlan.php` | Model with SoftDeletes, labels, relationships |
+| `app/Models/WorkspaceSubscription.php` | Model with status helpers, confirm-flow relationships |
+| `app/Models/Invoice.php` | Model with auto invoice_number, applyPayment(), recalculateTotals() |
+| `app/Models/InvoiceItem.php` | Model with auto total_amount calculation |
+| `app/Models/Payment.php` | Model with auto payment_reference, confirm() flow |
+| `app/Http/Controllers/WorkspaceBillingController.php` | index, showInvoice, payments |
+| `resources/views/workspace/billing/index.blade.php` | Subscription + invoices + payments overview |
+| `resources/views/workspace/billing/show-invoice.blade.php` | Invoice detail with items, totals, payment history |
+| `resources/views/workspace/billing/payments.blade.php` | Paginated payment history |
+| `app/Filament/Resources/BillingPlanResource.php` + 3 pages | Billing nav group, sort 1 |
+| `app/Filament/Resources/WorkspaceSubscriptionResource.php` + 3 pages | Billing nav group, sort 2 |
+| `app/Filament/Resources/InvoiceResource.php` + 3 pages | Issue/MarkPaid/Cancel actions, repeater items, sort 3 |
+| `app/Filament/Resources/PaymentResource.php` + 3 pages | Confirm/Cancel actions, sort 4 |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `app/Models/Workspace.php` | Added subscriptions(), activeSubscription(), invoices(), payments() |
+| `app/Models/ClientProfile.php` | Added subscriptions(), invoices() |
+| `app/Models/Company.php` | Added subscriptions(), invoices() |
+| `app/Services/AuditLogger.php` | Added 12 billing audit wrappers |
+| `routes/web.php` | Added 3 billing routes + WorkspaceBillingController import |
+| `resources/views/workspace/show.blade.php` | Billing card activated (subscription status, outstanding balance) |
+| `resources/views/dashboard/super-admin.blade.php` | 4 billing count cards + Phase 8 data |
+| `resources/views/dashboard/operations-admin.blade.php` | Outstanding invoices action item |
+| `resources/views/dashboard/individual-client.blade.php` | Billing quick link with balance |
+| `resources/views/dashboard/business-client-admin.blade.php` | Billing quick link with balance |
+| `docs/CURRENT_STATUS.md` | Phase 8 complete |
+| `docs/DATABASE_SCHEMA.md` | Phase 8 schema and payment flow |
+| `docs/PERMISSION_MATRIX.md` | Phase 8 billing access control |
+| `docs/TESTING_CHECKLIST.md` | Phase 8 manual test checklist |
+| `docs/KNOWN_ISSUES.md` | Phase 8 limitations and warnings |
+| `docs/IMPLEMENTATION_LOG.md` | This entry |
+
+---
+
 ### 2026-05-31 | UI Correction Batch 2 | Dashboards — Stitch Alignment
 
 **What was done:** Rebuilt all 8 portal dashboards to match Stitch design. Removed all Phase notice banners. Preserved all existing PHP data bindings. No backend, database, or route changes.

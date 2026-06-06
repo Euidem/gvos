@@ -30,6 +30,12 @@
     $reportTotal    = \App\Models\WorkspaceWeeklyReport::count();
     $reportPublished = \App\Models\WorkspaceWeeklyReport::where('status', 'published')->count();
 
+    // Phase 8 billing counts
+    $invoiceTotal       = \App\Models\Invoice::count();
+    $invoiceOutstanding = \App\Models\Invoice::whereIn('status', ['issued', 'partially_paid', 'overdue'])->count();
+    $invoicePaid        = \App\Models\Invoice::where('status', 'paid')->count();
+    $paymentsConfirmed  = \App\Models\Payment::where('status', 'confirmed')->count();
+
     $name = $profile?->first_name ?? $user->name ?? 'there';
 @endphp
 
@@ -270,6 +276,50 @@
         <a href="/admin/workspace-files" class="font-label-md text-label-md text-secondary hover:underline mt-1 inline-block">
             View all files
         </a>
+    </div>
+</div>
+
+{{-- ── Billing summary ─────────────────────────────────────────────────── --}}
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-8">
+
+    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 rounded-lg" style="background:rgba(0,88,190,0.06)">
+                <span class="material-symbols-outlined text-secondary" style="font-size:18px;">receipt_long</span>
+            </div>
+            <p class="font-label-md text-label-md text-outline uppercase tracking-wider">Total Invoices</p>
+        </div>
+        <p class="font-headline-md text-headline-md text-primary font-bold">{{ $invoiceTotal }}</p>
+    </div>
+
+    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 rounded-lg" style="background:rgba(245,158,11,0.08)">
+                <span class="material-symbols-outlined text-status-payment-due" style="font-size:18px;">hourglass_top</span>
+            </div>
+            <p class="font-label-md text-label-md text-outline uppercase tracking-wider">Outstanding</p>
+        </div>
+        <p class="font-headline-md text-headline-md {{ $invoiceOutstanding > 0 ? 'text-status-payment-due' : 'text-primary' }} font-bold">{{ $invoiceOutstanding }}</p>
+    </div>
+
+    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 rounded-lg" style="background:rgba(5,150,105,0.08)">
+                <span class="material-symbols-outlined text-status-completed" style="font-size:18px;">check_circle</span>
+            </div>
+            <p class="font-label-md text-label-md text-outline uppercase tracking-wider">Paid Invoices</p>
+        </div>
+        <p class="font-headline-md text-headline-md text-primary font-bold">{{ $invoicePaid }}</p>
+    </div>
+
+    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 rounded-lg" style="background:rgba(0,88,190,0.06)">
+                <span class="material-symbols-outlined text-secondary" style="font-size:18px;">payments</span>
+            </div>
+            <p class="font-label-md text-label-md text-outline uppercase tracking-wider">Payments Confirmed</p>
+        </div>
+        <p class="font-headline-md text-headline-md text-primary font-bold">{{ $paymentsConfirmed }}</p>
     </div>
 </div>
 

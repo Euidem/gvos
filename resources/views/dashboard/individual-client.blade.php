@@ -19,6 +19,12 @@
     $publishedReports = \App\Models\WorkspaceWeeklyReport::whereIn('workspace_id', $clientWorkspaceIds)
         ->where('status', 'published')->count();
 
+    // Phase 8 billing
+    $outstandingBalance = \App\Models\Invoice::whereIn('workspace_id', $clientWorkspaceIds)
+        ->whereIn('status', ['issued', 'partially_paid', 'overdue'])
+        ->sum('balance_due');
+    $billingWorkspaceId = $clientWorkspaceIds->first(); // for billing link
+
     $name = $profile?->first_name ?? $user->name ?? 'there';
 @endphp
 
@@ -164,10 +170,18 @@
 
 {{-- ── Quick access cards ───────────────────────────────────────────────── --}}
 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    @php
+        $billingWorkspace = $billingWorkspaceId
+            ? \App\Models\Workspace::find($billingWorkspaceId)
+            : null;
+    @endphp
     @foreach ([
-        ['label' => 'Workspace', 'sub' => 'View tasks and activity', 'icon' => 'workspaces',  'color' => '#0058be', 'route' => route('workspace.index')],
-        ['label' => 'Chat',      'sub' => 'Workspace messages',      'icon' => 'forum',        'color' => '#8B5CF6', 'route' => route('workspace.index')],
-        ['label' => 'Files',     'sub' => 'Shared documents',        'icon' => 'folder_open',  'color' => '#10B981', 'route' => route('workspace.index')],
+        ['label' => 'Workspace', 'sub' => 'View tasks and activity', 'icon' => 'workspaces',   'color' => '#0058be', 'route' => route('workspace.index')],
+        ['label' => 'Chat',      'sub' => 'Workspace messages',      'icon' => 'forum',         'color' => '#8B5CF6', 'route' => route('workspace.index')],
+        ['label' => 'Files',     'sub' => 'Shared documents',        'icon' => 'folder_open',   'color' => '#10B981', 'route' => route('workspace.index')],
+        ['label' => 'Billing',   'sub' => $outstandingBalance > 0 ? 'Balance: ' . number_format((float)$outstandingBalance, 2) : 'View invoices',
+                                          'icon' => 'receipt_long',   'color' => $outstandingBalance > 0 ? '#F59E0B' : '#0058be',
+                                          'route' => $billingWorkspace ? route('workspace.billing.index', $billingWorkspace) : route('workspace.index')],
     ] as $card)
     <a href="{{ $card['route'] }}"
        class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm hover:border-secondary/30 hover:shadow-md transition-all group">

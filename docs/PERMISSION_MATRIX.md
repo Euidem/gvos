@@ -331,12 +331,45 @@ All file routes require `auth` + `check.status`. Access is enforced via `Workspa
 
 ---
 
+## Phase 8 — Billing Access Control
+
+### Portal Billing Routes (`workspaces/{workspace}/billing/...`)
+
+All billing routes require `auth` + `check.status`. Access is enforced in `WorkspaceBillingController` using `Workspace::resolveUserWorkspaceRole()`.
+
+| Route | admin | workspace_admin | manager | talent / assigned_user | client_admin | client_staff | observer / none |
+|-------|-------|-----------------|---------|------------------------|--------------|--------------|-----------------|
+| billing index | ✅ | 👁 read-only | 👁 read-only | ❌ 403 | 👁 own workspace | 👁 own workspace | ❌ 403 |
+| invoice detail | ✅ | 👁 read-only | 👁 read-only | ❌ 403 | 👁 own workspace | 👁 own workspace | ❌ 403 |
+| payments history | ✅ | 👁 read-only | 👁 read-only | ❌ 403 | 👁 own workspace | 👁 own workspace | ❌ 403 |
+
+### Billing Visibility Rules
+
+- Non-members receive 403 through the workspace access check.
+- Talent, assigned_user, and observer roles do not see billing by default.
+- Clients cannot see invoice `internal_notes`, internal payment confirmation metadata, or void invoices.
+- Workspace admins and managers can view billing status for their workspace but cannot edit amounts or confirm payments from the portal.
+- Filament remains the only write surface for billing records.
+
+### Phase 8 Filament Resources (Billing nav group)
+
+| Resource | View | Create | Edit | Operational actions | Delete |
+|----------|------|--------|------|---------------------|--------|
+| BillingPlanResource | super_admin, ops_admin | super_admin, ops_admin | super_admin, ops_admin | Archive plan | ❌ |
+| WorkspaceSubscriptionResource | super_admin, ops_admin | super_admin, ops_admin | super_admin, ops_admin | Status/date tracking | ❌ |
+| InvoiceResource | super_admin, ops_admin | super_admin, ops_admin | draft/issued/partial only | Issue, mark paid, cancel | ❌ |
+| PaymentResource | super_admin, ops_admin | super_admin, ops_admin | pending only | Confirm, cancel | ❌ |
+
+> Phase 8 is foundation only: no live gateway collection, no recurring billing job, and no payroll.
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
 - Phase 2 Filament navigation group: "People & Organizations" (sort positions 1–5).
 - Phase 3 Filament navigation group: "Leads & Trials" (sort positions 1–3).
-- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5). Phase 7 adds WorkspaceTimeLogResource (sort 7) and WorkspaceWeeklyReportResource (sort 8).
+- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5). Phase 7 adds WorkspaceTimeLogResource (sort 7) and WorkspaceWeeklyReportResource (sort 8). Phase 8 adds "Billing" resources: Billing Plans, Subscriptions, Invoices, Payments.
 - Always enforce on server — never rely on front-end hiding alone.
 - Business client staff permissions are per-user, managed by Business Client Admin (Phase 4+).
 - GetVirtual brand name must not appear in any visible app UI (screens, panels, dashboards, notices). Internal documentation only.

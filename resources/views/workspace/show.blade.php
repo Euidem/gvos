@@ -26,6 +26,15 @@
                 $reportCount  = $workspace->weeklyReports()->where('status','published')->count();
             }
 
+            // Phase 8 — Billing
+            $subscription       = $workspace->activeSubscription;
+            $outstandingBalance = $workspace->invoices()
+                ->whereIn('status', ['issued', 'partially_paid', 'overdue'])
+                ->sum('balance_due');
+            $invoiceCount       = $workspace->invoices()->whereNotIn('status', ['void', 'cancelled'])->count();
+            // Talent does not see billing
+            $canSeeBilling = ! in_array($effectiveRole, ['talent', 'assigned_user', 'observer', 'none'], true);
+
             $statusColors = [
                 'active'    => 'bg-status-active/10 text-status-active border border-status-active/20',
                 'pending'   => 'bg-status-payment-due/10 text-status-payment-due border border-status-payment-due/20',
@@ -450,19 +459,77 @@
             </a>
         </div>
 
-        {{-- ── Future sections (placeholders) ────────────────────────────── --}}
+        {{-- ── Billing (Phase 8 — active) + Password Vault (placeholder) ── --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="bg-white rounded-xl border border-dashed border-border-subtle p-5 opacity-50 cursor-not-allowed">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined text-outline" style="font-size: 18px;">receipt</span>
+
+            {{-- Billing card — active for non-talent roles, hidden for talent/observer --}}
+            @if ($canSeeBilling)
+                @php
+                    $subStatusColor = match($subscription?->status) {
+                        'active'      => '#10B981',
+                        'trial'       => '#8B5CF6',
+                        'payment_due' => '#F59E0B',
+                        'overdue'     => '#EF4444',
+                        'suspended'   => '#64748B',
+                        default       => '#94A3B8',
+                    };
+                @endphp
+                <a href="{{ route('workspace.billing.index', $workspace) }}"
+                   class="bg-white rounded-xl border border-border-subtle shadow-card p-6 hover:border-secondary/30 hover:shadow-card transition-all group">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform"
+                                 style="background-color:rgba(0,88,190,.06);">
+                                <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">receipt_long</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-on-surface">Billing</h3>
+                        </div>
+                        @if ($subscription)
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                                  style="background:{{ $subStatusColor }}18;color:{{ $subStatusColor }};">
+                                {{ $subscription->statusLabel() }}
+                            </span>
+                        @endif
                     </div>
-                    <div>
-                        <p class="text-sm font-semibold text-on-surface-variant">Billing</p>
-                        <p class="text-xs text-outline mt-0.5">Coming in a later phase</p>
+                    @if ($subscription)
+                        <p class="text-xs text-outline leading-relaxed">
+                            {{ $subscription->formattedAmount() }} / {{ $subscription->cycleLabel() }}
+                            @if ($subscription->next_billing_date)
+                                &middot; Next: {{ $subscription->next_billing_date->format('d M Y') }}
+                            @endif
+                        </p>
+                        @if ($outstandingBalance > 0)
+                            <p class="text-xs font-semibold mt-1.5 text-status-blocked">
+                                {{ $subscription->currency }} {{ number_format((float) $outstandingBalance, 2) }} outstanding
+                            </p>
+                        @else
+                            <p class="text-xs mt-1.5 text-status-active font-medium">No outstanding balance</p>
+                        @endif
+                    @else
+                        <p class="text-xs text-outline leading-relaxed">
+                            {{ $invoiceCount > 0 ? $invoiceCount . ' invoice(s)' : 'No subscription configured yet' }}
+                        </p>
+                    @endif
+                    <p class="text-xs font-semibold mt-3 group-hover:underline transition-all" style="color:#0058be;">
+                        View Billing →
+                    </p>
+                </a>
+            @else
+                {{-- Billing hidden from talent — show placeholder --}}
+                <div class="bg-white rounded-xl border border-dashed border-border-subtle p-5 opacity-40 cursor-not-allowed">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-outline" style="font-size: 18px;">receipt</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-on-surface-variant">Billing</p>
+                            <p class="text-xs text-outline mt-0.5">Not available for this role</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
+
+            {{-- Password Vault — still placeholder --}}
             <div class="bg-white rounded-xl border border-dashed border-border-subtle p-5 opacity-50 cursor-not-allowed">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 bg-surface-container-low rounded-lg flex items-center justify-center">
