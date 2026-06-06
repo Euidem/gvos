@@ -24,7 +24,7 @@ export default function BusinessClientAdmin() {
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 mb-4">
                     <p className="text-blue-800 text-sm">
-                        <span className="font-semibold">Notice:</span> Activity on this platform is tracked and monitored by GetVirtual.
+                        <span className="font-semibold">Notice:</span> Security and audit logs are maintained for platform activity.
                     </p>
                 </div>
 

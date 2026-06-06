@@ -307,6 +307,26 @@ All file routes require `auth` + `check.status`. Access is enforced via `Workspa
 | review | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | destroy | ✅ | ✅ | ✅ | own draft only | ❌ | ❌ | ❌ |
 
+### Phase 9 Timer Routes (`workspaces/{workspace}/time-tracker/...`)
+
+All timer routes require `auth` + `check.status`. Access is enforced in `WorkspaceTimeTrackerController` through `Workspace::resolveUserWorkspaceRole()`.
+
+| Route | admin | workspace_admin | manager | talent / assigned_user | client_admin | client_staff | observer / none |
+|-------|-------|-----------------|---------|------------------------|--------------|--------------|-----------------|
+| `GET /time-tracker/current` | own active timer | own active timer | own active timer | own active timer | ❌ no timer use | ❌ no timer use | ❌ no timer use |
+| start | ✅ | ✅ | ✅ | ✅ | ❌ 403 | ❌ 403 | ❌ 403 |
+| stop own timer | ✅ | ✅ | ✅ | ✅ | ❌ 403 | ❌ 403 | ❌ 403 |
+| stop another user's timer | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| complete own timer | ✅ | ✅ | ✅ | ✅ | ❌ 403 | ❌ 403 | ❌ 403 |
+| complete another user's timer | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+
+Timer rules:
+- One running timer is enforced per user globally.
+- Running logs cannot be manually edited, reviewed, or deleted until stopped.
+- Completing a timer submits it for manager/admin review.
+- Clients never see running timers; they still only see approved logs with `visibility=client_summary`.
+- Timer JavaScript is display-only; server timestamps and server duration calculation are authoritative.
+
 ### Weekly Report Routes (`workspaces/{workspace}/reports/...`)
 
 | Route | admin | workspace_admin | manager | talent | client_admin | client_staff | observer |

@@ -11,7 +11,7 @@ export default function AppLayout({ children, title }) {
                 {/* Logo */}
                 <div className="px-6 py-5 border-b border-slate-700">
                     <span className="text-xl font-bold tracking-tight text-white">GVOS</span>
-                    <span className="block text-xs text-slate-400 mt-0.5">GetVirtual Operations</span>
+                    <span className="block text-xs text-slate-400 mt-0.5">GVOS Operations</span>
                 </div>
 
                 {/* Navigation */}

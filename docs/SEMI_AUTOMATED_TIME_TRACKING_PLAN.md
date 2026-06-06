@@ -1,9 +1,9 @@
 # GVOS — Semi-Automated Time Tracking Plan
 
 **Created:** 2026-05-31
-**Status:** Planning only — NOT YET IMPLEMENTED.
+**Status:** Implemented in Phase 9 on 2026-06-06.
 
-> **Important:** Phase 7 currently covers manual time logging only (talent fills a form with date, summary, duration). The timer-based semi-automated system described in this document is a planned enhancement. Do not implement until explicitly instructed.
+> **Important:** Phase 9 implements the semi-automated timer without screenshots, keystrokes, screen monitoring, payroll, password vault, billing automation, or Phase 10 work.
 
 ---
 
@@ -19,7 +19,7 @@ This is functional but doesn't match the timer-first design in `time_tracking_da
 
 ---
 
-## Desired Future Behavior
+## Implemented Behavior
 
 ### Talent Experience
 
@@ -50,7 +50,7 @@ This is functional but doesn't match the timer-first design in `time_tracking_da
 - **No surveillance.** No screenshots, keystrokes, screen time monitoring, or activity tracking. Time is purely self-reported via a simple start/stop action.
 - **Server-side truth.** Timer start and stop are recorded as server-side timestamps (`started_at`, `stopped_at` / `ended_at`). The frontend timer is display-only — duration is calculated server-side from the timestamps, not trusted from the browser.
 - **Browser close resilience.** Because `started_at` is saved on the server at timer start, if the browser closes, the session is still "running" on the server. On next login, the UI shows the timer still running (calculated from server `started_at` to now). Talent can stop it manually.
-- **One active timer per user per workspace.** A talent should not have two running timers in the same workspace simultaneously.
+- **One active timer per user globally.** A user cannot run overlapping timers across workspaces. They must stop or complete the active session before starting another one.
 
 ---
 
@@ -63,13 +63,13 @@ This is functional but doesn't match the timer-first design in `time_tracking_da
 | `started_at` | timestamp nullable | Timer start server timestamp | ✅ Already exists |
 | `ended_at` | timestamp nullable | Timer stop server timestamp | ✅ Already exists |
 | `duration_minutes` | integer nullable | Computed from started_at → ended_at | ✅ Already exists |
-| `status` | enum (draft/submitted/reviewed/approved/rejected) | Needs `running` status | ⚠️ Migration needed |
+| `status` | enum (running/draft/submitted/reviewed/approved/rejected) | Running timer state | ✅ Implemented in Phase 9 |
 | `work_summary` | text | Entered after stop (brief) | ✅ Already exists |
 | `work_details` | longText nullable | Full notes | ✅ Already exists |
 
 ### Status Extension Required
 
-The `status` enum needs a new value: `running`.
+The `status` enum now includes `running`.
 
 Proposed full status set:
 ```
@@ -83,10 +83,10 @@ rejected  — manager rejected; talent can re-edit
 
 Optionally: `paused` — if pause functionality is needed.
 
-### Migration Needed (Future — Do Not Create Yet)
+### Migration Added in Phase 9
 
 ```php
-// Proposed future migration: modify status enum to add 'running'
+// 2026_06_06_000001_add_running_status_to_workspace_time_logs_table.php
 $table->enum('status', ['running', 'draft', 'submitted', 'reviewed', 'approved', 'rejected'])
       ->default('draft')
       ->change();
@@ -96,32 +96,33 @@ $table->enum('status', ['running', 'draft', 'submitted', 'reviewed', 'approved',
 
 ---
 
-## Proposed Backend Endpoints (Future — Do Not Build Yet)
+## Backend Endpoints Implemented in Phase 9
 
-### Timer Routes (to be added when implementing)
+### Timer Routes
 
 ```
-POST  /workspaces/{workspace}/time-logs/start   → WorkspaceTimeLogController@start
-POST  /workspaces/{workspace}/time-logs/{log}/stop  → WorkspaceTimeLogController@stop
-GET   /workspaces/{workspace}/time-logs/active   → WorkspaceTimeLogController@active
+GET   /time-tracker/current                         → WorkspaceTimeTrackerController@current
+POST  /workspaces/{workspace}/time-tracker/start    → WorkspaceTimeTrackerController@start
+POST  /workspaces/{workspace}/time-tracker/stop     → WorkspaceTimeTrackerController@stop
+POST  /workspaces/{workspace}/time-tracker/complete → WorkspaceTimeTrackerController@complete
 ```
 
 ### `start` action logic
 
 ```php
-// 1. Check no other running log exists for this user in this workspace
+// 1. Check no other running log exists for this user globally
 // 2. Create time log with:
 //    status = 'running'
 //    started_at = now()
 //    workspace_task_id = $request->task_id (optional)
 //    log_date = today()
-// 3. Return the time log ID to frontend for display
+// 3. Redirect back or return JSON with the timer id
 ```
 
 ### `stop` action logic
 
 ```php
-// 1. Verify this log belongs to this user
+// 1. Verify this log belongs to this user or the actor can manage time logs
 // 2. Set ended_at = now()
 // 3. Calculate duration_minutes = started_at->diffInMinutes(ended_at)
 // 4. Set status = 'draft'
@@ -131,13 +132,13 @@ GET   /workspaces/{workspace}/time-logs/active   → WorkspaceTimeLogController@
 ### `active` query logic
 
 ```php
-// Find any running log for auth()->user() in this workspace
-// Returns: log_id, started_at, workspace_task_id (for timer resume on page load)
+// Find any running log for auth()->user()
+// Returns: log_id, workspace, task, started_at, duration_minutes, show_url
 ```
 
 ---
 
-## Frontend Timer Behavior (Future — Do Not Build Yet)
+## Frontend Timer Behavior Implemented
 
 ### Timer Widget HTML sketch (based on `talent_dashboard_gvos_1/code.html`):
 
@@ -162,7 +163,7 @@ GET   /workspaces/{workspace}/time-logs/active   → WorkspaceTimeLogController@
 ### JavaScript timer (display only — not source of truth):
 
 ```javascript
-// On page load: fetch /time-logs/active
+// Page renders the active timer from server data; JSON endpoint also exposes current state
 // If running log exists: calculate elapsed from started_at, resume display countdown
 // On Clock In: POST /start → store log ID, start JS interval
 // On Clock Out: POST /stop → clear interval, show duration
@@ -172,13 +173,13 @@ GET   /workspaces/{workspace}/time-logs/active   → WorkspaceTimeLogController@
 
 ---
 
-## Dashboard Integration (Future)
+## Dashboard Integration
 
-When implemented, the talent dashboard should show:
+The talent dashboard shows:
 - Active timer widget (pulsing green if running, neutral if idle)
-- Today's total logged time
-- This week's total logged time
-- Quick "Log Time" shortcut if no timer running
+- Workspace and optional task selection before clock-in
+- Clock Out action that saves a draft stopped log
+- Complete Work Session action that submits the log for review
 
 The workspace time-logs index page should show:
 - Active running session at the top (with elapsed time display)
@@ -188,27 +189,27 @@ The workspace time-logs index page should show:
 
 ## What Phase 7 Currently Does vs What's Planned
 
-| Feature | Phase 7 (Current) | Semi-Auto (Planned) |
+| Feature | Phase 7 Manual | Phase 9 Semi-Auto |
 |---------|-------------------|---------------------|
 | Time entry method | Manual form | Clock In/Out widget |
-| Timer | None | Server-stamped start/stop |
+| Timer | None | Server-stamped start/stop/complete |
 | Duration | Manual input or start/end time form | Auto-calculated from server timestamps |
 | Browser close | N/A | Timer continues on server |
-| Status: running | Not in enum | Needs migration |
+| Status: running | Not in enum | Added by Phase 9 migration |
 | Dashboard widget | None | Clock-In/Out with live display |
 | Task linking | Optional on form | Optional before Clock In |
 
 ---
 
-## Implementation Dependencies
+## Implemented Dependencies
 
-When the time comes to implement the semi-automated timer:
-1. A migration to add `running` to the `status` enum is required.
-2. The `WorkspaceTimeLogController` needs three new methods: `start`, `stop`, `active`.
-3. The layout (`gvos.blade.php`) needs the Clock In button wired to AJAX/form.
-4. The talent dashboard needs the timer widget (HTML + minimal JS interval display).
-5. The time-logs index page needs an "active session" row at top.
-6. A policy guard to prevent two running timers per user per workspace.
+Phase 9 implemented:
+1. A migration adding `running` to the `status` enum.
+2. `WorkspaceTimeTrackerController` with `current`, `start`, `stop`, and `complete`.
+3. Header Clock In entry point in `gvos.blade.php`.
+4. Talent dashboard timer widget with minimal JS interval display.
+5. Time-logs index active-session controls and manager/admin running timer list.
+6. A server guard preventing overlapping running timers for the same user.
 
 ---
 

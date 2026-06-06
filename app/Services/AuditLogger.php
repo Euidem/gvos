@@ -451,6 +451,47 @@ class AuditLogger
         ], $extra));
     }
 
+    // ── Phase 9: Semi-automated time tracker wrappers ─────────────────────
+
+    public static function timeTrackerStarted(Model $timeLog, array $extra = []): void
+    {
+        self::log('workspace_time_tracker.started', $timeLog, array_merge([
+            'workspace_id' => $timeLog->workspace_id ?? null,
+            'time_log_id'  => $timeLog->id ?? null,
+            'user_id'      => $timeLog->user_id ?? null,
+            'task_id'      => $timeLog->workspace_task_id ?? null,
+            'started_at'   => $timeLog->started_at?->toDateTimeString(),
+            'ended_at'     => $timeLog->ended_at?->toDateTimeString(),
+            'duration_minutes' => $timeLog->duration_minutes ?? null,
+        ], $extra));
+    }
+
+    public static function timeTrackerStopped(Model $timeLog, array $extra = []): void
+    {
+        self::log('workspace_time_tracker.stopped', $timeLog, array_merge([
+            'workspace_id' => $timeLog->workspace_id ?? null,
+            'time_log_id'  => $timeLog->id ?? null,
+            'user_id'      => $timeLog->user_id ?? null,
+            'task_id'      => $timeLog->workspace_task_id ?? null,
+            'started_at'   => $timeLog->started_at?->toDateTimeString(),
+            'ended_at'     => $timeLog->ended_at?->toDateTimeString(),
+            'duration_minutes' => $timeLog->duration_minutes ?? null,
+        ], $extra));
+    }
+
+    public static function timeTrackerCompleted(Model $timeLog, array $extra = []): void
+    {
+        self::log('workspace_time_tracker.completed', $timeLog, array_merge([
+            'workspace_id' => $timeLog->workspace_id ?? null,
+            'time_log_id'  => $timeLog->id ?? null,
+            'user_id'      => $timeLog->user_id ?? null,
+            'task_id'      => $timeLog->workspace_task_id ?? null,
+            'started_at'   => $timeLog->started_at?->toDateTimeString(),
+            'ended_at'     => $timeLog->ended_at?->toDateTimeString(),
+            'duration_minutes' => $timeLog->duration_minutes ?? null,
+        ], $extra));
+    }
+
     // ── Phase 7: Weekly Report wrappers ───────────────────────────────────
 
     public static function weeklyReportCreated(Model $report, array $extra = []): void

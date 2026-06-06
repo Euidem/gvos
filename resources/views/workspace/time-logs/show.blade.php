@@ -17,6 +17,18 @@
             {{ session('success') }}
         </div>
     @endif
+    @if (session('error'))
+        <div class="mb-4 flex items-start gap-3 px-4 py-3 rounded-lg text-sm"
+             style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.25);color:#991B1B;">
+            <span class="material-symbols-outlined flex-shrink-0" style="font-size: 18px;">error</span>
+            <div>
+                {{ session('error') }}
+                @if (session('active_timer_url'))
+                    <a href="{{ session('active_timer_url') }}" class="font-semibold underline ml-1">View active timer</a>
+                @endif
+            </div>
+        </div>
+    @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -41,6 +53,7 @@
                     @php
                         $statusColors = [
                             'draft'     => '#94A3B8',
+                            'running'   => '#10B981',
                             'submitted' => '#0058be',
                             'reviewed'  => '#7C3AED',
                             'approved'  => '#059669',
@@ -55,6 +68,20 @@
                 </div>
 
                 <div class="space-y-4">
+                    @if ($timeLog->isRunning() && !in_array($role, ['client_admin','client_staff','client']))
+                        <div class="p-4 rounded-lg"
+                             style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.24);">
+                            <p class="text-xs font-bold uppercase tracking-wide" style="color:#059669;">Running session</p>
+                            <p class="font-mono text-lg font-bold text-on-surface mt-1 js-running-timer"
+                               data-started-at="{{ $timeLog->started_at?->toIso8601String() }}">
+                                {{ $timeLog->durationForHumans() }}
+                            </p>
+                            <p class="text-xs text-on-surface-variant mt-1">
+                                Started {{ $timeLog->started_at?->format('d M Y H:i') }}. Browser time is display-only; saved duration is calculated on the server when the timer stops.
+                            </p>
+                        </div>
+                    @endif
+
                     {{-- Summary --}}
                     <div>
                         <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-1">Work Summary</p>
@@ -94,7 +121,34 @@
                 </div>
 
                 {{-- Action buttons --}}
-                @if ($canEdit || $canReview)
+                @if ($timeLog->isRunning() && $timeLog->canBeStoppedBy(auth()->user()))
+                    <div class="mt-6 pt-4 border-t border-[#F1F5F9] space-y-3">
+                        <form method="POST" action="{{ route('workspace.time-tracker.stop', $workspace) }}">
+                            @csrf
+                            <input type="hidden" name="time_log_id" value="{{ $timeLog->id }}">
+                            <input type="hidden" name="status" value="draft">
+                            <button type="submit"
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold border"
+                                    style="border-color:#F59E0B;color:#92400E;background:rgba(245,158,11,0.08);">
+                                <span class="material-symbols-outlined" style="font-size: 16px;">stop_circle</span>
+                                Clock Out
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('workspace.time-tracker.complete', $workspace) }}" class="space-y-2 max-w-xl">
+                            @csrf
+                            <input type="hidden" name="time_log_id" value="{{ $timeLog->id }}">
+                            <input type="text" name="work_summary" required maxlength="1000"
+                                   placeholder="Work summary for review"
+                                   class="w-full px-3 py-2 rounded-lg border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#0058be]">
+                            <button type="submit"
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white"
+                                    style="background-color:#0058be;">
+                                <span class="material-symbols-outlined" style="font-size: 16px;">task_alt</span>
+                                Complete Work Session
+                            </button>
+                        </form>
+                    </div>
+                @elseif ($canEdit || $canReview)
                     <div class="flex items-center gap-3 mt-6 pt-4 border-t border-[#F1F5F9]">
                         @if ($canEdit)
                             <a href="{{ route('workspace.time-logs.edit', [$workspace, $timeLog]) }}"
@@ -199,7 +253,10 @@
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-outline">Duration</dt>
-                        <dd class="font-medium text-on-surface">{{ $timeLog->durationForHumans() }}</dd>
+                        <dd class="font-medium text-on-surface {{ $timeLog->isRunning() ? 'js-running-timer font-mono' : '' }}"
+                            @if ($timeLog->isRunning()) data-started-at="{{ $timeLog->started_at?->toIso8601String() }}" @endif>
+                            {{ $timeLog->durationForHumans() }}
+                        </dd>
                     </div>
                     @if ($timeLog->started_at && !in_array($role, ['client_admin','client_staff','client']))
                         <div class="flex justify-between">
@@ -253,5 +310,26 @@
 
         </div>
     </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function formatElapsed(startedAt) {
+            var started = new Date(startedAt);
+            var totalSeconds = Math.max(0, Math.floor((Date.now() - started.getTime()) / 1000));
+            var hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+            var minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+            var seconds = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+            return hours + ':' + minutes + ':' + seconds;
+        }
+
+        document.querySelectorAll('.js-running-timer[data-started-at]').forEach(function (timer) {
+            var tick = function () {
+                timer.textContent = formatElapsed(timer.dataset.startedAt);
+            };
+            tick();
+            window.setInterval(tick, 1000);
+        });
+    });
+</script>
 
 </x-layouts.gvos>

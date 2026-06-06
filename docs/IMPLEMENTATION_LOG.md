@@ -7,6 +7,43 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-06 | Phase 9 | Semi Automated Time Tracking
+
+**What was done:** Implemented semi automated time tracking using server-stamped start/stop/complete actions. Timers use the existing `workspace_time_logs` table with a new `running` status, save `started_at` at clock-in, save `ended_at` and `duration_minutes` at clock-out/complete, and show live elapsed time in Blade as display-only JavaScript.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_06_06_000001_add_running_status_to_workspace_time_logs_table.php` | Adds `running` to `workspace_time_logs.status` enum |
+| `app/Http/Controllers/WorkspaceTimeTrackerController.php` | Timer current/start/stop/complete endpoints |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `app/Models/WorkspaceTimeLog.php` | Added running status helpers, duration resolution for active timers, activeTimerFor(), scopeRunning(), stop/submit permission helpers |
+| `app/Http/Controllers/WorkspaceTimeLogController.php` | Added active timer, running timer, task dropdown data; blocked edit/review/delete on running logs |
+| `app/Services/AuditLogger.php` | Added `workspace_time_tracker.started/stopped/completed` wrappers |
+| `app/Filament/Resources/WorkspaceTimeLogResource.php` | Added started column, running status badge, computed duration display |
+| `routes/web.php` | Added timer current/start/stop/complete routes |
+| `resources/views/dashboard/talent.blade.php` | Replaced placeholder clock widget with functional start/stop/complete timer UI |
+| `resources/views/components/layouts/gvos.blade.php` | Header Clock In button now links to active timer or timer entry point |
+| `resources/views/workspace/time-logs/index.blade.php` | Added active session controls, start timer form, manager/admin running timers, live elapsed display |
+| `resources/views/workspace/time-logs/show.blade.php` | Added running session panel and authorized stop/complete actions |
+| `resources/views/workspace/tasks/show.blade.php` | Added task-linked timer controls and running timer visibility |
+| `resources/js/Layouts/AppLayout.jsx`, `resources/js/Pages/Auth/*.jsx`, `resources/js/Pages/Dashboard/*Client*.jsx`, `resources/js/Pages/Dashboard/ActiveLead.jsx` | Removed legacy GetVirtual visible UI copy from React/Inertia views |
+| `docs/CURRENT_STATUS.md` | Phase 9 completion noted |
+| `docs/DATABASE_SCHEMA.md` | Time log status enum and timer behavior documented |
+| `docs/PERMISSION_MATRIX.md` | Timer route access documented |
+| `docs/TESTING_CHECKLIST.md` | Phase 9 validation checklist added |
+| `docs/KNOWN_ISSUES.md` | Old planned-timer issue resolved; Phase 9 warnings added |
+| `docs/SEMI_AUTOMATED_TIME_TRACKING_PLAN.md` | Plan marked implemented |
+
+**Preserved:** No Phase 10 work, no password vault, no payroll, no billing automation, no screenshots, no keystrokes, no screen monitoring, no billing calculation changes, no payment confirmation changes, and no invoice status changes.
+
+---
+
 ### 2026-06-06 | Phase 8 UI Correction | Admin invoice form layout
 
 **What was done:** Reorganized the Filament `InvoiceResource` create/edit form into a standard invoice flow: invoice identity first, invoice items second, totals and payment summary below the items, and notes last.

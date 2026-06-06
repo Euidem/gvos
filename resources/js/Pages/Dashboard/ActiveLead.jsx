@@ -11,14 +11,14 @@ export default function ActiveLead() {
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold text-slate-900">GVOS Lead Dashboard</h2>
-                            <p className="text-slate-500 text-sm">Welcome — Your inquiry is being reviewed by GetVirtual</p>
+                            <p className="text-slate-500 text-sm">Welcome — Your inquiry is being reviewed by the GVOS team</p>
                         </div>
                     </div>
                     <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
                         <p className="text-amber-800 text-sm font-medium">Phase 0 Placeholder</p>
                         <p className="text-amber-700 text-sm mt-1">
                             Your lead status, price estimate, and trial workspace will be available here in Phase 3.
-                            A GetVirtual team member will be in touch shortly.
+                            A GVOS team member will be in touch shortly.
                         </p>
                     </div>
                 </div>
@@ -28,7 +28,7 @@ export default function ActiveLead() {
                     <ol className="space-y-2 text-sm text-slate-600">
                         <li className="flex gap-3">
                             <span className="flex-shrink-0 w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full text-xs flex items-center justify-center font-semibold">1</span>
-                            GetVirtual reviews your inquiry
+                            GVOS reviews your inquiry
                         </li>
                         <li className="flex gap-3">
                             <span className="flex-shrink-0 w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full text-xs flex items-center justify-center font-semibold">2</span>

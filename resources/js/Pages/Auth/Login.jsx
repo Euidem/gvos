@@ -29,7 +29,7 @@ export default function Login({ status, canResetPassword }) {
                     {/* Logo */}
                     <div className="text-center mb-8">
                         <span className="text-3xl font-bold text-white tracking-tight">GVOS</span>
-                        <p className="text-slate-400 text-sm mt-1">GetVirtual Operations System</p>
+                        <p className="text-slate-400 text-sm mt-1">Operations Management Platform</p>
                     </div>
 
                     {/* Card */}
@@ -122,8 +122,7 @@ export default function Login({ status, canResetPassword }) {
 
                     {/* Monitoring notice */}
                     <p className="text-center text-xs text-slate-500 mt-6 px-4">
-                        By signing in, you acknowledge that your activity on this platform is
-                        tracked and monitored by GetVirtual.
+                        By signing in, you acknowledge that security and audit logs are maintained for platform activity.
                     </p>
                 </div>
             </div>

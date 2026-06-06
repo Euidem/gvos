@@ -61,9 +61,33 @@ class WorkspaceTimeLogController extends Controller
         $canCreate  = WorkspaceTimeLog::canCreate($role);
         $canReview  = WorkspaceTimeLog::canReview($role);
         $isClient   = WorkspaceTimeLog::isClientRole($role);
+        $userActiveTimer = WorkspaceTimeLog::activeTimerFor($user);
+        $activeTimer = $userActiveTimer && (int) $userActiveTimer->workspace_id === (int) $workspace->id
+            ? $userActiveTimer
+            : null;
+
+        $runningTimers = $canReview
+            ? $workspace->timeLogs()->with(['user', 'task'])->running()->orderByDesc('started_at')->get()
+            : collect();
+
+        $startableTasks = collect();
+        if ($canCreate && ! $userActiveTimer) {
+            $startableTasks = $workspace->tasks()
+                ->where(function ($q) use ($request, $role) {
+                    if (WorkspaceTimeLog::canViewAll($role)) {
+                        // Managers see all tasks.
+                    } else {
+                        $q->where('assigned_to_user_id', $request->user()->id);
+                    }
+                })
+                ->whereIn('status', ['pending', 'in_progress', 'blocked', 'revision_requested'])
+                ->orderBy('title')
+                ->get();
+        }
 
         return view('workspace.time-logs.index', compact(
-            'workspace', 'timeLogs', 'role', 'canCreate', 'canReview', 'isClient'
+            'workspace', 'timeLogs', 'role', 'canCreate', 'canReview', 'isClient',
+            'activeTimer', 'userActiveTimer', 'runningTimers', 'startableTasks'
         ));
     }
 
@@ -209,6 +233,10 @@ class WorkspaceTimeLogController extends Controller
             abort(404, 'Time log not found in this workspace.');
         }
 
+        if ($timeLog->isRunning()) {
+            abort(403, 'Stop the running timer before editing this time log.');
+        }
+
         // Only log author can edit; only if draft or rejected
         if ((int) $timeLog->user_id !== (int) $user->id) {
             if (! WorkspaceTimeLog::canReview($role)) {
@@ -246,6 +274,10 @@ class WorkspaceTimeLogController extends Controller
 
         if ((int) $timeLog->workspace_id !== (int) $workspace->id) {
             abort(404, 'Time log not found in this workspace.');
+        }
+
+        if ($timeLog->isRunning()) {
+            abort(403, 'Stop the running timer before editing this time log.');
         }
 
         $isOwner = (int) $timeLog->user_id === (int) $user->id;
@@ -323,6 +355,10 @@ class WorkspaceTimeLogController extends Controller
             abort(404, 'Time log not found in this workspace.');
         }
 
+        if ($timeLog->isRunning()) {
+            abort(403, 'Stop the running timer before reviewing this time log.');
+        }
+
         if (! WorkspaceTimeLog::canReview($role)) {
             abort(403, 'You do not have permission to review time logs.');
         }
@@ -368,6 +404,10 @@ class WorkspaceTimeLogController extends Controller
 
         $isOwner   = (int) $timeLog->user_id === (int) $user->id;
         $canManage = WorkspaceTimeLog::canReview($role);
+
+        if ($timeLog->isRunning()) {
+            abort(403, 'Stop the running timer before deleting this time log.');
+        }
 
         if (! $canManage && ! ($isOwner && $timeLog->status === 'draft')) {
             abort(403, 'You cannot delete this time log.');

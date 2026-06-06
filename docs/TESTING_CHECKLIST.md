@@ -1169,4 +1169,66 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] No password vault implementation appears beyond placeholder
 - [ ] No visible UI contains `GetVirtual`
 
+---
+
+## Phase 9 — Semi Automated Time Tracking
+
+Run after `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### Migrations and Routes
+- [ ] `php artisan migrate` runs without error on cPanel
+- [ ] `workspace_time_logs.status` accepts `running`
+- [ ] `php artisan route:list` shows `time-tracker.current`
+- [ ] `php artisan route:list` shows `workspace.time-tracker.start`
+- [ ] `php artisan route:list` shows `workspace.time-tracker.stop`
+- [ ] `php artisan route:list` shows `workspace.time-tracker.complete`
+
+### Talent Timer Flow
+- [ ] Talent dashboard shows Clock In when no timer is running
+- [ ] Talent can select a workspace and optional task before starting
+- [ ] Clock In creates a running time log with `started_at`, `status=running`, `ended_at=null`
+- [ ] Dashboard shows a live elapsed timer after start
+- [ ] Browser refresh still shows the running timer
+- [ ] Clock Out stops the timer, sets `ended_at`, calculates `duration_minutes`, and saves status `draft`
+- [ ] Complete Work Session requires a work summary and saves status `submitted`
+- [ ] User cannot start a second running timer while one already exists
+
+### Workspace Time Log Pages
+- [ ] Workspace time logs index shows active timer controls above the table
+- [ ] Workspace time logs index shows totals/table below the timer controls
+- [ ] Time log detail page shows running session state for a running log
+- [ ] Authorized users can stop or complete a running log from the detail page
+- [ ] Running logs cannot be edited manually
+- [ ] Running logs cannot be reviewed
+- [ ] Running logs cannot be deleted
+
+### Task Detail Integration
+- [ ] Task detail page shows Start Timer for active task statuses
+- [ ] Starting from a task links `workspace_task_id` to the created running log
+- [ ] If the current user has a timer running elsewhere, task page links to the active timer instead of starting another
+
+### Manager/Admin Visibility
+- [ ] Manager/admin time log index shows running timers for the workspace
+- [ ] Manager/admin can open a running timer record
+- [ ] Manager/admin can stop or complete another user's running timer when needed
+- [ ] Filament Workspace Time Logs table shows running status badge
+- [ ] Filament Workspace Time Logs table shows started timestamp and duration display
+
+### Client Protection
+- [ ] Client cannot start, stop, or complete timers
+- [ ] Client cannot see running time logs
+- [ ] Client time log views still show only approved `client_summary` logs
+- [ ] Client cannot see work_details, manager_notes, or internal summaries
+
+### Audit and Regression
+- [ ] `workspace_time_tracker.started` audit entry fires on Clock In
+- [ ] `workspace_time_tracker.stopped` audit entry fires on Clock Out
+- [ ] `workspace_time_tracker.completed` audit entry fires on Complete Work Session
+- [ ] Existing manual time log create/edit/review still works
+- [ ] Existing weekly reports still work
+- [ ] Existing billing invoice/payment confirmation flows still work
+- [ ] No billing database or payment logic changes are present
+- [ ] No screenshots, keystrokes, screen monitoring, payroll, password vault, or billing automation appears
+- [ ] No visible UI contains `GetVirtual`
+
 ## Phase 12 — Launch Readiness (planned)

@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 8 migrations created and active
+## Status: Phase 9 migrations created and active
 
 ---
 
@@ -185,6 +185,12 @@ Phase 3 actions: `lead_request.created`, `lead_request.updated`, `lead_request.s
 Phase 4 actions: `workspace.created`, `workspace.updated`, `workspace.status_changed`, `workspace.member_added`, `workspace.member_updated`, `workspace.member_removed`, `trial.workspace_created`
 
 Phase 5 actions: `workspace_task.created`, `workspace_task.updated`, `workspace_task.status_changed`, `workspace_task.assigned`, `workspace_task.comment_added`, `workspace_task.internal_comment_added`, `workspace_task.deleted`
+
+Phase 7 actions: `time_log.created`, `time_log.updated`, `time_log.reviewed`, `time_log.deleted`, `weekly_report.created`, `weekly_report.updated`, `weekly_report.deleted`, `weekly_report.published`, `weekly_report.status_changed`
+
+Phase 8 actions: `billing_plan.created`, `billing_plan.updated`, `workspace_subscription.created`, `workspace_subscription.updated`, `invoice.created`, `invoice.updated`, `invoice.issued`, `invoice.cancelled`, `invoice.marked_paid`, `payment.recorded`, `payment.confirmed`, `payment.failed_or_cancelled`
+
+Phase 9 actions: `workspace_time_tracker.started`, `workspace_time_tracker.stopped`, `workspace_time_tracker.completed`
 
 ---
 
@@ -461,7 +467,7 @@ Individual work session logs submitted by talents and reviewed by managers.
 | duration_minutes | integer nullable | explicit override; auto-derived from start/end if null |
 | work_summary | text | required brief description |
 | work_details | longText nullable | internal detail notes |
-| status | enum | draft, submitted, reviewed, approved, rejected; default: draft |
+| status | enum | running, draft, submitted, reviewed, approved, rejected; default: draft |
 | reviewed_by_user_id | FK users nullable | nullOnDelete |
 | reviewed_at | timestamp nullable | |
 | manager_notes | text nullable | internal manager feedback |
@@ -475,6 +481,13 @@ Individual work session logs submitted by talents and reviewed by managers.
 
 #### Client Visibility Rule
 Clients see a time log only when `status = 'approved' AND visibility = 'client_summary'`. The `client_visible_summary` text is shown instead of `work_summary` for clients.
+
+#### Phase 9 Timer Behavior
+- `running` means a timer has started, `started_at` is set, and `ended_at` is null.
+- Stop/complete actions set `ended_at`, calculate `duration_minutes` on the server, and move the log to `draft` or `submitted`.
+- Browser timers are display-only; stored duration is not trusted from the frontend.
+- One running timer is enforced per user globally by the timer start action.
+- No screenshots, keystrokes, screen monitoring, billing automation, payroll, or password vault behavior is attached to time tracking.
 
 ---
 

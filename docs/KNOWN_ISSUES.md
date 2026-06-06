@@ -14,30 +14,15 @@ Severity levels: Critical | High | Medium | Low | Info
 **Description:** Multiple portal screens have drifted from the Stitch UI export in layout, component composition, and page structure. Key deviations:
 1. Login page is single-column; Stitch uses 2-col split-screen layout.
 2. All 7 dashboards show "Phase X — Feature" banners not present in any Stitch screen.
-3. Sidebar is missing the Quick Action button, user profile card at bottom, and workspace switcher for talent.
-4. Header is missing Clock In button present in all Stitch portal headers.
-5. Talent dashboard has no Clock-In/Out timer widget (major difference from `talent_dashboard_gvos_1`).
-6. Workspace show page is a static card grid; Stitch `workspace_monitoring_gvos` is a rich monitoring screen.
-7. Time tracking page is a plain form table; Stitch shows a timer widget with live counting.
-8. Breadcrumbs used on most pages; Stitch uses page headers without breadcrumbs.
+3. Workspace show page is a static card grid; Stitch `workspace_monitoring_gvos` is a rich monitoring screen.
+4. Breadcrumbs used on most pages; Stitch uses page headers without breadcrumbs.
+5. Some legacy React/Inertia files remain visually older than the Blade Stitch-aligned views.
 
 **Impact:** Visual and UX inconsistency between built product and design intent.
 
-**Status:** Documented. UI correction plan created in `docs/UI_CORRECTION_PLAN.md`. No code changed yet.
+**Status:** Partially resolved. Header Clock In, sidebar shell, and Phase 9 timer UI are now implemented. Remaining drift is documented in `docs/UI_CORRECTION_PLAN.md`.
 
 **Resolution plan:** Work through correction batches 1–6 as described in UI_CORRECTION_PLAN.md.
-
----
-
-### 2026-05-31 | Time Tracking | Low | Timer status `running` not yet in schema
-
-**Description:** The semi-automated timer plan (see `docs/SEMI_AUTOMATED_TIME_TRACKING_PLAN.md`) requires a `running` value in the `workspace_time_logs.status` enum. Current enum is `draft, submitted, reviewed, approved, rejected`. When the timer is implemented, a migration to add `running` will be needed.
-
-**Impact:** None currently — timer is not implemented. Phase 7 is manual-only.
-
-**Status:** Documented. No migration needed yet.
-
----
 
 ---
 
@@ -145,7 +130,43 @@ Billing status is visible in the portal, but workspace access is not automatical
 
 ---
 
+## Phase 9 Warnings / Notes
+
+### Phase 9 | Info | Timer is self-reported and display-only in the browser
+
+The Clock In/Clock Out UI records server-side timestamps and calculates saved duration on the server. The JavaScript timer only formats elapsed time for display. There are no screenshots, keystrokes, screen monitoring, activity sampling, or surveillance signals.
+
+---
+
+### Phase 9 | Low | One active timer is enforced per user globally
+
+The timer start action blocks any second running timer for the same user, even in a different workspace. This avoids overlapping sessions and ambiguous duration data. Users must stop or complete the active timer before starting another one.
+
+---
+
+### Phase 9 | Low | No automatic idle detection or overnight cutoff
+
+If a user leaves a timer running overnight or closes the browser, the timer remains running on the server until stopped manually. This is intentional for Phase 9 server-truth resilience. Managers/admins can stop a running timer when needed.
+
+---
+
+### Phase 9 | Info | Timer data is not wired to payroll or billing automation
+
+Running, stopped, submitted, reviewed, and approved time logs remain operational records. They are not used to auto-generate invoices, payroll, subscription changes, or payment events.
+
+---
+
 ## Resolved Issues
+
+### 2026-06-06 | Phase 9 | Low | Timer status `running` not yet in schema
+
+**Description:** The semi-automated timer plan required a `running` value in the `workspace_time_logs.status` enum.
+
+**Resolution:** Added migration `2026_06_06_000001_add_running_status_to_workspace_time_logs_table.php` to extend the enum and implemented the Phase 9 timer flow.
+
+**Status:** Resolved.
+
+---
 
 ### 2026-05-27 | Phase 0 | Info | PHP/Composer/Node.js not installed on build machine
 

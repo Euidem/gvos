@@ -9,6 +9,7 @@ use App\Http\Controllers\WorkspaceMessageController;
 use App\Http\Controllers\WorkspaceTaskController;
 use App\Http\Controllers\WorkspaceBillingController;
 use App\Http\Controllers\WorkspaceTimeLogController;
+use App\Http\Controllers\WorkspaceTimeTrackerController;
 use App\Http\Controllers\WorkspaceWeeklyReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/workspaces',            [WorkspaceController::class, 'index'])->name('workspace.index');
     Route::get('/workspaces/{workspace}', [WorkspaceController::class, 'show'])->name('workspace.show');
+    Route::get('/time-tracker/current',   [WorkspaceTimeTrackerController::class, 'current'])->name('time-tracker.current');
 
     // ── Workspace task routes (Phase 5) ───────────────────────────────────
     Route::prefix('workspaces/{workspace}/tasks')->name('workspace.tasks.')->group(function () {
@@ -97,6 +99,13 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::put('/{timeLog}',         [WorkspaceTimeLogController::class, 'update'])->name('update');
         Route::post('/{timeLog}/review', [WorkspaceTimeLogController::class, 'review'])->name('review');
         Route::delete('/{timeLog}',      [WorkspaceTimeLogController::class, 'destroy'])->name('destroy');
+    });
+
+    // ── Workspace time tracker routes (Phase 9) ───────────────────────────
+    Route::prefix('workspaces/{workspace}/time-tracker')->name('workspace.time-tracker.')->group(function () {
+        Route::post('/start',    [WorkspaceTimeTrackerController::class, 'start'])->name('start');
+        Route::post('/stop',     [WorkspaceTimeTrackerController::class, 'stop'])->name('stop');
+        Route::post('/complete', [WorkspaceTimeTrackerController::class, 'complete'])->name('complete');
     });
 
     // ── Workspace weekly report routes (Phase 7) ──────────────────────────

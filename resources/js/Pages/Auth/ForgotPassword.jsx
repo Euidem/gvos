@@ -15,7 +15,7 @@ export default function ForgotPassword({ status }) {
                 <div className="w-full max-w-sm">
                     <div className="text-center mb-8">
                         <span className="text-3xl font-bold text-white tracking-tight">GVOS</span>
-                        <p className="text-slate-400 text-sm mt-1">GetVirtual Operations System</p>
+                        <p className="text-slate-400 text-sm mt-1">Operations Management Platform</p>
                     </div>
                     <div className="bg-white rounded-2xl shadow-xl p-8">
                         <h2 className="text-xl font-semibold text-slate-800 mb-2">Reset your password</h2>

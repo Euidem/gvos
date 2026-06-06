@@ -50,6 +50,17 @@
             {{ session('success') }}
         </div>
     @endif
+    @if (session('error'))
+        <div class="mb-4 flex items-start gap-3 px-4 py-3 bg-status-blocked/10 border border-status-blocked/20 rounded-lg text-sm text-status-blocked">
+            <span class="material-symbols-outlined flex-shrink-0" style="font-size: 18px;">error</span>
+            <div>
+                {{ session('error') }}
+                @if (session('active_timer_url'))
+                    <a href="{{ session('active_timer_url') }}" class="font-semibold underline ml-1">View active timer</a>
+                @endif
+            </div>
+        </div>
+    @endif
     @if ($errors->any())
         <div class="mb-4 p-4 bg-status-blocked/10 border border-status-blocked/20 rounded-lg">
             @foreach ($errors->all() as $error)
@@ -394,6 +405,16 @@
                 $canLogTimeForTask  = \App\Models\WorkspaceTimeLog::canCreate($taskTimeLogRole);
                 $canSeeTimeLogs     = $taskTimeLogRole !== 'observer'
                                       && !in_array($taskTimeLogRole, ['client_admin','client_staff','client'], true);
+                $activeTaskTimer    = \App\Models\WorkspaceTimeLog::activeTimerFor(auth()->user());
+                $activeTimerForThisTask = $activeTaskTimer
+                    && (int) $activeTaskTimer->workspace_id === (int) $workspace->id
+                    && (int) $activeTaskTimer->workspace_task_id === (int) $task->id;
+                $canStartTimerForTask = $canLogTimeForTask
+                    && ! $activeTaskTimer
+                    && in_array($task->status, ['pending', 'in_progress', 'blocked', 'revision_requested'], true);
+                $taskRunningTimers = $isAdminOrManager
+                    ? $task->timeLogs()->with('user')->running()->orderByDesc('started_at')->get()
+                    : collect();
             @endphp
             @if ($canSeeTimeLogs)
                 <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4">
@@ -411,6 +432,78 @@
                             </a>
                         @endif
                     </div>
+
+                    @if ($activeTimerForThisTask)
+                        <div class="mb-3 p-3 rounded-lg"
+                             style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.24);">
+                            <p class="text-[10px] font-bold uppercase tracking-wide" style="color:#059669;">Timer running</p>
+                            <p class="font-mono text-base font-bold text-on-surface js-running-timer"
+                               data-started-at="{{ $activeTaskTimer->started_at?->toIso8601String() }}">
+                                {{ $activeTaskTimer->durationForHumans() }}
+                            </p>
+                            <div class="mt-3 space-y-2">
+                                <form method="POST" action="{{ route('workspace.time-tracker.stop', $workspace) }}">
+                                    @csrf
+                                    <input type="hidden" name="time_log_id" value="{{ $activeTaskTimer->id }}">
+                                    <input type="hidden" name="status" value="draft">
+                                    <button type="submit"
+                                            class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border"
+                                            style="border-color:#F59E0B;color:#92400E;background:rgba(245,158,11,0.08);">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">stop_circle</span>
+                                        Clock Out
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('workspace.time-tracker.complete', $workspace) }}" class="space-y-2">
+                                    @csrf
+                                    <input type="hidden" name="time_log_id" value="{{ $activeTaskTimer->id }}">
+                                    <input type="text" name="work_summary" required maxlength="1000"
+                                           placeholder="Work summary"
+                                           class="w-full px-3 py-2 rounded-lg border border-border-subtle text-xs focus:outline-none focus:ring-2 focus:ring-[#0058be]">
+                                    <button type="submit"
+                                            class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white"
+                                            style="background-color:#0058be;">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">task_alt</span>
+                                        Complete Session
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @elseif ($activeTaskTimer)
+                        <div class="mb-3 p-3 rounded-lg text-xs text-on-surface-variant"
+                             style="background:#F8FAFC;border:1px solid #E2E8F0;">
+                            You already have a running timer.
+                            @if ($activeTaskTimer->workspace)
+                                <a href="{{ route('workspace.time-logs.show', [$activeTaskTimer->workspace, $activeTaskTimer]) }}"
+                                   class="font-semibold underline" style="color:#0058be;">View active timer</a>
+                            @endif
+                        </div>
+                    @elseif ($canStartTimerForTask)
+                        <form method="POST" action="{{ route('workspace.time-tracker.start', $workspace) }}" class="mb-3">
+                            @csrf
+                            <input type="hidden" name="workspace_task_id" value="{{ $task->id }}">
+                            <button type="submit"
+                                    class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white"
+                                    style="background-color:#0058be;">
+                                <span class="material-symbols-outlined" style="font-size: 14px;">timer</span>
+                                Start Timer for This Task
+                            </button>
+                        </form>
+                    @endif
+
+                    @if ($isAdminOrManager && $taskRunningTimers->isNotEmpty())
+                        <div class="mb-3 space-y-2">
+                            @foreach ($taskRunningTimers as $taskRunningTimer)
+                                <div class="flex items-center justify-between gap-2 text-xs p-2 rounded-lg"
+                                     style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.18);">
+                                    <span class="truncate text-on-surface">{{ $taskRunningTimer->user->name ?? 'Unknown user' }}</span>
+                                    <span class="font-mono font-bold js-running-timer"
+                                          data-started-at="{{ $taskRunningTimer->started_at?->toIso8601String() }}">
+                                        {{ $taskRunningTimer->durationForHumans() }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
 
                     @if ($taskTimeLogs->isEmpty())
                         <p class="text-xs italic text-outline">No time logs for this task yet.</p>
@@ -457,5 +550,26 @@
 
         </div>
     </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function formatElapsed(startedAt) {
+            var started = new Date(startedAt);
+            var totalSeconds = Math.max(0, Math.floor((Date.now() - started.getTime()) / 1000));
+            var hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+            var minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+            var seconds = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+            return hours + ':' + minutes + ':' + seconds;
+        }
+
+        document.querySelectorAll('.js-running-timer[data-started-at]').forEach(function (timer) {
+            var tick = function () {
+                timer.textContent = formatElapsed(timer.dataset.startedAt);
+            };
+            tick();
+            window.setInterval(tick, 1000);
+        });
+    });
+</script>
 
 </x-layouts.gvos>

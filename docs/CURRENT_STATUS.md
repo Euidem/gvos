@@ -1,8 +1,8 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-06
-**Current Phase:** Phase 7 — Time Tracking & Work Reports ✅ Complete
-**Current Activity:** Phase 8 — Billing Foundation ✅ Complete; invoice detail and admin invoice form layouts corrected
+**Current Phase:** Phase 9 - Semi Automated Time Tracking - Complete
+**Current Activity:** Phase 9 implemented; billing foundation remains unchanged
 
 ---
 
@@ -1033,6 +1033,24 @@ billing_plan.created/updated, workspace_subscription.created/updated, invoice.cr
 - [x] Totals section includes helper text: totals are calculated from invoice items and payment records where available
 - [x] Discount and tax remain editable; manual invoice total behavior is preserved
 - [x] No database, migration, billing calculation, payment confirmation, invoice status, permission, or portal changes
+
+---
+
+## Phase 9 Status — Complete (2026-06-06)
+
+### Semi Automated Time Tracking
+- [x] `workspace_time_logs.status` enum extended with `running`
+- [x] Server-side start/stop/complete timer controller added
+- [x] One active running timer enforced per user globally
+- [x] Talent dashboard clock-in widget now starts, stops, resumes, and completes running sessions
+- [x] Workspace time log index shows active session controls and manager/admin running timer visibility
+- [x] Time log detail page shows running state and stop/complete actions when authorized
+- [x] Task detail page can start a timer linked to the current task
+- [x] Filament time log table shows running status and live-duration-compatible duration column
+- [x] Audit events added for timer started, stopped, and completed
+- [x] Client visibility remains protected: clients still only see approved client_summary logs
+- [x] No screenshots, keystrokes, screen monitoring, payroll, password vault, billing automation, or Phase 10 work
+- [x] No billing database, payment confirmation, or invoice status logic changed
 
 ---
 

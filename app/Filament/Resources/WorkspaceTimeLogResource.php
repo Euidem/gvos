@@ -69,20 +69,27 @@ class WorkspaceTimeLogResource extends Resource
                     ->date('d M Y')
                     ->sortable(),
 
+                TextColumn::make('started_at')
+                    ->label('Started')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(),
+
                 TextColumn::make('work_summary')
                     ->label('Summary')
                     ->limit(50)
                     ->searchable(),
 
-                TextColumn::make('duration_minutes')
-                    ->label('Duration (min)')
-                    ->sortable(),
+                TextColumn::make('duration')
+                    ->label('Duration')
+                    ->getStateUsing(fn (WorkspaceTimeLog $record): string => $record->durationForHumans()),
 
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state) => match ($state) {
                         'draft'     => 'gray',
+                        'running'   => 'success',
                         'submitted' => 'info',
                         'reviewed'  => 'warning',
                         'approved'  => 'success',

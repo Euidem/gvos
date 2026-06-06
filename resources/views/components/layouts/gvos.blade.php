@@ -340,6 +340,12 @@
 
             {{-- Right: nav links + icons + Clock In --}}
             @auth
+            @php
+                $headerActiveTimer = \App\Models\WorkspaceTimeLog::activeTimerFor(auth()->user());
+                $headerTimerUrl = $headerActiveTimer?->workspace
+                    ? route('workspace.time-logs.show', [$headerActiveTimer->workspace, $headerActiveTimer])
+                    : (auth()->user()->hasRole('talent') ? route('talent.dashboard') : route('workspace.index'));
+            @endphp
             <div class="flex items-center gap-6">
 
                 {{-- Quick nav links (Stitch: Workspace active, Messages + Files as hints) --}}
@@ -374,13 +380,17 @@
                 {{-- Vertical divider --}}
                 <div class="h-6 w-px bg-border-subtle"></div>
 
-                {{-- Clock In — UI placeholder (Stitch: bg-secondary text-on-secondary rounded-lg) --}}
-                {{-- Timer not yet implemented. Links to workspaces to provide context for time logging. --}}
-                <a href="{{ route('workspace.index') }}"
-                   class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md text-label-md
-                          hover:brightness-110 transition-all"
-                   title="Go to your workspace to log time">
-                    Clock In
+                {{-- Clock In button --}}
+                {{-- Active timer entry point --}}
+                <a href="{{ $headerTimerUrl }}"
+                   class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md text-label-md hover:brightness-110 transition-all inline-flex items-center gap-2"
+                   title="{{ $headerActiveTimer ? 'View your active timer' : 'Go to your workspace to log time' }}">
+                    @if ($headerActiveTimer)
+                        <span class="material-symbols-outlined" style="font-size:15px;">timer</span>
+                        Timer Running
+                    @else
+                        Clock In
+                    @endif
                 </a>
 
             </div>

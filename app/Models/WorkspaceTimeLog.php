@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -48,6 +49,7 @@ class WorkspaceTimeLog extends Model
     {
         return [
             'draft'     => 'Draft',
+            'running'   => 'Running',
             'submitted' => 'Submitted',
             'reviewed'  => 'Reviewed',
             'approved'  => 'Approved',
@@ -77,7 +79,8 @@ class WorkspaceTimeLog extends Model
 
     /**
      * Returns duration_minutes if set, otherwise attempts to derive it from
-     * started_at and ended_at. Returns null if neither is possible.
+     * started_at and ended_at. Running logs derive duration from started_at
+     * to the current server time. Returns null if neither is possible.
      */
     public function resolvedDurationMinutes(): ?int
     {
@@ -87,6 +90,10 @@ class WorkspaceTimeLog extends Model
 
         if ($this->started_at && $this->ended_at) {
             return (int) $this->started_at->diffInMinutes($this->ended_at);
+        }
+
+        if ($this->isRunning()) {
+            return $this->runningDurationMinutes();
         }
 
         return null;
@@ -124,6 +131,74 @@ class WorkspaceTimeLog extends Model
     }
 
     // ── Access helpers (mirrors Workspace::resolveUserWorkspaceRole tiers) ──
+
+    public function isRunning(): bool
+    {
+        return $this->status === 'running'
+            && $this->started_at !== null
+            && $this->ended_at === null;
+    }
+
+    public function runningDurationMinutes(): ?int
+    {
+        if (! $this->started_at || $this->ended_at) {
+            return null;
+        }
+
+        return max(0, (int) $this->started_at->diffInMinutes(now()));
+    }
+
+    public function canBeStoppedBy(User $user): bool
+    {
+        if (! $this->isRunning()) {
+            return false;
+        }
+
+        if ((int) $this->user_id === (int) $user->id) {
+            return true;
+        }
+
+        $workspace = $this->workspace;
+        if (! $workspace) {
+            return false;
+        }
+
+        return static::canReview($workspace->resolveUserWorkspaceRole($user));
+    }
+
+    public function canBeSubmittedBy(User $user): bool
+    {
+        if (! in_array($this->status, ['draft', 'running', 'rejected'], true)) {
+            return false;
+        }
+
+        if ((int) $this->user_id === (int) $user->id) {
+            return true;
+        }
+
+        $workspace = $this->workspace;
+        if (! $workspace) {
+            return false;
+        }
+
+        return static::canReview($workspace->resolveUserWorkspaceRole($user));
+    }
+
+    public static function activeTimerFor(User $user): ?self
+    {
+        return static::query()
+            ->with(['workspace', 'task'])
+            ->where('user_id', $user->id)
+            ->where('status', 'running')
+            ->whereNull('ended_at')
+            ->orderByDesc('started_at')
+            ->first();
+    }
+
+    public function scopeRunning(Builder $query): Builder
+    {
+        return $query->where('status', 'running')->whereNull('ended_at');
+    }
 
     /**
      * Roles that can log time (create/edit own logs).
