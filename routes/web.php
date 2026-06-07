@@ -6,6 +6,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceFileController;
+use App\Http\Controllers\WorkspaceMemberController;
 use App\Http\Controllers\WorkspaceMessageController;
 use App\Http\Controllers\WorkspaceTaskController;
 use App\Http\Controllers\WorkspaceBillingController;
@@ -55,6 +56,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 
     Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('settings.notifications');
     Route::put('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('settings.notifications.update');
+
+    Route::post('/invitations/{token}/accept', [WorkspaceMemberController::class, 'acceptInvitation'])->name('workspace.invitations.accept');
 });
 
 // ── Workspace routes (all authenticated, active users) ────────────────────
@@ -62,6 +65,18 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/workspaces',            [WorkspaceController::class, 'index'])->name('workspace.index');
     Route::get('/workspaces/{workspace}', [WorkspaceController::class, 'show'])->name('workspace.show');
     Route::get('/time-tracker/current',   [WorkspaceTimeTrackerController::class, 'current'])->name('time-tracker.current');
+
+    // Workspace member and invitation routes (Phase 13)
+    Route::prefix('workspaces/{workspace}/members')->name('workspace.members.')->group(function () {
+        Route::get('/', [WorkspaceMemberController::class, 'index'])->name('index');
+        Route::post('/', [WorkspaceMemberController::class, 'store'])->name('store');
+        Route::get('/invite', [WorkspaceMemberController::class, 'invite'])->name('invite');
+        Route::post('/invite', [WorkspaceMemberController::class, 'sendInvitation'])->name('invite.store');
+        Route::put('/{member}', [WorkspaceMemberController::class, 'update'])->name('update');
+        Route::post('/{member}/deactivate', [WorkspaceMemberController::class, 'deactivate'])->name('deactivate');
+        Route::post('/invitations/{invitation}/resend', [WorkspaceMemberController::class, 'resendInvitation'])->name('invitations.resend');
+        Route::post('/invitations/{invitation}/revoke', [WorkspaceMemberController::class, 'revokeInvitation'])->name('invitations.revoke');
+    });
 
     // ── Workspace task routes (Phase 5) ───────────────────────────────────
     Route::prefix('workspaces/{workspace}/tasks')->name('workspace.tasks.')->group(function () {
@@ -182,6 +197,8 @@ Route::middleware(['auth', 'check.status', 'role:active_lead'])
 Route::get('/request-service', [LeadRequestController::class, 'show'])->name('lead.request-service');
 Route::post('/request-service', [LeadRequestController::class, 'store'])->name('lead.request-service.store');
 Route::get('/request-service/success', fn () => view('lead.request-service-success'))->name('lead.request-service.success');
+
+Route::get('/invitations/{token}', [WorkspaceMemberController::class, 'showInvitation'])->name('workspace.invitations.show');
 
 // ── Auth routes ──────────────────────────────────────────────────────────
 require __DIR__ . '/auth.php';

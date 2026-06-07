@@ -8,9 +8,17 @@
             $activeMember   = $workspace->activeMembers->firstWhere('user_id', $user->id);
             $memberRole     = $activeMember?->role;
             $userIsPrimary  = in_array($user->id, [$workspace->primary_manager_id, $workspace->primary_talent_id]);
-            $effectiveRole  = $userIsAdmin ? 'admin'
-                            : ($memberRole ?? ($userIsPrimary ? ($workspace->primary_manager_id === $user->id ? 'manager' : 'talent') : 'none'));
-            $canCreateTask  = $effectiveRole !== 'none' && $effectiveRole !== 'observer';
+            $effectiveRole  = $workspace->resolveUserWorkspaceRole($user);
+            $canCreateTask  = $workspace->userCanCreateTasks($user);
+            $canViewMembers = in_array($effectiveRole, ['admin', 'workspace_admin', 'manager', 'client_admin', 'client_staff', 'talent', 'assigned_user'], true);
+            $canManageMembers = in_array($effectiveRole, ['admin', 'workspace_admin', 'client_admin'], true);
+
+            $teamActiveCount = $workspace->activeMembers->count();
+            $teamManagerCount = $workspace->activeMembers->whereIn('role', ['manager', 'workspace_admin'])->count()
+                + ($workspace->primaryManager ? 1 : 0);
+            $teamTalentCount = $workspace->activeMembers->where('role', 'talent')->count()
+                + ($workspace->primaryTalent ? 1 : 0);
+            $teamClientCount = $workspace->activeMembers->whereIn('role', ['client_admin', 'client_staff', 'client'])->count();
 
             // Task counts for summary
             $taskCounts = $workspace->tasks()->selectRaw('status, count(*) as cnt')->groupBy('status')->pluck('cnt', 'status');
@@ -110,10 +118,37 @@
 
             {{-- Team card --}}
             <div class="bg-white rounded-xl border border-border-subtle shadow-card p-6">
-                <h3 class="text-sm font-bold text-on-surface mb-4 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">group</span>
-                    Your Team
-                </h3>
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <h3 class="text-sm font-bold text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">group</span>
+                        Your Team
+                    </h3>
+                    @if ($canViewMembers)
+                        <a href="{{ route('workspace.members.index', $workspace) }}"
+                           class="inline-flex items-center gap-1 text-xs font-semibold text-secondary hover:brightness-110">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">manage_accounts</span>
+                            {{ $canManageMembers ? 'Manage Members' : 'View Team' }}
+                        </a>
+                    @endif
+                </div>
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <div class="rounded-lg border border-border-subtle bg-surface-container-low px-3 py-2">
+                        <p class="text-lg font-bold text-on-surface">{{ $teamActiveCount }}</p>
+                        <p class="text-[11px] text-outline">Active</p>
+                    </div>
+                    <div class="rounded-lg border border-border-subtle bg-surface-container-low px-3 py-2">
+                        <p class="text-lg font-bold text-on-surface">{{ $teamManagerCount }}</p>
+                        <p class="text-[11px] text-outline">Managers</p>
+                    </div>
+                    <div class="rounded-lg border border-border-subtle bg-surface-container-low px-3 py-2">
+                        <p class="text-lg font-bold text-on-surface">{{ $teamTalentCount }}</p>
+                        <p class="text-[11px] text-outline">Talent</p>
+                    </div>
+                    <div class="rounded-lg border border-border-subtle bg-surface-container-low px-3 py-2">
+                        <p class="text-lg font-bold text-on-surface">{{ $teamClientCount }}</p>
+                        <p class="text-[11px] text-outline">Client Team</p>
+                    </div>
+                </div>
                 <div class="space-y-3">
                     @if ($workspace->primaryManager)
                         <div class="flex items-center gap-3">
@@ -202,12 +237,13 @@
                             </div>
                             <span class="text-xs font-semibold px-2.5 py-1 rounded-full
                                 {{ match($member->role) {
-                                    'manager' => 'bg-secondary/5 text-secondary border border-secondary/20',
+                                    'workspace_admin', 'manager' => 'bg-secondary/5 text-secondary border border-secondary/20',
                                     'talent'  => 'bg-status-active/10 text-status-active border border-status-active/20',
-                                    'client'  => 'bg-status-payment-due/10 text-status-payment-due border border-status-payment-due/20',
+                                    'client_admin', 'client_staff', 'client'  => 'bg-status-payment-due/10 text-status-payment-due border border-status-payment-due/20',
+                                    'observer' => 'bg-surface-container-low text-on-surface-variant border border-border-subtle',
                                     default   => 'bg-surface-container-low text-on-surface-variant border border-border-subtle',
                                 } }}">
-                                {{ ucfirst($member->role) }}
+                                {{ $member->roleLabel() }}
                             </span>
                         </div>
                     @endforeach

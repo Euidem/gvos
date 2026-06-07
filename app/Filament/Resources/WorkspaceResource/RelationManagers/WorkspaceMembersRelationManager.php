@@ -4,6 +4,7 @@ namespace App\Filament\Resources\WorkspaceResource\RelationManagers;
 
 use App\Models\WorkspaceMember;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -18,6 +19,8 @@ class WorkspaceMembersRelationManager extends RelationManager
     protected static string $relationship = 'members';
 
     protected static ?string $title = 'Members';
+
+    protected ?string $oldRole = null;
 
     public function form(Form $form): Form
     {
@@ -99,12 +102,22 @@ class WorkspaceMembersRelationManager extends RelationManager
                     ->label('Add Member')
                     ->after(function ($record): void {
                         AuditLogger::workspaceMemberAdded($record->workspace, $record);
+                        AuditLogger::workspaceMembershipAdded($record->workspace, $record, ['source' => 'filament']);
+                        app(NotificationService::class)->notifyWorkspaceMemberAdded($record, auth()->user());
                     }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
+                    ->before(function (WorkspaceMember $record): void {
+                        $this->oldRole = $record->role;
+                    })
                     ->after(function ($record): void {
                         AuditLogger::workspaceMemberUpdated($record->workspace, $record);
+
+                        if ($this->oldRole && $this->oldRole !== $record->role) {
+                            AuditLogger::workspaceMemberRoleChanged($record->workspace, $record, $this->oldRole, $record->role, ['source' => 'filament']);
+                            app(NotificationService::class)->notifyWorkspaceMemberRoleChanged($record, $this->oldRole, auth()->user());
+                        }
                     }),
 
                 Tables\Actions\Action::make('remove')
@@ -119,6 +132,8 @@ class WorkspaceMembersRelationManager extends RelationManager
                             'removed_at' => now(),
                         ]);
                         AuditLogger::workspaceMemberRemoved($record->workspace, $record);
+                        AuditLogger::workspaceMemberDeactivated($record->workspace, $record, ['source' => 'filament']);
+                        app(NotificationService::class)->notifyWorkspaceMemberDeactivated($record, auth()->user());
                     }),
             ])
             ->bulkActions([]);

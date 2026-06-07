@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 10 migrations created and active
+## Status: Phase 13 migrations created and active
 
 ---
 
@@ -196,6 +196,8 @@ Phase 10 actions: `workspace_vault_item.created`, `workspace_vault_item.updated`
 
 Phase 11 actions: `notification_preferences.updated`
 
+Phase 13 actions: `workspace_member.added`, `workspace_member.role_changed`, `workspace_member.deactivated`, `workspace_invitation.created`, `workspace_invitation.resent`, `workspace_invitation.revoked`, `workspace_invitation.accepted`
+
 ---
 
 ## Phase 3 Tables (live)
@@ -321,6 +323,34 @@ Pivot table tracking which users belong to each workspace with what role.
 | notes | text nullable | |
 | created_at / updated_at | timestamps | |
 | UNIQUE | (workspace_id, user_id) | prevents duplicate membership |
+
+### workspace_invitations
+Pending and historical invitations for joining a workspace.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | bigint PK | |
+| workspace_id | FK workspaces | cascadeOnDelete |
+| invited_by | FK users nullable | inviter; nullOnDelete |
+| email | string | invited email, indexed with status |
+| name | string nullable | invitee display name |
+| platform_role | string nullable | intended platform role label only; does not grant role automatically |
+| workspace_role | enum | workspace_admin, client_admin, client_staff, manager, talent, observer |
+| token | string unique | secure invitation token; never logged in audit context |
+| status | enum | pending, accepted, revoked, expired |
+| expires_at | timestamp nullable | invitation expiry |
+| accepted_at | timestamp nullable | set when accepted |
+| accepted_by | FK users nullable | accepting user; nullOnDelete |
+| created_at / updated_at | timestamps | |
+| INDEX | (workspace_id, status) | |
+| INDEX | (email, status) | |
+
+#### Phase 13 Invitation Behavior
+- Invitation acceptance links an existing authenticated user whose email matches the invitation.
+- If an invitee has no GVOS account, the invitation page instructs them to contact an admin to activate an account.
+- Invitation email delivery is attempted when mail is configured and does not block the app if mail fails.
+- Database notification payloads do not include invitation tokens.
+- No billing, payment, vault encryption, timer, payroll, gateway, screenshot, keystroke, or screen-monitoring behavior is attached to invitations.
 
 ---
 

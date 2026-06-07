@@ -1,8 +1,30 @@
 # GVOS — Current Status
 
-**Last Updated:** 2026-06-06
-**Current Phase:** Phase 12 - Stabilization, QA, Access Audit and Bug Fix Pass - Complete
-**Current Activity:** Phase 12 audit completed; no database, billing calculation, payment confirmation, or vault encryption changes
+**Last Updated:** 2026-06-07
+**Current Phase:** Phase 13 - Workspace Membership and Invitation Flow - Complete
+**Current Activity:** Workspace member management and invitation foundation completed; no billing, payment confirmation, vault encryption, or timer logic changes
+
+## Phase 13 Status - Complete (2026-06-07)
+
+### Workspace Membership and Invitation Flow
+- [x] Portal member management page added at `/workspaces/{workspace}/members`
+- [x] Authorized admins can add existing users, change workspace roles, and deactivate members without hard-deleting users
+- [x] Workspace admins can manage workspace membership within existing platform role boundaries
+- [x] Client admins are limited to client staff membership and invitation actions
+- [x] Workspace invitations table, model, routes, accept page, resend, revoke, and acceptance flow added
+- [x] Invitation email delivery is attempted safely when mail is configured; failures do not block the action
+- [x] Database notifications added for existing invitees and workspace membership events without storing invitation tokens
+- [x] Workspace overview team card now shows active, manager, talent, and client-team counts with role-gated member link
+- [x] Filament workspace admin now has separate Members and Invitations relation managers
+- [x] Phase 13 audit events added for member added, role changed, deactivated, invitation created, resent, revoked, and accepted
+- [x] No billing calculation, payment confirmation, invoice status, vault encryption, time tracker core, payment gateway, payroll, browser extension, screenshots, keystrokes, or screen monitoring changes
+
+### Remaining Manual Verification
+- [ ] Run cPanel artisan validation commands after pull because PHP is not installed on the local workstation
+- [ ] Manually test admin/workspace admin/client admin membership boundaries and invitation acceptance
+- [ ] Re-test existing tasks, billing, payment confirmation, vault, timer, notifications, and client portal invoice pages
+
+---
 
 ## Phase 12 Status - Complete (2026-06-06)
 

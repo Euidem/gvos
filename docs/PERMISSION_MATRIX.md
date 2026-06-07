@@ -469,6 +469,36 @@ All notification routes require `auth` + `check.status`.
 
 ---
 
+## Phase 13 - Workspace Membership and Invitations
+
+### Portal Member Routes
+
+All member management routes require `auth` + `check.status` except the invitation review page. Access is enforced in `WorkspaceMemberController` with `Workspace::resolveUserWorkspaceRole()`.
+
+| Action | admin | workspace_admin | manager | client_admin | client_staff | talent / assigned_user | observer / none |
+|--------|-------|-----------------|---------|--------------|--------------|------------------------|-----------------|
+| View member page | all | own workspace | view only | own workspace | view only | team list | 403 |
+| Add existing user | yes | yes | no | client_staff only | no | no | no |
+| Change workspace role | yes | yes | no | client_staff only | no | no | no |
+| Deactivate member | yes | yes | no | client_staff only | no | no | no |
+| Create invitation | yes | yes | no | client_staff only | no | no | no |
+| Resend/revoke invitation | yes | yes | no | client_staff only | no | no | no |
+| Accept invitation | invited authenticated email only | invited authenticated email only | invited authenticated email only | invited authenticated email only | invited authenticated email only | invited authenticated email only | invited authenticated email only |
+
+### Phase 13 Boundaries
+
+- Super Admin and Operations Admin can manage all workspace membership.
+- Workspace Admin can manage members in that workspace but cannot create platform super/operations admins.
+- Client Admin can add or invite `client_staff` only and is restricted to the client company boundary where company data is available.
+- Manager, Client Staff, Talent, and assigned users can view member context only; they cannot manage membership.
+- Observer and non-member users cannot access member management.
+- Membership removal sets `workspace_members.status=removed` and `removed_at`; users are not hard-deleted.
+- Invitation audit logs never include the invitation token.
+- Filament Workspace admin exposes separate Members and Invitations relation managers.
+- Phase 13 does not change billing, payments, vault encryption, timer logic, payroll, gateways, or monitoring/surveillance features.
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).

@@ -71,6 +71,31 @@ class UserNotificationPreference extends Model
             'description' => 'A service trial is approved for your account.',
             'email_default' => true,
         ],
+        'workspace_member_added' => [
+            'label' => 'Workspace access added',
+            'description' => 'You are added to a workspace team.',
+            'email_default' => true,
+        ],
+        'workspace_role_changed' => [
+            'label' => 'Workspace role changed',
+            'description' => 'Your workspace role is updated.',
+            'email_default' => true,
+        ],
+        'workspace_member_deactivated' => [
+            'label' => 'Workspace access removed',
+            'description' => 'Your workspace access is deactivated.',
+            'email_default' => true,
+        ],
+        'workspace_invitation_sent' => [
+            'label' => 'Workspace invitation sent',
+            'description' => 'You receive a workspace invitation.',
+            'email_default' => false,
+        ],
+        'workspace_invitation_accepted' => [
+            'label' => 'Workspace invitation accepted',
+            'description' => 'A workspace invitation you sent or manage is accepted.',
+            'email_default' => true,
+        ],
     ];
 
     public static function keys(): array

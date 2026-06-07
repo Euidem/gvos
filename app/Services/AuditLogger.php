@@ -279,6 +279,69 @@ class AuditLogger
         ], $extra));
     }
 
+    public static function workspaceMembershipAdded(Model $workspace, Model $member, array $extra = []): void
+    {
+        self::log('workspace_member.added', $workspace, array_merge([
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'member_id'      => $member->id ?? null,
+            'user_id'        => $member->user_id ?? null,
+            'role'           => $member->role ?? null,
+        ], $extra));
+    }
+
+    public static function workspaceMemberRoleChanged(Model $workspace, Model $member, string $from, string $to, array $extra = []): void
+    {
+        self::log('workspace_member.role_changed', $workspace, array_merge([
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'member_id'      => $member->id ?? null,
+            'user_id'        => $member->user_id ?? null,
+            'from'           => $from,
+            'to'             => $to,
+        ], $extra));
+    }
+
+    public static function workspaceMemberDeactivated(Model $workspace, Model $member, array $extra = []): void
+    {
+        self::log('workspace_member.deactivated', $workspace, array_merge([
+            'workspace_code' => $workspace->workspace_code ?? null,
+            'member_id'      => $member->id ?? null,
+            'user_id'        => $member->user_id ?? null,
+            'role'           => $member->role ?? null,
+            'deactivated_at' => now()->toDateTimeString(),
+        ], $extra));
+    }
+
+    public static function workspaceInvitationCreated(Model $invitation, array $extra = []): void
+    {
+        self::workspaceInvitationEvent('workspace_invitation.created', $invitation, $extra);
+    }
+
+    public static function workspaceInvitationResent(Model $invitation, array $extra = []): void
+    {
+        self::workspaceInvitationEvent('workspace_invitation.resent', $invitation, $extra);
+    }
+
+    public static function workspaceInvitationRevoked(Model $invitation, array $extra = []): void
+    {
+        self::workspaceInvitationEvent('workspace_invitation.revoked', $invitation, $extra);
+    }
+
+    public static function workspaceInvitationAccepted(Model $invitation, array $extra = []): void
+    {
+        self::workspaceInvitationEvent('workspace_invitation.accepted', $invitation, $extra);
+    }
+
+    private static function workspaceInvitationEvent(string $action, Model $invitation, array $extra = []): void
+    {
+        self::log($action, $invitation, array_merge([
+            'workspace_id'    => $invitation->workspace_id ?? null,
+            'invitation_id'   => $invitation->id ?? null,
+            'email_hash'      => isset($invitation->email) ? hash('sha256', strtolower($invitation->email)) : null,
+            'workspace_role'  => $invitation->workspace_role ?? null,
+            'status'          => $invitation->status ?? null,
+        ], $extra));
+    }
+
     public static function workspacePrimaryTeamSynced(Model $workspace, array $syncResult = []): void
     {
         self::log('workspace.primary_team_synced', $workspace, array_merge([

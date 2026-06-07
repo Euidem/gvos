@@ -306,6 +306,33 @@ GVOS is built in 13 phases (Phase 0–12). Each phase has a clear deliverable an
 
 ---
 
+## Phase 13 - Workspace Membership and Invitations
+**Status:** Complete
+**Depends on:** Phase 12 stabilization audit
+
+### Deliverables
+- [x] Portal workspace member management page
+- [x] Add existing workspace users with workspace role validation
+- [x] Workspace role update and safe deactivation
+- [x] Workspace invitations table and model
+- [x] Invitation create, resend, revoke, review, and accept routes
+- [x] Existing-user database notifications and mail invitation attempts
+- [x] Phase 13 audit events without token logging
+- [x] Filament workspace invitations relation manager
+- [x] Workspace overview team card count/link update
+- [x] Documentation update for schema, permissions, testing, known issues, and status
+- [x] No billing, payment, vault encryption, timer, payroll, gateway, screenshot, keystroke, or screen-monitoring changes
+
+### Test Checklist
+- Member page loads for authorized roles
+- Client admin can manage client staff only
+- Invitation token page renders and acceptance requires matching authenticated email
+- Pending invitations can be resent/revoked
+- Soft removal preserves users and sets member status to removed
+- Audit and notification payloads exclude invitation tokens
+
+---
+
 ## Phase Approval Process
 1. Complete all deliverables for the phase
 2. Run the phase-specific testing checklist

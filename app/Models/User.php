@@ -143,6 +143,16 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(UserNotificationPreference::class);
     }
 
+    public function sentWorkspaceInvitations(): HasMany
+    {
+        return $this->hasMany(WorkspaceInvitation::class, 'invited_by');
+    }
+
+    public function acceptedWorkspaceInvitations(): HasMany
+    {
+        return $this->hasMany(WorkspaceInvitation::class, 'accepted_by');
+    }
+
     // ── Phase 7 relationships ────────────────────────────────────────────
 
     /** Time logs submitted by this user. */

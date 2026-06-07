@@ -1409,3 +1409,60 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] No visible payment gateway, payroll, browser extension, auto-login, screenshot capture, keystroke tracking, or screen-monitoring UI appears
 - [ ] Notification payloads do not contain vault secrets, raw file paths, payment raw payloads, internal invoice notes, manager notes, tokens, or API keys
 - [ ] No new database migrations were added for Phase 12
+
+---
+
+## Phase 13 - Workspace Membership and Invitation Flow
+
+Run after `git pull origin main && php artisan migrate && php artisan optimize:clear && php artisan permission:cache-reset`.
+
+### Required Artisan Checks
+- [ ] `php artisan migrate` runs without error and creates `workspace_invitations`
+- [ ] `php artisan optimize:clear` runs without error
+- [ ] `php artisan permission:cache-reset` runs without error
+- [ ] `php artisan route:list | grep members` shows workspace member routes
+- [ ] `php artisan route:list | grep invitation` shows invitation review/accept routes
+
+### Portal Member Management
+- [ ] Admin can open `/workspaces/{workspace}/members`
+- [ ] Workspace admin can open the member page for their workspace
+- [ ] Manager can view members but cannot add, update, remove, invite, resend, or revoke
+- [ ] Client admin can add/invite `client_staff` only
+- [ ] Client staff can view only
+- [ ] Talent can view the team list only
+- [ ] Observer/non-member receives 403
+- [ ] Admin can add an existing workspace member with role `manager`, `talent`, `client_admin`, `client_staff`, `workspace_admin`, or `observer`
+- [ ] Duplicate active member add is rejected
+- [ ] Removing a member sets `workspace_members.status=removed` and does not delete the user
+- [ ] Updating a workspace role fires `workspace_member.role_changed`
+
+### Invitation Flow
+- [ ] Admin/workspace admin can create pending invitations
+- [ ] Client admin can invite client staff only
+- [ ] Invitation email failure does not break the portal action
+- [ ] Existing invited users receive a database notification without token payload
+- [ ] Pending invitations can be resent and revoked
+- [ ] Public `/invitations/{token}` page shows invitation status
+- [ ] Unauthenticated invitee is instructed to sign in or contact an admin if no account exists
+- [ ] Authenticated user with matching email can accept invitation
+- [ ] Authenticated user with different email cannot accept invitation
+- [ ] Accepted invitation creates or reactivates an active workspace member row
+- [ ] Accepted/revoked/expired invitations cannot be accepted again
+
+### Filament
+- [ ] Workspace edit page shows Members relation manager
+- [ ] Workspace edit page shows Invitations relation manager
+- [ ] Filament member removal remains a status change, not hard delete
+- [ ] Filament invitation resend/revoke works for pending invitations
+
+### Audit, Notifications, and Regression
+- [ ] `workspace_member.added` fires on add/accept
+- [ ] `workspace_member.role_changed` fires on role update
+- [ ] `workspace_member.deactivated` fires on removal
+- [ ] `workspace_invitation.created`, `.resent`, `.revoked`, `.accepted` fire as expected
+- [ ] Audit logs do not include invitation tokens
+- [ ] Workspace overview team card shows active, manager, talent, and client team counts
+- [ ] Existing tasks, chat, files, billing, time logs, reports, vault, and notifications still work
+- [ ] Existing invoice issue and payment confirmation flows still work
+- [ ] No billing calculation, payment confirmation, invoice status, vault encryption, or timer core changes are present
+- [ ] No visible UI contains `GetVirtual`

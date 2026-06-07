@@ -7,6 +7,40 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-07 | Phase 13 | Workspace Membership and Invitation Flow
+
+**What was done:** Added the workspace membership management and invitation foundation. Portal users with the right workspace role can now view members, add existing users, update workspace roles, deactivate members safely, create invitations, resend/revoke pending invitations, and accept invitations through a token route.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_06_07_000001_create_workspace_invitations_table.php` | Workspace invitation records with token, status, expiry, inviter, and acceptance metadata |
+| `app/Models/WorkspaceInvitation.php` | Invitation model, relationships, status helpers, token generation |
+| `app/Http/Controllers/WorkspaceMemberController.php` | Portal member management, invitation actions, role boundary enforcement, acceptance flow |
+| `resources/views/workspace/members/index.blade.php` | Portal member management page |
+| `resources/views/workspace/members/invite.blade.php` | Portal invitation form |
+| `resources/views/workspace/invitations/show.blade.php` | Invitation review/accept page |
+| `app/Filament/Resources/WorkspaceResource/RelationManagers/WorkspaceInvitationsRelationManager.php` | Filament invitation visibility and resend/revoke actions |
+| `app/Notifications/WorkspaceMember*.php`, `WorkspaceInvitation*.php` | Safe membership/invitation database notifications and mail invitation notification |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `routes/web.php` | Added member and invitation routes |
+| `app/Models/Workspace.php` | Added invitations relationship |
+| `app/Models/User.php` | Added sent/accepted invitation relationships |
+| `app/Models/UserNotificationPreference.php` | Added membership and invitation notification keys |
+| `app/Services/NotificationService.php` | Added safe member/invitation notification methods and mail failure handling |
+| `app/Services/AuditLogger.php` | Added Phase 13 audit wrappers; invitation token is not logged |
+| `app/Filament/Resources/WorkspaceResource.php` | Registered invitation relation manager |
+| `app/Filament/Resources/WorkspaceResource/RelationManagers/WorkspaceMembersRelationManager.php` | Added Phase 13 audit and notification hooks while preserving soft removal |
+| `resources/views/workspace/show.blade.php` | Improved team card counts and role-gated member link |
+| Docs | Phase 13 status, schema, permissions, testing, known issues, and build-phase notes |
+
+**Preserved:** No Phase 14 work, no billing calculation changes, no payment confirmation changes, no invoice status changes, no payment gateway, no payroll, no vault encryption changes, no timer core changes, no browser extension, no screenshots, no keystroke tracking, no screen monitoring, and no visible GetVirtual UI.
+
 ### 2026-06-06 | Phase 12 | Stabilization, QA, Access Audit and Bug Fix Pass
 
 **What was done:** Audited the Phase 8 billing foundation, Phase 9 timer flow, Phase 10 password vault, and Phase 11 notifications for migration safety, route protection, workspace ownership checks, role boundaries, billing visibility, timer behavior, vault secret handling, notification payload privacy, visible branding, error handling, and simple query/performance risks.

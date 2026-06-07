@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\UserNotificationPreference;
 use App\Models\Workspace;
 use App\Models\WorkspaceFile;
+use App\Models\WorkspaceInvitation;
+use App\Models\WorkspaceMember;
 use App\Models\WorkspaceMessage;
 use App\Models\WorkspaceTask;
 use App\Models\WorkspaceTaskComment;
@@ -24,9 +26,16 @@ use App\Notifications\TimeLogSubmittedNotification;
 use App\Notifications\TrialApprovedNotification;
 use App\Notifications\WeeklyReportPublishedNotification;
 use App\Notifications\WorkspaceFileUploadedNotification;
+use App\Notifications\WorkspaceInvitationAcceptedNotification;
+use App\Notifications\WorkspaceInvitationMailNotification;
+use App\Notifications\WorkspaceInvitationSentNotification;
+use App\Notifications\WorkspaceMemberAddedNotification;
+use App\Notifications\WorkspaceMemberDeactivatedNotification;
+use App\Notifications\WorkspaceMemberRoleChangedNotification;
 use App\Notifications\WorkspaceMessageNotification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class NotificationService
 {
@@ -220,6 +229,97 @@ class NotificationService
         );
     }
 
+    public function notifyWorkspaceMemberAdded(WorkspaceMember $member, ?User $actor = null): void
+    {
+        $member->loadMissing(['user', 'workspace']);
+
+        if (! $member->user || ! $member->workspace) {
+            return;
+        }
+
+        $this->send(
+            collect([$member->user]),
+            'workspace_member_added',
+            new WorkspaceMemberAddedNotification($member),
+            $actor,
+            false
+        );
+    }
+
+    public function notifyWorkspaceMemberRoleChanged(WorkspaceMember $member, string $oldRole, ?User $actor = null): void
+    {
+        $member->loadMissing(['user', 'workspace']);
+
+        if (! $member->user || ! $member->workspace) {
+            return;
+        }
+
+        $this->send(
+            collect([$member->user]),
+            'workspace_role_changed',
+            new WorkspaceMemberRoleChangedNotification($member, $oldRole),
+            $actor,
+            false
+        );
+    }
+
+    public function notifyWorkspaceMemberDeactivated(WorkspaceMember $member, ?User $actor = null): void
+    {
+        $member->loadMissing(['user', 'workspace']);
+
+        if (! $member->user || ! $member->workspace) {
+            return;
+        }
+
+        $this->send(
+            collect([$member->user]),
+            'workspace_member_deactivated',
+            new WorkspaceMemberDeactivatedNotification($member),
+            $actor,
+            false
+        );
+    }
+
+    public function notifyWorkspaceInvitationSent(WorkspaceInvitation $invitation, ?User $actor = null): void
+    {
+        $invitation->loadMissing('workspace');
+
+        $existingUser = User::query()
+            ->where('email', $invitation->email)
+            ->first();
+
+        if ($existingUser) {
+            $this->send(
+                collect([$existingUser]),
+                'workspace_invitation_sent',
+                new WorkspaceInvitationSentNotification($invitation),
+                $actor,
+                false
+            );
+        }
+
+        $this->mailInvitationSafely($invitation);
+    }
+
+    public function notifyWorkspaceInvitationAccepted(WorkspaceInvitation $invitation, ?User $actor = null): void
+    {
+        $invitation->loadMissing(['workspace', 'inviter', 'acceptedBy']);
+
+        if (! $invitation->workspace) {
+            return;
+        }
+
+        $recipients = $this->workspaceInternalRecipients($invitation->workspace)
+            ->merge([$invitation->inviter]);
+
+        $this->send(
+            $this->filterWorkspaceRecipients($invitation->workspace, $recipients),
+            'workspace_invitation_accepted',
+            new WorkspaceInvitationAcceptedNotification($invitation),
+            $actor
+        );
+    }
+
     private function send(
         iterable $recipients,
         string $key,
@@ -258,6 +358,20 @@ class NotificationService
                 'user_id' => $user->id,
                 'notification_key' => $key,
                 'channel' => $channel,
+            ]);
+        }
+    }
+
+    private function mailInvitationSafely(WorkspaceInvitation $invitation): void
+    {
+        try {
+            Notification::route('mail', $invitation->email)
+                ->notify(new WorkspaceInvitationMailNotification($invitation));
+        } catch (\Throwable $e) {
+            Log::warning('GVOS workspace invitation mail failed: ' . $e->getMessage(), [
+                'workspace_id' => $invitation->workspace_id,
+                'invitation_id' => $invitation->id,
+                'email_hash' => hash('sha256', strtolower($invitation->email)),
             ]);
         }
     }

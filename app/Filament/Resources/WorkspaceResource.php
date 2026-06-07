@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\WorkspaceResource\Pages;
+use App\Filament\Resources\WorkspaceResource\RelationManagers\WorkspaceInvitationsRelationManager;
 use App\Filament\Resources\WorkspaceResource\RelationManagers\WorkspaceMembersRelationManager;
 use App\Models\User;
 use App\Models\Workspace;
@@ -343,6 +344,7 @@ class WorkspaceResource extends Resource
     {
         return [
             WorkspaceMembersRelationManager::class,
+            WorkspaceInvitationsRelationManager::class,
         ];
     }
 

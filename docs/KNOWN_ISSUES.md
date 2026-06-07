@@ -233,6 +233,26 @@ The Phase 12 audit did not add migrations or alter pushed migrations. Billing to
 
 ---
 
+## Phase 13 Warnings / Notes
+
+### Phase 13 | Info | Invitation acceptance requires an existing GVOS account
+
+Workspace invitations can be reviewed publicly, but accepting an invitation requires the invitee to sign in with the invited email address. If the email does not already belong to a GVOS user, the invitation page tells the invitee to contact a workspace admin to activate an account. Full self-service registration remains deferred.
+
+---
+
+### Phase 13 | Info | Invitation email delivery depends on Laravel mail configuration
+
+Invitation email is attempted when a pending invitation is created or resent. Mail delivery failures are logged with a hashed email and do not block the portal or Filament action. Production must configure the standard Laravel `MAIL_*` values.
+
+---
+
+### Phase 13 | Low | Client staff company matching is strongest when company domain/profile data exists
+
+Client admins are limited to client staff invitations. Existing users are checked against client profile company data where available; new invitees can also be checked against `companies.company_email_domain` when set. If no company domain is configured, admins should manually review staff invites.
+
+---
+
 ## Resolved Issues
 
 ### 2026-06-06 | Phase 12 | High | Portal task assignment could grant workspace access to arbitrary users

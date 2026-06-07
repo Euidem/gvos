@@ -288,6 +288,11 @@ class Workspace extends Model
         return $this->hasMany(WorkspaceMember::class)->where('status', 'active');
     }
 
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(WorkspaceInvitation::class)->orderByDesc('created_at');
+    }
+
     public function tasks(): HasMany
     {
         return $this->hasMany(WorkspaceTask::class)->orderBy('sort_order')->orderBy('created_at');
