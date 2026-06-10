@@ -26,6 +26,20 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 14 Warnings / Notes
+
+### Phase 14 | Info | Login redirect after sign-in for Scenario 3 requires manual return
+
+When an invited user is not logged in but has an existing account (Scenario 3), they are shown a "Sign In" button. The login page does not automatically redirect back to the invitation URL after authentication. The user must return to the original invitation link manually after signing in. A future improvement could pass the invitation URL as a `?redirect=` query param and handle it in the login controller.
+
+---
+
+### Phase 14 | Info | No email verification for invitation-registered users
+
+Users created through the invitation registration path receive an `active` status immediately and are logged in without email verification. This is intentional for smooth onboarding. If email verification is required in future, the registration flow will need to set `status=pending` and dispatch a verification email before logging in.
+
+---
+
 ## Phase 6 Warnings / Notes
 
 ### Phase 6 | Info | Chat has no real-time updates — page reload required

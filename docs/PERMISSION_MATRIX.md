@@ -499,6 +499,36 @@ All member management routes require `auth` + `check.status` except the invitati
 
 ---
 
+## Phase 14 - Invitation Account Activation
+
+### Invitation Route Access
+
+| Route | Auth Required | Who Can Use |
+|-------|--------------|-------------|
+| `GET /invitations/{token}` | No | Anyone with the link |
+| `POST /invitations/{token}/accept` | Yes (auth middleware) | Logged-in user whose email matches invitation |
+| `POST /invitations/{token}/register` | No | Anyone — only valid for invitations with no existing account |
+
+### Registration Constraints
+
+- Email is locked to the invited email — the registrant cannot choose a different one.
+- Workspace role comes from the invitation — the registrant cannot change it.
+- Platform role is safely inferred from workspace_role or taken from `invitation.platform_role` if set and safe.
+- `super_admin` and `operations_admin` can never be assigned via invitation under any code path.
+- Client admin invitations remain limited to `client_staff` workspace role.
+- Workspace admin invitations infer `line_manager` platform role.
+
+### Phase 14 Boundaries
+
+- No token is logged in any audit event.
+- No password is logged in any audit event.
+- Accepted/revoked/expired invitations cannot be re-accepted.
+- A logged-in user with a non-matching email cannot accept even if they POST directly.
+- A duplicate active workspace membership is blocked.
+- Phase 14 does not change billing, payments, vault encryption, timer logic, payroll, gateways, or monitoring/surveillance features.
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).

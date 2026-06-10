@@ -331,6 +331,11 @@ class AuditLogger
         self::workspaceInvitationEvent('workspace_invitation.accepted', $invitation, $extra);
     }
 
+    public static function workspaceInvitationRegisteredAndAccepted(Model $invitation, array $extra = []): void
+    {
+        self::workspaceInvitationEvent('workspace_invitation.registered_and_accepted', $invitation, $extra);
+    }
+
     private static function workspaceInvitationEvent(string $action, Model $invitation, array $extra = []): void
     {
         self::log($action, $invitation, array_merge([

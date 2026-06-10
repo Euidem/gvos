@@ -56,7 +56,7 @@
                 </div>
             </div>
             <p class="text-xs text-outline">
-                New invitees who do not already have a GVOS account will see instructions to contact an admin to activate their account before accepting.
+                New invitees who do not have a GVOS account will be prompted to create one directly from the invitation link. Existing users will see a sign-in prompt.
             </p>
             <div class="flex justify-end">
                 <button class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white hover:brightness-110" style="background-color:#0058be">

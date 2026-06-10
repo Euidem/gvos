@@ -1466,3 +1466,64 @@ Run after `git pull origin main && php artisan migrate && php artisan optimize:c
 - [ ] Existing invoice issue and payment confirmation flows still work
 - [ ] No billing calculation, payment confirmation, invoice status, vault encryption, or timer core changes are present
 - [ ] No visible UI contains `GetVirtual`
+
+---
+
+## Phase 14 - Invitation Account Activation and Onboarding
+
+Run after `git pull origin main && php artisan optimize:clear && php artisan permission:cache-reset`.
+No new migrations in Phase 14.
+
+### Required Artisan Checks
+- [ ] `php artisan optimize:clear` runs without error
+- [ ] `php artisan permission:cache-reset` runs without error
+- [ ] `php artisan route:list | grep invitation` shows `workspace.invitations.show`, `workspace.invitations.accept`, `workspace.invitations.register`
+
+### New User (Scenario 4 — No Account)
+- [ ] Invite a brand-new email that has no GVOS account
+- [ ] Open invitation link — account setup form appears
+- [ ] Email field is locked and cannot be changed
+- [ ] First name, last name, and password fields are required
+- [ ] Phone and timezone fields are optional
+- [ ] Submit with valid data — user created, logged in, redirected to workspace
+- [ ] User becomes active workspace member with the invited workspace role
+- [ ] Invitation status becomes `accepted`
+- [ ] `accepted_at` and `accepted_by` are set on the invitation record
+- [ ] Duplicate acceptance of the same invitation is blocked
+- [ ] Correct role-specific profile stub created (TalentProfile / ManagerProfile / ClientProfile)
+- [ ] Correct platform role assigned based on workspace_role
+
+### Existing Account Not Logged In (Scenario 3)
+- [ ] Invite an email that already has a GVOS account
+- [ ] Open invitation link without being signed in
+- [ ] Page shows "A GVOS account already exists" and a Sign In button — no registration form
+
+### Existing Account Logged In — Wrong Email (Scenario 2)
+- [ ] Sign in as a different user, then open invitation link
+- [ ] Page shows wrong-account warning with both email addresses
+- [ ] Sign Out button shown; POST accept blocked by controller check
+
+### Existing Account Logged In — Matching Email (Scenario 1)
+- [ ] Sign in with the invited email, then open invitation link
+- [ ] Accept button creates workspace membership
+- [ ] Duplicate active membership is blocked
+
+### Terminal States
+- [ ] Accepted invitation shows correct state and optional workspace link
+- [ ] Revoked/expired invitations show appropriate message, no action button
+
+### Role Safety
+- [ ] No path through invitation can create super_admin or operations_admin account
+- [ ] Client admin invitation enforces workspace_role = client_staff only
+- [ ] workspace_admin workspace role maps to line_manager platform role
+
+### Audit
+- [ ] `workspace_invitation.registered_and_accepted` fires on new-user path
+- [ ] `workspace_invitation.accepted` fires on existing-user path
+- [ ] `user.created` fires on new-user path
+- [ ] No audit log entry contains token or password
+
+### Regression
+- [ ] Existing tasks, billing, payment confirmation, vault, timer, and notifications still work
+- [ ] No billing calculation, payment confirmation, invoice status, vault encryption, or timer core changes
+- [ ] No visible UI contains `GetVirtual`

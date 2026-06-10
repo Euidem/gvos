@@ -7,6 +7,32 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-10 | Phase 14 | Invitation Account Activation and Onboarding
+
+**What was done:** Extended the workspace invitation flow so invited users can create a GVOS account directly from the invitation link. Phase 13 only handled existing users. Phase 14 adds a self-registration path (Scenario 4), improves detection of account existence (Scenario 3), clarifies the wrong-email error (Scenario 2), and retains the existing accept flow (Scenario 1). A dedicated `WorkspaceInvitationController` was created to own the invitation show/accept/register logic cleanly.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `app/Http/Controllers/WorkspaceInvitationController.php` | show, accept, registerAndAccept methods; role inference; profile stub creation; transaction safety |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `routes/web.php` | Added `WorkspaceInvitationController` import; updated `GET /invitations/{token}` and `POST /invitations/{token}/accept` to new controller; added `POST /invitations/{token}/register` route |
+| `resources/views/workspace/invitations/show.blade.php` | Full rewrite — 4-scenario invitation page with account detection, registration form, login prompt, and terminal-state handling |
+| `app/Services/AuditLogger.php` | Added `workspaceInvitationRegisteredAndAccepted` wrapper |
+| `app/Filament/Resources/WorkspaceResource/RelationManagers/WorkspaceInvitationsRelationManager.php` | Added `accepted_at` and `accepted_by` columns to invitation table |
+| `app/Notifications/WorkspaceInvitationMailNotification.php` | Updated invitation email to reflect self-registration capability |
+| `resources/views/workspace/members/invite.blade.php` | Updated helper note to reflect new registration flow |
+| Docs | Phase 14 status, permissions, testing checklist, known issues, build phases |
+
+**Preserved:** No Phase 15 work, no billing calculation changes, no payment confirmation changes, no invoice status changes, no payment gateway, no payroll, no vault encryption changes, no timer core changes, no browser extension, no screenshots, no keystroke tracking, no screen monitoring, and no visible GetVirtual UI.
+
+---
+
 ### 2026-06-07 | Phase 13 | Workspace Membership and Invitation Flow
 
 **What was done:** Added the workspace membership management and invitation foundation. Portal users with the right workspace role can now view members, add existing users, update workspace roles, deactivate members safely, create invitations, resend/revoke pending invitations, and accept invitations through a token route.

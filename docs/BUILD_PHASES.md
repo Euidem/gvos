@@ -333,6 +333,39 @@ GVOS is built in 13 phases (Phase 0–12). Each phase has a clear deliverable an
 
 ---
 
+## Phase 14 - Invitation Account Activation and Onboarding
+**Status:** Complete
+**Depends on:** Phase 13 workspace invitations
+
+### Deliverables
+- [x] `WorkspaceInvitationController` with `show`, `accept`, and `registerAndAccept` methods
+- [x] Public `GET /invitations/{token}` updated to `WorkspaceInvitationController::show`
+- [x] Public `POST /invitations/{token}/register` route for new-user self-registration
+- [x] Auth-protected `POST /invitations/{token}/accept` updated to `WorkspaceInvitationController::accept`
+- [x] Invitation page detects account existence and renders correct scenario
+- [x] Scenario 1: logged-in matching email → Accept button
+- [x] Scenario 2: logged-in wrong email → error + sign-out
+- [x] Scenario 3: account exists, not logged in → Login prompt
+- [x] Scenario 4: no account → registration form with locked email
+- [x] Platform role safely inferred from workspace_role; super_admin / operations_admin blocked
+- [x] Profile stubs created matching Filament CreateUser pattern
+- [x] Database transaction for full register-and-accept flow
+- [x] `workspace_invitation.registered_and_accepted` audit event; no token or password logged
+- [x] Filament invitation relation manager updated with accepted_at and accepted_by columns
+- [x] Documentation updates (status, log, permissions, testing, known issues, build phases)
+- [x] No billing, payment, vault encryption, timer, payroll, gateway, screenshot, keystroke, or screen-monitoring changes
+
+### Test Checklist
+- New user opens invitation, fills registration form, is logged in and added to workspace
+- Existing user without session sees login prompt, not registration form
+- Logged-in wrong-email user cannot accept
+- Logged-in matching-email user can accept
+- Accepted/revoked/expired invitations show terminal state with no action button
+- No audit entry contains token or password
+- Role-safety: no super_admin or operations_admin created via invitation
+
+---
+
 ## Phase Approval Process
 1. Complete all deliverables for the phase
 2. Run the phase-specific testing checklist

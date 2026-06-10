@@ -31,6 +31,6 @@ class WorkspaceInvitationMailNotification extends Notification
             ->line('You have been invited to join ' . $workspaceName . ' as ' . ucfirst(str_replace('_', ' ', $this->invitation->workspace_role)) . '.')
             ->line('This invitation expires ' . ($this->invitation->expires_at?->format('d M Y H:i') ?? 'when revoked by an admin') . '.')
             ->action('Review Invitation', route('workspace.invitations.show', $this->invitation->token))
-            ->line('If you do not have a GVOS account yet, contact your workspace admin to activate your account before accepting.');
+            ->line('If you do not have a GVOS account yet, you can create one directly from the invitation link.');
     }
 }

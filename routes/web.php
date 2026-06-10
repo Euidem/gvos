@@ -4,12 +4,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadRequestController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WorkspaceBillingController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceFileController;
+use App\Http\Controllers\WorkspaceInvitationController;
 use App\Http\Controllers\WorkspaceMemberController;
 use App\Http\Controllers\WorkspaceMessageController;
 use App\Http\Controllers\WorkspaceTaskController;
-use App\Http\Controllers\WorkspaceBillingController;
 use App\Http\Controllers\WorkspaceTimeLogController;
 use App\Http\Controllers\WorkspaceTimeTrackerController;
 use App\Http\Controllers\WorkspaceVaultController;
@@ -57,7 +58,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('settings.notifications');
     Route::put('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('settings.notifications.update');
 
-    Route::post('/invitations/{token}/accept', [WorkspaceMemberController::class, 'acceptInvitation'])->name('workspace.invitations.accept');
+    Route::post('/invitations/{token}/accept', [WorkspaceInvitationController::class, 'accept'])->name('workspace.invitations.accept');
 });
 
 // ── Workspace routes (all authenticated, active users) ────────────────────
@@ -198,7 +199,9 @@ Route::get('/request-service', [LeadRequestController::class, 'show'])->name('le
 Route::post('/request-service', [LeadRequestController::class, 'store'])->name('lead.request-service.store');
 Route::get('/request-service/success', fn () => view('lead.request-service-success'))->name('lead.request-service.success');
 
-Route::get('/invitations/{token}', [WorkspaceMemberController::class, 'showInvitation'])->name('workspace.invitations.show');
+// ── Invitation routes (Phase 14) ─────────────────────────────────────────
+Route::get('/invitations/{token}', [WorkspaceInvitationController::class, 'show'])->name('workspace.invitations.show');
+Route::post('/invitations/{token}/register', [WorkspaceInvitationController::class, 'registerAndAccept'])->name('workspace.invitations.register');
 
 // ── Auth routes ──────────────────────────────────────────────────────────
 require __DIR__ . '/auth.php';

@@ -92,6 +92,17 @@ class WorkspaceInvitationsRelationManager extends RelationManager
                     ->dateTime('d M Y')
                     ->toggleable(),
 
+                TextColumn::make('accepted_at')
+                    ->label('Accepted At')
+                    ->dateTime('d M Y H:i')
+                    ->toggleable()
+                    ->placeholder('—'),
+
+                TextColumn::make('acceptedBy.name')
+                    ->label('Accepted By')
+                    ->toggleable()
+                    ->placeholder('—'),
+
                 TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime('d M Y')

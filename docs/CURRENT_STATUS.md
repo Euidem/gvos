@@ -1,8 +1,42 @@
 # GVOS — Current Status
 
-**Last Updated:** 2026-06-07
-**Current Phase:** Phase 13 - Workspace Membership and Invitation Flow - Complete
-**Current Activity:** Workspace member management and invitation foundation completed; no billing, payment confirmation, vault encryption, or timer logic changes
+**Last Updated:** 2026-06-10
+**Current Phase:** Phase 14 - Invitation Account Activation and Onboarding - Complete
+**Current Activity:** Invitation flow extended so invited users can create a GVOS account directly from the invitation link; no billing, payment confirmation, vault encryption, or timer logic changes
+
+## Phase 14 Status - Complete (2026-06-10)
+
+### Invitation Account Activation and Onboarding
+- [x] `WorkspaceInvitationController` created with `show`, `accept`, and `registerAndAccept` methods
+- [x] Public `GET /invitations/{token}` route updated to use `WorkspaceInvitationController::show`
+- [x] Auth-protected `POST /invitations/{token}/accept` route updated to `WorkspaceInvitationController::accept`
+- [x] New public `POST /invitations/{token}/register` route added as `workspace.invitations.register`
+- [x] Invitation page detects whether invited email has an existing GVOS account
+- [x] Scenario 1: Logged in with matching email → Accept button shown
+- [x] Scenario 2: Logged in with wrong email → error shown with sign-out option
+- [x] Scenario 3: Account exists but not logged in → Login button shown with return instruction
+- [x] Scenario 4: No account → account setup form with email locked to invitation email
+- [x] Registration form collects first name, last name, password, optional phone and timezone
+- [x] Platform role safely inferred from workspace_role; no super_admin or operations_admin via invitation
+- [x] Role profile stubs created for talent, line_manager, and client roles following Filament CreateUser pattern
+- [x] User created, logged in automatically, and redirected to workspace
+- [x] Database transaction wraps the full register-and-accept flow
+- [x] Token and password are not logged in any audit event
+- [x] `workspace_invitation.registered_and_accepted` audit event added
+- [x] Filament invitation relation manager updated with accepted_at and accepted_by columns
+- [x] Invitation mail notification updated to reflect new self-registration capability
+- [x] Invite form note updated to reflect new flow
+- [x] No billing calculation, payment confirmation, vault encryption, timer core, payment gateway, payroll, or Phase 15 work
+
+### Remaining Manual Verification
+- [ ] Run cPanel artisan validation commands after pull because PHP is not installed on the local workstation
+- [ ] Test invitation flow: new user creates account from link, logs in, becomes workspace member
+- [ ] Test existing-user flow: logged-in user with matching email can accept
+- [ ] Test wrong-email scenario: logged-in user with different email cannot accept
+- [ ] Test revoked/expired/accepted invitation renders correct terminal state
+- [ ] Re-test existing tasks, billing, payment confirmation, vault, timer, notifications, and client portal
+
+---
 
 ## Phase 13 Status - Complete (2026-06-07)
 
