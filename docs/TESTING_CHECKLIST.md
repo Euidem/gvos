@@ -5,6 +5,47 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 19 — Billing Middleware QA and Production Readiness Pass
+
+Run after `git pull && php artisan optimize:clear`. No migrations required for Phase 19.
+
+### cPanel Commands (PHP not available locally)
+```bash
+git pull origin main
+php artisan optimize:clear
+php artisan view:clear
+```
+
+### Billing Banner — `payment_due` State (Bug 4 fix)
+- [ ] Set a subscription status to `payment_due` directly in DB (or run the artisan command against a workspace with billing date in the past and an unpaid invoice)
+- [ ] Visit `workspace/show` for that workspace — billing banner should appear with "Payment overdue" (red) styling
+- [ ] Visit `workspace/billing/index` for that workspace — billing banner should appear
+- [ ] Banner should show invoice reference and due date if available
+
+### Artisan Command — `restored` Counter (Bug 2 fix)
+- [ ] Create a subscription with status `payment_due` or `overdue`, no `restricted_at`, and clear all its invoices (or mark them paid)
+- [ ] Run `php artisan gvos:billing-refresh-statuses`
+- [ ] Summary output should show `restored   : 1` (or matching count)
+- [ ] Subscription status should be set back to `active`
+
+### Artisan Command — Step 3 Notification (Bug 3 fix)
+- [ ] With a subscription newly in `payment_due` state, verify no "due soon" notification was sent
+- [ ] Check `notifications` table — the notification type should be `BillingOverdueNotification`, not `BillingDueSoonNotification`
+
+### Manual Test Matrix
+- [ ] Workspace with `active` subscription + no warnings → no banner on workspace/show
+- [ ] Workspace with `trial` subscription + billing date 2 days away → "Payment due soon" amber banner
+- [ ] Workspace with `payment_due` subscription → "Payment overdue" red banner (intermediate state)
+- [ ] Workspace with `overdue` subscription, within grace period → "Payment overdue" red banner + grace end date
+- [ ] Workspace with `restricted_at` set → "Workspace access restricted" dark red banner; client redirected to restricted page; manager/talent access normal
+- [ ] Workspace with `suspended` → "Workspace suspended" slate banner; client redirected to restricted page; manager/talent access normal
+- [ ] Client dashboard (individual or business) shows billing banner when workspace is in billing-alert state
+- [ ] Internal role (manager, talent) on restricted workspace → all pages accessible, no redirect
+- [ ] `php artisan gvos:billing-refresh-statuses --dry-run` → no DB writes, preview output only
+- [ ] Filament Reactivate action on suspended workspace → `restricted_at`, `suspended_at`, `suspended_by` cleared; `status=active`
+
+---
+
 ## Phase 18 — Billing Subscription Enforcement and Workspace Access Restrictions
 
 Run after `git pull && php artisan migrate && php artisan optimize:clear`.

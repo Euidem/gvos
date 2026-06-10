@@ -34,6 +34,10 @@
             $__bState = 'restricted';
         } elseif ($__bsub->isOverdue()) {
             $__bState = 'overdue';
+        } elseif ($__bsub->isPaymentDue()) {
+            // payment_due = billing date has passed but not yet advanced to 'overdue'.
+            // Show the overdue banner so the warning is visible even in this intermediate state.
+            $__bState = 'overdue';
         } elseif ($__bsub->isDueSoon()) {
             $__bState = 'due_soon';
         }

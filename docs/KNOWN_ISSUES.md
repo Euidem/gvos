@@ -26,6 +26,18 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 19 Warnings / Notes
+
+### Phase 19 | Info | `payment_due` is an intermediate state — banner now visible
+The `payment_due` status exists between `active/trial` and `overdue`. The artisan command marks a subscription `payment_due` when the billing date passes with unpaid invoices; it does not immediately advance to `overdue` on the same run (that happens on the next run once `payment_due` is confirmed). Phase 18 had a gap where `payment_due` subscriptions showed no billing banner because none of `isOverdue()`, `isDueSoon()`, `isRestricted()`, `isSuspended()` matched. Fixed in Phase 19: `billing-banner.blade.php` now checks `isPaymentDue()` explicitly and maps it to the `overdue` banner state.
+
+---
+
+### Phase 19 | Info | Step 3 notification semantic fix
+The billing refresh command Step 3 (marking `active/trial → payment_due`) previously sent a `notifyBillingDueSoon` notification, which would reference the billing date as if it were upcoming when it had already passed. Fixed in Phase 19 to send `notifyBillingOverdue` — semantically correct because the billing date has elapsed.
+
+---
+
 ## Phase 18 Warnings / Notes
 
 ### Phase 18 | Info | Migration must run before enforcement middleware is effective

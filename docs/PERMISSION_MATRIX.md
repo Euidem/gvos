@@ -33,10 +33,48 @@ $middleware->alias([
     'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
     'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
     'check.status'       => \App\Http\Middleware\CheckAccountStatus::class,
+    'check.billing'      => \App\Http\Middleware\CheckWorkspaceBillingAccess::class,
 ]);
 ```
 
 > **Important:** In Laravel 11, Spatie aliases must be declared explicitly. They are NOT auto-registered.
+
+---
+
+## Phase 18–19 — Billing Access Layer (`check.billing` middleware)
+
+All workspace routes are protected by `check.billing` (`CheckWorkspaceBillingAccess`). The middleware fires after `auth` and `check.status`.
+
+### Always-Allowed Routes (bypass billing check)
+| Route name prefix | Reason |
+|-------------------|--------|
+| `workspace.billing.*` | Client must always access billing pages to pay or view status |
+| `workspace.index` | Workspace list page (no subscription context) |
+| `workspace.show` | Workspace overview always accessible |
+
+### Workspace Role → Access Decision
+| Workspace Role | Restricted Workspace | Suspended Workspace |
+|----------------|---------------------|---------------------|
+| `admin` | ✅ Pass | ✅ Pass |
+| `workspace_admin` | ✅ Pass | ✅ Pass |
+| `manager` | ✅ Pass | ✅ Pass |
+| `talent` | ✅ Pass | ✅ Pass |
+| `assigned_user` | ✅ Pass | ✅ Pass |
+| `client_admin` | ❌ → billing.restricted | ❌ → billing.restricted |
+| `client_staff` | ❌ → billing.restricted | ❌ → billing.restricted |
+| `client` (legacy) | ❌ → billing.restricted | ❌ → billing.restricted |
+| `observer` | ❌ → billing.restricted | ❌ → billing.restricted |
+| `none` (not a member) | ✅ Pass* | ✅ Pass* |
+
+> *`none` role passes the billing middleware — the workspace controller/policy handles the 403 for non-members (separation of concerns). Billing access is a workspace-member-specific gate.
+
+### Restriction vs Suspension
+| State | Condition | Effect |
+|-------|-----------|--------|
+| Restricted | `restricted_at IS NOT NULL` AND `suspended_at IS NULL` | Client roles redirected to `workspace.billing.restricted` |
+| Suspended | `suspended_at IS NOT NULL` AND `status = 'suspended'` | Client roles redirected to `workspace.billing.restricted` (same page, different message) |
+| Manual suspension | `suspended_by IS NOT NULL` | Cannot be auto-cleared by `Payment::confirm()` — requires Filament `Reactivate` action |
+| Auto suspension | `suspended_at IS NOT NULL` AND `suspended_by IS NULL` | Can be cleared automatically when payment is confirmed |
 
 ---
 

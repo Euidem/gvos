@@ -7,7 +7,6 @@ use App\Services\AuditLogger;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -44,6 +43,7 @@ class BillingRefreshStatuses extends Command
         'payment_due'  => 0,
         'overdue'      => 0,
         'restricted'   => 0,
+        'restored'     => 0,
         'skipped'      => 0,
         'errors'       => 0,
     ];
@@ -115,6 +115,7 @@ class BillingRefreshStatuses extends Command
                         $this->notifications->notifyWorkspaceReactivated($subscription->fresh());
                     }
                     $this->line("  [restored] {$workspaceName} — all invoices cleared, status restored to active.");
+                    $this->summary['restored']++;
                 } else {
                     $this->summary['skipped']++;
                 }
@@ -166,6 +167,8 @@ class BillingRefreshStatuses extends Command
             }
 
             // ── Step 3: Mark payment_due (next_billing_date has passed, was active/trial) ─
+            // NOTE: We use notifyBillingOverdue here because the billing date has already
+            // passed — "due soon" messaging is only appropriate while the date is upcoming.
             if (
                 in_array($subscription->status, ['active', 'trial'], true)
                 && $subscription->next_billing_date
@@ -178,7 +181,7 @@ class BillingRefreshStatuses extends Command
                         'status' => 'payment_due',
                     ]);
                     AuditLogger::billingSubscriptionPaymentDue($subscription->fresh());
-                    $this->notifications->notifyBillingDueSoon($subscription->fresh());
+                    $this->notifications->notifyBillingOverdue($subscription->fresh());
                 }
 
                 $this->summary['payment_due']++;
@@ -226,6 +229,7 @@ class BillingRefreshStatuses extends Command
         $this->line("  payment_due: {$this->summary['payment_due']}");
         $this->line("  overdue    : {$this->summary['overdue']}");
         $this->line("  restricted : {$this->summary['restricted']}");
+        $this->line("  restored   : {$this->summary['restored']}");
         $this->line("  skipped    : {$this->summary['skipped']}");
 
         if ($this->summary['errors'] > 0) {

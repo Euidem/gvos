@@ -7,6 +7,37 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-10 | Phase 19 | Billing Middleware QA and Production Readiness Pass
+
+**Goal:** Audit, test, and harden all Phase 18 billing enforcement code before any new feature work continues.
+
+**Files modified (2):**
+
+| File | Change |
+|------|--------|
+| `app/Console/Commands/BillingRefreshStatuses.php` | Bug 1: removed unused `DB` import. Bug 2: added `restored` counter to summary init/increment/print. Bug 3: changed Step 3 notification from `notifyBillingDueSoon` to `notifyBillingOverdue`. |
+| `resources/views/partials/billing-banner.blade.php` | Bug 4: added `isPaymentDue()` check so `payment_due` subscriptions show the overdue banner (was previously invisible — no banner state matched). |
+
+**Bugs fixed (4):**
+1. Unused `DB` facade import in `BillingRefreshStatuses` (dead import, no functional impact)
+2. `restored` counter never incremented in summary — `evaluated` total did not equal sum of all other counters
+3. Step 3 (active→payment_due when billing date passed) fired `notifyBillingDueSoon` with a past date — changed to `notifyBillingOverdue`
+4. Billing banner showed nothing for subscriptions in `payment_due` intermediate state — billing date passed but artisan not yet run; all state checks (`isOverdue`, `isDueSoon`, `isRestricted`, `isSuspended`) returned false
+
+**Audit items confirmed clean (no changes needed):**
+- Middleware route grouping and ordering
+- Internal role pass-through (admin/workspace_admin/manager/talent/assigned_user always pass)
+- Always-allowed prefixes (`workspace.billing.*`, `workspace.index`, `workspace.show`)
+- Public/invitation routes outside billing middleware group
+- Manual suspension safety (`Payment::confirm()` respects `wasManuallySuspended()`)
+- Notification payload safety (no sensitive data, correct recipient scoping)
+- Filament action visibility conditions
+- Banner null-safety in dashboard integrations
+
+**Docs updated:** CURRENT_STATUS.md, BUILD_PHASES.md, IMPLEMENTATION_LOG.md, PERMISSION_MATRIX.md, TESTING_CHECKLIST.md, KNOWN_ISSUES.md
+
+---
+
 ### 2026-06-10 | Phase 18 | Billing Subscription Enforcement and Workspace Access Restrictions
 
 **Migration:** `2026_06_10_000004_add_billing_enforcement_fields_to_workspace_subscriptions.php` — adds `restricted_at`, `suspended_at`, `reactivated_at`, `restriction_reason`, `suspended_by` FK, `reactivated_by` FK to `workspace_subscriptions`.

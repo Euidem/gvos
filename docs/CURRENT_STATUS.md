@@ -1,8 +1,66 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-10
-**Current Phase:** Phase 18 - Billing Subscription Enforcement and Workspace Access Restrictions - Complete
-**Current Activity:** Billing enforcement layer — payment warning banners, overdue/grace-period logic, workspace client-access restriction, admin suspend/reactivate actions, billing-refresh artisan command, safe internal continuity for admins/managers/talents
+**Current Phase:** Phase 19 - Billing Middleware QA and Production Readiness Pass - Complete
+**Current Activity:** QA and hardening of the Phase 18 billing access middleware and subscription enforcement system — 4 bugs found and fixed, all audit items confirmed, docs updated
+
+## Phase 19 Status - Complete (2026-06-10)
+
+### Billing Middleware QA and Production Readiness Pass
+
+**Goal:** Audit, test, and harden all Phase 18 billing enforcement code before any new feature work.
+
+#### Audit Results — No Issues Found
+
+- [x] Middleware route grouping verified — `check.billing` applied to all workspace routes
+- [x] Internal role pass-through confirmed — admin, workspace_admin, manager, talent, assigned_user always pass
+- [x] Client/observer roles blocked when `isRestricted() || isSuspended()` — confirmed correct
+- [x] Billing routes always allowed — `workspace.billing.*`, `workspace.index`, `workspace.show` prefix matches confirmed
+- [x] Public/invitation routes not in workspace group — correct (no `{workspace}` param)
+- [x] `workspace.show` always-allowed — confirmed in middleware allow-list
+- [x] Manual suspension safety confirmed — `Payment::confirm()` checks `wasManuallySuspended()` before any auto-restore
+- [x] `wasManuallySuspended()` definition confirmed — `suspended_at !== null && suspended_by !== null`
+- [x] Auto-suspended workspaces can be auto-restored by payment confirmation
+- [x] Notification payload safety confirmed — no sensitive data, correct recipient sets
+- [x] Filament action visibility conditions verified — Restrict/Suspend/Reactivate conditions are correct
+- [x] Billing banner null-safety confirmed — `@if ($__billingBannerWs)` guards in all dashboard integrations
+- [x] `activeSubscription` includes `suspended` status — confirmed, required for billing page to load suspended workspace data
+
+#### Bugs Found and Fixed (4)
+
+**Bug 1 — `BillingRefreshStatuses`: unused `DB` import**
+- File: `app/Console/Commands/BillingRefreshStatuses.php`
+- `use Illuminate\Support\Facades\DB;` was imported but never used
+- Fix: Removed the unused import
+
+**Bug 2 — `BillingRefreshStatuses`: `restored` counter not tracked**
+- File: `app/Console/Commands/BillingRefreshStatuses.php`
+- The `[restored]` output line ran when all invoices cleared and status was restored, but no summary counter was incremented — `evaluated` total did not equal the sum of other counters
+- Fix: Added `'restored' => 0` to summary init array, `$this->summary['restored']++` in the restored branch, and `"restored   : {$this->summary['restored']}"` line to `printSummary()`
+
+**Bug 3 — `BillingRefreshStatuses`: wrong notification in Step 3**
+- File: `app/Console/Commands/BillingRefreshStatuses.php`
+- Step 3 marks `active/trial → payment_due` when `next_billing_date` has already passed, then called `notifyBillingDueSoon` — sending "A payment is due on [past date]" which is semantically wrong and confusing
+- Fix: Changed Step 3 to call `notifyBillingOverdue` — billing date has passed, overdue messaging is appropriate
+
+**Bug 4 — Billing banner invisible for `payment_due` subscriptions**
+- File: `resources/views/partials/billing-banner.blade.php`
+- When status = `payment_due` (billing date passed, artisan command not yet run to advance to `overdue`): `isSuspended()=false`, `isRestricted()=false`, `isOverdue()=false` (checks `status='overdue'`), `isDueSoon()=false` (daysUntilDue is negative) → `$__bState='none'` → no banner rendered at all
+- Fix: Added `elseif ($__bsub->isPaymentDue())` check that maps to `$__bState = 'overdue'` so the overdue banner shows in this intermediate state
+
+#### Constraints Respected
+- [x] No Phase 20 built
+- [x] No new product features added
+- [x] No payment gateway integration
+- [x] No invoice calculation changes
+- [x] No vault encryption changes
+- [x] No timer core changes
+- [x] No invitation token changes
+- [x] No payroll built
+- [x] No `GetVirtual` in visible UI
+- [x] GVOS naming throughout
+
+---
 
 ## Phase 18 Status - Complete (2026-06-10)
 
