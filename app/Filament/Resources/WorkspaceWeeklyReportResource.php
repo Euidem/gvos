@@ -3,10 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\WorkspaceWeeklyReportResource\Pages;
+use App\Models\Workspace;
 use App\Models\WorkspaceWeeklyReport;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -54,28 +56,28 @@ class WorkspaceWeeklyReportResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('workspace.workspace_code')
+                TextColumn::make('workspace.name')
                     ->label('Workspace')
-                    ->searchable()
+                    ->description(fn ($record) => $record->workspace?->workspace_code)
+                    ->searchable(['workspaces.name', 'workspaces.workspace_code'])
                     ->sortable(),
 
                 TextColumn::make('week_start_date')
-                    ->label('Week Start')
+                    ->label('Week')
                     ->date('d M Y')
-                    ->sortable(),
-
-                TextColumn::make('week_end_date')
-                    ->label('Week End')
-                    ->date('d M Y')
+                    ->description(fn ($record) => 'to ' . $record->week_end_date->format('d M Y'))
                     ->sortable(),
 
                 TextColumn::make('total_minutes')
-                    ->label('Total Min')
+                    ->label('Duration')
+                    ->formatStateUsing(fn ($state) => $state
+                        ? intdiv($state, 60) . 'h ' . ($state % 60) . 'm'
+                        : '—')
                     ->sortable(),
 
                 TextColumn::make('summary')
                     ->label('Summary')
-                    ->limit(50)
+                    ->limit(60)
                     ->searchable(),
 
                 TextColumn::make('status')
@@ -89,6 +91,24 @@ class WorkspaceWeeklyReportResource extends Resource
                         default     => 'gray',
                     }),
 
+                // Phase 17: show auto-generated flag
+                IconColumn::make('generated_at')
+                    ->label('Auto-Gen')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-sparkles')
+                    ->falseIcon('heroicon-o-minus')
+                    ->trueColor('warning')
+                    ->falseColor('gray')
+                    ->getStateUsing(fn ($record) => $record->wasGenerated())
+                    ->toggleable(),
+
+                TextColumn::make('generated_at')
+                    ->label('Generated')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('preparedBy.name')
                     ->label('Prepared by')
                     ->toggleable(),
@@ -97,6 +117,7 @@ class WorkspaceWeeklyReportResource extends Resource
                     ->label('Published')
                     ->dateTime('d M Y')
                     ->sortable()
+                    ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
@@ -108,6 +129,16 @@ class WorkspaceWeeklyReportResource extends Resource
             ->filters([
                 SelectFilter::make('status')
                     ->options(WorkspaceWeeklyReport::statusLabels()),
+
+                // Phase 17: workspace filter
+                SelectFilter::make('workspace_id')
+                    ->label('Workspace')
+                    ->options(
+                        Workspace::orderBy('name')
+                            ->pluck('name', 'id')
+                            ->toArray()
+                    )
+                    ->searchable(),
             ])
             ->defaultSort('week_start_date', 'desc')
             ->actions([

@@ -5,6 +5,62 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 17 — Weekly Report Automation and Client Summary Workflow
+
+Run after `git pull && php artisan migrate && php artisan optimize:clear`.
+
+### Migration
+- [ ] `php artisan migrate` adds `generated_at` and `generated_by_user_id` to `workspace_weekly_reports`
+- [ ] Existing reports are unaffected (both columns are nullable)
+
+### Generation Flow
+- [ ] As manager: navigate to Workspace → Weekly Reports → "Generate Report"
+- [ ] Select a date range with existing time logs — preview counts show approved sessions, submitted sessions, completed tasks
+- [ ] Select a date range with no logs — warning message appears; confirm dialog fires on clicking "Generate Draft Report"
+- [ ] Click "Generate Draft Report" — draft created, redirected to edit page
+- [ ] Edit page shows auto-generated banner with date
+- [ ] Edit page shows green "Client-Visible Sections" panel (Summary, Achievements, Client Notes) and amber "Internal Sections" panel (Blockers, Next Steps)
+- [ ] Generated draft has correct week dates and total_minutes filled in
+- [ ] `generated_at` and `generated_by_user_id` are set on the new report record
+
+### Edit and Publish Flow
+- [ ] Edit + save as Draft — status stays draft
+- [ ] Edit + save as "Submit for Review" — status becomes submitted
+- [ ] Edit + save as Approved — status becomes approved
+- [ ] No "Published" option in "Save as" — must use the dedicated Publish button on show page
+- [ ] On show page: "Publish to Client" button fires confirm dialog, then sets status=published and published_at
+- [ ] Publish fails with error if summary is empty (tested by clearing summary field)
+- [ ] After publish: client notification sent (check `notifications` table)
+
+### Client View
+- [ ] As client: cannot see draft, submitted, or approved reports (403 or empty list)
+- [ ] As client: can see published report in list
+- [ ] Published report show page: Summary, Work Completed, Hours This Week block (if total_minutes > 0), Message from Your Team (if client_notes set)
+- [ ] Blockers and Next Steps NOT visible to client
+- [ ] "Published by your GVOS team" footer visible at bottom
+- [ ] No "Edit Report" or "Publish" buttons visible to client
+
+### Dashboard and Workspace Show
+- [ ] Manager dashboard: bento card shows time log count + report draft count as amber link when drafts exist
+- [ ] Workspace show: Weekly Reports card shows latest report week + status badge
+- [ ] Workspace show: "Generate" button visible for manager; not visible for client
+- [ ] Workspace show: "View Latest Report" button visible for client when published report exists
+- [ ] Client dashboard (individual and business-admin): Published Reports card is a link to reports index when count > 0
+
+### Filament Admin
+- [ ] `/admin` → Weekly Reports: workspace column shows workspace name + code
+- [ ] Duration column shows formatted hours/minutes (not raw minutes)
+- [ ] Auto-Gen column shows sparkle icon for auto-generated reports
+- [ ] Workspace filter dropdown lets admin filter by workspace
+- [ ] Status filter works correctly
+
+### Security
+- [ ] Talent user cannot access `GET /workspaces/{ws}/reports/generate` (expect 403)
+- [ ] Client user cannot access generate or publish routes (expect 403)
+- [ ] Client cannot see `blockers`, `next_steps`, or manager internal notes via any route
+
+---
+
 ## Phase 16 — User Onboarding Completion
 
 Run after `git pull && php artisan migrate && php artisan optimize:clear`.

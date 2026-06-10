@@ -611,6 +611,17 @@ class AuditLogger
         ], $extra));
     }
 
+    // ── Phase 17: Weekly Report generation ───────────────────────────────
+
+    public static function weeklyReportGenerated(Model $report, array $extra = []): void
+    {
+        self::log('weekly_report.generated', $report, array_merge([
+            'workspace_id'    => $report->workspace_id ?? null,
+            'week_start_date' => $report->week_start_date ?? null,
+            'week_end_date'   => $report->week_end_date ?? null,
+        ], $extra));
+    }
+
     // ── Phase 8: Billing wrappers ─────────────────────────────────────────
 
     public static function billingPlanCreated(Model $plan, array $extra = []): void

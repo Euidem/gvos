@@ -34,6 +34,17 @@
                 $reportCount  = $workspace->weeklyReports()->where('status','published')->count();
             }
 
+            // Phase 17: latest report for reports card
+            $isClientRole   = in_array($effectiveRole, ['client_admin','client_staff','client'], true);
+            $isManagerRole  = in_array($effectiveRole, ['admin','workspace_admin','manager'], true);
+            $latestReport   = $workspace->weeklyReports()
+                ->when($isClientRole, fn($q) => $q->where('status','published'))
+                ->orderBy('week_start_date', 'desc')
+                ->first();
+            $reportsDraftCount = $isManagerRole
+                ? $workspace->weeklyReports()->whereIn('status', ['draft','submitted'])->count()
+                : 0;
+
             // Phase 8 — Billing
             $subscription       = $workspace->activeSubscription;
             $outstandingBalance = $workspace->invoices()
@@ -569,12 +580,11 @@
                 </p>
             </a>
 
-            {{-- Weekly Reports card --}}
-            <a href="{{ route('workspace.reports.index', $workspace) }}"
-               class="bg-white rounded-xl border border-border-subtle shadow-card p-6 hover:border-secondary/30 hover:shadow-card transition-all group">
+            {{-- Weekly Reports card (Phase 17 enhanced) --}}
+            <div class="bg-white rounded-xl border border-border-subtle shadow-card p-6">
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform"
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center"
                              style="background-color:rgba(0,88,190,.06);">
                             <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">summarize</span>
                         </div>
@@ -585,13 +595,67 @@
                         {{ $reportCount }} {{ Str::plural('report', $reportCount) }}
                     </span>
                 </div>
-                <p class="text-xs text-outline leading-relaxed">
-                    View weekly work summaries and progress reports for this workspace.
-                </p>
-                <p class="text-xs font-semibold mt-3 group-hover:underline transition-all" style="color:#0058be;">
-                    View Reports →
-                </p>
-            </a>
+
+                @if ($latestReport)
+                    @php
+                        $lrColors = ['draft'=>'#94A3B8','submitted'=>'#0058be','approved'=>'#7C3AED','published'=>'#059669'];
+                        $lrColor  = $lrColors[$latestReport->status] ?? '#94A3B8';
+                    @endphp
+                    <div class="mb-3 p-3 rounded-lg" style="background:{{ $lrColor }}08;border:1px solid {{ $lrColor }}22;">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="text-xs font-semibold text-on-surface">{{ $latestReport->weekLabel() }}</p>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                  style="background:{{ $lrColor }}18;color:{{ $lrColor }};">
+                                {{ $latestReport->statusLabel() }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-outline">
+                            {{ $latestReport->totalDurationForHumans() }} logged
+                            @if ($latestReport->published_at)
+                                &middot; Published {{ $latestReport->published_at->format('d M Y') }}
+                            @endif
+                        </p>
+                    </div>
+                @elseif ($isManagerRole)
+                    <p class="text-xs text-outline leading-relaxed mb-3">
+                        No reports yet. Generate a draft from workspace activity.
+                    </p>
+                @else
+                    <p class="text-xs text-outline leading-relaxed mb-3">
+                        Weekly progress summaries will appear here once published.
+                    </p>
+                @endif
+
+                @if ($reportsDraftCount > 0)
+                    <p class="text-xs font-semibold mb-2" style="color:#D97706;">
+                        {{ $reportsDraftCount }} {{ Str::plural('draft', $reportsDraftCount) }} awaiting review
+                    </p>
+                @endif
+
+                <div class="flex flex-wrap items-center gap-2">
+                    @if ($isManagerRole)
+                        <a href="{{ route('workspace.reports.generate', $workspace) }}"
+                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:brightness-110"
+                           style="background-color:#0058be;">
+                            <span class="material-symbols-outlined" style="font-size:13px;">auto_awesome</span>
+                            Generate
+                        </a>
+                    @endif
+                    @if ($latestReport && $isClientRole)
+                        <a href="{{ route('workspace.reports.show', [$workspace, $latestReport]) }}"
+                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                           style="border-color:#059669;color:#059669;">
+                            <span class="material-symbols-outlined" style="font-size:13px;">open_in_new</span>
+                            View Latest Report
+                        </a>
+                    @endif
+                    <a href="{{ route('workspace.reports.index', $workspace) }}"
+                       class="inline-flex items-center gap-1 text-xs font-semibold transition-all hover:brightness-110"
+                       style="color:#0058be;">
+                        All Reports →
+                    </a>
+                </div>
+            </div>
         </div>
 
         {{-- ── Billing (Phase 8 — active) + Password Vault (Phase 10 — active when allowed) ── --}}

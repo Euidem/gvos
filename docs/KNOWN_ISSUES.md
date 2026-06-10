@@ -26,6 +26,23 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 17 Warnings / Notes
+
+### Phase 17 | Info | Migration must run before using Generate Report feature
+`add_generation_fields_to_workspace_weekly_reports_table` adds `generated_at` and `generated_by_user_id`. Both columns are nullable so existing reports are unaffected. The generate form and service will work correctly only after running `php artisan migrate`. Without the migration, `generateStore()` will fail when attempting to fill `generated_at`.
+
+---
+
+### Phase 17 | Info | `WeeklyReportGeneratorService` uses `updated_at` as fallback for task completion date
+Completed tasks are matched to the date range using `approved_at OR closed_at OR updated_at`. If a task was approved/closed before Phase 17 was deployed and neither `approved_at` nor `closed_at` is populated, `updated_at` is used as the fallback. This may include tasks updated (not completed) within the range in edge cases. Review generated drafts before publishing.
+
+---
+
+### Phase 17 | Info | `notifyWeeklyReportGenerated` sends to all workspace internal members
+`NotificationService::workspaceInternalRecipients()` returns all managers and admins in the workspace. If a workspace has multiple managers, all will receive the draft-generated notification. This is intentional — all managers can see and edit reports.
+
+---
+
 ## Phase 16 Warnings / Notes
 
 ### Phase 16 | Info | Onboarding migration must run before invitation acceptance

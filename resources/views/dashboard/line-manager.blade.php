@@ -118,14 +118,22 @@
 
     <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between h-[160px]">
         <div class="flex justify-between items-start">
-            <span class="font-label-md text-label-md text-outline">Time Logs Pending</span>
+            <span class="font-label-md text-label-md text-outline">Pending Review</span>
             <span class="material-symbols-outlined text-secondary" style="font-size:18px;">schedule</span>
         </div>
         <div class="flex items-baseline gap-2">
             <span class="font-headline-lg text-headline-lg text-on-surface">{{ $timeLogsPending }}</span>
-            <span class="font-label-md text-label-md text-status-trial">{{ $reportsPending }} reports</span>
+            <span class="font-label-md text-label-md text-on-surface-variant">time logs</span>
         </div>
-        <p class="font-label-md text-label-md text-on-surface-variant">Awaiting your review</p>
+        @if ($reportsPending > 0)
+            <a href="{{ route('workspace.index') }}"
+               class="font-label-md text-label-md font-semibold hover:underline"
+               style="color:#D97706;">
+                {{ $reportsPending }} report {{ Str::plural('draft', $reportsPending) }} awaiting review
+            </a>
+        @else
+            <p class="font-label-md text-label-md text-on-surface-variant">Awaiting your review</p>
+        @endif
     </div>
 
 </section>

@@ -7,6 +7,39 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-10 | Phase 17 | Weekly Report Automation and Client Summary Workflow
+
+**What was done:** Built a complete report generation, review, and publishing workflow. Managers can auto-generate weekly report drafts from workspace time logs and completed tasks — no AI/LLM involved, all output is deterministic and sanitised (no internal notes, no work_details exposed). The edit view now clearly separates client-visible sections (summary, achievements, client notes) from internal sections (blockers, next steps) using colour-coded panels with lock/visibility icons. The client-facing report show view was enhanced with an hours summary block, friendly section headings, a "Message from Your Team" notes panel, and a published-by footer. A dedicated `POST publish` route handles publishing (separate from the save-as-status radio). Dashboard enhancements: manager dashboard shows report draft count as an amber link; client dashboards link the Published Reports card to the reports index; workspace show card shows latest report status and role-appropriate CTAs.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_06_10_000003_add_generation_fields_to_workspace_weekly_reports_table.php` | Adds `generated_at` and `generated_by_user_id` to `workspace_weekly_reports` |
+| `app/Services/WeeklyReportGeneratorService.php` | Deterministic report generation from time logs and tasks |
+| `resources/views/workspace/reports/generate.blade.php` | Generate form with date picker, preview count grid, "How it works" info box |
+| `app/Notifications/WeeklyReportGeneratedNotification.php` | Notification sent to workspace managers/admins after auto-generation |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `app/Models/WorkspaceWeeklyReport.php` | Added `generated_at`, `generated_by_user_id` to fillable/casts; added `generatedBy()` relation and `wasGenerated()` helper |
+| `app/Http/Controllers/WorkspaceWeeklyReportController.php` | Added `generate()`, `generateStore()`, `publish()` methods |
+| `app/Services/AuditLogger.php` | Added `weeklyReportGenerated()` wrapper |
+| `app/Services/NotificationService.php` | Added `notifyWeeklyReportGenerated()` method |
+| `app/Filament/Resources/WorkspaceWeeklyReportResource.php` | Workspace column with code, duration formatting, generated_at icon column, workspace filter |
+| `routes/web.php` | Added generate (GET/POST) and publish (POST) routes; generate routes ordered before `/{report}` wildcard |
+| `resources/views/workspace/reports/edit.blade.php` | Restructured into Report Period / Client-Visible / Internal / Save sections; auto-generated banner |
+| `resources/views/workspace/reports/show.blade.php` | Enhanced client view: hours block, friendly headings, notes panel, published footer; internal fields styled with amber locked badge |
+| `resources/views/workspace/reports/index.blade.php` | Generate + Write Manually header buttons; auto-generated badge on list items; enhanced empty state |
+| `resources/views/workspace/show.blade.php` | Weekly Reports card: latest report status, generate button for managers, view latest for clients |
+| `resources/views/dashboard/line-manager.blade.php` | Pending Review bento card shows report drafts count as amber link |
+| `resources/views/dashboard/individual-client.blade.php` | Published Reports card links to reports index when reports exist |
+| `resources/views/dashboard/business-client-admin.blade.php` | Published Reports card links to reports index when reports exist |
+
+---
+
 ### 2026-06-10 | Phase 16 | User Onboarding Completion
 
 **What was done:** Created a polished post-registration onboarding experience for all GVOS user roles. New users arrive at a dedicated `/onboarding` page after accepting an invitation. The page shows a progress ring, a role-tailored checklist, a quick profile form, a workspace card, and primary action links. Dashboard banners prompt incomplete users to return and finish. Workspace show adds an orientation card for new or incomplete-profile members. Empty states in workspace, tasks, and time-log pages were made role-specific and informative.

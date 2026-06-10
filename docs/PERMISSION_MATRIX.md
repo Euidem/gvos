@@ -352,6 +352,19 @@ Timer rules:
 > Weekly report visibility: clients see only `status=published` records.
 > Blockers and next_steps fields in weekly reports are hidden from client-role views in Blade templates.
 
+### Phase 17 Report Routes (additional)
+
+| Route | Roles that can access |
+|-------|-----------------------|
+| `GET /workspaces/{workspace}/reports/generate` | admin, workspace_admin, manager |
+| `POST /workspaces/{workspace}/reports/generate` | admin, workspace_admin, manager |
+| `POST /workspaces/{workspace}/reports/{report}/publish` | admin, workspace_admin, manager |
+
+> Generate routes are placed BEFORE `/{report}` in the route group to prevent slug collision.
+> The `publish` action validates that `summary` is non-empty before setting `status=published`.
+> After publishing, `notifyWeeklyReportPublished` fires — clients in the workspace are notified.
+> After auto-generation, `notifyWeeklyReportGenerated` fires — only workspace managers/admins are notified (never clients).
+
 ---
 
 ## Phase 8 — Billing Access Control

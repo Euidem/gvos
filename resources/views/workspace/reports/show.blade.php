@@ -36,6 +36,12 @@
                             @if ($report->preparedBy)
                                 &middot; Prepared by {{ $report->preparedBy->name }}
                             @endif
+                            @if ($report->wasGenerated() && ! $isClient)
+                                &middot; <span style="color:#7C3AED;" class="inline-flex items-center gap-0.5">
+                                    <span class="material-symbols-outlined" style="font-size:12px;">auto_awesome</span>
+                                    Auto-generated {{ $report->generated_at?->format('d M Y') }}
+                                </span>
+                            @endif
                         </p>
                     </div>
                     @php
@@ -55,30 +61,60 @@
 
                 {{-- Summary --}}
                 <div class="mb-5">
-                    <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-2">Summary</p>
-                    <p class="text-sm text-on-surface whitespace-pre-line">{{ $report->summary }}</p>
+                    <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-2">
+                        @if ($isClient) Week Summary @else Summary @endif
+                    </p>
+                    <p class="text-sm text-on-surface whitespace-pre-line leading-relaxed">{{ $report->summary }}</p>
                 </div>
 
                 {{-- Achievements --}}
                 @if ($report->achievements)
                     <div class="mb-5">
-                        <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-2">Achievements</p>
-                        <p class="text-sm text-on-surface whitespace-pre-line">{{ $report->achievements }}</p>
+                        <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-2">
+                            @if ($isClient) Work Completed @else Achievements @endif
+                        </p>
+                        <p class="text-sm text-on-surface whitespace-pre-line leading-relaxed">{{ $report->achievements }}</p>
+                    </div>
+                @endif
+
+                {{-- Hours summary block for clients --}}
+                @if ($isClient && $report->total_minutes > 0)
+                    @php
+                        $ch = intdiv($report->total_minutes, 60);
+                        $cm = $report->total_minutes % 60;
+                    @endphp
+                    <div class="mb-5 rounded-xl px-5 py-4"
+                         style="background:rgba(0,88,190,0.04);border:1px solid rgba(0,88,190,0.12);">
+                        <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-1.5">Hours This Week</p>
+                        <p class="text-2xl font-bold" style="color:#0058be;">
+                            {{ $ch > 0 ? $ch . 'h' : '' }}{{ $cm > 0 ? ' ' . $cm . 'm' : '' }}
+                        </p>
+                        <p class="text-xs text-outline mt-0.5">Logged and approved by your GVOS team</p>
                     </div>
                 @endif
 
                 {{-- Blockers (internal only) --}}
                 @if ($report->blockers && !$isClient)
-                    <div class="mb-5">
-                        <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-2">Blockers</p>
+                    <div class="mb-5 rounded-lg px-4 py-3"
+                         style="background:rgba(217,119,6,0.04);border:1px solid rgba(217,119,6,0.12);">
+                        <p class="text-xs font-semibold uppercase tracking-wide mb-2 flex items-center gap-1.5"
+                           style="color:#D97706;">
+                            <span class="material-symbols-outlined" style="font-size:13px;">lock</span>
+                            Blockers <span class="font-normal normal-case tracking-normal" style="color:#92400E;">(internal)</span>
+                        </p>
                         <p class="text-sm text-on-surface whitespace-pre-line">{{ $report->blockers }}</p>
                     </div>
                 @endif
 
                 {{-- Next steps (internal only) --}}
                 @if ($report->next_steps && !$isClient)
-                    <div class="mb-5">
-                        <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-2">Next Steps</p>
+                    <div class="mb-5 rounded-lg px-4 py-3"
+                         style="background:rgba(217,119,6,0.04);border:1px solid rgba(217,119,6,0.12);">
+                        <p class="text-xs font-semibold uppercase tracking-wide mb-2 flex items-center gap-1.5"
+                           style="color:#D97706;">
+                            <span class="material-symbols-outlined" style="font-size:13px;">lock</span>
+                            Next Steps <span class="font-normal normal-case tracking-normal" style="color:#92400E;">(internal)</span>
+                        </p>
                         <p class="text-sm text-on-surface whitespace-pre-line">{{ $report->next_steps }}</p>
                     </div>
                 @endif
@@ -86,8 +122,22 @@
                 {{-- Client notes --}}
                 @if ($report->client_notes)
                     <div class="mb-5">
-                        <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-2">Client Notes</p>
-                        <p class="text-sm text-on-surface whitespace-pre-line">{{ $report->client_notes }}</p>
+                        <p class="text-xs font-semibold text-outline uppercase tracking-wide mb-2">
+                            @if ($isClient) Message from Your Team @else Client Notes @endif
+                        </p>
+                        <div class="rounded-xl px-4 py-3 text-sm text-on-surface whitespace-pre-line leading-relaxed"
+                             style="background:rgba(5,150,105,0.04);border:1px solid rgba(5,150,105,0.15);">
+                            {{ $report->client_notes }}
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Client-view footer --}}
+                @if ($isClient && $report->status === 'published')
+                    <div class="pt-3 mt-2 border-t border-[#F1F5F9] flex items-center gap-2 text-xs text-outline">
+                        <span class="material-symbols-outlined" style="font-size:14px;color:#059669;">verified</span>
+                        Published {{ $report->published_at?->format('d M Y') }} by your GVOS team.
+                        @if ($report->reviewedBy) Reviewed by {{ $report->reviewedBy->name }}. @endif
                     </div>
                 @endif
 
@@ -99,7 +149,7 @@
                                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white"
                                style="background-color:#0058be;">
                                 <span class="material-symbols-outlined" style="font-size: 16px;">edit</span>
-                                Edit
+                                Edit Report
                             </a>
                         @endif
 
@@ -115,19 +165,16 @@
                                         class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold border"
                                         style="border-color:#7C3AED;color:#7C3AED;">
                                     <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
-                                    Approve
+                                    Mark Approved
                                 </button>
                             </form>
                         @endif
 
                         @if ($canPublish)
-                            <form method="POST" action="{{ route('workspace.reports.update', [$workspace, $report]) }}">
-                                @csrf @method('PUT')
-                                <input type="hidden" name="week_start_date" value="{{ $report->week_start_date->format('Y-m-d') }}">
-                                <input type="hidden" name="week_end_date" value="{{ $report->week_end_date->format('Y-m-d') }}">
-                                <input type="hidden" name="summary" value="{{ $report->summary }}">
-                                <input type="hidden" name="total_minutes" value="{{ $report->total_minutes }}">
-                                <input type="hidden" name="status" value="published">
+                            {{-- Phase 17: Dedicated publish action --}}
+                            <form method="POST" action="{{ route('workspace.reports.publish', [$workspace, $report]) }}"
+                                  onsubmit="return confirm('Publish this report to the client? They will be notified.')">
+                                @csrf
                                 <button type="submit"
                                         class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white"
                                         style="background-color:#059669;">
@@ -149,6 +196,14 @@
                                 </button>
                             </form>
                         @endif
+                    </div>
+                @endif
+
+                {{-- Validation errors from publish --}}
+                @if ($errors->has('publish'))
+                    <div class="mt-3 p-3 rounded-lg text-xs"
+                         style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.25);color:#991B1B;">
+                        {{ $errors->first('publish') }}
                     </div>
                 @endif
             </div>

@@ -25,6 +25,7 @@ use App\Notifications\TaskCommentAddedNotification;
 use App\Notifications\TaskStatusChangedNotification;
 use App\Notifications\TimeLogSubmittedNotification;
 use App\Notifications\TrialApprovedNotification;
+use App\Notifications\WeeklyReportGeneratedNotification;
 use App\Notifications\WeeklyReportPublishedNotification;
 use App\Notifications\WorkspaceFileUploadedNotification;
 use App\Notifications\WorkspaceInvitationAcceptedNotification;
@@ -178,6 +179,26 @@ class NotificationService
             $this->workspaceClientRecipients($report->workspace),
             'weekly_report_published',
             new WeeklyReportPublishedNotification($report),
+            $actor
+        );
+    }
+
+    /**
+     * Phase 17: Notify workspace managers/admins when a report draft is auto-generated.
+     * This is informational — no client receives this notification.
+     */
+    public function notifyWeeklyReportGenerated(WorkspaceWeeklyReport $report, ?User $actor = null): void
+    {
+        $report->loadMissing('workspace');
+
+        if (! $report->workspace) {
+            return;
+        }
+
+        $this->send(
+            $this->workspaceInternalRecipients($report->workspace),
+            'weekly_report_generated',
+            new WeeklyReportGeneratedNotification($report),
             $actor
         );
     }

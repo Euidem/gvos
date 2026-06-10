@@ -6,6 +6,7 @@ use App\Models\Workspace;
 use App\Models\WorkspaceWeeklyReport;
 use App\Services\AuditLogger;
 use App\Services\NotificationService;
+use App\Services\WeeklyReportGeneratorService;
 use Illuminate\Http\Request;
 
 class WorkspaceWeeklyReportController extends Controller
@@ -266,6 +267,149 @@ class WorkspaceWeeklyReportController extends Controller
         return redirect()
             ->route('workspace.reports.show', [$workspace, $report])
             ->with('success', 'Weekly report updated.');
+    }
+
+    // ── Phase 17: Report generation ────────────────────────────────────────
+
+    /**
+     * Show the report generation form.
+     *
+     * Displays a date-range picker with a preview of how many approved/submitted
+     * time logs and completed tasks fall within the selected range.
+     */
+    public function generate(Request $request, Workspace $workspace)
+    {
+        $role = $this->requireAccess($request, $workspace);
+
+        if (! WorkspaceWeeklyReport::canCreate($role)) {
+            abort(403, 'You cannot generate weekly reports in this workspace.');
+        }
+
+        // Default to last week
+        $suggestedStart = now()->startOfWeek()->subWeek()->format('Y-m-d');
+        $suggestedEnd   = now()->startOfWeek()->subDay()->format('Y-m-d');
+
+        $startDate = $request->input('start_date', $suggestedStart);
+        $endDate   = $request->input('end_date',   $suggestedEnd);
+
+        $preview = app(WeeklyReportGeneratorService::class)
+            ->preview($workspace, $startDate, $endDate);
+
+        return view('workspace.reports.generate', compact(
+            'workspace', 'role', 'startDate', 'endDate', 'preview'
+        ));
+    }
+
+    /**
+     * Run the generator and create a draft report.
+     *
+     * Runs the WeeklyReportGeneratorService against the chosen date range,
+     * saves a new draft report with generated content, and redirects to the
+     * edit page so the manager can review and adjust before publishing.
+     */
+    public function generateStore(Request $request, Workspace $workspace)
+    {
+        $role = $this->requireAccess($request, $workspace);
+        $user = $request->user();
+
+        if (! WorkspaceWeeklyReport::canCreate($role)) {
+            abort(403, 'You cannot generate weekly reports in this workspace.');
+        }
+
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date'   => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $request->input('start_date');
+        $endDate   = $request->input('end_date');
+
+        // Run the generator
+        $generated = app(WeeklyReportGeneratorService::class)
+            ->generate($workspace, $startDate, $endDate, $user);
+
+        // Remove the non-storable _meta key before saving
+        $meta = $generated['_meta'] ?? [];
+        unset($generated['_meta']);
+
+        $report = WorkspaceWeeklyReport::create(array_merge($generated, [
+            'workspace_id'        => $workspace->id,
+            'prepared_by_user_id' => $user->id,
+            'week_start_date'     => $startDate,
+            'week_end_date'       => $endDate,
+            'status'              => 'draft',
+        ]));
+
+        AuditLogger::weeklyReportGenerated($report, [
+            'workspace_code'        => $workspace->workspace_code,
+            'generated_by'          => $user->id,
+            'approved_log_count'    => $meta['approved_log_count'] ?? 0,
+            'submitted_log_count'   => $meta['submitted_log_count'] ?? 0,
+            'completed_task_count'  => $meta['completed_task_count'] ?? 0,
+        ]);
+
+        // Phase 17 Part J: notify workspace managers/admins (never clients)
+        app(NotificationService::class)->notifyWeeklyReportGenerated($report, $user);
+
+        return redirect()
+            ->route('workspace.reports.edit', [$workspace, $report])
+            ->with('success', 'Draft report generated from workspace data. Review and edit before publishing.');
+    }
+
+    /**
+     * Dedicated publish action — sets status to published, fires notification.
+     *
+     * Requires the report to have a non-empty summary (and ideally client_notes).
+     * Can only act on approved reports. The manager must approve before publishing.
+     */
+    public function publish(Request $request, Workspace $workspace, WorkspaceWeeklyReport $report)
+    {
+        $role = $this->requireAccess($request, $workspace);
+        $user = $request->user();
+
+        if ((int) $report->workspace_id !== (int) $workspace->id) {
+            abort(404, 'Report not found in this workspace.');
+        }
+
+        if (! WorkspaceWeeklyReport::canApprove($role)) {
+            abort(403, 'You cannot publish weekly reports.');
+        }
+
+        if (! in_array($report->status, ['approved', 'submitted', 'draft'], true)) {
+            return redirect()
+                ->route('workspace.reports.show', [$workspace, $report])
+                ->withErrors(['publish' => 'This report cannot be published from its current status.']);
+        }
+
+        if (empty(trim($report->summary ?? ''))) {
+            return redirect()
+                ->route('workspace.reports.show', [$workspace, $report])
+                ->withErrors(['publish' => 'A summary is required before publishing.']);
+        }
+
+        $oldStatus = $report->status;
+
+        $report->update([
+            'status'              => 'published',
+            'published_at'        => $report->published_at ?? now(),
+            'reviewed_by_user_id' => $user->id,
+        ]);
+
+        AuditLogger::weeklyReportPublished($report, [
+            'workspace_code' => $workspace->workspace_code,
+            'published_by'   => $user->id,
+            'from_status'    => $oldStatus,
+        ]);
+
+        AuditLogger::weeklyReportStatusChanged($report, $oldStatus, 'published', [
+            'workspace_code' => $workspace->workspace_code,
+        ]);
+
+        app(NotificationService::class)->notifyWeeklyReportPublished($report, $user);
+
+        return redirect()
+            ->route('workspace.reports.show', [$workspace, $report])
+            ->with('success', 'Report published to client. They have been notified.');
     }
 
     /**

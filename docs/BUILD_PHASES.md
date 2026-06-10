@@ -428,6 +428,45 @@ GVOS is built in 13 phases (Phase 0–12). Each phase has a clear deliverable an
 
 ---
 
+---
+
+## Phase 17 — Weekly Report Automation and Client Summary Workflow
+**Status:** Complete (2026-06-10)
+**Depends on:** Phase 16 onboarding
+
+### Goal
+Make GVOS weekly reports easier and more professional. Managers generate drafts from workspace activity (time logs and completed tasks), edit and approve the report, then publish to clients. Clients see only polished published summaries — never internal notes or raw logs.
+
+### Deliverables
+- [x] Migration: `generated_at` + `generated_by_user_id` on `workspace_weekly_reports`
+- [x] `WorkspaceWeeklyReport` model: `wasGenerated()`, `generatedBy()` relation
+- [x] `WeeklyReportGeneratorService::generate()` — builds report fields from approved/submitted time logs and tasks; no internal fields exposed
+- [x] `WeeklyReportGeneratorService::preview()` — count-only preview for the generate form
+- [x] Controller: `generate()` GET, `generateStore()` POST, `publish()` POST (dedicated publish action)
+- [x] Generate view: date picker, preview count grid, "How it works" info box
+- [x] Edit view: Client-Visible section (green) + Internal section (amber); auto-generated banner
+- [x] Show view: client-polished view — hours block, friendly headings, notes box, published footer; internal sections locked with amber badge
+- [x] Index view: "Generate Report" + "Write Manually" buttons; auto-generated badge on list items
+- [x] Workspace show: enhanced Weekly Reports card with latest report status, generate button for managers, view latest for clients
+- [x] Manager dashboard: report drafts count with amber link
+- [x] Client dashboards: Published Reports card links to reports when > 0
+- [x] `AuditLogger::weeklyReportGenerated()` wrapper
+- [x] `NotificationService::notifyWeeklyReportGenerated()` — internal notification (managers/admins only)
+- [x] `WeeklyReportGeneratedNotification` class
+- [x] Filament resource: workspace filter, duration formatting, `generated_at` icon column
+- [x] No billing, payment, vault, timer, invitation token, payroll, gateway changes
+
+### Test Checklist
+- Manager generates report from date range — draft created, redirected to edit
+- Edit page clearly separates client-visible and internal sections
+- Publishing sets status=published, fires client notification
+- Client sees only summary, achievements, hours block, client notes — never blockers/next_steps/internal notes
+- Manager dashboard shows amber report draft count when drafts exist
+- Workspace show card shows latest report status + appropriate buttons per role
+- Filament workspace filter and generated_at column work correctly
+
+---
+
 ## Phase Approval Process
 1. Complete all deliverables for the phase
 2. Run the phase-specific testing checklist

@@ -152,15 +152,20 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/complete', [WorkspaceTimeTrackerController::class, 'complete'])->name('complete');
     });
 
-    // ── Workspace weekly report routes (Phase 7) ──────────────────────────
+    // ── Workspace weekly report routes (Phase 7 + Phase 17) ───────────────
     Route::prefix('workspaces/{workspace}/reports')->name('workspace.reports.')->group(function () {
         Route::get('/',              [WorkspaceWeeklyReportController::class, 'index'])->name('index');
         Route::get('/create',        [WorkspaceWeeklyReportController::class, 'create'])->name('create');
         Route::post('/',             [WorkspaceWeeklyReportController::class, 'store'])->name('store');
+        // Phase 17: generate route must precede /{report} to avoid route collision with slug "generate"
+        Route::get('/generate',      [WorkspaceWeeklyReportController::class, 'generate'])->name('generate');
+        Route::post('/generate',     [WorkspaceWeeklyReportController::class, 'generateStore'])->name('generate.store');
         Route::get('/{report}',      [WorkspaceWeeklyReportController::class, 'show'])->name('show');
         Route::get('/{report}/edit', [WorkspaceWeeklyReportController::class, 'edit'])->name('edit');
-        Route::put('/{report}',      [WorkspaceWeeklyReportController::class, 'update'])->name('update');
-        Route::delete('/{report}',   [WorkspaceWeeklyReportController::class, 'destroy'])->name('destroy');
+        Route::put('/{report}',          [WorkspaceWeeklyReportController::class, 'update'])->name('update');
+        Route::delete('/{report}',       [WorkspaceWeeklyReportController::class, 'destroy'])->name('destroy');
+        // Phase 17: dedicated publish action
+        Route::post('/{report}/publish', [WorkspaceWeeklyReportController::class, 'publish'])->name('publish');
     });
 });
 

@@ -146,16 +146,36 @@
         </div>
 
         {{-- Published reports --}}
-        <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">
-            <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
-                 style="background:rgba(5,150,105,0.08)">
-                <span class="material-symbols-outlined text-status-completed" style="font-size:20px;">summarize</span>
+        @php
+            $reportLinkWorkspace = $clientWorkspaceIds->first()
+                ? \App\Models\Workspace::find($clientWorkspaceIds->first())
+                : null;
+        @endphp
+        @if ($reportLinkWorkspace && $publishedReports > 0)
+            <a href="{{ route('workspace.reports.index', $reportLinkWorkspace) }}"
+               class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4 hover:border-secondary/30 hover:shadow-md transition-all group">
+                <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                     style="background:rgba(5,150,105,0.08)">
+                    <span class="material-symbols-outlined text-status-completed" style="font-size:20px;">summarize</span>
+                </div>
+                <div class="flex-1">
+                    <p class="font-label-md text-label-md text-outline">Published Reports</p>
+                    <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $publishedReports }}</h4>
+                </div>
+                <span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors" style="font-size:16px;">chevron_right</span>
+            </a>
+        @else
+            <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">
+                <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                     style="background:rgba(5,150,105,0.08)">
+                    <span class="material-symbols-outlined text-status-completed" style="font-size:20px;">summarize</span>
+                </div>
+                <div class="flex-1">
+                    <p class="font-label-md text-label-md text-outline">Published Reports</p>
+                    <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $publishedReports }}</h4>
+                </div>
             </div>
-            <div class="flex-1">
-                <p class="font-label-md text-label-md text-outline">Published Reports</p>
-                <h4 class="font-headline-md text-headline-md text-primary font-bold">{{ $publishedReports }}</h4>
-            </div>
-        </div>
+        @endif
 
         {{-- Open tasks --}}
         <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4">

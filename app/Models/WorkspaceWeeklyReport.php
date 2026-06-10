@@ -25,18 +25,23 @@ class WorkspaceWeeklyReport extends Model
         'client_notes',
         'status',
         'published_at',
+        // Phase 17 — generation metadata
+        'generated_at',
+        'generated_by_user_id',
     ];
 
     protected $casts = [
         // Integer FKs
-        'workspace_id'        => 'integer',
-        'prepared_by_user_id' => 'integer',
-        'reviewed_by_user_id' => 'integer',
-        'total_minutes'       => 'integer',
+        'workspace_id'          => 'integer',
+        'prepared_by_user_id'   => 'integer',
+        'reviewed_by_user_id'   => 'integer',
+        'generated_by_user_id'  => 'integer',
+        'total_minutes'         => 'integer',
         // Dates / datetimes
         'week_start_date' => 'date',
         'week_end_date'   => 'date',
         'published_at'    => 'datetime',
+        'generated_at'    => 'datetime',
     ];
 
     // ── Labels ─────────────────────────────────────────────────────────────
@@ -152,5 +157,19 @@ class WorkspaceWeeklyReport extends Model
     public function reviewedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by_user_id');
+    }
+
+    /** Phase 17: user who triggered auto-generation */
+    public function generatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'generated_by_user_id');
+    }
+
+    /**
+     * Whether this report was generated from workspace activity data.
+     */
+    public function wasGenerated(): bool
+    {
+        return $this->generated_at !== null;
     }
 }

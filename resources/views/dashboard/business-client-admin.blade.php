@@ -114,16 +114,33 @@
             <p class="font-body-sm text-body-sm text-outline mt-1">Submitted tasks</p>
         </div>
 
-        <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="p-2 rounded-lg" style="background:rgba(5,150,105,0.08)">
-                    <span class="material-symbols-outlined text-status-completed" style="font-size:18px;">summarize</span>
+        @php
+            $reportLinkWs = $billingWorkspaceId ? \App\Models\Workspace::find($billingWorkspaceId) : null;
+        @endphp
+        @if ($reportLinkWs && $publishedReports > 0)
+            <a href="{{ route('workspace.reports.index', $reportLinkWs) }}"
+               class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm hover:border-secondary/30 hover:shadow-md transition-all group">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2 rounded-lg" style="background:rgba(5,150,105,0.08)">
+                        <span class="material-symbols-outlined text-status-completed" style="font-size:18px;">summarize</span>
+                    </div>
+                    <p class="font-label-md text-label-md text-outline uppercase tracking-wider">Published Reports</p>
                 </div>
-                <p class="font-label-md text-label-md text-outline uppercase tracking-wider">Published Reports</p>
+                <p class="font-headline-lg text-headline-lg text-primary font-bold">{{ $publishedReports }}</p>
+                <p class="font-body-sm text-body-sm text-status-active mt-1 group-hover:underline">View reports →</p>
+            </a>
+        @else
+            <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2 rounded-lg" style="background:rgba(5,150,105,0.08)">
+                        <span class="material-symbols-outlined text-status-completed" style="font-size:18px;">summarize</span>
+                    </div>
+                    <p class="font-label-md text-label-md text-outline uppercase tracking-wider">Published Reports</p>
+                </div>
+                <p class="font-headline-lg text-headline-lg text-primary font-bold">{{ $publishedReports }}</p>
+                <p class="font-body-sm text-body-sm text-outline mt-1">Available to view</p>
             </div>
-            <p class="font-headline-lg text-headline-lg text-primary font-bold">{{ $publishedReports }}</p>
-            <p class="font-body-sm text-body-sm text-outline mt-1">Available to view</p>
-        </div>
+        @endif
 
         <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
             <div class="flex items-center gap-3 mb-3">

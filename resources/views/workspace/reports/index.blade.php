@@ -20,11 +20,17 @@
         </div>
         <div class="flex items-center gap-2">
             @if ($canCreate)
-                <a href="{{ route('workspace.reports.create', $workspace) }}"
+                <a href="{{ route('workspace.reports.generate', $workspace) }}"
                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all text-white"
                    style="background-color:#0058be;">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
-                    New Report
+                    <span class="material-symbols-outlined" style="font-size: 16px;">auto_awesome</span>
+                    Generate Report
+                </a>
+                <a href="{{ route('workspace.reports.create', $workspace) }}"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                   style="border-color:#0058be; color:#0058be;">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">edit_note</span>
+                    Write Manually
                 </a>
             @endif
             <a href="{{ route('workspace.time-logs.index', $workspace) }}"
@@ -66,11 +72,11 @@
                 @endif
             </p>
             @if ($canCreate)
-                <a href="{{ route('workspace.reports.create', $workspace) }}"
+                <a href="{{ route('workspace.reports.generate', $workspace) }}"
                    class="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white"
                    style="background-color:#0058be;">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
-                    New Report
+                    <span class="material-symbols-outlined" style="font-size: 16px;">auto_awesome</span>
+                    Generate First Report
                 </a>
             @endif
         </div>
@@ -101,6 +107,9 @@
                                 @endif
                                 @if ($report->published_at)
                                     &middot; Published {{ $report->published_at->format('d M Y') }}
+                                @endif
+                                @if ($report->wasGenerated())
+                                    &middot; <span title="Generated from workspace data" style="color:#7C3AED;">auto-generated</span>
                                 @endif
                             </p>
                         </div>

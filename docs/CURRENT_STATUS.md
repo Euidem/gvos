@@ -1,8 +1,45 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-10
-**Current Phase:** Phase 16 - User Onboarding Completion - Complete
-**Current Activity:** Polished onboarding experience for new GVOS users — profile completion page, checklist, dashboard banners, workspace orientation card, improved empty states, post-invitation redirects
+**Current Phase:** Phase 17 - Weekly Report Automation and Client Summary Workflow - Complete
+**Current Activity:** Auto-generation of weekly report drafts from workspace time logs and completed tasks; manager review / edit workflow with internal vs client-visible section separation; dedicated publish action; polished client-facing report view; dashboard enhancements for managers and clients
+
+## Phase 17 Status - Complete (2026-06-10)
+
+### Weekly Report Automation and Client Summary Workflow
+- [x] Migration: `generated_at` (timestamp) and `generated_by_user_id` (FK to users) added to `workspace_weekly_reports`
+- [x] `WorkspaceWeeklyReport` model: `$fillable`, `$casts`, `generatedBy()` relation, `wasGenerated()` helper
+- [x] `WeeklyReportGeneratorService` — deterministic generation from approved + submitted time logs and completed/blocked/active tasks; no AI/LLM; internal fields never exposed
+- [x] `WeeklyReportGeneratorService::preview()` — lightweight count-only method for the generation form
+- [x] `WorkspaceWeeklyReportController::generate()` — GET: renders generate form with preview counts
+- [x] `WorkspaceWeeklyReportController::generateStore()` — POST: validates dates, runs generator, strips `_meta`, creates draft, fires audit + notification, redirects to edit
+- [x] `WorkspaceWeeklyReportController::publish()` — POST: dedicated publish action (draft/submitted/approved → published); validates summary non-empty; fires `notifyWeeklyReportPublished`
+- [x] Report edit view: visually separated into "Client-Visible" (green badge) and "Internal" (amber badge/border) sections; auto-generated banner; "Save as" status selector (no published option — use dedicated publish button)
+- [x] Report show view: client view enhanced — "Hours This Week" block, "Work Completed" heading, "Message from Your Team" notes, published footer; internal sections (blockers, next steps) styled with amber locked badge
+- [x] Report index view: "Generate Report" primary button + "Write Manually" secondary; empty state with "Generate First Report" CTA; auto-generated badge on list items
+- [x] Report generate view: GET date-range preview form + POST generate button; preview count grid; "How it works" info box; confirm dialog when no logs found
+- [x] Workspace show page: Weekly Reports card enhanced — shows latest report status badge + week label; "Generate" button for managers; "View Latest Report" button for clients; draft count warning
+- [x] Manager dashboard: "Pending Review" bento card — time logs count + report drafts count as amber link when > 0
+- [x] Client dashboards (individual + business): Published Reports card links to reports index when published reports exist
+- [x] `AuditLogger::weeklyReportGenerated()` added
+- [x] `NotificationService::notifyWeeklyReportGenerated()` added — notifies workspace managers/admins only (never clients)
+- [x] `WeeklyReportGeneratedNotification` class created
+- [x] Filament `WorkspaceWeeklyReportResource`: workspace name + code column, duration formatted, `generated_at` column (icon + date), workspace filter, status filter
+- [x] Route ordering: generate routes placed before `/{report}` wildcard to avoid slug collision
+- [x] No billing, payment, vault, timer, invitation token, payroll, gateway changes; no client exposure of internal notes
+
+### Remaining Manual Verification
+- [ ] Run `php artisan migrate` on cPanel to add `generated_at` and `generated_by_user_id` columns
+- [ ] As manager: go to Workspace → Reports → Generate Report; select last week; verify preview counts show
+- [ ] Click "Generate Draft Report" — confirm draft created and redirected to edit
+- [ ] Verify edit page shows green "Client-Visible" section and amber "Internal" section correctly
+- [ ] Edit client notes, set status to "Approved", save — then use "Publish to Client" on show page
+- [ ] As client: confirm only published reports are visible; verify "Hours This Week" block shows; internal sections not visible
+- [ ] Manager dashboard: verify amber "report drafts awaiting review" link appears when drafts exist
+- [ ] Workspace show page: verify latest report status badge appears; "Generate" button visible for manager; "View Latest Report" for client when published
+- [ ] Filament admin panel: open Weekly Reports — confirm workspace filter and generated_at column work
+
+---
 
 ## Phase 16 Status - Complete (2026-06-10)
 
