@@ -68,7 +68,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 });
 
 // ── Workspace routes (all authenticated, active users) ────────────────────
-Route::middleware(['auth', 'check.status'])->group(function () {
+Route::middleware(['auth', 'check.status', 'check.billing'])->group(function () {
     Route::get('/workspaces',            [WorkspaceController::class, 'index'])->name('workspace.index');
     Route::get('/workspaces/{workspace}', [WorkspaceController::class, 'show'])->name('workspace.show');
     Route::get('/time-tracker/current',   [WorkspaceTimeTrackerController::class, 'current'])->name('time-tracker.current');
@@ -113,11 +113,13 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::delete('/{file}',             [WorkspaceFileController::class, 'destroy'])->name('destroy');
     });
 
-    // ── Workspace billing routes (Phase 8) ───────────────────────────────
+    // ── Workspace billing routes (Phase 8 + Phase 18) ────────────────────
     Route::prefix('workspaces/{workspace}/billing')->name('workspace.billing.')->group(function () {
         Route::get('/',                        [WorkspaceBillingController::class, 'index'])->name('index');
         Route::get('/invoices/{invoice}',      [WorkspaceBillingController::class, 'showInvoice'])->name('invoice');
         Route::get('/payments',                [WorkspaceBillingController::class, 'payments'])->name('payments');
+        // Phase 18: restricted access page — always accessible to billing-gated clients
+        Route::get('/restricted',              [WorkspaceBillingController::class, 'restricted'])->name('restricted');
     });
 
     // ── Workspace password vault routes (Phase 10) ──────────────────────────

@@ -114,6 +114,35 @@ class WorkspaceBillingController extends Controller
     }
 
     /**
+     * Phase 18: Restricted access landing page.
+     * Always accessible — this is the page clients land on when their workspace is
+     * restricted or suspended. They must be able to see what they owe and who to contact.
+     */
+    public function restricted(Request $request, Workspace $workspace)
+    {
+        $role = $this->requireAccess($request, $workspace);
+
+        $subscription = $workspace->activeSubscription;
+
+        $outstandingBalance = $workspace->invoices()
+            ->whereIn('status', ['issued', 'partially_paid', 'overdue'])
+            ->sum('balance_due');
+
+        $latestUnpaidInvoice = $workspace->invoices()
+            ->whereIn('status', ['issued', 'partially_paid', 'overdue'])
+            ->where('balance_due', '>', 0)
+            ->orderByDesc('issue_date')
+            ->first();
+
+        $isSuspended = $subscription && $subscription->isSuspended();
+
+        return view('workspace.billing.restricted', compact(
+            'workspace', 'subscription', 'outstandingBalance',
+            'latestUnpaidInvoice', 'isSuspended', 'role'
+        ));
+    }
+
+    /**
      * Workspace payment history.
      */
     public function payments(Request $request, Workspace $workspace)

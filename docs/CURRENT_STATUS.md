@@ -1,8 +1,102 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-10
-**Current Phase:** Phase 17 - Weekly Report Automation and Client Summary Workflow - Complete
-**Current Activity:** Auto-generation of weekly report drafts from workspace time logs and completed tasks; manager review / edit workflow with internal vs client-visible section separation; dedicated publish action; polished client-facing report view; dashboard enhancements for managers and clients
+**Current Phase:** Phase 18 - Billing Subscription Enforcement and Workspace Access Restrictions - Complete
+**Current Activity:** Billing enforcement layer — payment warning banners, overdue/grace-period logic, workspace client-access restriction, admin suspend/reactivate actions, billing-refresh artisan command, safe internal continuity for admins/managers/talents
+
+## Phase 18 Status - Complete (2026-06-10)
+
+### Billing Subscription Enforcement and Workspace Access Restrictions
+
+#### Database
+- [x] Migration: `2026_06_10_000004_add_billing_enforcement_fields_to_workspace_subscriptions.php`
+  - `restricted_at` (timestamp, nullable) — set when client access is restricted (grace period expired, unpaid)
+  - `suspended_at` (timestamp, nullable) — set when workspace is manually suspended by admin
+  - `reactivated_at` (timestamp, nullable) — set when access is restored
+  - `restriction_reason` (text, nullable) — admin note, shown to members on restriction page
+  - `suspended_by` (FK → users, nullable) — identifies manual suspension actor
+  - `reactivated_by` (FK → users, nullable) — identifies reactivation actor
+
+#### Models
+- [x] `WorkspaceSubscription` — new fillable/casts, constants (`GRACE_PERIOD_DAYS=3`, `DUE_SOON_DAYS=3`), helper methods: `isTrial()`, `isPaymentDue()`, `isOverdue()`, `isSuspended()`, `isRestricted()`, `wasManuallySuspended()`, `isWithinGracePeriod()`, `shouldBeRestricted()`, `daysUntilDue()`, `daysOverdue()`, `isDueSoon()`, `billingStatusLabel()`, `billingStatusColor()`; relations: `suspendedByUser()`, `reactivatedByUser()`
+- [x] `Invoice` — billing helper methods: `isUnpaid()`, `isPaid()`, `isPartiallyPaid()`, `isOverdue()`, `isDueSoon()`, `daysOverdue()`, `daysUntilDue()`, `remainingBalance()`, `billingWarningLevel()`
+- [x] `Workspace` — `billingSubscription()`, `hasBillingRestriction()`, `isBillingRestricted()`, `isBillingSuspended()`, `canClientAccessWorkspace()`, `clientBillingAccessMessage()`; `activeSubscription` scope now includes `suspended` status
+- [x] `Payment::confirm()` — manual suspensions (`suspended_by IS NOT NULL`) are never auto-cleared by payment confirmation; only `payment_due`/`overdue` statuses are auto-restored
+
+#### Middleware and Routes
+- [x] `CheckWorkspaceBillingAccess` middleware (`check.billing` alias) — registered in `bootstrap/app.php`; internal roles always pass; client roles blocked when `isRestricted() || isSuspended()`; always-allows `workspace.billing.*`, `workspace.index`, `workspace.show`
+- [x] All workspace routes now use `['auth', 'check.status', 'check.billing']` middleware
+- [x] `workspace.billing.restricted` route added (GET) — always accessible
+
+#### Controllers and Views
+- [x] `WorkspaceBillingController::restricted()` — loads subscription, outstanding balance, latest unpaid invoice; renders restricted page
+- [x] `resources/views/workspace/billing/restricted.blade.php` — color-coded by state (red=restricted, slate=suspended); outstanding balance card; restriction reason (if set); "View Billing" + "View Invoice" actions; support instructions card
+- [x] `resources/views/partials/billing-banner.blade.php` — 4-state banner (due_soon amber / overdue red / restricted dark red / suspended slate); client-facing vs internal messaging variants; "View Billing" CTA on all states; renders nothing when no billing issue
+
+#### Banner Integration
+- [x] `resources/views/workspace/billing/index.blade.php` — billing banner added above flash messages
+- [x] `resources/views/workspace/show.blade.php` — billing banner added after workspace status banner
+- [x] `resources/views/dashboard/individual-client.blade.php` — billing banner added after onboarding banner
+- [x] `resources/views/dashboard/business-client-admin.blade.php` — billing banner added after onboarding banner
+
+#### Notifications (5 new classes)
+- [x] `BillingDueSoonNotification` — sent to internal + client members when payment is due soon
+- [x] `BillingOverdueNotification` — sent to internal + client members when invoice is overdue
+- [x] `WorkspaceRestrictedNotification` — sent to internal staff only when client access is restricted
+- [x] `WorkspaceSuspendedNotification` — sent to all workspace members when workspace is suspended
+- [x] `WorkspaceReactivatedNotification` — sent to all workspace members when access is restored
+
+#### NotificationService (5 new methods)
+- [x] `notifyBillingDueSoon()` — internal + client recipients
+- [x] `notifyBillingOverdue()` — internal + client recipients
+- [x] `notifyWorkspaceRestricted()` — internal recipients only
+- [x] `notifyWorkspaceSuspended()` — all workspace members
+- [x] `notifyWorkspaceReactivated()` — internal + client recipients
+
+#### AuditLogger (7 new wrappers)
+- [x] `billingSubscriptionPaymentDue()` — subscription moved to payment_due
+- [x] `billingSubscriptionOverdue()` — subscription moved to overdue, grace started
+- [x] `billingSubscriptionRestricted()` — client access restricted
+- [x] `billingSubscriptionSuspended()` — manual suspension with actor tracking
+- [x] `billingSubscriptionReactivated()` — manual or payment-triggered reactivation
+- [x] `billingGracePeriodExtended()` — admin extended grace period
+- [x] `billingStatusRefreshRan()` — artisan command execution summary
+
+#### Artisan Command
+- [x] `php artisan gvos:billing-refresh-statuses` — idempotent; evaluates all non-cancelled/ended, non-manually-suspended subscriptions; advances statuses (active→payment_due→overdue→restricted); sends notifications; logs each step; `--dry-run` flag for preview; writes audit log on completion
+
+#### Filament — WorkspaceSubscriptionResource
+- [x] `restricted_at` column (boolean icon — locked icon / danger when restricted)
+- [x] `suspended_at` column (boolean icon — no-symbol icon / gray when suspended)
+- [x] `grace_ends_at` and `reactivated_at` columns (toggleable)
+- [x] Form: `restricted_at`, `suspended_at`, `reactivated_at`, `restriction_reason` fields added
+- [x] **Restrict** action — sets `restricted_at`, audits, optional notification; hidden when already restricted/suspended
+- [x] **Suspend** action — sets `status=suspended`, `suspended_at`, `suspended_by`, optional reason + notification; manual suspension (cannot be auto-cleared)
+- [x] **Reactivate** action — clears `restricted_at`, `suspended_at`, `suspended_by`, `restriction_reason`; sets `status=active`, `reactivated_at`, `reactivated_by`; optional notification; visible only when restricted or suspended
+
+#### Constraints Respected
+- [x] No live payment gateway integration
+- [x] No invoice calculation changes
+- [x] No password vault changes
+- [x] No timer core changes
+- [x] No invitation token changes
+- [x] No payroll built
+- [x] No `GetVirtual` in visible UI
+- [x] GVOS naming throughout
+
+### Remaining Manual Verification
+- [ ] Run `php artisan migrate` on cPanel to add the 6 enforcement columns
+- [ ] Test: open a workspace with an overdue subscription as a client → should redirect to `workspace.billing.restricted`
+- [ ] Test: internal staff (manager/talent) can still access all workspace features when subscription is restricted
+- [ ] Test: Filament `Restrict` action → client blocked; `Reactivate` → client restored
+- [ ] Test: Filament `Suspend` action → workspace page shows suspended banner for all
+- [ ] Test: run `php artisan gvos:billing-refresh-statuses --dry-run` → verify output without DB writes
+- [ ] Test: billing banner shows on workspace/show and billing/index for overdue/restricted/suspended states
+- [ ] Test: billing banner shows on client dashboards (individual + business) for restricted workspaces
+- [ ] Test: `Payment::confirm()` on manually suspended workspace → suspension NOT auto-cleared
+- [ ] Test: `Payment::confirm()` on overdue (auto) workspace → subscription restored to active
+
+---
 
 ## Phase 17 Status - Complete (2026-06-10)
 

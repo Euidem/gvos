@@ -31,6 +31,13 @@
         </div>
     </div>
 
+    {{-- ── Phase 18: Billing warning banner ───────────────────────────────── --}}
+    @php
+        $__billingWorkspace = $workspace;
+        $__billingForClient = $isClient;
+    @endphp
+    @include('partials.billing-banner')
+
     {{-- ── Session flash ─────────────────────────────────────────────────── --}}
     @if (session('success'))
         <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg text-sm"

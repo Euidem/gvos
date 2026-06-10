@@ -367,6 +367,44 @@ Timer rules:
 
 ---
 
+## Phase 18 — Billing Enforcement Access Control
+
+### Billing Access Middleware (`check.billing`)
+
+Registered as a route middleware alias. Applied to ALL workspace routes.
+
+**Internal roles** (admin, workspace_admin, manager, talent, assigned_user): always pass through — never blocked regardless of subscription state.
+
+**Client roles** (client_admin, client_staff, client/legacy, observer): blocked with redirect to `workspace.billing.restricted` when:
+- `subscription->isRestricted()` — grace period expired, unpaid invoice (restricted_at NOT NULL, suspended_at IS NULL)
+- `subscription->isSuspended()` — manually suspended by admin (suspended_at NOT NULL, status = suspended)
+
+**Always-allowed routes** (even for blocked client roles):
+- `workspace.billing.*` (billing index, invoice detail, payments, restricted page)
+- `workspace.index`
+- `workspace.show`
+
+### Restriction vs Suspension
+
+| State | How triggered | Who is blocked | How cleared |
+|-------|--------------|----------------|-------------|
+| `restricted` | `restricted_at IS NOT NULL AND suspended_at IS NULL` | Client roles only | Admin reactivate action, or payment auto-clears if `!wasManuallySuspended()` |
+| `suspended` | `suspended_at IS NOT NULL AND status = suspended` | All users (internally shown banner; billing page still accessible) | Admin reactivate action only (never auto-cleared) |
+
+### Filament — WorkspaceSubscriptionResource Actions
+
+| Action | Who can use | What it does |
+|--------|------------|--------------|
+| Restrict | super_admin, operations_admin | Sets `restricted_at = now()`; audits; optional notification to internal staff |
+| Suspend | super_admin, operations_admin | Sets `status=suspended`, `suspended_at`, `suspended_by`; optional reason; optional notification |
+| Reactivate | super_admin, operations_admin | Clears restriction/suspension; sets `status=active`, `reactivated_at`, `reactivated_by`; optional notification |
+
+> The **Restrict** action is hidden when already restricted or suspended.
+> The **Reactivate** action is visible only when `isRestricted() || isSuspended()`.
+> Manual suspensions (`suspended_by IS NOT NULL`) are NEVER auto-cleared by `Payment::confirm()` — only admin reactivation can clear them.
+
+---
+
 ## Phase 8 — Billing Access Control
 
 ### Portal Billing Routes (`workspaces/{workspace}/billing/...`)

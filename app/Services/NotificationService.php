@@ -13,6 +13,7 @@ use App\Models\WorkspaceFile;
 use App\Models\WorkspaceInvitation;
 use App\Models\WorkspaceMember;
 use App\Models\WorkspaceMessage;
+use App\Models\WorkspaceSubscription;
 use App\Models\WorkspaceTask;
 use App\Models\WorkspaceTaskComment;
 use App\Models\WorkspaceTimeLog;
@@ -25,8 +26,13 @@ use App\Notifications\TaskCommentAddedNotification;
 use App\Notifications\TaskStatusChangedNotification;
 use App\Notifications\TimeLogSubmittedNotification;
 use App\Notifications\TrialApprovedNotification;
+use App\Notifications\BillingDueSoonNotification;
+use App\Notifications\BillingOverdueNotification;
 use App\Notifications\WeeklyReportGeneratedNotification;
 use App\Notifications\WeeklyReportPublishedNotification;
+use App\Notifications\WorkspaceReactivatedNotification;
+use App\Notifications\WorkspaceRestrictedNotification;
+use App\Notifications\WorkspaceSuspendedNotification;
 use App\Notifications\WorkspaceFileUploadedNotification;
 use App\Notifications\WorkspaceInvitationAcceptedNotification;
 use App\Notifications\WorkspaceInvitationMailNotification;
@@ -339,6 +345,118 @@ class NotificationService
             'workspace_invitation_accepted',
             new WorkspaceInvitationAcceptedNotification($invitation),
             $actor
+        );
+    }
+
+    // ── Phase 18: Billing enforcement notifications ───────────────────────
+
+    /**
+     * Notify workspace members (internal + clients) that payment is due soon.
+     * Sent 3 days before next_billing_date.
+     */
+    public function notifyBillingDueSoon(WorkspaceSubscription $subscription): void
+    {
+        $workspace = $subscription->workspace;
+
+        if (! $workspace) {
+            return;
+        }
+
+        $recipients = $this->workspaceInternalRecipients($workspace)
+            ->merge($this->workspaceClientRecipients($workspace));
+
+        $this->send(
+            $this->filterWorkspaceRecipients($workspace, $recipients),
+            'billing_due_soon',
+            new BillingDueSoonNotification($subscription)
+        );
+    }
+
+    /**
+     * Notify workspace members (internal + clients) that payment is overdue.
+     * Sent when next_billing_date has passed with unpaid invoices.
+     */
+    public function notifyBillingOverdue(WorkspaceSubscription $subscription): void
+    {
+        $workspace = $subscription->workspace;
+
+        if (! $workspace) {
+            return;
+        }
+
+        $recipients = $this->workspaceInternalRecipients($workspace)
+            ->merge($this->workspaceClientRecipients($workspace));
+
+        $this->send(
+            $this->filterWorkspaceRecipients($workspace, $recipients),
+            'billing_overdue',
+            new BillingOverdueNotification($subscription)
+        );
+    }
+
+    /**
+     * Notify workspace members (internal only) that client access has been restricted.
+     * Clients are not notified here — they see the restricted page directly.
+     */
+    public function notifyWorkspaceRestricted(WorkspaceSubscription $subscription): void
+    {
+        $workspace = $subscription->workspace;
+
+        if (! $workspace) {
+            return;
+        }
+
+        $this->send(
+            $this->workspaceInternalRecipients($workspace),
+            'workspace_restricted',
+            new WorkspaceRestrictedNotification($subscription)
+        );
+    }
+
+    /**
+     * Notify all workspace members that the workspace has been suspended.
+     * Internal staff need to know; clients who can still reach the billing page will also be notified.
+     */
+    public function notifyWorkspaceSuspended(WorkspaceSubscription $subscription): void
+    {
+        $workspace = $subscription->workspace;
+
+        if (! $workspace) {
+            return;
+        }
+
+        $recipients = $this->workspaceInternalRecipients($workspace)
+            ->merge($this->workspaceClientRecipients($workspace));
+
+        $this->send(
+            collect($recipients)
+                ->filter(fn ($user): bool => $user instanceof User)
+                ->filter(fn (User $user): bool => ! in_array($user->status, ['suspended', 'inactive'], true))
+                ->unique(fn (User $user): int => (int) $user->id)
+                ->values(),
+            'workspace_suspended',
+            new WorkspaceSuspendedNotification($subscription)
+        );
+    }
+
+    /**
+     * Notify all workspace members that access has been restored.
+     */
+    public function notifyWorkspaceReactivated(WorkspaceSubscription $subscription): void
+    {
+        $workspace = $subscription->workspace;
+
+        if (! $workspace) {
+            return;
+        }
+
+        $recipients = $this->workspaceInternalRecipients($workspace)
+            ->merge($this->workspaceClientRecipients($workspace));
+
+        $this->send(
+            $this->filterWorkspaceRecipients($workspace, $recipients),
+            'workspace_reactivated',
+            new WorkspaceReactivatedNotification($subscription)
         );
     }
 

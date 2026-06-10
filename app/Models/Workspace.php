@@ -338,7 +338,7 @@ class Workspace extends Model
     public function activeSubscription(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(WorkspaceSubscription::class)
-            ->whereIn('status', ['trial', 'active', 'payment_due', 'overdue'])
+            ->whereIn('status', ['trial', 'active', 'payment_due', 'overdue', 'suspended'])
             ->latestOfMany();
     }
 
@@ -350,6 +350,90 @@ class Workspace extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class)->orderByDesc('created_at');
+    }
+
+    // ── Phase 18 — Billing enforcement helpers ────────────────────────────
+
+    /**
+     * Convenience accessor for the active subscription (same as relation, eager-loadable).
+     */
+    public function billingSubscription(): ?WorkspaceSubscription
+    {
+        return $this->activeSubscription;
+    }
+
+    /**
+     * Returns true if the workspace has ANY billing restriction
+     * (restricted state OR manual suspension).
+     */
+    public function hasBillingRestriction(): bool
+    {
+        $sub = $this->activeSubscription;
+        if (! $sub) {
+            return false;
+        }
+        return $sub->isRestricted() || $sub->isSuspended();
+    }
+
+    /**
+     * Returns true if the workspace is in the "restricted" state
+     * (post-grace-period overdue, but not yet manually suspended).
+     */
+    public function isBillingRestricted(): bool
+    {
+        $sub = $this->activeSubscription;
+        return $sub && $sub->isRestricted();
+    }
+
+    /**
+     * Returns true if the workspace has been manually suspended by an admin.
+     */
+    public function isBillingSuspended(): bool
+    {
+        $sub = $this->activeSubscription;
+        return $sub && $sub->isSuspended();
+    }
+
+    /**
+     * Returns true if a client-role user can freely access workspace features.
+     *
+     * Rules:
+     *  - Admins/managers/talent: always true (use separate role checks for their own limits).
+     *  - Client roles: blocked if workspace is restricted or suspended.
+     */
+    public function canClientAccessWorkspace(User $user): bool
+    {
+        $role = $this->resolveUserWorkspaceRole($user);
+
+        // Internal roles are never blocked by billing restrictions
+        if (in_array($role, ['admin', 'workspace_admin', 'manager', 'talent', 'assigned_user'], true)) {
+            return true;
+        }
+
+        // Client roles are blocked when workspace is restricted or suspended
+        return ! $this->hasBillingRestriction();
+    }
+
+    /**
+     * Returns a message describing the billing access restriction for clients.
+     * Returns null if there is no restriction.
+     */
+    public function clientBillingAccessMessage(): ?string
+    {
+        $sub = $this->activeSubscription;
+        if (! $sub) {
+            return null;
+        }
+
+        if ($sub->isSuspended()) {
+            return 'Workspace suspended: Please contact GVOS support or complete payment to restore access.';
+        }
+
+        if ($sub->isRestricted()) {
+            return 'Workspace access is restricted: An invoice is overdue. Please review your billing to restore full access.';
+        }
+
+        return null;
     }
 
     // ── Phase 10 — Password Vault relationships ─────────────────────────────

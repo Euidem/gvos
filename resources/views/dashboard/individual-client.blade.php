@@ -26,11 +26,24 @@
     $billingWorkspaceId = $clientWorkspaceIds->first(); // for billing link
 
     $name = $profile?->first_name ?? $user->name ?? 'there';
+
+    // Phase 18: billing banner workspace
+    $reportLinkWorkspace = \App\Models\Workspace::find($clientWorkspaceIds->first());
+    $__billingBannerWs   = $reportLinkWorkspace;
 @endphp
 
 {{-- Phase 16: onboarding banner --}}
 @php $__obUser = $user; @endphp
 @include('partials.onboarding-banner')
+
+{{-- Phase 18: billing warning banner --}}
+@if ($__billingBannerWs)
+    @php
+        $__billingWorkspace = $__billingBannerWs;
+        $__billingForClient = true;
+    @endphp
+    @include('partials.billing-banner')
+@endif
 
 {{-- ── Page header ─────────────────────────────────────────────────────── --}}
 <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">

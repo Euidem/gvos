@@ -26,6 +26,28 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 18 Warnings / Notes
+
+### Phase 18 | Info | Migration must run before enforcement middleware is effective
+`2026_06_10_000004_add_billing_enforcement_fields_to_workspace_subscriptions.php` adds 6 columns used by `isRestricted()`, `isSuspended()`, `wasManuallySuspended()`. Until the migration runs, all enforcement checks return `false` (no restriction). Run `php artisan migrate` immediately after deployment.
+
+---
+
+### Phase 18 | Info | `check.billing` middleware: no subscription = no restriction
+If a workspace has no `activeSubscription`, `isRestricted()` and `isSuspended()` both return `false` and all clients pass through. This is intentional — unsubscribed/trial workspaces without a subscription record are not gated.
+
+---
+
+### Phase 18 | Info | `gvos:billing-refresh-statuses` sends duplicate notifications on repeated runs
+The command is idempotent for **status changes** (it skips subscriptions already in the correct state). However, `isDueSoon()` can re-fire a `notifyBillingDueSoon` on each run if the subscription is in `active`/`trial` and approaching `next_billing_date`. For production, run the command once daily via the scheduler and wrap `isDueSoon` re-notifications with a "last notified at" guard if needed in a future phase.
+
+---
+
+### Phase 18 | Info | Manual suspension requires admin reactivation — not self-service
+A workspace suspended via the Filament `Suspend` action (`suspended_by IS NOT NULL`) can only be restored by a super_admin or operations_admin via the `Reactivate` action. `Payment::confirm()` will NOT auto-restore it. Admins must be instructed to always use `Reactivate` after confirming payment for suspended workspaces.
+
+---
+
 ## Phase 17 Warnings / Notes
 
 ### Phase 17 | Info | Migration must run before using Generate Report feature

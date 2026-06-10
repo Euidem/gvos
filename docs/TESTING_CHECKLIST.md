@@ -5,6 +5,67 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 18 — Billing Subscription Enforcement and Workspace Access Restrictions
+
+Run after `git pull && php artisan migrate && php artisan optimize:clear`.
+
+### Migration
+- [ ] `php artisan migrate` adds `restricted_at`, `suspended_at`, `reactivated_at`, `restriction_reason`, `suspended_by`, `reactivated_by` to `workspace_subscriptions`
+
+### Billing Status Middleware
+- [ ] As a client member of a workspace with `restricted_at` set — visiting workspace tasks/chat/files redirects to `workspace.billing.restricted`
+- [ ] As a client member of a suspended workspace — visiting workspace tasks redirects to `workspace.billing.restricted`
+- [ ] As a manager/talent/admin on a restricted workspace — all workspace pages load normally
+- [ ] `workspace.billing.index`, `workspace.billing.invoice`, `workspace.billing.restricted` always load even for restricted clients
+
+### Restricted Page
+- [ ] Restricted page shows amber styling, outstanding balance, invoice reference, grace period end date if set
+- [ ] Suspended page shows slate/gray styling with suspension message
+- [ ] Restriction reason (admin note) appears when set on the subscription
+
+### Billing Banner
+- [ ] Billing banner appears on `workspace/show` when subscription is `payment_due` (amber / "Payment due soon")
+- [ ] Billing banner appears on `workspace/show` when subscription is `overdue` (red / "Payment overdue" + grace end date)
+- [ ] Billing banner appears on `workspace/show` when subscription is `restricted` (dark red / "Workspace access restricted")
+- [ ] Billing banner appears on `workspace/show` when subscription is `suspended` (slate / "Workspace suspended")
+- [ ] Billing banner appears on `workspace/billing/index` for the same states
+- [ ] Billing banner appears on individual-client dashboard when client's workspace is in a billing-alert state
+- [ ] Billing banner appears on business-client-admin dashboard for the same
+- [ ] Billing banner renders nothing for `active` or `trial` subscriptions with no due-soon condition
+
+### Artisan Command
+- [ ] `php artisan gvos:billing-refresh-statuses --dry-run` outputs a summary table; writes no DB changes
+- [ ] Running without `--dry-run` on a subscription past `next_billing_date` with unpaid invoice → advances status to `payment_due`
+- [ ] Running again → idempotent (no double-notification, no re-firing)
+- [ ] Manually suspended workspaces are skipped and logged as `[skip]`
+
+### Filament Enforcement Actions
+- [ ] Open a subscription in Filament — `restricted_at` and `suspended_at` icon columns show correct state
+- [ ] `Restrict` action is visible for active/trial subscriptions; hidden when already restricted/suspended
+- [ ] Clicking `Restrict` shows confirmation modal; confirms sets `restricted_at`, shows success notification
+- [ ] `Suspend` action opens modal with reason textarea; confirms sets `status=suspended`, `suspended_at`, `suspended_by`
+- [ ] `Reactivate` action visible on restricted/suspended subscriptions; confirms clears all restriction fields, sets `status=active`
+- [ ] Reactivated subscription can be accessed by clients normally
+
+### Manual Suspension Safety
+- [ ] Set `suspended_by` on a subscription; run `Payment::confirm()` for an associated payment → suspension NOT cleared
+- [ ] Subscription with `suspended_by=NULL` and `status=suspended` (auto) + confirm payment → subscription restored to active
+
+### Notifications
+- [ ] `BillingDueSoonNotification` creates in-app notification for internal + client members
+- [ ] `BillingOverdueNotification` creates in-app notification for internal + client members
+- [ ] `WorkspaceRestrictedNotification` creates in-app notification for internal staff only (not clients)
+- [ ] `WorkspaceSuspendedNotification` creates in-app notification for all workspace members
+- [ ] `WorkspaceReactivatedNotification` creates in-app notification for all workspace members
+
+### Audit Log
+- [ ] Filament Restrict action creates `billing.subscription_restricted` audit entry
+- [ ] Filament Suspend action creates `billing.subscription_suspended` audit entry with `suspended_by`
+- [ ] Filament Reactivate action creates `billing.subscription_reactivated` audit entry with `reactivated_by`
+- [ ] Artisan command creates `billing.status_refresh_ran` audit entry with summary counts
+
+---
+
 ## Phase 17 — Weekly Report Automation and Client Summary Workflow
 
 Run after `git pull && php artisan migrate && php artisan optimize:clear`.

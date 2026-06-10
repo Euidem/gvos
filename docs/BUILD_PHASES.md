@@ -1,7 +1,40 @@
 # GVOS — Build Phases
 
 ## Overview
-GVOS is built in 13 phases (Phase 0–12). Each phase has a clear deliverable and must be approved before the next phase starts. Do not build ahead. Do not skip phases.
+GVOS is built in phases (Phase 0–18+). Each phase has a clear deliverable and must be approved before the next phase starts. Do not build ahead. Do not skip phases.
+
+---
+
+## Phase 18 — Billing Subscription Enforcement and Workspace Access Restrictions ✅
+**Status:** Complete (2026-06-10)
+**Goal:** Billing enforcement layer — payment warning banners, overdue/grace-period tracking, workspace restriction for non-paying clients, admin suspend/reactivate actions, safe internal continuity for all internal roles.
+
+### Deliverables
+- [x] Migration: 6 enforcement columns on `workspace_subscriptions` (restricted_at, suspended_at, reactivated_at, restriction_reason, suspended_by FK, reactivated_by FK)
+- [x] `WorkspaceSubscription` model: billing state helpers, grace period constants, restriction/suspension/reactivation methods
+- [x] `Invoice` model: billing helper methods (isUnpaid, isOverdue, isDueSoon, remainingBalance, billingWarningLevel)
+- [x] `Workspace` model: billing access helpers, fixed `activeSubscription` scope to include suspended status
+- [x] `Payment::confirm()`: manual suspension safety — manually suspended workspaces are never auto-cleared by payment
+- [x] `CheckWorkspaceBillingAccess` middleware (`check.billing`): client roles blocked when restricted/suspended; internal roles always pass; billing routes always allowed
+- [x] All workspace routes use `check.billing` middleware
+- [x] `workspace.billing.restricted` route and page — always accessible; shows outstanding balance, invoice, support instructions
+- [x] `resources/views/partials/billing-banner.blade.php` — 4-state banner partial (due_soon/overdue/restricted/suspended)
+- [x] Billing banner added to: billing/index, workspace/show, individual-client dashboard, business-client-admin dashboard
+- [x] 5 notification classes: BillingDueSoon, BillingOverdue, WorkspaceRestricted, WorkspaceSuspended, WorkspaceReactivated
+- [x] 5 NotificationService methods for billing events
+- [x] 7 AuditLogger billing enforcement wrappers
+- [x] `php artisan gvos:billing-refresh-statuses` command — idempotent, dry-run capable, sends notifications, writes audit log
+- [x] Filament WorkspaceSubscriptionResource: restricted_at/suspended_at columns, Restrict/Suspend/Reactivate actions with confirmation modals
+
+### Constraints
+- No Phase 19 built
+- No live payment gateway integration
+- No invoice calculation changes
+- No password vault changes
+- No timer core changes
+- No invitation token changes
+- No payroll built
+- No GetVirtual in visible UI
 
 ---
 

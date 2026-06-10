@@ -7,6 +7,42 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-10 | Phase 18 | Billing Subscription Enforcement and Workspace Access Restrictions
+
+**Migration:** `2026_06_10_000004_add_billing_enforcement_fields_to_workspace_subscriptions.php` — adds `restricted_at`, `suspended_at`, `reactivated_at`, `restriction_reason`, `suspended_by` FK, `reactivated_by` FK to `workspace_subscriptions`.
+
+**Models updated:**
+- `WorkspaceSubscription` — constants, fillable, casts, 13 billing state helper methods, 2 new relations
+- `Invoice` — 9 billing helper methods
+- `Workspace` — 5 billing access helpers, `activeSubscription` scope fixed to include `suspended` status
+- `Payment` — `confirm()` now respects manual suspensions (never auto-clears when `suspended_by IS NOT NULL`)
+
+**Middleware:** `CheckWorkspaceBillingAccess` (`check.billing`) created and registered. All workspace routes protected. Billing, workspace index, and workspace show routes always allowed through.
+
+**Views created:**
+- `resources/views/workspace/billing/restricted.blade.php` — client-facing restriction page
+- `resources/views/partials/billing-banner.blade.php` — 4-state inline billing warning banner
+
+**Views updated:**
+- `resources/views/workspace/billing/index.blade.php` — billing banner added
+- `resources/views/workspace/show.blade.php` — billing banner added
+- `resources/views/dashboard/individual-client.blade.php` — billing banner added
+- `resources/views/dashboard/business-client-admin.blade.php` — billing banner added
+
+**Notifications (5 new classes):** `BillingDueSoonNotification`, `BillingOverdueNotification`, `WorkspaceRestrictedNotification`, `WorkspaceSuspendedNotification`, `WorkspaceReactivatedNotification`
+
+**NotificationService** — 5 new billing notification methods; `WorkspaceSubscription` model import added
+
+**AuditLogger** — 7 new Phase 18 wrappers: `billingSubscriptionPaymentDue`, `billingSubscriptionOverdue`, `billingSubscriptionRestricted`, `billingSubscriptionSuspended`, `billingSubscriptionReactivated`, `billingGracePeriodExtended`, `billingStatusRefreshRan`
+
+**Artisan command:** `app/Console/Commands/BillingRefreshStatuses.php` (`php artisan gvos:billing-refresh-statuses`) — idempotent status refresh with `--dry-run` support
+
+**Filament:** `WorkspaceSubscriptionResource` updated — `restricted_at`/`suspended_at` icon columns, `grace_ends_at`/`reactivated_at` toggleable columns, enforcement fields in form, Restrict/Suspend/Reactivate table actions with confirmation modals
+
+**Docs updated:** CURRENT_STATUS.md, BUILD_PHASES.md, IMPLEMENTATION_LOG.md, DATABASE_SCHEMA.md, PERMISSION_MATRIX.md, TESTING_CHECKLIST.md, KNOWN_ISSUES.md
+
+---
+
 ### 2026-06-10 | Phase 17 | Weekly Report Automation and Client Summary Workflow
 
 **What was done:** Built a complete report generation, review, and publishing workflow. Managers can auto-generate weekly report drafts from workspace time logs and completed tasks — no AI/LLM involved, all output is deterministic and sanitised (no internal notes, no work_details exposed). The edit view now clearly separates client-visible sections (summary, achievements, client notes) from internal sections (blockers, next steps) using colour-coded panels with lock/visibility icons. The client-facing report show view was enhanced with an hours summary block, friendly section headings, a "Message from Your Team" notes panel, and a published-by footer. A dedicated `POST publish` route handles publishing (separate from the save-as-status radio). Dashboard enhancements: manager dashboard shows report draft count as an amber link; client dashboards link the Published Reports card to the reports index; workspace show card shows latest report status and role-appropriate CTAs.

@@ -163,6 +163,94 @@ class Invoice extends Model
         return ! in_array($this->status, ['void'], true);
     }
 
+    // ── Phase 18: Billing enforcement helpers ───────────────────────────────
+
+    /** Returns true if any balance is owed and invoice is not paid/cancelled/void. */
+    public function isUnpaid(): bool
+    {
+        return in_array($this->status, ['issued', 'partially_paid', 'overdue'], true)
+            && (float) $this->balance_due > 0;
+    }
+
+    /** Returns true when fully paid. */
+    public function isPaid(): bool
+    {
+        return $this->status === 'paid';
+    }
+
+    /** Returns true when partially paid. */
+    public function isPartiallyPaid(): bool
+    {
+        return $this->status === 'partially_paid';
+    }
+
+    /**
+     * Returns true if the invoice is unpaid and past its due date.
+     * Does NOT depend on the stored status field — calculated dynamically.
+     */
+    public function isOverdue(): bool
+    {
+        if (! $this->due_date) {
+            return false;
+        }
+        return $this->isUnpaid() && $this->due_date->isPast();
+    }
+
+    /**
+     * Returns true if invoice is unpaid and due within 3 days.
+     */
+    public function isDueSoon(int $days = 3): bool
+    {
+        if (! $this->due_date) {
+            return false;
+        }
+        if (! $this->isUnpaid()) {
+            return false;
+        }
+        $daysUntil = (int) now()->startOfDay()->diffInDays($this->due_date, false);
+        return $daysUntil >= 0 && $daysUntil <= $days;
+    }
+
+    /** Number of days the invoice is overdue. Returns 0 if not overdue. */
+    public function daysOverdue(): int
+    {
+        if (! $this->isOverdue()) {
+            return 0;
+        }
+        return max(0, (int) $this->due_date->diffInDays(now(), false));
+    }
+
+    /**
+     * Days until due date. Negative if past. Null if no due date.
+     */
+    public function daysUntilDue(): ?int
+    {
+        if (! $this->due_date) {
+            return null;
+        }
+        return (int) now()->startOfDay()->diffInDays($this->due_date, false);
+    }
+
+    /** Remaining unpaid balance. */
+    public function remainingBalance(): float
+    {
+        return (float) $this->balance_due;
+    }
+
+    /**
+     * Returns warning level for UI: 'none', 'due_soon', 'overdue'.
+     */
+    public function billingWarningLevel(): string
+    {
+        if ($this->isOverdue()) {
+            return 'overdue';
+        }
+        if ($this->isDueSoon()) {
+            return 'due_soon';
+        }
+        return 'none';
+    }
+
     // ── Relationships ──────────────────────────────────────────────────────
 
     public function workspace(): BelongsTo

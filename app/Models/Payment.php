@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+// Note: Invoice is in the same namespace (App\Models), no import needed.
 
 class Payment extends Model
 {
@@ -121,9 +122,34 @@ class Payment extends Model
         if ($this->workspace_subscription_id && $this->subscription) {
             $sub = $this->subscription;
             $sub->last_paid_at = now();
-            if (in_array($sub->status, ['payment_due', 'overdue', 'suspended'], true)) {
-                $sub->status = 'active';
+
+            // Phase 18: Only auto-restore payment_due and overdue statuses.
+            // Manual suspensions (suspended_by IS NOT NULL) require admin reactivation.
+            // After payment, also clear restriction tracking fields if relevant.
+            if (in_array($sub->status, ['payment_due', 'overdue'], true)) {
+                // Check if there are still outstanding invoices on this workspace
+                $stillOwed = $sub->workspace
+                    ? Invoice::where('workspace_subscription_id', $sub->id)
+                        ->whereIn('status', ['issued', 'partially_paid', 'overdue'])
+                        ->where('balance_due', '>', 0)
+                        ->exists()
+                    : false;
+
+                if (! $stillOwed) {
+                    $sub->status        = 'active';
+                    $sub->restricted_at = null;
+                    $sub->reactivated_at = now();
+                }
+            } elseif ($sub->status === 'suspended' && ! $sub->wasManuallySuspended()) {
+                // Auto-suspended (no suspended_by set): safe to auto-restore
+                $sub->status         = 'active';
+                $sub->restricted_at  = null;
+                $sub->suspended_at   = null;
+                $sub->reactivated_at = now();
             }
+            // Manual suspension (suspended_by IS NOT NULL) is NOT auto-cleared here.
+            // Admin must explicitly reactivate via Filament.
+
             $sub->save();
         }
     }

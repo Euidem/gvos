@@ -774,6 +774,90 @@ class AuditLogger
         self::log('workspace_vault_item.access_logs_viewed', $vaultItem, self::vaultContext($vaultItem, $extra));
     }
 
+    // ── Phase 18 — Billing Enforcement ───────────────────────────────────
+
+    /**
+     * Subscription moved to payment_due status.
+     */
+    public static function billingSubscriptionPaymentDue(Model $subscription, array $extra = []): void
+    {
+        self::log('billing.subscription_payment_due', $subscription, array_merge([
+            'workspace_id'      => $subscription->workspace_id ?? null,
+            'next_billing_date' => $subscription->next_billing_date ?? null,
+            'status'            => $subscription->status ?? null,
+        ], $extra));
+    }
+
+    /**
+     * Subscription moved to overdue status (grace period started).
+     */
+    public static function billingSubscriptionOverdue(Model $subscription, array $extra = []): void
+    {
+        self::log('billing.subscription_overdue', $subscription, array_merge([
+            'workspace_id'   => $subscription->workspace_id ?? null,
+            'grace_ends_at'  => $subscription->grace_ends_at ?? null,
+            'status'         => $subscription->status ?? null,
+        ], $extra));
+    }
+
+    /**
+     * Workspace client access restricted (grace period expired, unpaid).
+     */
+    public static function billingSubscriptionRestricted(Model $subscription, array $extra = []): void
+    {
+        self::log('billing.subscription_restricted', $subscription, array_merge([
+            'workspace_id'  => $subscription->workspace_id ?? null,
+            'restricted_at' => $subscription->restricted_at ?? null,
+        ], $extra));
+    }
+
+    /**
+     * Workspace manually suspended by an admin.
+     */
+    public static function billingSubscriptionSuspended(Model $subscription, ?int $suspendedBy = null, array $extra = []): void
+    {
+        self::log('billing.subscription_suspended', $subscription, array_merge([
+            'workspace_id'  => $subscription->workspace_id ?? null,
+            'suspended_by'  => $suspendedBy,
+            'suspended_at'  => $subscription->suspended_at ?? null,
+            'reason'        => $subscription->restriction_reason ?? null,
+        ], $extra), $suspendedBy);
+    }
+
+    /**
+     * Workspace access reactivated (manual admin action or auto-cleared by payment).
+     */
+    public static function billingSubscriptionReactivated(Model $subscription, ?int $reactivatedBy = null, array $extra = []): void
+    {
+        self::log('billing.subscription_reactivated', $subscription, array_merge([
+            'workspace_id'   => $subscription->workspace_id ?? null,
+            'reactivated_by' => $reactivatedBy,
+            'reactivated_at' => $subscription->reactivated_at ?? null,
+        ], $extra), $reactivatedBy);
+    }
+
+    /**
+     * Admin extended the grace period for a subscription.
+     */
+    public static function billingGracePeriodExtended(Model $subscription, array $extra = []): void
+    {
+        self::log('billing.grace_period_extended', $subscription, array_merge([
+            'workspace_id'  => $subscription->workspace_id ?? null,
+            'grace_ends_at' => $subscription->grace_ends_at ?? null,
+        ], $extra));
+    }
+
+    /**
+     * The gvos:billing-refresh-statuses artisan command ran.
+     * Subject is null (system-level action, not tied to one model).
+     */
+    public static function billingStatusRefreshRan(array $summary = []): void
+    {
+        self::log('billing.status_refresh_ran', null, array_merge([
+            'ran_at' => now()->toDateTimeString(),
+        ], $summary), null);
+    }
+
     // ── Phase 16 — Onboarding ─────────────────────────────────────────────
 
     public static function onboardingProfileUpdated(Model $user, array $changes = []): void

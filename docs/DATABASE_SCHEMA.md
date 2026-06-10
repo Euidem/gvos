@@ -1,6 +1,6 @@
 # GVOS — Database Schema
 
-## Status: Phase 13 migrations created and active
+## Status: Phase 18 migrations created and active
 
 ---
 
@@ -604,6 +604,12 @@ Active billing relationship between a workspace and a billing plan.
 | last_paid_at | timestamp nullable | updated on payment confirm |
 | grace_ends_at | timestamp nullable | |
 | notes | text nullable | |
+| restricted_at | timestamp nullable | Phase 18: set when client access restricted (grace expired + unpaid) |
+| suspended_at | timestamp nullable | Phase 18: set when manually suspended by admin |
+| reactivated_at | timestamp nullable | Phase 18: set when access restored |
+| restriction_reason | text nullable | Phase 18: admin note shown to members on restriction page |
+| suspended_by | FK users nullable | Phase 18: actor who performed manual suspension; nullOnDelete |
+| reactivated_by | FK users nullable | Phase 18: actor who reactivated; nullOnDelete |
 | timestamps + softDeletes | | |
 | INDEX | (workspace_id, status) | |
 

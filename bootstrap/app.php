@@ -28,6 +28,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
             // GVOS — account status gate (blocks suspended / inactive users)
             'check.status'       => \App\Http\Middleware\CheckAccountStatus::class,
+
+            // GVOS Phase 18 — billing access gate (blocks restricted/suspended workspace access for clients)
+            'check.billing'      => \App\Http\Middleware\CheckWorkspaceBillingAccess::class,
         ]);
 
         // Inertia middleware appended to web group.

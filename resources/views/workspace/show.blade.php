@@ -124,6 +124,13 @@
             </div>
         @endif
 
+        {{-- ── Phase 18: Billing warning banner ───────────────────────────────── --}}
+        @php
+            $__billingWorkspace = $workspace;
+            $__billingForClient = $isClientRole;
+        @endphp
+        @include('partials.billing-banner')
+
         {{-- ── Phase 16: Orientation card for new members ──────────────────── --}}
         @php
             $__joinedAt  = $activeMember?->joined_at;
