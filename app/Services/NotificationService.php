@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\EmailDeliveryLog;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Trial;
@@ -351,14 +352,41 @@ class NotificationService
 
     private function notifySafely(User $user, GvosNotification $notification, string $key, string $channel): void
     {
+        $payload = $notification->toArray(new \stdClass());
+        $workspaceId = isset($payload['workspace_id']) ? (int) $payload['workspace_id'] : null;
+
         try {
             $user->notify($notification);
+
+            if ($channel === 'mail') {
+                EmailDeliveryLog::create([
+                    'notification_key' => $key,
+                    'channel' => $channel,
+                    'recipient_user_id' => $user->id,
+                    'recipient_email_hash' => hash('sha256', strtolower($user->email)),
+                    'workspace_id' => $workspaceId,
+                    'status' => 'success',
+                ]);
+            }
         } catch (\Throwable $e) {
-            Log::warning('GVOS notification delivery failed: ' . $e->getMessage(), [
+            Log::warning('GVOS notification delivery failed', [
                 'user_id' => $user->id,
                 'notification_key' => $key,
                 'channel' => $channel,
+                'error' => $this->sanitizeErrorMessage($e->getMessage()),
             ]);
+
+            if ($channel === 'mail') {
+                EmailDeliveryLog::create([
+                    'notification_key' => $key,
+                    'channel' => $channel,
+                    'recipient_user_id' => $user->id,
+                    'recipient_email_hash' => hash('sha256', strtolower($user->email)),
+                    'workspace_id' => $workspaceId,
+                    'status' => 'failed',
+                    'error_message' => substr($this->sanitizeErrorMessage($e->getMessage()), 0, 255),
+                ]);
+            }
         }
     }
 
@@ -367,13 +395,43 @@ class NotificationService
         try {
             Notification::route('mail', $invitation->email)
                 ->notify(new WorkspaceInvitationMailNotification($invitation));
+
+            EmailDeliveryLog::create([
+                'notification_key' => 'workspace_invitation_mail',
+                'channel' => 'mail',
+                'recipient_user_id' => null,
+                'recipient_email_hash' => hash('sha256', strtolower($invitation->email)),
+                'workspace_id' => $invitation->workspace_id,
+                'status' => 'success',
+            ]);
         } catch (\Throwable $e) {
-            Log::warning('GVOS workspace invitation mail failed: ' . $e->getMessage(), [
+            Log::warning('GVOS workspace invitation mail failed', [
                 'workspace_id' => $invitation->workspace_id,
                 'invitation_id' => $invitation->id,
                 'email_hash' => hash('sha256', strtolower($invitation->email)),
+                'error' => $this->sanitizeErrorMessage($e->getMessage()),
+            ]);
+
+            EmailDeliveryLog::create([
+                'notification_key' => 'workspace_invitation_mail',
+                'channel' => 'mail',
+                'recipient_user_id' => null,
+                'recipient_email_hash' => hash('sha256', strtolower($invitation->email)),
+                'workspace_id' => $invitation->workspace_id,
+                'status' => 'failed',
+                'error_message' => substr($this->sanitizeErrorMessage($e->getMessage()), 0, 255),
             ]);
         }
+    }
+
+    private function sanitizeErrorMessage(string $message): string
+    {
+        // Strip potential SMTP credentials or connection strings from error messages
+        $message = preg_replace('/password[=:\s]+\S+/i', 'password=[redacted]', $message);
+        $message = preg_replace('/username[=:\s]+\S+/i', 'username=[redacted]', $message);
+        $message = preg_replace('/://[^@\s]+@/', '://[credentials]@', $message);
+
+        return $message;
     }
 
     private function preferencesFor(User $user, string $key): array

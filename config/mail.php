@@ -71,4 +71,11 @@ return [
         'name' => env('MAIL_FROM_NAME', 'GVOS'),
     ],
 
+    'markdown' => [
+        'theme' => env('MAIL_MARKDOWN_THEME', 'gvos'),
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];

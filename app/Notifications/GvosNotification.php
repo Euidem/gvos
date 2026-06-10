@@ -50,15 +50,17 @@ abstract class GvosNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $mail = (new MailMessage)
-            ->subject($this->payload['title'] ?? 'GVOS notification')
-            ->greeting('Hello ' . ($notifiable->name ?? 'there'))
+            ->subject('GVOS: ' . ($this->payload['title'] ?? 'New notification'))
+            ->greeting('Hello ' . ($notifiable->name ?? 'there') . ',')
             ->line($this->payload['message'] ?? 'You have a new GVOS notification.');
 
         if (! empty($this->payload['action_url'])) {
             $mail->action('Open in GVOS', url($this->payload['action_url']));
         }
 
-        return $mail->line('You can update your notification preferences from GVOS settings.');
+        return $mail
+            ->line('To manage your notification preferences, visit your GVOS account settings.')
+            ->salutation('The GVOS Team');
     }
 
     private function safePayload(array $payload): array

@@ -529,12 +529,41 @@ All member management routes require `auth` + `check.status` except the invitati
 
 ---
 
+## Phase 15 - Email Configuration and System Mail
+
+### Mail Test Page (Filament — `/admin/mail-test`)
+
+| Role | Access |
+|------|--------|
+| super_admin | ✅ Full access |
+| operations_admin | ✅ Full access |
+| All other roles | ❌ Denied (Filament panel restriction) |
+
+### Email Delivery Log (Filament — `/admin/email-delivery-logs`)
+
+| Role | Access |
+|------|--------|
+| super_admin | ✅ Read-only view |
+| operations_admin | ✅ Read-only view |
+| All other roles | ❌ Denied (Filament panel restriction) |
+
+### Phase 15 Security Constraints
+
+- Mail test page is accessible only to admin roles via `canAccess()` static method on the Filament page class.
+- Emails must not include vault secrets, invitation tokens in plain text, SMTP credentials, raw payment payloads, private file paths, or internal notes.
+- SMTP errors are sanitized to remove `password=` and `username=` patterns before any logging or display.
+- `email_delivery_logs` stores only sha256 hash of recipient email — no plain email addresses.
+- Delivery log stores a sanitized error message (max 255 chars) — no credentials or full stack traces.
+- Phase 15 does not change billing calculations, payment confirmation logic, vault encryption, timer core, or invitation token logic.
+
+---
+
 ## Implementation Notes
 
 - Filament resources are protected at panel level (`canAccessPanel`) AND resource level (`canViewAny`, `canCreate`, `canEdit`, `canDelete`).
 - Phase 2 Filament navigation group: "People & Organizations" (sort positions 1–5).
 - Phase 3 Filament navigation group: "Leads & Trials" (sort positions 1–3).
-- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5). Phase 7 adds WorkspaceTimeLogResource (sort 7) and WorkspaceWeeklyReportResource (sort 8). Phase 8 adds "Billing" resources: Billing Plans, Subscriptions, Invoices, Payments. Phase 10 adds WorkspaceVaultItemResource (sort 9) and WorkspaceVaultAccessLogResource (sort 10) under Workspace. Phase 11 adds UserNotificationPreferenceResource under User Management (sort 2).
+- Phase 4 Filament navigation group: "Workspace" (sort 1). Phase 5 adds WorkspaceTaskResource (sort 2). Phase 6 adds WorkspaceFileResource (sort 4) and WorkspaceMessageResource (sort 5). Phase 7 adds WorkspaceTimeLogResource (sort 7) and WorkspaceWeeklyReportResource (sort 8). Phase 8 adds "Billing" resources: Billing Plans, Subscriptions, Invoices, Payments. Phase 10 adds WorkspaceVaultItemResource (sort 9) and WorkspaceVaultAccessLogResource (sort 10) under Workspace. Phase 11 adds UserNotificationPreferenceResource under User Management (sort 2). Phase 15 adds EmailDeliveryLogResource (System nav group, sort 98) and MailTest page (System nav group, sort 99).
 - Always enforce on server — never rely on front-end hiding alone.
 - Business client staff permissions are per-user, managed by Business Client Admin (Phase 4+).
 - GetVirtual brand name must not appear in any visible app UI (screens, panels, dashboards, notices). Internal documentation only.

@@ -366,6 +366,38 @@ GVOS is built in 13 phases (Phase 0–12). Each phase has a clear deliverable an
 
 ---
 
+## Phase 15 - Email Configuration, System Mail Testing and Branded Notification Templates
+**Status:** Complete
+**Depends on:** Phase 14 invitation flow
+
+### Deliverables
+- [x] GVOS branded mail CSS theme (`resources/views/vendor/mail/html/themes/gvos.css`)
+- [x] Custom mail header and footer blade overrides for GVOS wordmark and privacy footer
+- [x] `config/mail.php` updated with `markdown.theme = gvos`
+- [x] `.env.example` updated with `MAIL_MARKDOWN_THEME`, cPanel SMTP block (SSL + TLS), mail test tool reference
+- [x] `GvosNotification::toMail()` improved — `GVOS:` subject prefix, better footer, `The GVOS Team` salutation
+- [x] `WorkspaceInvitationMailNotification` improved — inviter name, better subject, clearer expiry, ignore note
+- [x] `email_delivery_logs` migration and model for mail delivery tracking
+- [x] `NotificationService` logs mail success/failure to `email_delivery_logs`; error messages sanitized for SMTP credential safety
+- [x] `EmailDeliveryLogResource` Filament read-only resource with filters
+- [x] `MailTest` Filament page at `/admin/mail-test` — super_admin + operations_admin only; sanitized error display
+- [x] Auth email branding verified (APP_NAME=GVOS controls password reset email)
+- [x] Documentation updates (status, log, permissions, testing, known issues, build phases)
+- [x] No billing, payment, vault encryption, timer, invitation token logic, payroll, gateway, screenshot, keystroke, or screen-monitoring changes
+
+### Test Checklist
+- Password reset email renders with GVOS branding (dark header, GVOS footer)
+- Invitation email includes workspace name, inviter name, expiry, and GVOS salutation
+- Mail test page at `/admin/mail-test` is accessible only to super_admin and operations_admin
+- Mail test with log driver writes to laravel.log without error
+- Mail test with cPanel SMTP delivers to recipient
+- Failed mail test shows sanitized error — no credentials visible
+- `email_delivery_logs` table creates success row on mail delivery and failed row on error
+- Filament `/admin/email-delivery-logs` shows delivery log entries
+- No raw email addresses in delivery log — only sha256 hash
+
+---
+
 ## Phase Approval Process
 1. Complete all deliverables for the phase
 2. Run the phase-specific testing checklist

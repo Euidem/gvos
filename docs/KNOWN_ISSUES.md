@@ -26,6 +26,26 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 15 Warnings / Notes
+
+### Phase 15 | Info | email_delivery_logs migration must be run manually on cPanel
+
+The `email_delivery_logs` table requires `php artisan migrate` after deploying. Until the migration runs, `NotificationService` mail delivery calls will throw a database error. **Mitigation:** deploy code and run migrate before testing any mail-enabled notification flows on staging/production.
+
+---
+
+### Phase 15 | Info | Mail delivery log does not capture database channel events
+
+The `EmailDeliveryLog` is only written for the `mail` channel. Database notifications are not logged in this table — they are tracked via the standard Laravel `notifications` table. This is intentional to avoid double-logging.
+
+---
+
+### Phase 15 | Info | Vendor mail theme requires `php artisan view:clear` after deployment
+
+Switching from the default Laravel mail theme to the `gvos` custom theme requires clearing the compiled view cache. Run `php artisan view:clear` after pull if invitation emails still render without GVOS branding.
+
+---
+
 ## Phase 14 Warnings / Notes
 
 ### Phase 14 | Info | Login redirect after sign-in for Scenario 3 requires manual return

@@ -5,6 +5,62 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 15 — Email Configuration and Templates
+
+Run after `git pull && php artisan migrate && php artisan optimize:clear`.
+
+### Mail Theme
+- [ ] Password reset email renders with GVOS dark header and footer (check log or live)
+- [ ] Workspace invitation email renders with GVOS brand (dark header, blue button, GVOS footer)
+- [ ] Notification email subject is prefixed with `GVOS:`
+- [ ] Notification email salutation says "The GVOS Team"
+- [ ] No GetVirtual or Laravel branding visible in any email
+
+### Invitation Mail Content
+- [ ] Invitation email subject includes workspace name
+- [ ] Invitation email body includes inviter's name (when inviter is set)
+- [ ] Invitation email expiry line uses human-readable date format
+- [ ] "If you were not expecting this invitation" ignore note is present
+- [ ] Invitation action button links to correct `/invitations/{token}` URL
+
+### Mail Test Tool
+- [ ] `/admin/mail-test` loads for super_admin
+- [ ] `/admin/mail-test` loads for operations_admin
+- [ ] Talent user gets 403 accessing `/admin/mail-test` (panel-level restriction)
+- [ ] Sending test email with `MAIL_MAILER=log` writes to `storage/logs/laravel.log` without error
+- [ ] Sending test email with valid cPanel SMTP delivers to the recipient address
+- [ ] A deliberate bad SMTP config shows a user-friendly error in the Filament panel without exposing credentials
+- [ ] Mail test success logs `admin_user_id` and `recipient_hash` (not raw email) to laravel.log
+- [ ] Mail test failure logs `admin_user_id` and `error` (sanitized) to laravel.log
+
+### Email Delivery Log
+- [ ] `email_delivery_logs` table exists after migration
+- [ ] Sending a workspace invitation mail creates a `success` or `failed` row in the table
+- [ ] Triggering a mail notification (e.g. task assigned with email enabled) creates a `success` row
+- [ ] A delivery failure creates a `failed` row with sanitized `error_message` (no password/credentials)
+- [ ] `/admin/email-delivery-logs` loads in Filament for super_admin
+- [ ] Log table shows notification_key, channel, status, recipient user, created_at
+- [ ] No raw email addresses are stored in the log (only sha256 hash in `recipient_email_hash`)
+
+### Error Handling and Security
+- [ ] SMTP connection failure in NotificationService does not expose credentials in log output
+- [ ] SMTP failure in `mailInvitationSafely` logs workspace_id, invitation_id, email_hash — no raw email, no token
+- [ ] `sanitizeErrorMessage()` strips `password=` and `username=` strings from error messages
+
+### Environment Documentation
+- [ ] `.env.example` has `MAIL_MARKDOWN_THEME=gvos` entry
+- [ ] `.env.example` has cPanel SMTP block with SSL (port 465) and TLS (port 587) examples
+- [ ] `.env.example` references mail test tool in the cPanel block comment
+- [ ] No visible `GetVirtual` text in any visible UI or email
+
+### Regression
+- [ ] Existing workspace invitation flow still works end to end
+- [ ] Notification inbox still shows notifications correctly
+- [ ] Notification preferences page still saves correctly
+- [ ] No billing, vault, timer, or payment changes
+
+---
+
 ## Phase 0 — Foundation Setup ✅ PASSED
 
 - [x] Laravel loads on cPanel staging

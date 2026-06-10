@@ -1,8 +1,39 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-10
-**Current Phase:** Phase 14 - Invitation Account Activation and Onboarding - Complete
-**Current Activity:** Invitation flow extended so invited users can create a GVOS account directly from the invitation link; no billing, payment confirmation, vault encryption, or timer logic changes
+**Current Phase:** Phase 15 - Email Configuration, System Mail Testing and Branded Notification Templates - Complete
+**Current Activity:** GVOS email system made reliable and branded — custom mail theme, admin mail test tool, delivery logging, improved notification content, cPanel SMTP docs
+
+## Phase 15 Status - Complete (2026-06-10)
+
+### Email Configuration, System Mail Testing and Branded Notification Templates
+- [x] GVOS branded mail theme created (`resources/views/vendor/mail/html/themes/gvos.css`) — GVOS color tokens, Inter font, dark header/footer
+- [x] Custom mail header blade override (`resources/views/vendor/mail/html/header.blade.php`) — GVOS Platform wordmark on dark bar
+- [x] Custom mail footer blade override (`resources/views/vendor/mail/html/footer.blade.php`) — copyright and ignore-if-unexpected note
+- [x] `config/mail.php` updated with `markdown.theme = gvos` and `markdown.paths`
+- [x] `.env.example` updated with full cPanel SMTP block (SSL port 465 + TLS port 587 variants) and `MAIL_MARKDOWN_THEME` key
+- [x] `GvosNotification::toMail()` improved — subject prefixed with `GVOS:`, improved greeting, better footer, `salutation('The GVOS Team')`
+- [x] `WorkspaceInvitationMailNotification` improved — inviter name included, better subject, clearer expiry phrasing, `salutation('The GVOS Team')`, ignore note
+- [x] `NotificationService::notifySafely()` now logs mail delivery success/failure to `email_delivery_logs` table
+- [x] `NotificationService::mailInvitationSafely()` now logs mail delivery success/failure to `email_delivery_logs` table
+- [x] `NotificationService` error messages sanitized to strip potential SMTP credentials before logging
+- [x] `email_delivery_logs` migration created — notification_key, channel, recipient_user_id, recipient_email_hash (sha256), workspace_id, status, error_message
+- [x] `EmailDeliveryLog` model created with `recipientUser` relationship
+- [x] `EmailDeliveryLogResource` Filament resource created — read-only, filterable by status/channel, sortable by created_at
+- [x] `MailTest` Filament page created at `/admin/mail-test` — super_admin and operations_admin only, safe error display, credential-sanitized logging
+- [x] Auth email branding verified — `APP_NAME=GVOS` controls password reset email app name; no change required
+- [x] No billing calculation, payment confirmation, vault encryption, timer core, payment gateway, payroll, invitation token logic, or Phase 16 work
+
+### Remaining Manual Verification
+- [ ] Run `php artisan migrate` on cPanel to create `email_delivery_logs` table
+- [ ] Test mail test tool at `/admin/mail-test` with log driver; check `storage/logs/laravel.log`
+- [ ] Switch to cPanel SMTP in `.env`, re-test mail test tool to verify live delivery
+- [ ] Trigger a workspace invitation; confirm branded email renders in mail client
+- [ ] Check Filament `/admin/email-delivery-logs` populates after notification activity
+- [ ] Confirm mail test page is inaccessible to talent/client roles (403 expected)
+- [ ] Re-test existing tasks, billing, payment confirmation, vault, timer, notifications, and client portal
+
+---
 
 ## Phase 14 Status - Complete (2026-06-10)
 

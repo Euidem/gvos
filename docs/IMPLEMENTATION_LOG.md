@@ -7,6 +7,39 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-10 | Phase 15 | Email Configuration, System Mail Testing and Branded Notification Templates
+
+**What was done:** Made GVOS emails reliable, professional, and safe. Created a custom GVOS branded mail theme, improved all notification email content, added a Filament-based mail test tool restricted to admin roles, added an email delivery log table to track mail success/failure, sanitized error messages to prevent SMTP credential exposure, and documented cPanel SMTP configuration in `.env.example`.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `resources/views/vendor/mail/html/themes/gvos.css` | GVOS branded mail CSS theme — dark header/footer, Inter font, GVOS blue button |
+| `resources/views/vendor/mail/html/header.blade.php` | Mail header override — GVOS Platform wordmark on dark bar |
+| `resources/views/vendor/mail/html/footer.blade.php` | Mail footer override — copyright and ignore-if-unexpected note |
+| `database/migrations/2026_06_10_000001_create_email_delivery_logs_table.php` | Email delivery tracking table |
+| `app/Models/EmailDeliveryLog.php` | EmailDeliveryLog model with recipientUser relationship |
+| `app/Filament/Pages/MailTest.php` | Admin-only mail test page (super_admin + operations_admin) |
+| `resources/views/filament/pages/mail-test.blade.php` | Mail test page Blade view |
+| `app/Filament/Resources/EmailDeliveryLogResource.php` | Read-only Filament resource for mail delivery log |
+| `app/Filament/Resources/EmailDeliveryLogResource/Pages/ListEmailDeliveryLogs.php` | List page for delivery log resource |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `config/mail.php` | Added `markdown` key with `theme=gvos` and `paths` |
+| `.env.example` | Added `MAIL_MARKDOWN_THEME=gvos`, full cPanel SMTP block with SSL+TLS options, mail test tool reference |
+| `app/Notifications/GvosNotification.php` | Improved `toMail()` — subject prefixed with `GVOS:`, better greeting/footer, `salutation('The GVOS Team')` |
+| `app/Notifications/WorkspaceInvitationMailNotification.php` | Improved content — inviter name, better subject, expiry phrasing, ignore note, GVOS salutation |
+| `app/Services/NotificationService.php` | Added `EmailDeliveryLog` import; `notifySafely()` logs mail success/failure; `mailInvitationSafely()` logs; `sanitizeErrorMessage()` strips potential SMTP credentials |
+| Docs | Phase 15 status, log, build phases, testing checklist, known issues, permissions |
+
+**Preserved:** No Phase 16 work, no billing calculation changes, no payment confirmation changes, no invoice status changes, no payment gateway, no payroll, no vault encryption changes, no timer core changes, no invitation token logic changes, no browser extension, no screenshots, no keystroke tracking, no screen monitoring, and no visible GetVirtual UI.
+
+---
+
 ### 2026-06-10 | Phase 14 | Invitation Account Activation and Onboarding
 
 **What was done:** Extended the workspace invitation flow so invited users can create a GVOS account directly from the invitation link. Phase 13 only handled existing users. Phase 14 adds a self-registration path (Scenario 4), improves detection of account existence (Scenario 3), clarifies the wrong-email error (Scenario 2), and retains the existing accept flow (Scenario 1). A dedicated `WorkspaceInvitationController` was created to own the invitation show/accept/register logic cleanly.
