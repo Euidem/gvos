@@ -18,13 +18,13 @@ class UserNotificationPreferenceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-bell';
 
-    protected static ?string $navigationGroup = 'User Management';
+    protected static ?string $navigationGroup = 'Communications';
 
     protected static ?string $navigationLabel = 'Notification Preferences';
 
     protected static ?string $modelLabel = 'Notification Preference';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     public static function canViewAny(): bool
     {

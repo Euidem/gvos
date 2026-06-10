@@ -18,13 +18,13 @@ class WorkspaceMessageResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
-    protected static ?string $navigationGroup = 'Workspace';
+    protected static ?string $navigationGroup = 'Operations';
 
     protected static ?string $navigationLabel = 'Messages';
 
     protected static ?string $modelLabel = 'Workspace Message';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
     // ── Access control ────────────────────────────────────────────────────
 

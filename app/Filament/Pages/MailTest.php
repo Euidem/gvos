@@ -18,8 +18,8 @@ class MailTest extends Page implements HasForms
     protected static ?string $navigationIcon = 'heroicon-o-envelope';
     protected static string $view = 'filament.pages.mail-test';
     protected static ?string $navigationLabel = 'Mail Test';
-    protected static ?string $navigationGroup = 'System';
-    protected static ?int $navigationSort = 99;
+    protected static ?string $navigationGroup = 'Communications';
+    protected static ?int $navigationSort = 3;
     protected static ?string $title = 'Mail Configuration Test';
 
     public ?array $data = [];

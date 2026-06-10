@@ -5,6 +5,70 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 22 — Admin Dashboard and Operational Command Center Polish
+
+Run after `git pull && php artisan optimize:clear && php artisan view:clear`. No migrations required.
+
+### cPanel Commands
+```bash
+git pull origin main
+php artisan optimize:clear
+php artisan view:clear
+php artisan permission:cache-reset
+```
+
+### Dashboard Heading Tests
+- [ ] Super admin visits `/admin` — page heading is "GVOS Command Center"
+- [ ] Subheading "Monitor clients, workspaces, billing, reports and operations from one place." appears
+- [ ] No "GetVirtual" text visible anywhere on the dashboard
+- [ ] No development/phase language visible on the dashboard
+
+### Widget Tests
+- [ ] **PlatformOverviewWidget** — 6 stat cards appear with non-zero or zero values (no PHP errors)
+- [ ] **WorkspaceOperationsWidget** — 6 stat cards appear
+- [ ] **BillingHealthWidget** — 6 stat cards appear
+- [ ] **TimeProductivityWidget** — 5 stat cards appear
+- [ ] **ReportsWidget** — 4 stat cards appear
+- [ ] **SecurityVaultWidget** — 5 stat cards appear (no secret values visible anywhere)
+- [ ] **OperationalAlertsWidget** — renders either "No active alerts" green banner, or a list of alert cards
+- [ ] **RecentActivityWidget** — renders last audit events or "no events yet" message
+- [ ] **QuickActionsWidget** — 10 action buttons visible; clicking "Create Workspace" opens workspace create form
+
+### Navigation Group Tests
+- [ ] Sidebar shows group: **Operations** containing Workspaces, Tasks, Time Logs, Weekly Reports, Files, Messages
+- [ ] Sidebar shows group: **People** containing Users, Companies, Departments, Client Profiles, Talent Profiles, Manager Profiles
+- [ ] Sidebar shows group: **Billing** containing Billing Plans, Subscriptions, Invoices, Payments
+- [ ] Sidebar shows group: **Security** containing Password Vault, Vault Access Logs, Audit Logs
+- [ ] Sidebar shows group: **Communications** containing Notification Preferences, Mail Delivery Log, Mail Test
+- [ ] Sidebar shows group: **Leads & Trials** containing Lead Requests, Price Estimates, Trials
+- [ ] No "Workspace" group visible (old group name)
+- [ ] No "People & Organizations" group visible (old group name)
+- [ ] No "User Management" group visible (old group name)
+- [ ] No "System" group visible (old group name)
+
+### AuditLogResource Tests
+- [ ] Visiting `/admin/audit-logs` shows a list of audit events
+- [ ] No create/edit/delete buttons visible on audit log list
+- [ ] Actor name column is searchable
+- [ ] Today filter works correctly
+- [ ] Operations admin can access audit logs; client/talent cannot
+
+### Security / Privacy Tests
+- [ ] Vault widget does not display any `secret_value` data
+- [ ] Recent activity widget does not show vault secret values in context
+- [ ] Email delivery log widget does not show SMTP credentials
+- [ ] Client/talent roles cannot access `/admin` (403 expected)
+
+### Quick Action Link Tests
+- [ ] Create Workspace → `/admin/workspaces/create`
+- [ ] Add User → `/admin/users/create`
+- [ ] Create Invoice → `/admin/invoices/create`
+- [ ] Record Payment → `/admin/payments/create`
+- [ ] Mail Test → `/admin/mail-test`
+- [ ] Vault Items → `/admin/workspace-vault-items`
+
+---
+
 ## Phase 21 — Portal Security, Rate Limiting and CSRF Audit
 
 Run after `git pull && php artisan optimize:clear`. No migrations required.

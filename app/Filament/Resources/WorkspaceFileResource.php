@@ -18,13 +18,13 @@ class WorkspaceFileResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-folder-open';
 
-    protected static ?string $navigationGroup = 'Workspace';
+    protected static ?string $navigationGroup = 'Operations';
 
     protected static ?string $navigationLabel = 'Files';
 
     protected static ?string $modelLabel = 'Workspace File';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
 
     // ── Access control ────────────────────────────────────────────────────
 

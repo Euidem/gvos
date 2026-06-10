@@ -7,6 +7,38 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-11 | Phase 22 | Admin Dashboard and Operational Command Center Polish
+
+**What was done:** Transformed the Filament admin panel from a generic list of resources into an operational command center. Added 9 new widgets covering platform health, workspace operations, billing status, time/productivity, reports, vault/security, operational alerts, recent audit activity, and quick action links. Created a custom Dashboard page override with GVOS branding. Added a read-only AuditLogResource so admins can browse the audit trail without CLI access. Re-grouped all 23 Filament resources from generic groups into semantic groups: Operations, People, Billing, Security, Communications, Leads & Trials.
+
+**Files created (15):**
+
+| File | Purpose |
+|------|---------|
+| `app/Filament/Pages/Dashboard.php` | Custom dashboard page — heading "GVOS Command Center" |
+| `app/Filament/Widgets/PlatformOverviewWidget.php` | User/workspace/trial/invitation counts |
+| `app/Filament/Widgets/WorkspaceOperationsWidget.php` | Running timers, blocked tasks, unassigned workspaces |
+| `app/Filament/Widgets/BillingHealthWidget.php` | Subscription health, overdue invoices, restricted/suspended counts |
+| `app/Filament/Widgets/TimeProductivityWidget.php` | Timer activity, review queue, hours logged |
+| `app/Filament/Widgets/ReportsWidget.php` | Draft/submitted/approved/published report counts |
+| `app/Filament/Widgets/SecurityVaultWidget.php` | Vault items, reveals today, file uploads, audit activity |
+| `app/Filament/Widgets/OperationalAlertsWidget.php` | Alert cards with severity and direct admin links |
+| `app/Filament/Widgets/RecentActivityWidget.php` | Last 10 audit events with actor, action, workspace context |
+| `app/Filament/Widgets/QuickActionsWidget.php` | 10 quick action links to key admin pages |
+| `app/Filament/Resources/AuditLogResource.php` | Read-only audit log Filament resource (Security group) |
+| `app/Filament/Resources/AuditLogResource/Pages/ListAuditLogs.php` | List page |
+| `resources/views/filament/widgets/operational-alerts.blade.php` | Alert widget view |
+| `resources/views/filament/widgets/recent-activity.blade.php` | Recent activity widget view |
+| `resources/views/filament/widgets/quick-actions.blade.php` | Quick actions widget view |
+
+**Files modified (18):** AdminPanelProvider (removed FilamentInfoWidget, pages() cleared), MailTest (Communications group), 6 Workspace→Operations resources, 6 People&Organizations→People resources, 2 Workspace→Security resources (vault), 2 User Management/System→Communications resources.
+
+**No migration required.** All changes at the Filament/widget layer only.
+
+**Tool:** Claude Code | **Status:** Phase 22 complete
+
+---
+
 ### 2026-06-10 | Phase 21 | Portal Security, Rate Limiting and CSRF Audit
 
 **Files changed:**

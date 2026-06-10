@@ -22,13 +22,13 @@ class TalentProfileResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-circle';
 
-    protected static ?string $navigationGroup = 'People & Organizations';
+    protected static ?string $navigationGroup = 'People';
 
     protected static ?string $navigationLabel = 'Talent Profiles';
 
     protected static ?string $modelLabel = 'Talent Profile';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
 
     // ── Label helpers ─────────────────────────────────────────────────────
 

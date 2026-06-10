@@ -22,13 +22,13 @@ class ManagerProfileResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $navigationGroup = 'People & Organizations';
+    protected static ?string $navigationGroup = 'People';
 
     protected static ?string $navigationLabel = 'Manager Profiles';
 
     protected static ?string $modelLabel = 'Manager Profile';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
     // ── Status options ────────────────────────────────────────────────────
 

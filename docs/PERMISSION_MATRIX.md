@@ -103,6 +103,34 @@ All rate limiters are defined in `AppServiceProvider::boot()` and applied via `t
 
 ---
 
+## Phase 22 — Admin Dashboard and Audit Log Access
+
+### New AuditLogResource
+| Role | Access |
+|------|--------|
+| `super_admin` | Full read access to audit logs via Filament |
+| `operations_admin` | Full read access to audit logs via Filament |
+| All other roles | No access — `canAccess()` returns false; Filament returns 403 |
+
+### Dashboard Widgets (Filament Admin Panel)
+All dashboard widgets are rendered only for users who can access the Filament panel (`canAccessPanel()` returns true for `super_admin` and `operations_admin`). No widget exposes:
+- Vault `secret_value` (widget only shows counts)
+- SMTP credentials (email delivery log widget only shows counts)
+- Invitation tokens (not stored in any widget query)
+- Raw context objects that could contain sensitive data (recent activity widget shows workspace_code/workspace_name only)
+
+### Navigation Groups (Phase 22)
+| Group | Resources |
+|-------|-----------|
+| Operations | Workspaces, Tasks, Time Logs, Weekly Reports, Files, Messages |
+| People | Users, Companies, Departments, Client Profiles, Talent Profiles, Manager Profiles |
+| Billing | Billing Plans, Subscriptions, Invoices, Payments |
+| Security | Password Vault, Vault Access Logs, Audit Logs |
+| Communications | Notification Preferences, Mail Delivery Log, Mail Test |
+| Leads & Trials | Lead Requests, Price Estimates, Trials |
+
+---
+
 ## Phase 20 — File Storage Access Rules
 
 All file actions (upload, download, delete, index) are in the workspace route group (`auth` + `check.status` + `check.billing`). The controller enforces workspace membership + file ownership on top.

@@ -23,13 +23,13 @@ class ClientProfileResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
-    protected static ?string $navigationGroup = 'People & Organizations';
+    protected static ?string $navigationGroup = 'People';
 
     protected static ?string $navigationLabel = 'Client Profiles';
 
     protected static ?string $modelLabel = 'Client Profile';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     // ── Client type labels ────────────────────────────────────────────────
 

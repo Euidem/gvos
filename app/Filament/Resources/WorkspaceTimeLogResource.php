@@ -18,13 +18,13 @@ class WorkspaceTimeLogResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
 
-    protected static ?string $navigationGroup = 'Workspace';
+    protected static ?string $navigationGroup = 'Operations';
 
     protected static ?string $navigationLabel = 'Time Logs';
 
     protected static ?string $modelLabel = 'Time Log';
 
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 3;
 
     // ── Access control ────────────────────────────────────────────────────
 

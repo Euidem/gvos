@@ -14,8 +14,8 @@ class EmailDeliveryLogResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-envelope-open';
     protected static ?string $navigationLabel = 'Mail Delivery Log';
-    protected static ?string $navigationGroup = 'System';
-    protected static ?int $navigationSort = 98;
+    protected static ?string $navigationGroup = 'Communications';
+    protected static ?int $navigationSort = 2;
     protected static ?string $modelLabel = 'Mail Delivery Log';
     protected static ?string $pluralModelLabel = 'Mail Delivery Logs';
 

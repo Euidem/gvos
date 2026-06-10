@@ -1,8 +1,83 @@
 # GVOS — Current Status
 
-**Last Updated:** 2026-06-10
-**Current Phase:** Phase 21 - Portal Security, Rate Limiting and CSRF Audit - Complete
-**Current Activity:** Full security audit of portal routes, forms, rate limiting, CSRF, vault reveal, invitation endpoints, session config. Rate limiting added to 6 sensitive endpoints. CSRF confirmed complete across all forms. Session production guidance documented.
+**Last Updated:** 2026-06-11
+**Current Phase:** Phase 22 - Admin Dashboard and Operational Command Center Polish - Complete
+**Current Activity:** Transformed the Filament admin panel into a useful command center. Added 9 operational widgets, a custom Dashboard heading, an AuditLogResource, re-grouped all navigation into logical sections (Operations / People / Billing / Security / Communications / Leads & Trials), and added a read-only audit log viewer.
+
+## Phase 22 Status - Complete (2026-06-11)
+
+### Admin Dashboard and Operational Command Center Polish
+
+**Goal:** Turn the Filament admin panel into a useful command center with operational metrics, billing health, time/productivity stats, report status, security/vault summaries, audit activity, operational alerts, and quick action links.
+
+#### What Was Built
+
+**Widgets (9 new — auto-discovered from `app/Filament/Widgets/`):**
+- [x] `PlatformOverviewWidget` — total users, active users, active workspaces, clients, talent/managers, active trials, pending invitations
+- [x] `WorkspaceOperationsWidget` — active workspaces, workspaces with running timers, blocked tasks, pending reports, no manager, no talent
+- [x] `BillingHealthWidget` — active subscriptions, payment due/overdue count, overdue invoices, restricted workspaces, suspended workspaces, recent confirmed payments
+- [x] `TimeProductivityWidget` — running timers, submitted logs awaiting review, approved this week, logged hours this week, long-running timers (>10h)
+- [x] `ReportsWidget` — draft/submitted/approved report counts, published this week
+- [x] `SecurityVaultWidget` — active vault items, secret reveals today, vault access logs today, file uploads today, audit events today
+- [x] `OperationalAlertsWidget` — custom view; shows alert cards with severity (danger/warning/info) and links for: overdue invoices, restricted/suspended workspaces, long-running timers, submitted logs, draft reports, stale invitations, workspaces without manager/talent, failed emails
+- [x] `RecentActivityWidget` — custom view; shows last 10 audit events with actor name, action label, workspace context, time-ago
+- [x] `QuickActionsWidget` — custom view; 10 quick action buttons linking to create/view key admin pages
+
+**Custom Dashboard Page:**
+- [x] `app/Filament/Pages/Dashboard.php` — overrides Filament default; heading "GVOS Command Center", subheading "Monitor clients, workspaces, billing, reports and operations from one place."
+
+**AuditLogResource (new):**
+- [x] `app/Filament/Resources/AuditLogResource.php` — read-only Filament resource for audit logs; sortable by time, searchable by actor, filterable by action and today; no create/edit/delete
+- [x] `app/Filament/Resources/AuditLogResource/Pages/ListAuditLogs.php`
+
+**Navigation Re-grouping:**
+All 23 Filament resources were re-grouped from the generic "Workspace" and "People & Organizations" groups into semantic operational groups:
+- [x] **Operations** (sort 1–6): Workspaces, Tasks, Time Logs, Weekly Reports, Files, Messages
+- [x] **People** (sort 1–6): Users, Companies, Departments, Client Profiles, Talent Profiles, Manager Profiles
+- [x] **Billing** (unchanged): Billing Plans, Subscriptions, Invoices, Payments
+- [x] **Security** (sort 1–3): Password Vault, Vault Access Logs, Audit Logs
+- [x] **Communications** (sort 1–3): Notification Preferences, Mail Delivery Log, Mail Test
+- [x] **Leads & Trials** (unchanged): Lead Requests, Price Estimates, Trials
+
+**AdminPanelProvider changes:**
+- [x] Removed `Widgets\FilamentInfoWidget` from default widgets array
+- [x] Removed `Pages\Dashboard::class` from explicit pages array (now auto-discovered)
+- [x] Custom `App\Filament\Pages\Dashboard` is now auto-discovered and sets the GVOS Command Center heading
+
+#### Constraints Respected
+- [x] No Phase 23 built
+- [x] No payment gateway integration
+- [x] No invoice calculation changes
+- [x] No payment confirmation logic changes
+- [x] No vault encryption changes
+- [x] No timer core changes
+- [x] No invitation token security changes
+- [x] No file storage security changes
+- [x] No payroll built
+- [x] No `GetVirtual` in visible UI
+- [x] GVOS naming throughout
+- [x] No migrations — no schema changes
+
+#### No Migration Required
+All changes are at the Filament/widget layer only.
+
+### Remaining Manual Verification (Phase 22)
+- [ ] Run `php artisan optimize:clear && php artisan view:clear` on cPanel after pull
+- [ ] Super admin opens `/admin` — confirm "GVOS Command Center" heading and subheading appear
+- [ ] Operations admin opens `/admin` — confirm same dashboard renders
+- [ ] All 9 widgets appear and load without error
+- [ ] Stat counts appear correct for at least Platform Overview and Billing Health
+- [ ] Operational Alerts widget shows "No active alerts" when there are none, or lists real alerts
+- [ ] Recent Activity widget shows latest audit events (if any exist)
+- [ ] Quick Actions: click Create Workspace → lands on workspace create form
+- [ ] Quick Actions: click Mail Test → lands on mail test page
+- [ ] Navigation sidebar shows Operations, People, Billing, Security, Communications, Leads & Trials groups
+- [ ] Operations group contains Workspaces, Tasks, Time Logs, Weekly Reports, Files, Messages
+- [ ] Security group contains Password Vault, Vault Access Logs, Audit Logs
+- [ ] Communications group contains Notification Preferences, Mail Delivery Log, Mail Test
+- [ ] AuditLogResource at `/admin/audit-logs` lists events — no create/edit/delete actions visible
+- [ ] Vault widget does not show any secret values
+- [ ] Client/talent roles cannot access admin dashboard (403 expected)
 
 ## Phase 21 Status - Complete (2026-06-10)
 

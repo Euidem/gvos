@@ -26,13 +26,13 @@ class WorkspaceVaultItemResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-lock-closed';
 
-    protected static ?string $navigationGroup = 'Workspace';
+    protected static ?string $navigationGroup = 'Security';
 
     protected static ?string $navigationLabel = 'Password Vault';
 
     protected static ?string $modelLabel = 'Vault Item';
 
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 1;
 
     public static function canViewAny(): bool
     {

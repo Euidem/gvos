@@ -18,13 +18,13 @@ class WorkspaceVaultAccessLogResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shield-check';
 
-    protected static ?string $navigationGroup = 'Workspace';
+    protected static ?string $navigationGroup = 'Security';
 
     protected static ?string $navigationLabel = 'Vault Access Logs';
 
     protected static ?string $modelLabel = 'Vault Access Log';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 2;
 
     public static function canViewAny(): bool
     {

@@ -20,13 +20,13 @@ class WorkspaceWeeklyReportResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
 
-    protected static ?string $navigationGroup = 'Workspace';
+    protected static ?string $navigationGroup = 'Operations';
 
     protected static ?string $navigationLabel = 'Weekly Reports';
 
     protected static ?string $modelLabel = 'Weekly Report';
 
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 4;
 
     // ── Access control ────────────────────────────────────────────────────
 

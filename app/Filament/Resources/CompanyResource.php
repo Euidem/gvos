@@ -24,13 +24,13 @@ class CompanyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
 
-    protected static ?string $navigationGroup = 'People & Organizations';
+    protected static ?string $navigationGroup = 'People';
 
     protected static ?string $navigationLabel = 'Companies';
 
     protected static ?string $modelLabel = 'Company';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     // ── Status label helpers ──────────────────────────────────────────────
 

@@ -23,13 +23,13 @@ class DepartmentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
 
-    protected static ?string $navigationGroup = 'People & Organizations';
+    protected static ?string $navigationGroup = 'People';
 
     protected static ?string $navigationLabel = 'Departments';
 
     protected static ?string $modelLabel = 'Department';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     // ── Access control ────────────────────────────────────────────────────
 
