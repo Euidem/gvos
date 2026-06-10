@@ -10,7 +10,7 @@ class WorkspaceOperationsWidget extends BaseWidget
 {
     protected static ?int $sort = 2;
     protected static ?string $pollingInterval = null;
-    protected static ?string $heading = 'Workspace Operations';
+    protected ?string $heading = 'Workspace Operations';
 
     protected function getStats(): array
     {

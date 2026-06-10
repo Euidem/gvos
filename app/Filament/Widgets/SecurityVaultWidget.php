@@ -13,7 +13,7 @@ class SecurityVaultWidget extends BaseWidget
 {
     protected static ?int $sort = 6;
     protected static ?string $pollingInterval = null;
-    protected static ?string $heading = 'Security and Vault';
+    protected ?string $heading = 'Security and Vault';
 
     protected function getStats(): array
     {

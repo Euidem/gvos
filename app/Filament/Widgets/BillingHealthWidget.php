@@ -12,7 +12,7 @@ class BillingHealthWidget extends BaseWidget
 {
     protected static ?int $sort = 3;
     protected static ?string $pollingInterval = null;
-    protected static ?string $heading = 'Billing Health';
+    protected ?string $heading = 'Billing Health';
 
     protected function getStats(): array
     {

@@ -10,7 +10,7 @@ class TimeProductivityWidget extends BaseWidget
 {
     protected static ?int $sort = 4;
     protected static ?string $pollingInterval = null;
-    protected static ?string $heading = 'Time and Productivity';
+    protected ?string $heading = 'Time and Productivity';
 
     protected function getStats(): array
     {

@@ -16,7 +16,7 @@ class PlatformOverviewWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
     protected static ?string $pollingInterval = null;
-    protected static ?string $heading = 'Platform Overview';
+    protected ?string $heading = 'Platform Overview';
 
     protected function getStats(): array
     {

@@ -10,7 +10,7 @@ class ReportsWidget extends BaseWidget
 {
     protected static ?int $sort = 5;
     protected static ?string $pollingInterval = null;
-    protected static ?string $heading = 'Weekly Reports';
+    protected ?string $heading = 'Weekly Reports';
 
     protected function getStats(): array
     {
