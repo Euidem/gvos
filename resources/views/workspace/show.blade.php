@@ -113,6 +113,96 @@
             </div>
         @endif
 
+        {{-- ── Phase 16: Orientation card for new members ──────────────────── --}}
+        @php
+            $__joinedAt  = $activeMember?->joined_at;
+            $__isNew     = $__joinedAt && $__joinedAt->gt(now()->subDays(7));
+            $__needsOnb  = $user->needsOnboarding();
+        @endphp
+        @if ($__isNew || $__needsOnb)
+            <div class="rounded-xl border border-secondary/20 bg-secondary/5 px-5 py-4">
+                <div class="flex items-start gap-3 mb-3">
+                    <span class="material-symbols-outlined text-secondary flex-shrink-0 mt-0.5" style="font-size:22px">waving_hand</span>
+                    <div>
+                        <p class="font-body-md text-body-md text-on-surface font-semibold">
+                            Welcome to {{ $workspace->name }}
+                        </p>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                            @if ($__needsOnb)
+                                You have joined this workspace. Complete your profile setup to get the most out of GVOS.
+                            @else
+                                You joined this workspace recently. Here is a quick guide to get started.
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
+                    @if ($user->hasRole('talent'))
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">task_alt</span>
+                            Check your assigned tasks
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">schedule</span>
+                            Log time for each session
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">chat</span>
+                            Use chat for updates
+                        </div>
+                    @elseif ($user->hasRole('line_manager'))
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">group</span>
+                            Review your team below
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">task_alt</span>
+                            Create and assign tasks
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">schedule</span>
+                            Approve time logs weekly
+                        </div>
+                    @elseif ($user->hasAnyRole(['individual_client','business_client_admin']))
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">task_alt</span>
+                            Track deliverables via tasks
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">receipt</span>
+                            Review billing and invoices
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">chat</span>
+                            Communicate via chat
+                        </div>
+                    @else
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">visibility</span>
+                            Browse workspace activity
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">chat</span>
+                            Use chat for questions
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-secondary" style="font-size:16px">contact_support</span>
+                            Contact your manager for help
+                        </div>
+                    @endif
+                </div>
+                @if ($__needsOnb)
+                    <div class="mt-3 pt-3 border-t border-secondary/20">
+                        <a href="{{ route('onboarding.index') }}"
+                           class="inline-flex items-center gap-1.5 text-sm font-semibold text-secondary hover:underline">
+                            <span class="material-symbols-outlined" style="font-size:15px">arrow_forward</span>
+                            Complete your profile setup
+                        </a>
+                    </div>
+                @endif
+            </div>
+        @endif
+
         {{-- ── Details grid ──────────────────────────────────────────────── --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 

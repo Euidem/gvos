@@ -30,6 +30,10 @@
     $greeting = now()->hour < 12 ? 'Good morning' : (now()->hour < 18 ? 'Good afternoon' : 'Good evening');
 @endphp
 
+{{-- Phase 16: onboarding banner --}}
+@php $__obUser = $user; @endphp
+@include('partials.onboarding-banner')
+
 {{-- ── Page header ─────────────────────────────────────────────────────── --}}
 <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
     <div>

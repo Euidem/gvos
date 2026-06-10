@@ -51,6 +51,10 @@
     $name = $profile?->first_name ?? $user->name ?? 'there';
 @endphp
 
+{{-- Phase 16: onboarding banner --}}
+@php $__obUser = $user; @endphp
+@include('partials.onboarding-banner')
+
 {{-- ── Page header + Clock-In widget ──────────────────────────────────── --}}
 {{-- Stitch: flex row with welcome left + Clock-In/Out widget right --}}
 <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">

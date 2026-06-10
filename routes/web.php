@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadRequestController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkspaceBillingController;
 use App\Http\Controllers\WorkspaceController;
@@ -46,10 +47,15 @@ Route::middleware('auth')->group(function () {
     })->name('account.status');
 });
 
-// ── Profile routes (all authenticated users) ─────────────────────────────
+// ── Profile and onboarding routes (all authenticated users) ──────────────
 Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/profile',  [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profile',  [ProfileController::class, 'update'])->name('profile.update');
+
+    // ── Onboarding routes (Phase 16) ──────────────────────────────────────
+    Route::get('/onboarding',              [OnboardingController::class, 'index'])->name('onboarding.index');
+    Route::post('/onboarding/profile',     [OnboardingController::class, 'update'])->name('onboarding.profile.update');
+    Route::post('/onboarding/complete',    [OnboardingController::class, 'completeStep'])->name('onboarding.step.complete');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');

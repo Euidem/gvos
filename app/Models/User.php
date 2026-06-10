@@ -179,6 +179,129 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(WorkspaceWeeklyReport::class, 'reviewed_by_user_id');
     }
 
+    // ── Onboarding helpers ───────────────────────────────────────────────
+
+    /**
+     * Returns true if the user still needs to complete onboarding.
+     * Based on user_profiles.onboarding_status.
+     */
+    public function needsOnboarding(): bool
+    {
+        $profile = $this->profile;
+        return ! $profile || $profile->onboarding_status !== 'complete';
+    }
+
+    /**
+     * Returns true when the required profile fields (first + last name) are filled.
+     */
+    public function hasCompletedRequiredProfile(): bool
+    {
+        $profile = $this->profile;
+        return $profile
+            && filled($profile->first_name)
+            && filled($profile->last_name);
+    }
+
+    /**
+     * Returns the role-specific profile model: TalentProfile, ManagerProfile, or ClientProfile.
+     */
+    public function profileForRole(): ?\Illuminate\Database\Eloquent\Model
+    {
+        return match ($this->getGvosRoleName()) {
+            'talent'                                                              => $this->talentProfile,
+            'line_manager'                                                        => $this->managerProfile,
+            'individual_client', 'business_client_admin', 'business_client_staff' => $this->clientProfile,
+            default                                                               => null,
+        };
+    }
+
+    /**
+     * Returns the user's first active workspace (membership first, then primary roles).
+     */
+    public function primaryWorkspace(): ?Workspace
+    {
+        $membership = $this->workspaceMemberships()
+            ->where('status', 'active')
+            ->with('workspace')
+            ->first();
+
+        if ($membership?->workspace) {
+            return $membership->workspace;
+        }
+
+        return Workspace::where(function ($q) {
+            $q->where('primary_manager_id', $this->id)
+              ->orWhere('primary_talent_id', $this->id);
+        })->whereIn('status', ['pending', 'active'])->first();
+    }
+
+    /**
+     * Returns a role-tailored onboarding checklist.
+     * Each item: ['key', 'label', 'done', 'optional' (default false)]
+     */
+    public function onboardingChecklist(): array
+    {
+        $profile    = $this->profile;
+        $role       = $this->getGvosRoleName();
+        $hasName    = $profile && filled($profile->first_name) && filled($profile->last_name);
+        $hasPhone   = $profile && filled($profile->phone);
+        $hasTz      = filled($this->timezone) && $this->timezone !== 'UTC';
+        $workspace  = $this->primaryWorkspace();
+        $hasWs      = $workspace !== null;
+
+        $items = [
+            ['key' => 'name',      'label' => 'Complete your full name',       'done' => $hasName],
+            ['key' => 'timezone',  'label' => 'Set your timezone',             'done' => $hasTz],
+            ['key' => 'phone',     'label' => 'Add a phone number',            'done' => $hasPhone,  'optional' => true],
+            ['key' => 'workspace', 'label' => 'Join or access your workspace', 'done' => $hasWs],
+        ];
+
+        $roleItems = match ($role) {
+            'talent' => [
+                ['key' => 'tasks', 'label' => 'Check your assigned tasks',
+                 'done' => WorkspaceTask::where('assigned_to_user_id', $this->id)->exists(),
+                 'optional' => true],
+            ],
+            'line_manager' => [
+                ['key' => 'team', 'label' => 'Review your team members',
+                 'done' => $hasWs, 'optional' => true],
+                ['key' => 'timelogs', 'label' => 'Review submitted time logs',
+                 'done' => $hasWs && WorkspaceTimeLog::whereIn('workspace_id',
+                        Workspace::where('primary_manager_id', $this->id)->pluck('id'))
+                    ->where('status', 'submitted')->exists(),
+                 'optional' => true],
+            ],
+            'individual_client', 'business_client_admin' => [
+                ['key' => 'tasks', 'label' => 'Review workspace tasks',
+                 'done' => $hasWs, 'optional' => true],
+            ],
+            'business_client_staff' => [
+                ['key' => 'messages', 'label' => 'Check workspace messages',
+                 'done' => $hasWs, 'optional' => true],
+            ],
+            default => [],
+        };
+
+        return array_merge($items, $roleItems);
+    }
+
+    /**
+     * Returns a 0–100 completion percentage based on required checklist items.
+     */
+    public function onboardingCompletionPercentage(): int
+    {
+        $checklist = $this->onboardingChecklist();
+        $required  = array_values(array_filter($checklist, fn ($i) => empty($i['optional'])));
+        $done      = array_filter($required, fn ($i) => $i['done']);
+        $total     = count($required);
+
+        if ($total === 0) {
+            return 100;
+        }
+
+        return (int) round(count($done) / $total * 100);
+    }
+
     // ── Status helpers ───────────────────────────────────────────────────
 
     public function isActive(): bool

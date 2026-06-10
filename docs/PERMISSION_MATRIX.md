@@ -62,6 +62,9 @@ $middleware->alias([
 | `/lead/dashboard` | `auth, check.status, role:active_lead` |
 | `/profile` | `auth, check.status` |
 | `/account/status` | `auth` |
+| `/onboarding` (GET) | `auth, check.status` — all authenticated roles |
+| `/onboarding/profile` (POST) | `auth, check.status` — all authenticated roles |
+| `/onboarding/complete` (POST) | `auth, check.status` — all authenticated roles |
 
 ### Account Status Gate
 

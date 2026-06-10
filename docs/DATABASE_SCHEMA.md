@@ -41,6 +41,8 @@ Extended profile data for all GVOS users.
 | city | string(100) nullable | |
 | bio | text nullable | max 500 chars at UI layer |
 | onboarding_status | enum | pending, in_progress, complete (default: pending) |
+| onboarding_completed_at | timestamp nullable | Set when onboarding_status transitions to complete (Phase 16) |
+| last_onboarding_step | string(100) nullable | Tracks last step reached: started, profile, complete (Phase 16) |
 | created_at | timestamp | |
 | updated_at | timestamp | |
 

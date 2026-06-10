@@ -111,6 +111,14 @@ class WorkspaceInvitationController extends Controller
         app(NotificationService::class)->notifyWorkspaceMemberAdded($member, $user);
         app(NotificationService::class)->notifyWorkspaceInvitationAccepted($invitation, $user);
 
+        // Send users with incomplete onboarding to the onboarding page first
+        $user->load('profile');
+        if ($user->needsOnboarding()) {
+            return redirect()
+                ->route('onboarding.index')
+                ->with('success', 'You have joined ' . ($invitation->workspace->name ?? 'the workspace') . '. Complete your profile to get started.');
+        }
+
         return redirect()
             ->route('workspace.show', $invitation->workspace)
             ->with('success', 'Welcome to ' . ($invitation->workspace->name ?? 'the workspace') . '!');
@@ -235,9 +243,11 @@ class WorkspaceInvitationController extends Controller
 
         Auth::login($user);
 
+        // New users are sent to onboarding to complete their profile first.
+        // The workspace they joined is visible on the onboarding page.
         return redirect()
-            ->route('workspace.show', $invitation->workspace)
-            ->with('success', 'Welcome to ' . ($invitation->workspace->name ?? 'the workspace') . '! Your account has been created and you have been added to the workspace.');
+            ->route('onboarding.index')
+            ->with('success', 'Welcome to GVOS! Your account has been created and you have been added to ' . ($invitation->workspace->name ?? 'the workspace') . '. Complete your profile to get started.');
     }
 
     /**

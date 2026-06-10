@@ -1,8 +1,39 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-10
-**Current Phase:** Phase 15 - Email Configuration, System Mail Testing and Branded Notification Templates - Complete
-**Current Activity:** GVOS email system made reliable and branded — custom mail theme, admin mail test tool, delivery logging, improved notification content, cPanel SMTP docs
+**Current Phase:** Phase 16 - User Onboarding Completion - Complete
+**Current Activity:** Polished onboarding experience for new GVOS users — profile completion page, checklist, dashboard banners, workspace orientation card, improved empty states, post-invitation redirects
+
+## Phase 16 Status - Complete (2026-06-10)
+
+### User Onboarding Completion
+- [x] Migration: `2026_06_10_000002_add_onboarding_fields_to_user_profiles_table.php` — adds `onboarding_completed_at` and `last_onboarding_step` to `user_profiles`
+- [x] `UserProfile` model: new fillable fields and `onboarding_completed_at` datetime cast
+- [x] `User` model: 6 onboarding helpers — `needsOnboarding()`, `hasCompletedRequiredProfile()`, `profileForRole()`, `primaryWorkspace()`, `onboardingChecklist()`, `onboardingCompletionPercentage()`
+- [x] `AuditLogger`: `onboardingProfileUpdated()` and `onboardingCompleted()` wrappers
+- [x] `OnboardingController`: `index` (checklist, % progress, role label), `update` (profile save), `completeStep` (marks complete, notifies)
+- [x] `/onboarding` page with progress ring, role-tailored checklist, profile form, workspace card, primary action links
+- [x] Onboarding banner partial (`resources/views/partials/onboarding-banner.blade.php`) included in all 5 role dashboards — auto-hides when complete
+- [x] Workspace show page: orientation card for new members or incomplete profiles
+- [x] Improved empty states — role-specific messages in workspace index, tasks index, time logs index
+- [x] `WorkspaceInvitationController::registerAndAccept()` redirects new users to onboarding
+- [x] `WorkspaceInvitationController::accept()` redirects existing users with incomplete onboarding to onboarding
+- [x] `ProfileController` updated — also sets `onboarding_completed_at` and `last_onboarding_step` on profile completion
+- [x] Routes: `GET /onboarding`, `POST /onboarding/profile`, `POST /onboarding/complete`
+- [x] Onboarding completion fires database notification to user (silent fail-safe)
+- [x] No billing, payment, vault, timer, invitation token, payroll, gateway, screenshot, or keystroke changes
+
+### Remaining Manual Verification
+- [ ] Run `php artisan migrate` on cPanel to add `onboarding_completed_at` and `last_onboarding_step` columns
+- [ ] Register a new user via invitation — confirm redirect to `/onboarding`
+- [ ] Accept an existing invitation with incomplete profile — confirm onboarding redirect
+- [ ] Complete profile form — verify `onboarding_status` transitions from `pending` → `in_progress` → `complete`
+- [ ] Mark setup complete — verify `onboarding_completed_at` is set and redirect goes to workspace/dashboard
+- [ ] Open talent/manager/client dashboard — confirm onboarding banner appears until setup is complete
+- [ ] Confirm empty states in workspace index, tasks index, and time logs index are role-aware
+- [ ] Confirm checklist percentage counts only required (non-optional) items
+
+---
 
 ## Phase 15 Status - Complete (2026-06-10)
 

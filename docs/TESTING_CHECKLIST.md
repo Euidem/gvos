@@ -5,6 +5,62 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 16 — User Onboarding Completion
+
+Run after `git pull && php artisan migrate && php artisan optimize:clear`.
+
+### Onboarding Page
+- [ ] New user via invitation redirect lands at `/onboarding` after registerAndAccept
+- [ ] Existing user with incomplete profile lands at `/onboarding` after accept
+- [ ] `/onboarding` page shows welcome with first name and role label
+- [ ] Progress ring shows 0% on first visit with no profile data
+- [ ] Filling first name and last name and saving advances progress to at least required steps done
+- [ ] "Mark Setup Complete" button appears only when required profile fields are filled
+- [ ] Clicking "Mark Setup Complete" sets `onboarding_status = complete` and `onboarding_completed_at`
+- [ ] After completion, redirect goes to primary workspace (if exists) or role dashboard
+- [ ] "I'll finish this later" and "Go to Dashboard" links work on onboarding page
+- [ ] Workspace card on onboarding shows correct workspace name and "Open Workspace" link
+- [ ] If no workspace, empty workspace card shows waiting message
+
+### Checklist Accuracy
+- [ ] Talent checklist includes tasks and time-log optional items
+- [ ] Manager checklist includes team review and timelogs optional items
+- [ ] Client checklist includes billing optional item
+- [ ] Required items count correctly for percentage (optional items excluded)
+- [ ] Percentage shows 100 when all required items done
+
+### Dashboard Banners
+- [ ] Talent dashboard shows onboarding banner when `onboarding_status !== complete`
+- [ ] Manager dashboard shows onboarding banner when `onboarding_status !== complete`
+- [ ] Individual client dashboard shows onboarding banner when `onboarding_status !== complete`
+- [ ] Business client admin dashboard shows onboarding banner when `onboarding_status !== complete`
+- [ ] Business client staff dashboard shows onboarding banner when `onboarding_status !== complete`
+- [ ] Banner disappears after setup is marked complete
+- [ ] "Continue Setup" link in banner goes to `/onboarding`
+
+### Workspace Orientation Card
+- [ ] Workspace show page shows orientation card for users who joined in the last 7 days
+- [ ] Workspace show page shows orientation card for users with incomplete onboarding
+- [ ] Role-specific tips shown: talent sees task/time-log/chat; manager sees team/tasks/timelogs; client sees tasks/billing/chat
+- [ ] "Complete your profile setup" link appears in card when `needsOnboarding()` is true
+- [ ] Orientation card absent for established members with complete onboarding
+
+### Empty States
+- [ ] Workspace index shows role-aware empty state with onboarding link when profile incomplete
+- [ ] Tasks index shows role-specific message for talent (manager hasn't assigned tasks yet)
+- [ ] Tasks index shows role-specific message for clients (deliverables coming from manager)
+- [ ] Time logs index shows role-specific message for manager (team hasn't submitted yet)
+- [ ] Time logs index shows role-specific message for clients (approved logs coming from manager)
+
+### Audit and Security
+- [ ] `onboarding.profile_updated` event appears in audit_logs after saving profile from onboarding
+- [ ] `onboarding.completed` event appears in audit_logs after marking setup complete
+- [ ] No raw email, token, or password in any audit log entry
+- [ ] `/onboarding` requires auth (unauthenticated gets login redirect)
+- [ ] `POST /onboarding/complete` only works for authenticated users
+
+---
+
 ## Phase 15 — Email Configuration and Templates
 
 Run after `git pull && php artisan migrate && php artisan optimize:clear`.

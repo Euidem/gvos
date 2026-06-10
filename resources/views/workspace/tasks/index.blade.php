@@ -282,23 +282,36 @@
 
     {{-- ── Global empty state (no tasks at all) ───────────────────────────── --}}
     @if ($tasks->isEmpty())
+        @php $__taskUser = auth()->user(); @endphp
         <div class="bg-white rounded-xl shadow-sm p-12 text-center"
              style="border:1px solid #E2E8F0; margin-top: -8px;">
             <div class="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
                  style="background-color:rgba(0,88,190,.06);">
                 <span class="material-symbols-outlined" style="font-size:28px; color:#0058be;">view_kanban</span>
             </div>
-            <h4 class="text-sm font-semibold mb-1" style="color:#1E293B;">No tasks yet</h4>
-            <p class="text-xs max-w-xs mx-auto mb-4" style="color:#94A3B8;">
-                Tasks help track work inside this workspace. Create the first task to get started.
-            </p>
+            <h4 class="text-sm font-semibold mb-2" style="color:#1E293B;">No tasks yet</h4>
             @if ($canCreate)
+                <p class="text-xs max-w-xs mx-auto mb-4" style="color:#94A3B8;">
+                    Tasks help track work inside this workspace. Create the first task to get started.
+                </p>
                 <a href="{{ route('workspace.tasks.create', $workspace) }}"
                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white"
                    style="background-color:#0058be">
                     <span class="material-symbols-outlined" style="font-size:16px;">add</span>
                     Create First Task
                 </a>
+            @elseif ($__taskUser->hasRole('talent'))
+                <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
+                    Your manager has not assigned any tasks yet. Check back soon or reach out via workspace chat.
+                </p>
+            @elseif ($__taskUser->hasAnyRole(['individual_client','business_client_admin','business_client_staff']))
+                <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
+                    Tasks will appear here once your manager sets up your project deliverables.
+                </p>
+            @else
+                <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
+                    No tasks have been created in this workspace yet.
+                </p>
             @endif
         </div>
     @endif

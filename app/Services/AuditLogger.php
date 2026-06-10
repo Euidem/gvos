@@ -762,4 +762,21 @@ class AuditLogger
     {
         self::log('workspace_vault_item.access_logs_viewed', $vaultItem, self::vaultContext($vaultItem, $extra));
     }
+
+    // ── Phase 16 — Onboarding ─────────────────────────────────────────────
+
+    public static function onboardingProfileUpdated(Model $user, array $changes = []): void
+    {
+        self::log('onboarding.profile_updated', $user, array_merge([
+            'user_id' => $user->id ?? null,
+        ], $changes));
+    }
+
+    public static function onboardingCompleted(Model $user): void
+    {
+        self::log('onboarding.completed', $user, [
+            'user_id'   => $user->id ?? null,
+            'role'      => $user->getGvosRoleName() ?? null,
+        ]);
+    }
 }

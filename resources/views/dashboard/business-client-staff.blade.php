@@ -20,6 +20,10 @@
     $name = $profile?->first_name ?? $user->name ?? 'there';
 @endphp
 
+{{-- Phase 16: onboarding banner --}}
+@php $__obUser = $user; @endphp
+@include('partials.onboarding-banner')
+
 {{-- ── Page header ─────────────────────────────────────────────────────── --}}
 <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
     <div>

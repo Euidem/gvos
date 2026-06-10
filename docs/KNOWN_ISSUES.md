@@ -26,6 +26,18 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 16 Warnings / Notes
+
+### Phase 16 | Info | Onboarding migration must run before invitation acceptance
+The `add_onboarding_fields_to_user_profiles_table` migration adds `onboarding_completed_at` and `last_onboarding_step` columns. These are nullable so the app will not crash if the migration has not run yet, but `OnboardingController::completeStep()` and `ProfileController::update()` will silently not set those fields. Run `php artisan migrate` after deploy.
+
+---
+
+### Phase 16 | Info | `primaryWorkspace()` depends on workspace membership data
+`User::primaryWorkspace()` checks active workspace memberships first, then primary_manager_id/primary_talent_id. For a brand new user with no workspace yet, this returns null. The onboarding page handles null workspace gracefully (shows an empty card with a waiting message).
+
+---
+
 ## Phase 15 Warnings / Notes
 
 ### Phase 15 | Info | email_delivery_logs migration must be run manually on cPanel

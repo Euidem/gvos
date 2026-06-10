@@ -12,12 +12,35 @@
 
         {{-- ── Empty state ──────────────────────────────────────────────── --}}
         @if ($workspaces->isEmpty())
+            @php $__wsUser = auth()->user(); @endphp
             <div class="bg-white rounded-xl border border-border-subtle shadow-card px-8 py-12 text-center">
                 <div class="w-14 h-14 bg-surface-container-low rounded-xl flex items-center justify-center mx-auto mb-4">
                     <span class="material-symbols-outlined text-outline" style="font-size: 28px;">workspaces</span>
                 </div>
-                <h3 class="text-base font-semibold text-on-surface mb-1">No workspaces yet</h3>
-                <p class="text-sm text-on-surface-variant">Workspaces are created by the GVOS team when your service begins.</p>
+                <h3 class="text-base font-semibold text-on-surface mb-2">No workspaces yet</h3>
+                @if ($__wsUser->hasAnyRole(['talent','line_manager']))
+                    <p class="text-sm text-on-surface-variant max-w-sm mx-auto">
+                        The GVOS operations team will create and assign your workspace when your engagement begins.
+                        You will receive an email notification once you are added.
+                    </p>
+                @elseif ($__wsUser->hasAnyRole(['individual_client','business_client_admin','business_client_staff']))
+                    <p class="text-sm text-on-surface-variant max-w-sm mx-auto">
+                        Your workspace will be set up by the GVOS team. If you believe this is an error,
+                        please contact us.
+                    </p>
+                @else
+                    <p class="text-sm text-on-surface-variant max-w-sm mx-auto">
+                        Workspaces are created by the GVOS team when your service begins.
+                        Check back soon or contact support.
+                    </p>
+                @endif
+                @if ($__wsUser->needsOnboarding())
+                    <a href="{{ route('onboarding.index') }}"
+                       class="mt-4 inline-flex items-center gap-2 bg-secondary text-on-secondary px-4 py-2 rounded-lg text-sm font-semibold hover:brightness-110 transition-all">
+                        <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
+                        Complete your profile while you wait
+                    </a>
+                @endif
             </div>
 
         {{-- ── Workspace cards ──────────────────────────────────────────── --}}

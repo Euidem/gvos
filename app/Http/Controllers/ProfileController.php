@@ -93,8 +93,10 @@ class ProfileController extends Controller
 
         // Mark onboarding complete once first + last name are filled in
         $isProfileFilled = filled($validated['first_name']) && filled($validated['last_name']);
-        if ($isProfileFilled && $profile->onboarding_status === 'pending') {
-            $profileData['onboarding_status'] = 'complete';
+        if ($isProfileFilled && $profile->onboarding_status !== 'complete') {
+            $profileData['onboarding_status']       = 'complete';
+            $profileData['onboarding_completed_at'] = now();
+            $profileData['last_onboarding_step']    = 'complete';
         }
 
         $profile->update($profileData);

@@ -171,26 +171,35 @@
     <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
 
         @if ($timeLogs->isEmpty())
+            @php $__tlUser = auth()->user(); @endphp
             <div class="p-12 text-center">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
                      style="background-color:rgba(0,88,190,.06);">
                     <span class="material-symbols-outlined" style="font-size: 26px; color:#0058be;">schedule</span>
                 </div>
-                <h4 class="text-sm font-semibold mb-1" style="color:#1E293B;">No time logs yet</h4>
-                <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
-                    @if ($canCreate)
-                        Log your first work session to get started.
-                    @else
-                        No time logs are available for this workspace yet.
-                    @endif
-                </p>
+                <h4 class="text-sm font-semibold mb-2" style="color:#1E293B;">No time logs yet</h4>
                 @if ($canCreate)
+                    <p class="text-xs max-w-xs mx-auto mb-4" style="color:#94A3B8;">
+                        Record your work sessions here. Start by logging your first session.
+                    </p>
                     <a href="{{ route('workspace.time-logs.create', $workspace) }}"
-                       class="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all"
+                       class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all"
                        style="background-color:#0058be;">
                         <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
                         Log Time
                     </a>
+                @elseif ($__tlUser->hasAnyRole(['line_manager']))
+                    <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
+                        No time logs have been submitted by your team yet. They will appear here once talent starts logging sessions.
+                    </p>
+                @elseif ($__tlUser->hasAnyRole(['individual_client','business_client_admin','business_client_staff']))
+                    <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
+                        Approved time logs will appear here once your manager approves sessions. This gives you a clear view of time spent on your project.
+                    </p>
+                @else
+                    <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
+                        No time logs are available for this workspace yet.
+                    </p>
                 @endif
             </div>
         @else

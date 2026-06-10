@@ -16,6 +16,12 @@ class UserProfile extends Model
         'city',
         'bio',
         'onboarding_status',
+        'onboarding_completed_at',
+        'last_onboarding_step',
+    ];
+
+    protected $casts = [
+        'onboarding_completed_at' => 'datetime',
     ];
 
     // ── Relationships ────────────────────────────────────────────────────

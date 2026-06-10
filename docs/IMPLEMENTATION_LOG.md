@@ -7,6 +7,44 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-10 | Phase 16 | User Onboarding Completion
+
+**What was done:** Created a polished post-registration onboarding experience for all GVOS user roles. New users arrive at a dedicated `/onboarding` page after accepting an invitation. The page shows a progress ring, a role-tailored checklist, a quick profile form, a workspace card, and primary action links. Dashboard banners prompt incomplete users to return and finish. Workspace show adds an orientation card for new or incomplete-profile members. Empty states in workspace, tasks, and time-log pages were made role-specific and informative.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_06_10_000002_add_onboarding_fields_to_user_profiles_table.php` | Adds `onboarding_completed_at` and `last_onboarding_step` columns to `user_profiles` |
+| `app/Http/Controllers/OnboardingController.php` | index / update / completeStep — onboarding page, profile save, completion tracking |
+| `resources/views/onboarding/index.blade.php` | Full onboarding page — progress ring, checklist, profile form, workspace card, role actions |
+| `resources/views/partials/onboarding-banner.blade.php` | Reusable onboarding banner partial for dashboards; auto-hides when complete |
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `app/Models/UserProfile.php` | Added `onboarding_completed_at`, `last_onboarding_step` to fillable; added datetime cast |
+| `app/Models/User.php` | Added 6 onboarding helpers: `needsOnboarding()`, `hasCompletedRequiredProfile()`, `profileForRole()`, `primaryWorkspace()`, `onboardingChecklist()`, `onboardingCompletionPercentage()` |
+| `app/Services/AuditLogger.php` | Added `onboardingProfileUpdated()` and `onboardingCompleted()` wrappers |
+| `routes/web.php` | Added `GET /onboarding`, `POST /onboarding/profile`, `POST /onboarding/complete` routes |
+| `app/Http/Controllers/WorkspaceInvitationController.php` | `registerAndAccept` redirects to `/onboarding`; `accept` redirects to `/onboarding` if profile incomplete |
+| `app/Http/Controllers/ProfileController.php` | Sets `onboarding_completed_at` and `last_onboarding_step` when profile is filled in from profile settings |
+| `resources/views/dashboard/talent.blade.php` | Added onboarding banner include |
+| `resources/views/dashboard/line-manager.blade.php` | Added onboarding banner include |
+| `resources/views/dashboard/individual-client.blade.php` | Added onboarding banner include |
+| `resources/views/dashboard/business-client-admin.blade.php` | Added onboarding banner include |
+| `resources/views/dashboard/business-client-staff.blade.php` | Added onboarding banner include |
+| `resources/views/workspace/show.blade.php` | Added orientation card for new members and users with incomplete onboarding |
+| `resources/views/workspace/index.blade.php` | Improved empty state — role-aware messaging with onboarding link |
+| `resources/views/workspace/tasks/index.blade.php` | Improved empty state — role-specific no-task messages |
+| `resources/views/workspace/time-logs/index.blade.php` | Improved empty state — role-specific no-log messages |
+| Docs | Phase 16 status, log, schema, permissions, testing, build phases |
+
+**Preserved:** No Phase 17 work, no billing calculation changes, no payment confirmation changes, no vault encryption changes, no timer core changes, no invitation token logic changes, no payment gateway, no payroll, no screenshots, no keystroke tracking, no screen monitoring, and no visible GetVirtual UI.
+
+---
+
 ### 2026-06-10 | Phase 15 | Email Configuration, System Mail Testing and Branded Notification Templates
 
 **What was done:** Made GVOS emails reliable, professional, and safe. Created a custom GVOS branded mail theme, improved all notification email content, added a Filament-based mail test tool restricted to admin roles, added an email delivery log table to track mail success/failure, sanitized error messages to prevent SMTP credential exposure, and documented cPanel SMTP configuration in `.env.example`.

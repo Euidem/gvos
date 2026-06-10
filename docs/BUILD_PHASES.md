@@ -398,6 +398,36 @@ GVOS is built in 13 phases (Phase 0–12). Each phase has a clear deliverable an
 
 ---
 
+## Phase 16 — User Onboarding Completion
+**Status:** Complete
+**Depends on:** Phase 15 email configuration
+
+### Deliverables
+- [x] Migration: `onboarding_completed_at` and `last_onboarding_step` added to `user_profiles`
+- [x] `User` model onboarding helpers: `needsOnboarding()`, `hasCompletedRequiredProfile()`, `profileForRole()`, `primaryWorkspace()`, `onboardingChecklist()`, `onboardingCompletionPercentage()`
+- [x] `AuditLogger` wrappers: `onboardingProfileUpdated()` and `onboardingCompleted()`
+- [x] `OnboardingController` with `index`, `update`, `completeStep` methods
+- [x] `/onboarding` page — welcome, role label, progress ring, checklist, profile form, workspace card, role-based action links
+- [x] Onboarding banner partial included in all 5 role dashboards — auto-hides on completion
+- [x] Workspace show: orientation card for new members or users with incomplete onboarding
+- [x] Improved empty states: workspace index (role-aware + onboarding CTA), tasks (role-specific), time logs (role-specific)
+- [x] Post-invitation redirect: new users go to `/onboarding` after registration; existing users with incomplete profile go to `/onboarding` after acceptance
+- [x] Database notification on onboarding completion (silent fail-safe)
+- [x] No billing, payment, vault, timer, invitation token, payroll, gateway, screenshot, or keystroke changes
+
+### Test Checklist
+- New user via invitation redirected to `/onboarding` after registration
+- Existing user with incomplete profile redirected to `/onboarding` after accepting invitation
+- Onboarding page shows correct role label, checklist, and workspace card
+- Progress ring shows 0% with no profile, advances when required fields are filled
+- "Mark Setup Complete" button only appears when required fields are done
+- After completion: `onboarding_status = complete`, `onboarding_completed_at` set, redirect to workspace/dashboard
+- Onboarding banners shown on all 5 role dashboards until setup complete
+- Workspace orientation card shown for new/incomplete-profile members
+- Role-specific empty states in workspace index, tasks, and time logs
+
+---
+
 ## Phase Approval Process
 1. Complete all deliverables for the phase
 2. Run the phase-specific testing checklist
