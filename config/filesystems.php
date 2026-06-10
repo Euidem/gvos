@@ -9,7 +9,11 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Phase 20: set to false — GVOS private files are never served via Storage::url().
+            // All downloads go through WorkspaceFileController::download() with full auth checks.
+            // 'serve' => true would allow Storage::url() to generate accessible endpoints for
+            // private files, which is not needed and increases the attack surface.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

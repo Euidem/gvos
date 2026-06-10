@@ -7,6 +7,41 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-10 | Phase 20 | File Storage Security and Access Hardening
+
+**Goal:** Audit and harden workspace file storage — private disk, download authorization, upload validation, filename safety.
+
+**Files created (1):**
+
+| File | Purpose |
+|------|---------|
+| `app/Console/Commands/GvosStorageCheck.php` | `php artisan gvos:storage-check` — storage health check command |
+
+**Files modified (3):**
+
+| File | Change |
+|------|--------|
+| `config/filesystems.php` | Set local disk `serve: false` to prevent Storage::url() on private files |
+| `app/Models/WorkspaceFile.php` | `allowedMimes()` updated (removed gif, added mp4/mov); added `blockedMimeTypes()`, `blockedExtensions()`, `sanitizeFilename()` static helpers |
+| `app/Http/Controllers/WorkspaceFileController.php` | `handleUpload()`: blocked MIME/extension validation closure, sanitize original_filename, extension safety net; `download()`: sanitize Content-Disposition filename |
+
+**Audit items confirmed clean (no changes needed):**
+- Files on private local disk — not web-accessible
+- No raw Storage URLs in any Blade view — all downloads via controller
+- Workspace membership + file-workspace ownership + visibility enforced on all actions
+- Soft-delete: metadata preserved, physical file retained; soft-deleted files unreachable via model binding
+- Delete authorization: uploader OR admin/workspace_admin/manager
+- Filament resource: no storage_path column, no create/edit forms, archive uses soft delete
+- Billing middleware applies to file routes (restricted/suspended clients locked out)
+- Task attachment cross-workspace check: `storeForTask()` verifies task-workspace match
+- Audit logs: no storage_path exposed
+
+**No migrations added.** All hardening at application layer.
+
+**Docs updated:** CURRENT_STATUS.md, BUILD_PHASES.md, IMPLEMENTATION_LOG.md, PERMISSION_MATRIX.md, TESTING_CHECKLIST.md, KNOWN_ISSUES.md
+
+---
+
 ### 2026-06-10 | Phase 19 | Billing Middleware QA and Production Readiness Pass
 
 **Goal:** Audit, test, and harden all Phase 18 billing enforcement code before any new feature work continues.

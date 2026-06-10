@@ -26,6 +26,28 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 20 Warnings / Notes
+
+### Phase 20 | Info | 10 MB limit applies to mp4/mov — practical restriction for video attachments
+The global file size limit is 10 MB (`max:10240` in KB). MP4 and MOV files are now in the allowed list per spec, but 10 MB is restrictive for video (1 min 720p ≈ 50–100 MB). For now this is intentional — GVOS is a workspace management platform, not a video host. If video needs grow, increase the limit in `handleUpload()` and update the upload form hint.
+
+---
+
+### Phase 20 | Info | Physical files are never auto-deleted on soft-delete
+Soft-deleting a `WorkspaceFile` record removes it from the UI and makes it inaccessible via model binding, but the physical file remains at `storage_path('app/private/workspaces/{id}/{uuid}.ext')`. This is intentional (preserves files for potential admin restore). A future scheduled cleanup command should prune orphaned physical files where `deleted_at` is older than the retention window.
+
+---
+
+### Phase 20 | Info | `gif` removed from allowed MIME types
+Previously `gif` was in `allowedMimes()`. Removed in Phase 20 to align with the MVP spec. Any existing GIF files already uploaded are unaffected (they remain on disk and in DB). New GIF uploads will be rejected with a validation error. If GIF support is needed, add `gif` back to `allowedMimes()`.
+
+---
+
+### Phase 20 | Info | `storage:link` is for public disk only — not needed for private files
+`php artisan storage:link` creates `public/storage` → `storage_path('app/public')`. GVOS workspace files are on the `local` disk (`storage_path('app/private')`), which is **not** symlinked and should never be. The symlink is only needed if public assets (e.g. user avatars) are stored on the public disk. Run `php artisan gvos:storage-check` to verify the symlink is correct on cPanel.
+
+---
+
 ## Phase 19 Warnings / Notes
 
 ### Phase 19 | Info | `payment_due` is an intermediate state — banner now visible

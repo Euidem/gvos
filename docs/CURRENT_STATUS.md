@@ -1,8 +1,78 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-10
-**Current Phase:** Phase 19 - Billing Middleware QA and Production Readiness Pass - Complete
-**Current Activity:** QA and hardening of the Phase 18 billing access middleware and subscription enforcement system — 4 bugs found and fixed, all audit items confirmed, docs updated
+**Current Phase:** Phase 20 - File Storage Security and Access Hardening - Complete
+**Current Activity:** Audit and hardening of workspace file storage — private disk confirmed, download authorization verified, upload validation hardened, filename sanitization added, dangerous extension/MIME blocklist added, storage health check command added
+
+## Phase 20 Status - Complete (2026-06-10)
+
+### File Storage Security and Access Hardening
+
+**Goal:** Audit and harden workspace file storage so files are private, authorized, and safe.
+
+#### Audit Results — No Breaking Issues Found
+
+- [x] Files stored on `local` disk (`storage_path('app/private')`) — never web-accessible ✅
+- [x] No raw `Storage::url()` or `/storage/` paths in any Blade view ✅
+- [x] All downloads go through `WorkspaceFileController::download()` with full auth ✅
+- [x] Workspace membership checked on every file action (`requireAccess()`) ✅
+- [x] File-workspace ownership verified on download and delete ✅
+- [x] Internal visibility enforced on index query, download, and task show attachment list ✅
+- [x] Non-internal roles forced to `visibility=public` on upload ✅
+- [x] Soft-delete used — metadata preserved, physical file retained for potential restore ✅
+- [x] Soft-deleted files cannot be downloaded (model binding excludes them by default) ✅
+- [x] Delete authorization: uploader OR admin/workspace_admin/manager ✅
+- [x] Task file ownership: `storeForTask()` verifies task belongs to workspace ✅
+- [x] Billing middleware applies to file routes — restricted/suspended clients locked out ✅
+- [x] Filament WorkspaceFileResource does NOT expose `storage_path` column ✅
+- [x] Filament archive uses soft delete, not hard delete ✅
+- [x] Audit logs do NOT include `storage_path` (safe) ✅
+
+#### Changes Made (hardening)
+
+**1 — `config/filesystems.php`: `serve: false` on local disk**
+- `serve: true` would allow `Storage::url()` to generate accessible endpoints for private files
+- Set to `false` — GVOS never needs URL-based serving of private files; all access via controller
+
+**2 — `WorkspaceFile::allowedMimes()`: aligned with spec**
+- Removed `gif` (not in MVP spec)
+- Added `mp4`, `mov` (video attachments per spec)
+
+**3 — `WorkspaceFile`: added security helpers**
+- `blockedMimeTypes()` — list of dangerous MIME types (PHP, HTML, JS, SVG, shell scripts, executables)
+- `blockedExtensions()` — list of dangerous extensions (php, js, html, svg, exe, sh, etc.)
+- `sanitizeFilename(string)` — strips path separators, null bytes, leading dots, limits to 255 chars
+
+**4 — `WorkspaceFileController::handleUpload()`: validation hardened**
+- Added custom validation closure: checks detected MIME type against `blockedMimeTypes()`; checks extension against `blockedExtensions()`
+- Added extension safety net: stored filename extension forced to `bin` if it's in the blocked list (triple protection)
+- `original_filename` now sanitized via `sanitizeFilename()` before storing in DB
+
+**5 — `WorkspaceFileController::download()`: Content-Disposition sanitized**
+- `original_filename` passed to `Storage::download()` now goes through `sanitizeFilename()` first
+- Prevents path separators or special characters in the `Content-Disposition: attachment; filename=` header
+
+**6 — `app/Console/Commands/GvosStorageCheck.php`: new admin command**
+- `php artisan gvos:storage-check`
+- Checks: disk config, local disk root is outside public path, `serve` setting, writability, PHP upload limits, symlink status, write/delete round-trip test
+
+#### No Migration Required
+- No schema changes — all hardening is at the application layer.
+
+#### Constraints Respected
+- [x] No Phase 21 built
+- [x] No new product modules
+- [x] No billing calculation changes
+- [x] No payment confirmation changes
+- [x] No vault encryption changes
+- [x] No timer core changes
+- [x] No invitation token changes
+- [x] No payment gateways
+- [x] No payroll
+- [x] No `GetVirtual` in visible UI
+- [x] GVOS naming throughout
+
+---
 
 ## Phase 19 Status - Complete (2026-06-10)
 

@@ -78,6 +78,59 @@ All workspace routes are protected by `check.billing` (`CheckWorkspaceBillingAcc
 
 ---
 
+## Phase 20 — File Storage Access Rules
+
+All file actions (upload, download, delete, index) are in the workspace route group (`auth` + `check.status` + `check.billing`). The controller enforces workspace membership + file ownership on top.
+
+### File Download Authorization
+| Check | Where enforced |
+|-------|---------------|
+| User is authenticated | `auth` route middleware |
+| User account is active | `check.status` middleware |
+| Billing restrictions apply | `check.billing` middleware (restricted/suspended clients cannot reach file routes) |
+| User is a workspace member (or admin) | `WorkspaceFileController::requireAccess()` |
+| File belongs to the workspace in the URL | `(int) $file->workspace_id !== (int) $workspace->id` → 404 |
+| Internal file requires internal role | `$file->isInternal() && ! canViewInternal($role)` → 403 |
+| File exists on disk | `Storage::disk('local')->exists()` → 404 |
+
+### File Visibility by Workspace Role
+| Workspace Role | Can see `public` files | Can see `internal` files | Can upload | Can delete own | Can delete any |
+|----------------|----------------------|--------------------------|-----------|---------------|----------------|
+| `admin` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `workspace_admin` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `manager` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `talent` | ✅ | ❌ | ✅ | ✅ | ❌ |
+| `client_admin` | ✅ | ❌ | ✅ | ✅ | ❌ |
+| `client_staff` | ✅ | ❌ | ✅ | ✅ | ❌ |
+| `client` (legacy) | ✅ | ❌ | ✅ | ✅ | ❌ |
+| `assigned_user` | ✅ | ❌ | ✅ | ✅ | ❌ |
+| `observer` | ✅ | ❌ | ❌ | ❌ | ❌ |
+
+> `internal` files are always hidden from client roles and observers — enforced on query (index), download action, and task show attachment list.
+
+### Upload Validation (Phase 20 hardened)
+| Rule | Detail |
+|------|--------|
+| Max size | 10 MB (`max:10240`) |
+| Allowed extensions | pdf, jpg, jpeg, png, webp, doc, docx, xls, xlsx, ppt, pptx, txt, csv, mp4, mov, zip |
+| MIME whitelist | `mimes:` rule — validates actual file content, not just extension |
+| MIME blocklist | Explicit closure check: PHP, HTML, JS, SVG, shell scripts, executables rejected |
+| Extension blocklist | Explicit closure check: php, js, html, htm, svg, exe, sh, asp, etc. rejected |
+| Stored extension safety net | If stored extension would be in blocked list, overridden to `bin` |
+| Stored filename | UUID-based (`{uuid}.{ext}`) — never user-supplied, never guessable |
+| Original filename | Sanitized via `WorkspaceFile::sanitizeFilename()` before DB storage |
+
+### Storage Disk
+| Property | Value |
+|----------|-------|
+| Disk | `local` |
+| Root | `storage_path('app/private')` |
+| Web-accessible? | No — outside `public/` |
+| `serve` setting | `false` — Storage::url() disabled |
+| Symlink | `public/storage` → `storage_path('app/public')` (public disk only) |
+
+---
+
 ## Phase 1 — Implemented Access Control
 
 ### Filament Panel (`/admin`)

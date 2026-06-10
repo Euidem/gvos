@@ -80,6 +80,25 @@ class WorkspaceFileController extends Controller
                 'file',
                 'max:10240',   // 10 MB in KB
                 'mimes:' . implode(',', WorkspaceFile::allowedMimes()),
+                // Phase 20: belt-and-suspenders — explicit MIME type and extension blocklist.
+                // The mimes whitelist above should already reject dangerous types, but this
+                // closure catches edge cases (e.g. MIME detection variance, double-extension tricks).
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (! ($value instanceof \Illuminate\Http\UploadedFile)) {
+                        return;
+                    }
+                    // Block dangerous MIME types
+                    $detectedMime = $value->getMimeType();
+                    if (in_array($detectedMime, WorkspaceFile::blockedMimeTypes(), true)) {
+                        $fail('This file type is not permitted for security reasons.');
+                        return;
+                    }
+                    // Block dangerous extensions
+                    $ext = strtolower($value->getClientOriginalExtension());
+                    if (in_array($ext, WorkspaceFile::blockedExtensions(), true)) {
+                        $fail('This file extension is not permitted for security reasons.');
+                    }
+                },
             ],
             'title'       => 'nullable|string|max:255',
             'category'    => 'nullable|in:' . implode(',', array_keys(WorkspaceFile::categoryLabels())),
@@ -93,7 +112,18 @@ class WorkspaceFileController extends Controller
         }
 
         $uploadedFile = $request->file('file');
-        $extension    = strtolower($uploadedFile->getClientOriginalExtension());
+
+        // Phase 20: derive stored extension from client extension but block dangerous ones.
+        // The mimes whitelist + blocklist closure above already rejected dangerous types,
+        // so this is a final safety net ensuring we never store a dangerous extension on disk.
+        $extension = strtolower($uploadedFile->getClientOriginalExtension());
+        if (in_array($extension, WorkspaceFile::blockedExtensions(), true) || $extension === '') {
+            $extension = 'bin';
+        }
+
+        // Phase 20: sanitize the original filename before storing in DB and using in headers.
+        $originalFilename = WorkspaceFile::sanitizeFilename($uploadedFile->getClientOriginalName());
+
         $storedName   = Str::uuid() . '.' . $extension;
         $storagePath  = 'workspaces/' . $workspace->id . '/' . $storedName;
 
@@ -106,7 +136,7 @@ class WorkspaceFileController extends Controller
             'uploaded_by_user_id' => $request->user()->id,
             'workspace_task_id'   => $task?->id,
             'title'               => $validated['title'] ?? null,
-            'original_filename'   => $uploadedFile->getClientOriginalName(),
+            'original_filename'   => $originalFilename,
             'stored_filename'     => $storedName,
             'storage_path'        => $storagePath,
             'mime_type'           => $uploadedFile->getMimeType(),
@@ -217,7 +247,11 @@ class WorkspaceFileController extends Controller
             'workspace_code' => $workspace->workspace_code,
         ]);
 
-        return Storage::disk('local')->download($file->storage_path, $file->original_filename);
+        // Phase 20: sanitize the download filename used in the Content-Disposition header.
+        // original_filename is user-supplied and could contain path separators or special chars.
+        $downloadName = WorkspaceFile::sanitizeFilename($file->original_filename ?? 'download');
+
+        return Storage::disk('local')->download($file->storage_path, $downloadName);
     }
 
     /**

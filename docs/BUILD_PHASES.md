@@ -5,6 +5,37 @@ GVOS is built in phases (Phase 0–18+). Each phase has a clear deliverable and 
 
 ---
 
+## Phase 20 — File Storage Security and Access Hardening ✅
+**Status:** Complete (2026-06-10)
+**Goal:** Audit and harden workspace file storage so files are private, authorized, and safe before production.
+
+### Deliverables
+- [x] Full audit of file storage design: private `local` disk confirmed, no raw storage URLs in Blade, all downloads via controller
+- [x] Full audit of route and controller authorization: workspace membership, file-workspace ownership, visibility, billing restrictions
+- [x] `config/filesystems.php`: local disk `serve: false` — prevents accidental Storage::url() on private files
+- [x] `WorkspaceFile::allowedMimes()`: removed `gif`, added `mp4`, `mov` (per spec)
+- [x] `WorkspaceFile::blockedMimeTypes()`: explicit MIME blocklist (PHP, HTML, JS, SVG, executables, shell scripts)
+- [x] `WorkspaceFile::blockedExtensions()`: explicit extension blocklist (same types)
+- [x] `WorkspaceFile::sanitizeFilename()`: strips path separators, null bytes, leading dots, limits length
+- [x] `WorkspaceFileController::handleUpload()`: blocked MIME + extension validation closure; sanitized original_filename; extension safety net
+- [x] `WorkspaceFileController::download()`: sanitized Content-Disposition filename
+- [x] `php artisan gvos:storage-check`: storage health check command (disk config, writability, PHP limits, symlink, write/delete test)
+- [x] No migration required — all hardening at application layer
+
+### Constraints
+- No Phase 21 built
+- No new product modules
+- No billing calculation changes
+- No payment confirmation changes
+- No vault encryption changes
+- No timer core changes
+- No invitation token changes
+- No payment gateways
+- No payroll
+- No GetVirtual in visible UI
+
+---
+
 ## Phase 19 — Billing Middleware QA and Production Readiness Pass ✅
 **Status:** Complete (2026-06-10)
 **Goal:** Audit, test, and harden Phase 18 billing enforcement middleware and subscription enforcement system before any new feature work.

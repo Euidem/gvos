@@ -5,6 +5,85 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 20 — File Storage Security and Access Hardening
+
+Run after `git pull && php artisan optimize:clear`. No migrations required.
+
+### cPanel Commands
+```bash
+git pull origin main
+php artisan optimize:clear
+php artisan view:clear
+php artisan gvos:storage-check
+php artisan route:list | grep file
+php artisan route:list | grep download
+```
+
+### Storage Configuration
+- [ ] `php artisan gvos:storage-check` runs with no errors — all checks pass
+- [ ] Verify `storage_path('app/private')` is not inside `public/` directory
+- [ ] Verify `public/storage` symlink points to `storage_path('app/public')` (not `app/private`)
+- [ ] `config/filesystems.php` local disk has `serve: false`
+
+### Upload Validation
+- [ ] Try uploading a `.php` file → rejected with validation error
+- [ ] Try uploading a `.exe` file → rejected with validation error
+- [ ] Try uploading a `.html` file → rejected with validation error
+- [ ] Try uploading a `.svg` file → rejected with validation error
+- [ ] Try uploading a PDF over 10 MB → rejected with "max file size" error
+- [ ] Try uploading a valid PDF (< 10 MB) → succeeds
+- [ ] Try uploading a valid image (jpg/png/webp) → succeeds
+- [ ] Try uploading a valid DOCX → succeeds
+- [ ] Try uploading a valid MP4 (< 10 MB) → succeeds
+- [ ] Try uploading a `file.php.pdf` (double extension, actual PHP content) → rejected (MIME validation catches it)
+- [ ] Upload form shows allowed types and 10 MB limit hint
+
+### Download Authorization
+- [ ] As workspace member: download a public file → succeeds, file streams correctly
+- [ ] As non-member: attempt to access download URL directly → 403
+- [ ] As client_admin: download a public file → succeeds
+- [ ] As client_admin: attempt to download an internal file → 403
+- [ ] As manager: download an internal file → succeeds
+- [ ] As restricted client (billing restricted): attempt to access file download → redirected to billing.restricted (check.billing middleware)
+- [ ] Try accessing `/workspaces/{otherWorkspace}/files/{fileFromWorkspace1}/download` → 404 (workspace mismatch)
+- [ ] Try accessing soft-deleted file ID via download URL → 404 (model binding excludes soft-deleted)
+- [ ] Verify downloaded file has sanitized filename in browser (no path separators)
+
+### File Upload URL Not Exposed
+- [ ] View page source of file library — no `/storage/app/private` URLs visible
+- [ ] View page source of task show page — no raw storage paths visible
+- [ ] Download link is `route('workspace.files.download', ...)` not a Storage URL
+
+### Task Attachments
+- [ ] Upload file on task detail page → succeeds, appears in Attachments card
+- [ ] Upload file on task detail page for task in a different workspace (if URL manipulated) → 404
+- [ ] Observer on workspace: no upload form visible, no delete button
+- [ ] Client: can upload and download public files, cannot see internal badge files
+
+### Soft Delete
+- [ ] Delete a file → disappears from file list
+- [ ] Physical file still exists on disk at `storage_path('app/private/workspaces/{id}/{uuid}.ext')`
+- [ ] Deleted file row exists in DB with `deleted_at` set
+
+### Audit Log
+- [ ] Upload a file → `workspace_file.uploaded` audit entry created
+- [ ] Download a file → `workspace_file.downloaded` audit entry created; `downloads_count` incremented
+- [ ] Delete a file → `workspace_file.deleted` audit entry created with `deleted_by`
+
+### Security Bypass Scenarios (reason through each)
+- [ ] Cannot bypass by guessing file ID (controller verifies workspace_id match)
+- [ ] Cannot use file ID from another workspace (404 on workspace mismatch)
+- [ ] Cannot open raw storage URL (local disk not web-accessible)
+- [ ] Cannot download internal file as client (403 in download action)
+- [ ] Cannot upload executable script (mimes whitelist + MIME/extension blocklist)
+- [ ] Cannot upload disguised PHP file (getMimeType() content-based check rejects it)
+- [ ] Cannot upload oversized file (max:10240 rule)
+- [ ] Restricted client cannot access file routes at all (check.billing middleware)
+- [ ] Soft-deleted file cannot be re-downloaded (model binding 404)
+- [ ] Cannot attach file to task in a different workspace (storeForTask workspace check)
+
+---
+
 ## Phase 19 — Billing Middleware QA and Production Readiness Pass
 
 Run after `git pull && php artisan optimize:clear`. No migrations required for Phase 19.
