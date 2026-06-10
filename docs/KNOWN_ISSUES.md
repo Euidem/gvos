@@ -26,6 +26,23 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 21 Warnings / Notes
+
+### Phase 21 | Info | Rate limit 429 responses are plain Laravel JSON — no custom GVOS error page
+When a rate limit is hit, Laravel returns a 429 JSON response with `"message": "Too Many Attempts."`. For the vault reveal (AJAX endpoint) this is correct behaviour — the JS will catch the non-OK response and show "Secret could not be retrieved." in the UI. For form-submit routes (chat, file upload, invitation) a 429 will show the raw error page. A future improvement could add a custom 429 Blade view under `resources/views/errors/429.blade.php`.
+
+---
+
+### Phase 21 | Info | `SESSION_SECURE_COOKIE` must be `true` in production
+The `.env.example` now documents `SESSION_SECURE_COOKIE=false` (local dev default). On any cPanel/live deployment over HTTPS, this **must** be set to `true` in the production `.env`. Leaving it `false` in production means the session cookie could be transmitted over HTTP, enabling session hijacking.
+
+---
+
+### Phase 21 | Info | `APP_DEBUG=true` must never be deployed to production
+The `.env.example` sets `APP_DEBUG=true` for local development. An inline warning comment was added in Phase 21. In production this **must** be `false` — Laravel debug output exposes stack traces, environment variables, and file paths.
+
+---
+
 ## Phase 20 Warnings / Notes
 
 ### Phase 20 | Info | 10 MB limit applies to mp4/mov — practical restriction for video attachments

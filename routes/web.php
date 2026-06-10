@@ -64,7 +64,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('settings.notifications');
     Route::put('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('settings.notifications.update');
 
-    Route::post('/invitations/{token}/accept', [WorkspaceInvitationController::class, 'accept'])->name('workspace.invitations.accept');
+    Route::post('/invitations/{token}/accept', [WorkspaceInvitationController::class, 'accept'])->name('workspace.invitations.accept')->middleware('throttle:invitation');
 });
 
 // ── Workspace routes (all authenticated, active users) ────────────────────
@@ -95,20 +95,20 @@ Route::middleware(['auth', 'check.status', 'check.billing'])->group(function () 
         Route::put('/{task}',                    [WorkspaceTaskController::class, 'update'])->name('update');
         Route::post('/{task}/comments',          [WorkspaceTaskController::class, 'storeComment'])->name('comments.store');
         Route::post('/{task}/status',            [WorkspaceTaskController::class, 'updateStatus'])->name('status.update');
-        Route::post('/{task}/files',             [WorkspaceFileController::class, 'storeForTask'])->name('files.store');
+        Route::post('/{task}/files',             [WorkspaceFileController::class, 'storeForTask'])->name('files.store')->middleware('throttle:file-upload');
     });
 
     // ── Workspace chat routes (Phase 6) ───────────────────────────────────
     Route::prefix('workspaces/{workspace}/chat')->name('workspace.chat.')->group(function () {
         Route::get('/',              [WorkspaceMessageController::class, 'index'])->name('index');
-        Route::post('/',             [WorkspaceMessageController::class, 'store'])->name('store');
+        Route::post('/',             [WorkspaceMessageController::class, 'store'])->name('store')->middleware('throttle:chat-send');
         Route::delete('/{message}',  [WorkspaceMessageController::class, 'destroy'])->name('destroy');
     });
 
     // ── Workspace file routes (Phase 6) ───────────────────────────────────
     Route::prefix('workspaces/{workspace}/files')->name('workspace.files.')->group(function () {
         Route::get('/',                      [WorkspaceFileController::class, 'index'])->name('index');
-        Route::post('/',                     [WorkspaceFileController::class, 'store'])->name('store');
+        Route::post('/',                     [WorkspaceFileController::class, 'store'])->name('store')->middleware('throttle:file-upload');
         Route::get('/{file}/download',       [WorkspaceFileController::class, 'download'])->name('download');
         Route::delete('/{file}',             [WorkspaceFileController::class, 'destroy'])->name('destroy');
     });
@@ -130,7 +130,7 @@ Route::middleware(['auth', 'check.status', 'check.billing'])->group(function () 
         Route::get('/{vaultItem}',              [WorkspaceVaultController::class, 'show'])->name('show');
         Route::get('/{vaultItem}/edit',         [WorkspaceVaultController::class, 'edit'])->name('edit');
         Route::put('/{vaultItem}',              [WorkspaceVaultController::class, 'update'])->name('update');
-        Route::post('/{vaultItem}/reveal',      [WorkspaceVaultController::class, 'reveal'])->name('reveal');
+        Route::post('/{vaultItem}/reveal',      [WorkspaceVaultController::class, 'reveal'])->name('reveal')->middleware('throttle:vault-reveal');
         Route::post('/{vaultItem}/archive',     [WorkspaceVaultController::class, 'archive'])->name('archive');
         Route::get('/{vaultItem}/access-logs',  [WorkspaceVaultController::class, 'accessLogs'])->name('access-logs');
     });
@@ -214,7 +214,7 @@ Route::get('/request-service/success', fn () => view('lead.request-service-succe
 
 // ── Invitation routes (Phase 14) ─────────────────────────────────────────
 Route::get('/invitations/{token}', [WorkspaceInvitationController::class, 'show'])->name('workspace.invitations.show');
-Route::post('/invitations/{token}/register', [WorkspaceInvitationController::class, 'registerAndAccept'])->name('workspace.invitations.register');
+Route::post('/invitations/{token}/register', [WorkspaceInvitationController::class, 'registerAndAccept'])->name('workspace.invitations.register')->middleware('throttle:invitation');
 
 // ── Auth routes ──────────────────────────────────────────────────────────
 require __DIR__ . '/auth.php';

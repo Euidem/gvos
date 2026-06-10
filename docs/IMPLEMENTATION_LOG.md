@@ -7,6 +7,26 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-10 | Phase 21 | Portal Security, Rate Limiting and CSRF Audit
+
+**Files changed:**
+- `app/Providers/AppServiceProvider.php` — Added 4 named rate limiter definitions (`vault-reveal`, `file-upload`, `chat-send`, `invitation`) using `RateLimiter::for()` in `boot()`
+- `routes/web.php` — Added `throttle:` middleware to 6 sensitive routes: invitation accept/register, vault reveal, file upload (2 routes), chat send
+- `.env.example` — Added `SESSION_SECURE_COOKIE=false` with production comment; added `APP_DEBUG` production warning
+
+**Security audit findings:**
+- Rate limiting added to: vault reveal (10/min per user), file upload (20/min per user), chat send (30/min per user), invitation register/accept (10/min per IP)
+- CSRF confirmed: all 32 POST-form Blade views have `@csrf`; vault JS uses `X-CSRF-TOKEN` header
+- Vault security confirmed: `canReveal()` blocks archived items, `secret_value` encrypted + hidden, never logged
+- Login rate limiting already in place via `LoginRequest` (5/min per email+IP)
+- All state-changing routes confirmed on correct HTTP verbs; no unsafe GET state changes
+- Billing controller confirmed read-only in portal; notification/member scoping confirmed correct
+- Session security: `http_only: true`, `same_site: lax`; production env keys documented
+
+**No migration required** — all changes at application/configuration layer.
+
+---
+
 ### 2026-06-10 | Phase 20 | File Storage Security and Access Hardening
 
 **Goal:** Audit and harden workspace file storage — private disk, download authorization, upload validation, filename safety.

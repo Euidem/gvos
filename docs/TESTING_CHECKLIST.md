@@ -5,6 +5,59 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 21 — Portal Security, Rate Limiting and CSRF Audit
+
+Run after `git pull && php artisan optimize:clear`. No migrations required.
+
+### cPanel Commands
+```bash
+git pull origin main
+php artisan optimize:clear
+php artisan config:clear
+php artisan route:clear
+```
+
+### Rate Limiting Tests
+- [ ] **Vault reveal rate limit:** Hit `POST /workspaces/{w}/vault/{item}/reveal` 11 times in 60 seconds from same user — expect 429 on the 11th request
+- [ ] **File upload rate limit:** Upload 21 files in 60 seconds — expect 429 on the 21st
+- [ ] **Chat rate limit:** Send 31 messages in 60 seconds — expect 429 on the 31st
+- [ ] **Invitation register rate limit:** Submit the invitation register form 11 times in 60 seconds from same IP — expect 429 on 11th
+- [ ] **Invitation accept rate limit:** Submit accept form 11 times from same IP in 60 seconds — expect 429 on 11th
+- [ ] **Login rate limit:** Confirm 6th failed login attempt per email+IP shows "too many requests" message (pre-existing)
+
+### CSRF Verification
+- [ ] Attempt POST to any workspace form without a CSRF token (e.g., via curl) — expect 419 Page Expired
+- [ ] Confirm all POST forms in the browser work normally (token is present and valid)
+- [ ] Confirm vault reveal JS fetch works in browser (X-CSRF-TOKEN header is sent correctly)
+- [ ] Confirm vault reveal fails with 419 if attempted without CSRF token via curl
+
+### Vault Security Checks
+- [ ] Archived vault item: attempt to reveal secret — controller should return 403 (`canReveal()` returns false for archived)
+- [ ] Vault reveal response: confirm `Cache-Control: no-store` header in browser DevTools → Network tab
+- [ ] Vault reveal: confirm secret does NOT appear in any request URL (only in JSON response body)
+- [ ] Audit log for vault reveal: confirm `secret_value` is NOT present in the `context` column of `audit_logs` table
+
+### Session Security
+- [ ] Confirm `SESSION_SECURE_COOKIE=false` in local `.env` (development)
+- [ ] On production: confirm `SESSION_SECURE_COOKIE=true` is set in production `.env`
+- [ ] Confirm `APP_DEBUG=false` on production server
+
+### Route Audit
+- [ ] Confirm no state-changing actions are accessible via GET (use `php artisan route:list`)
+- [ ] Confirm `check.billing` middleware applies to `/workspaces/{workspace}/files/*` routes
+- [ ] Confirm unauthenticated user cannot access any workspace route (redirect to login)
+
+### Invitation Security
+- [ ] Register via invitation: confirm registered user email matches invitation email (cannot be changed)
+- [ ] Register via invitation: confirm registered user cannot choose `super_admin` or `operations_admin` role
+- [ ] Accept invitation: confirm only the invited email address can accept
+
+### Notification Security
+- [ ] Confirm `/notifications/{id}/read` with another user's notification ID returns 404 (not found for current user)
+- [ ] Confirm `/notifications/read-all` only marks current user's notifications as read
+
+---
+
 ## Phase 20 — File Storage Security and Access Hardening
 
 Run after `git pull && php artisan optimize:clear`. No migrations required.

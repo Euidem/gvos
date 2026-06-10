@@ -78,6 +78,31 @@ All workspace routes are protected by `check.billing` (`CheckWorkspaceBillingAcc
 
 ---
 
+## Phase 21 — Rate Limiting Rules
+
+All rate limiters are defined in `AppServiceProvider::boot()` and applied via `throttle:<name>` on individual routes.
+
+| Limiter Name | Limit | Window | Key | Routes |
+|---|---|---|---|---|
+| `vault-reveal` | 10 requests | 1 minute | user ID (or IP) | `POST /workspaces/{w}/vault/{item}/reveal` |
+| `file-upload` | 20 requests | 1 minute | user ID (or IP) | `POST /workspaces/{w}/files`, `POST /workspaces/{w}/tasks/{t}/files` |
+| `chat-send` | 30 requests | 1 minute | user ID (or IP) | `POST /workspaces/{w}/chat` |
+| `invitation` | 10 requests | 1 minute | IP address | `POST /invitations/{token}/register`, `POST /invitations/{token}/accept` |
+
+**Pre-existing rate limits (not changed in Phase 21):**
+
+| Endpoint | Limit | Mechanism |
+|---|---|---|
+| `POST /login` | 5 attempts per email+IP | `LoginRequest::ensureIsNotRateLimited()` |
+| `GET /email/verify/{id}/{hash}` | 6/min | `throttle:6,1` in `routes/auth.php` |
+| `POST /email/verification-notification` | 6/min | `throttle:6,1` in `routes/auth.php` |
+
+**429 response behaviour:**
+- AJAX endpoints (vault reveal): JSON `{"message":"Too Many Attempts."}` — JS catches and shows error message
+- Form-submit endpoints: standard Laravel 429 page (future improvement: custom `errors/429.blade.php`)
+
+---
+
 ## Phase 20 — File Storage Access Rules
 
 All file actions (upload, download, delete, index) are in the workspace route group (`auth` + `check.status` + `check.billing`). The controller enforces workspace membership + file ownership on top.

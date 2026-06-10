@@ -5,6 +5,41 @@ GVOS is built in phases (Phase 0–18+). Each phase has a clear deliverable and 
 
 ---
 
+## Phase 21 — Portal Security, Rate Limiting and CSRF Audit ✅
+**Status:** Complete (2026-06-10)
+**Goal:** Audit and harden GVOS portal security across forms, POST actions, sensitive routes, uploads, vault reveal, invitations, login, notifications, billing and workspace actions.
+
+### Deliverables
+- [x] Full route security audit: all state-changing routes on correct HTTP verbs, no unsafe GETs, middleware confirmed on all portal routes
+- [x] CSRF audit: all 32 POST-form Blade views confirmed to have `@csrf`; vault reveal JS uses `X-CSRF-TOKEN` header
+- [x] Rate limiting: 4 named limiters defined in `AppServiceProvider::boot()` (`vault-reveal`, `file-upload`, `chat-send`, `invitation`)
+- [x] Rate limiting: `throttle:vault-reveal` on vault secret reveal (10/min per user)
+- [x] Rate limiting: `throttle:file-upload` on workspace file upload and task file upload (20/min per user)
+- [x] Rate limiting: `throttle:chat-send` on workspace chat send (30/min per user)
+- [x] Rate limiting: `throttle:invitation` on invitation register and accept (10/min per IP)
+- [x] Vault security audit: `canReveal()` confirmed to block archived items, secret never in URL/logs, `secret_value` encrypted+hidden
+- [x] Invitation security audit: token not logged, email locked to invited address, role enforcement confirmed, DB transaction verified
+- [x] Login rate limiting: confirmed pre-existing `LoginRequest` protection (5/min per email+IP)
+- [x] Notification scoping: `markRead`/`markAllRead` confirmed scoped to `$request->user()`
+- [x] Billing controller: confirmed portal routes are read-only
+- [x] Session security: `SESSION_SECURE_COOKIE` added to `.env.example` with production guidance; `APP_DEBUG` production warning added
+- [x] No migration required — all hardening at application/configuration layer
+
+### Constraints
+- No Phase 22 built
+- No new product modules
+- No billing calculation changes
+- No payment confirmation changes (unless security bug)
+- No vault encryption changes (unless security bug)
+- No timer core logic changes (unless security bug)
+- No invitation token behavior changes (unless security bug)
+- No payment gateways
+- No payroll
+- No GetVirtual mentions in UI
+- GVOS naming only
+
+---
+
 ## Phase 20 — File Storage Security and Access Hardening ✅
 **Status:** Complete (2026-06-10)
 **Goal:** Audit and harden workspace file storage so files are private, authorized, and safe before production.

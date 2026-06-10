@@ -1,8 +1,71 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-10
-**Current Phase:** Phase 20 - File Storage Security and Access Hardening - Complete
-**Current Activity:** Audit and hardening of workspace file storage — private disk confirmed, download authorization verified, upload validation hardened, filename sanitization added, dangerous extension/MIME blocklist added, storage health check command added
+**Current Phase:** Phase 21 - Portal Security, Rate Limiting and CSRF Audit - Complete
+**Current Activity:** Full security audit of portal routes, forms, rate limiting, CSRF, vault reveal, invitation endpoints, session config. Rate limiting added to 6 sensitive endpoints. CSRF confirmed complete across all forms. Session production guidance documented.
+
+## Phase 21 Status - Complete (2026-06-10)
+
+### Portal Security, Rate Limiting and CSRF Audit
+
+**Goal:** Audit and harden GVOS portal security across forms, POST actions, sensitive routes, uploads, vault reveal, invitations, login, notifications, billing and workspace actions.
+
+#### Audit Results — Items Found and Fixed
+
+**Rate limiting gaps (FIXED):**
+- [x] `POST /invitations/{token}/register` — public endpoint had no rate limit → `throttle:invitation` (10/min per IP)
+- [x] `POST /invitations/{token}/accept` — no rate limit → `throttle:invitation` (10/min per IP)
+- [x] `POST /{vaultItem}/reveal` — sensitive credential reveal had no rate limit → `throttle:vault-reveal` (10/min per user)
+- [x] `POST /workspaces/{workspace}/files` — file upload had no rate limit → `throttle:file-upload` (20/min per user)
+- [x] `POST /workspaces/{workspace}/tasks/{task}/files` — task file upload had no rate limit → `throttle:file-upload` (20/min per user)
+- [x] `POST /workspaces/{workspace}/chat` — chat send had no rate limit → `throttle:chat-send` (30/min per user)
+
+**Session security documentation (FIXED):**
+- [x] `.env.example` missing `SESSION_SECURE_COOKIE` → added with production guidance
+- [x] `.env.example` `APP_DEBUG=true` → added inline production warning comment
+
+#### Audit Results — Already Secure (No Changes)
+
+- [x] **CSRF:** All 32 POST-form Blade views have `@csrf`; vault JS uses `X-CSRF-TOKEN` from layout meta tag ✅
+- [x] **Login rate limiting:** `LoginRequest::ensureIsNotRateLimited()` — 5 attempts per email+IP already in place ✅
+- [x] **Email verification:** `throttle:6,1` on verification routes ✅
+- [x] **Vault `canReveal()` blocks archived items:** `if (! $this->isActive()) { return false; }` (WorkspaceVaultItem line 184) ✅
+- [x] **Vault secret never logged:** `AuditLogger::vaultContext()` logs title/visibility/status only — no `secret_value` ✅
+- [x] **Vault `secret_value`:** cast as `'encrypted'`, in `$hidden` array — safe from serialization leaks ✅
+- [x] **Vault JS CSRF:** `show.blade.php` reads meta `csrf-token` and sends `X-CSRF-TOKEN` header on reveal fetch ✅
+- [x] **Vault reveal never exposes secret in URL** — POST endpoint returns JSON ✅
+- [x] **Invitation token never logged** — confirmed via code review ✅
+- [x] **Invitation email locked to invited address** — `$email = strtolower($invitation->email)` (not from request) ✅
+- [x] **Invitation role enforcement:** `resolveSafePlatformRole()` blocks `super_admin`/`operations_admin` ✅
+- [x] **Invitation transaction safety:** `DB::transaction()` wraps register + accept ✅
+- [x] **Notification scoping:** `markRead`/`markAllRead` scoped to `$request->user()->notifications()` ✅
+- [x] **Billing controller:** read-only portal routes — no state-changing POST actions ✅
+- [x] **All state-changing routes:** POST/PUT/PATCH/DELETE only — no unsafe GET state changes found ✅
+- [x] **Workspace membership check:** `requireAccess()` present in all workspace controllers ✅
+- [x] **File routes:** protected by `['auth', 'check.status', 'check.billing']` ✅
+- [x] **Session:** `http_only: true`, `same_site: lax` — JS cookie access blocked, CSRF protection active ✅
+- [x] **Session driver:** `database` — sessions stored server-side ✅
+
+#### Changes Made
+
+**1 — `app/Providers/AppServiceProvider.php`: rate limiter definitions**
+- Added `RateLimiter::for()` definitions for `vault-reveal`, `file-upload`, `chat-send`, `invitation`
+- Per-user rate limiting for authenticated endpoints; per-IP for public invitation endpoint
+
+**2 — `routes/web.php`: throttle middleware on 6 routes**
+- `POST /invitations/{token}/accept` → `throttle:invitation`
+- `POST /workspaces/{workspace}/tasks/{task}/files` → `throttle:file-upload`
+- `POST /workspaces/{workspace}/chat` → `throttle:chat-send`
+- `POST /workspaces/{workspace}/files` → `throttle:file-upload`
+- `POST /workspaces/{workspace}/vault/{vaultItem}/reveal` → `throttle:vault-reveal`
+- `POST /invitations/{token}/register` → `throttle:invitation`
+
+**3 — `.env.example`: production security documentation**
+- Added `SESSION_SECURE_COOKIE=false` with production comment (set to `true` over HTTPS)
+- Added inline `APP_DEBUG` production warning comment
+
+#### No Migration Required
+- No schema changes — all hardening is at the application/configuration layer.
 
 ## Phase 20 Status - Complete (2026-06-10)
 
