@@ -340,12 +340,21 @@ class User extends Authenticatable implements FilamentUser
     // ── Filament ─────────────────────────────────────────────────────────
 
     /**
-     * Filament v3 panel access gate.
+     * Single source of truth for GVOS admin (Filament) panel access.
      * Only super_admin and operations_admin may enter the GVOS Ops Console.
+     */
+    public function canAccessAdminPanel(): bool
+    {
+        return $this->hasAnyRole(['super_admin', 'operations_admin']);
+    }
+
+    /**
+     * Filament v3 panel access gate. Delegates to canAccessAdminPanel()
+     * so the admin gate has one definition shared with the login redirect logic.
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasAnyRole(['super_admin', 'operations_admin']);
+        return $this->canAccessAdminPanel();
     }
 
     // ── Routing ─────────────────────────────────────────────────────────

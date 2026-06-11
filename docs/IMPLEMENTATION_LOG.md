@@ -7,6 +7,27 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-11 | Hotfix | Non-admin login redirect
+
+**What was done:** Fixed a critical post-login redirect bug where every non-admin role landed on `/admin` and received a Filament 403. Root cause: `redirect()->intended()` honoured a stale `url.intended` of `/admin` (stored by Filament's `Authenticate` middleware when a guest touches an `/admin` route). The login flow now ignores an intended `/admin` URL for users who cannot access the panel, and falls back to the role dashboard via `User::getDashboardRoute()`. Added a safety-net middleware so an authenticated non-admin who reaches `/admin` by any path is redirected to their dashboard with a notice instead of a 403. Filament's `canAccessPanel()` security is unchanged.
+
+**Files created (1):**
+
+| File | Purpose |
+|------|---------|
+| `app/Http/Middleware/RedirectIfCannotAccessAdmin.php` | Redirects authenticated non-admins away from `/admin` to their dashboard (friendly, no 403) |
+
+**Files modified (4):**
+
+| File | Change |
+|------|--------|
+| `app/Http/Controllers/Auth/AuthenticatedSessionController.php` | Replaced blind `intended()` with admin-aware redirect; discards stale `/admin` intended URLs for non-admins |
+| `app/Models/User.php` | Added `canAccessAdminPanel()` as the single admin gate; `canAccessPanel()` now delegates to it |
+| `app/Providers/Filament/AdminPanelProvider.php` | Registered `RedirectIfCannotAccessAdmin` in the panel `authMiddleware` after `Authenticate` |
+| `docs/*` | CURRENT_STATUS, KNOWN_ISSUES, TESTING_CHECKLIST updated |
+
+---
+
 ### 2026-06-11 | Phase 25 | MVP Launch Validation and Live cPanel Bug Fixes
 
 **What was done:** MVP launch validation pass. Statically validated cPanel deployment/cache compatibility (PHP/artisan unavailable locally). Found and fixed one confirmed deployment-blocking bug: closure route actions prevented `php artisan route:cache`. Verified `config:cache` safety (no `env()` outside config), no debug leftovers, rate limiters present, mail config clean. Expanded the production readiness checklist with the final MVP launch validation and backup/restore sections, the `route:cache` compatibility note, and the production domain.

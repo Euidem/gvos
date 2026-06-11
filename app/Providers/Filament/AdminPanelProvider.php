@@ -8,6 +8,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
+use App\Http\Middleware\RedirectIfCannotAccessAdmin;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -50,6 +51,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                // After authentication, send non-admins to their portal dashboard
+                // (friendly redirect) instead of letting them hit a 403.
+                RedirectIfCannotAccessAdmin::class,
             ])
             ->authGuard('web');
     }

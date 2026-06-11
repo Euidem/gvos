@@ -5,6 +5,26 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Hotfix (2026-06-11) — Non-admin login redirect
+
+Run after deploy + `php artisan optimize:clear`. Use a fresh/incognito window for each role.
+
+- [ ] Log out completely.
+- [ ] Login as **Super Admin** → lands on `/admin` (Filament).
+- [ ] Login as **Operations Admin** → lands on `/admin` (Filament).
+- [ ] Login as **Talent** → lands on `/talent/dashboard`, NOT `/admin`.
+- [ ] Login as **Line Manager** → lands on `/manager/dashboard`, NOT `/admin`.
+- [ ] Login as **Individual Client** → lands on `/client/dashboard`, NOT `/admin`.
+- [ ] Login as **Business Client Admin** → lands on `/client/dashboard`, NOT `/admin`.
+- [ ] Login as **Business Client Staff** → lands on `/client/dashboard`, NOT `/admin`.
+- [ ] Login as **Active Lead** → lands on `/lead/dashboard`, NOT `/admin`.
+- [ ] As a logged-in **non-admin**, type `/admin` manually → redirected to dashboard with notice, NOT a 403.
+- [ ] As a **guest** visit `/admin`, then log in as a non-admin → lands on portal dashboard, NOT 403 (stale intended `/admin` ignored).
+- [ ] As a **guest** visit `/admin`, then log in as an admin → lands on `/admin` (intended honoured for admins).
+- [ ] Repeat the talent/client test in a private/incognito window → still lands on portal dashboard.
+
+---
+
 ## Phase 25 — MVP Launch Validation and Live cPanel Bug Fixes
 
 > Live launch validation. The full deployment sequence, env requirements, role smoke tests,

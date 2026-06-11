@@ -7,6 +7,14 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Hotfix (2026-06-11) — Non-admin login redirect
+
+### RESOLVED | Auth/Redirect | Critical | Non-admin users redirected to `/admin` after login → 403
+**Description:** After login, non-admin users (talent, manager, all client roles, active lead) were sent to `/admin` and hit a Filament 403, because they cannot access the panel. Removing `/admin` from the URL and reloading let them reach their portal. **Root cause:** `AuthenticatedSessionController::store()` used `redirect()->intended($fallback)`. When a guest hits any `/admin` route (or is bounced to login from it), Filament's `Authenticate` middleware stores `/admin` as the session `url.intended`. `intended()` then honoured that stale `/admin` URL after a normal login, overriding the correct role dashboard.
+**Resolution:** Login now pulls `url.intended` manually and **discards it when it targets the admin panel and the user is not an admin** (`User::canAccessAdminPanel()`), falling back to `User::getDashboardRoute()`. Admins still honour an intended `/admin`. Added `RedirectIfCannotAccessAdmin` middleware to the Filament panel's auth stack as a safety net: an authenticated non-admin reaching `/admin` (e.g. typed manually) is redirected to their dashboard with a friendly notice instead of a 403. Filament's `canAccessPanel()` gate is unchanged — non-admins are still blocked from the panel.
+
+---
+
 ## Phase 23 Notes (2026-06-11)
 
 ### Mobile sidebar uses CSS-only fixed overlay

@@ -2,6 +2,8 @@
 
 **Last Updated:** 2026-06-11
 **Current Phase:** Phase 25 - MVP Launch Validation and Live cPanel Bug Fixes - Complete (pending live cPanel smoke tests)
+
+> **Hotfix (2026-06-11) — Non-admin login redirect:** Fixed critical bug where non-admin users were redirected to `/admin` after login and received a 403. Login no longer honours a stale intended `/admin` URL for non-admins; they now land on their role dashboard via `User::getDashboardRoute()`. Admins still land on `/admin`. Added `RedirectIfCannotAccessAdmin` panel middleware so any authenticated non-admin reaching `/admin` is redirected to their dashboard with a notice instead of a 403. `canAccessPanel()` security unchanged. See KNOWN_ISSUES "Hotfix (2026-06-11)".
 **Current Activity:** Prepared GVOS for MVP launch at `https://gvos.afbs.ng`. Validated deployment/cache compatibility statically (PHP unavailable locally). Found and fixed one confirmed deployment-blocking bug: closure route actions prevented `php artisan route:cache`. Converted them to controllers so route caching works. Verified `config:cache` safety (no `env()` outside config), absence of debug statements, and rate-limiter definitions. Expanded `docs/PRODUCTION_READINESS_CHECKLIST.md` with the final MVP launch + backup/restore sections. No new modules, no payment gateway, no payroll.
 
 ## Phase 25 Status - Complete (2026-06-11)
