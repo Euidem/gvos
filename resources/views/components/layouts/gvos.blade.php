@@ -421,8 +421,13 @@
         </header>
 
         {{-- ── Page content --}}
-        <main class="flex-1 p-8" style="background-color:#F8FAFC">
-            {{ $slot }}
+        {{-- Responsive gutters + centered max-width keep content readable on wide screens. --}}
+        <main class="flex-1 p-4 sm:p-6 lg:p-8" style="background-color:#f7f9fb">
+            <div class="max-w-[1440px] mx-auto w-full">
+                {{-- Global flash stack (status / warning). success+error stay page-local. --}}
+                <x-portal.flash />
+                {{ $slot }}
+            </div>
         </main>
 
     </div>

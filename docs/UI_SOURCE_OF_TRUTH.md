@@ -159,6 +159,31 @@ Every screen follows this exact HTML structure:
 
 ---
 
+## Portal Component Library (Phase 26 Batch 1 — 2026-06-11)
+
+Reusable Blade components under `resources/views/components/portal/`. Use these on
+non-admin portal pages instead of hand-rolling markup, so structure and spacing stay
+consistent. They are token-compliant and CDN-Tailwind safe (status colors follow the
+established inline-style banner pattern).
+
+| Component | Usage |
+|-----------|-------|
+| `<x-portal.page-header title subtitle badge badgeType>` + `<x-slot:actions>` | Standard page title block (Rule 9 compliant — no breadcrumbs) |
+| `<x-portal.stat-card label value hint icon accent valueClass hintClass href>` | Dashboard metric card |
+| `<x-portal.action-card href icon title description>` | Quick-action / shortcut card |
+| `<x-portal.empty-state icon title message compact>` + `<x-slot:action>` | Empty states (in-card use `compact`) |
+| `<x-portal.status-badge :status label>` | Colored status pill from a raw status string |
+| `<x-portal.section-card title subtitle flush>` + `<x-slot:actions>` | Titled card container; `flush` removes body padding for lists/tables |
+| `<x-portal.alert type title>` | Inline alert (info/status/success/error/warning) |
+| `<x-portal.flash />` | Global status+warning stack — rendered once in the shell |
+
+**Flash convention:** the shell renders `status` and `warning` globally via `<x-portal.flash />`.
+Pages render their own `success`/`error` (often positioned for page context) using
+`<x-portal.alert type="success|error">`. Do not render `success`/`error` globally — it would
+double up with the ~17 pages that already show them locally.
+
+---
+
 ## Notes
 
 - Visual Repair v3 CSS fallbacks in `gvos.blade.php` MUST NOT be removed until fully replaced by compiled CSS.

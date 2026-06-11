@@ -187,69 +187,47 @@
 
 {{-- ── Metrics bento grid (4 columns) ─────────────────────────────────── --}}
 {{-- Stitch: 4-col grid — Today's Tasks, Overdue, Blocked, Weekly Goal --}}
-@if (session('success') || session('error'))
-    <div class="mb-6 flex items-start gap-3 px-4 py-3 rounded-lg text-sm"
-         style="background:{{ session('success') ? 'rgba(16,185,129,0.08)' : 'rgba(220,38,38,0.06)' }};border:1px solid {{ session('success') ? 'rgba(16,185,129,0.25)' : 'rgba(220,38,38,0.25)' }};color:{{ session('success') ? '#065F46' : '#991B1B' }};">
-        <span class="material-symbols-outlined flex-shrink-0" style="font-size:18px;">{{ session('success') ? 'check_circle' : 'error' }}</span>
-        <div>
-            {{ session('success') ?: session('error') }}
-            @if (session('active_timer_url'))
-                <a href="{{ session('active_timer_url') }}" class="font-semibold underline ml-1">View active timer</a>
-            @endif
-        </div>
-    </div>
+@if (session('success'))
+    <x-portal.alert type="success">
+        {{ session('success') }}
+        @if (session('active_timer_url'))
+            <a href="{{ session('active_timer_url') }}" class="font-semibold underline ml-1">View active timer</a>
+        @endif
+    </x-portal.alert>
+@elseif (session('error'))
+    <x-portal.alert type="error">
+        {{ session('error') }}
+        @if (session('active_timer_url'))
+            <a href="{{ session('active_timer_url') }}" class="font-semibold underline ml-1">View active timer</a>
+        @endif
+    </x-portal.alert>
 @endif
 
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
 
-    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between
-                group hover:border-secondary transition-all hover:shadow-md cursor-pointer">
-        <div class="flex justify-between items-start">
-            <span class="font-label-md text-label-md text-outline uppercase tracking-wider">Active Tasks</span>
-            <span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity"
-                  style="font-size:18px;">task_alt</span>
-        </div>
-        <div class="mt-4 flex items-baseline gap-2">
-            <span class="font-headline-lg text-headline-lg text-primary">{{ $myAssignedTasks }}</span>
-            @if ($myDueSoonTasks > 0)
-                <span class="font-label-md text-label-md text-status-payment-due">{{ $myDueSoonTasks }} due soon</span>
-            @endif
-        </div>
-    </div>
+    <x-portal.stat-card
+        label="Active Tasks"
+        :value="$myAssignedTasks"
+        icon="task_alt"
+        accent="secondary"
+        :hint="$myDueSoonTasks > 0 ? $myDueSoonTasks . ' due soon' : null"
+        hint-class="text-status-payment-due" />
 
-    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between
-                group hover:border-status-urgent transition-all hover:shadow-md cursor-pointer">
-        <div class="flex justify-between items-start">
-            <span class="font-label-md text-label-md text-outline uppercase tracking-wider">Due Soon</span>
-            <span class="material-symbols-outlined text-status-urgent opacity-0 group-hover:opacity-100 transition-opacity"
-                  style="font-size:18px;">schedule</span>
-        </div>
-        <div class="mt-4 flex items-baseline gap-2">
-            <span class="font-headline-lg text-headline-lg {{ $myDueSoonTasks > 0 ? 'text-status-urgent' : 'text-primary' }}">
-                {{ $myDueSoonTasks }}
-            </span>
-            <span class="font-label-md text-label-md text-outline">
-                {{ $myDueSoonTasks > 0 ? 'within 3 days' : 'No urgent items' }}
-            </span>
-        </div>
-    </div>
+    <x-portal.stat-card
+        label="Due Soon"
+        :value="$myDueSoonTasks"
+        icon="schedule"
+        accent="status-urgent"
+        :value-class="$myDueSoonTasks > 0 ? 'text-status-urgent' : 'text-primary'"
+        :hint="$myDueSoonTasks > 0 ? 'within 3 days' : 'No urgent items'" />
 
-    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between
-                group hover:border-status-blocked transition-all hover:shadow-md cursor-pointer">
-        <div class="flex justify-between items-start">
-            <span class="font-label-md text-label-md text-outline uppercase tracking-wider">Blocked</span>
-            <span class="material-symbols-outlined text-status-blocked opacity-0 group-hover:opacity-100 transition-opacity"
-                  style="font-size:18px;">block</span>
-        </div>
-        <div class="mt-4 flex items-baseline gap-2">
-            <span class="font-headline-lg text-headline-lg {{ $myBlockedTasks > 0 ? 'text-status-blocked' : 'text-primary' }}">
-                {{ $myBlockedTasks }}
-            </span>
-            <span class="font-label-md text-label-md text-outline">
-                {{ $myBlockedTasks > 0 ? 'Awaiting feedback' : 'No blockers' }}
-            </span>
-        </div>
-    </div>
+    <x-portal.stat-card
+        label="Blocked"
+        :value="$myBlockedTasks"
+        icon="block"
+        accent="status-blocked"
+        :value-class="$myBlockedTasks > 0 ? 'text-status-blocked' : 'text-primary'"
+        :hint="$myBlockedTasks > 0 ? 'Awaiting feedback' : 'No blockers'" />
 
     {{-- Weekly goal card with progress bar --}}
     <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
@@ -273,26 +251,20 @@
 
     {{-- My Workspaces --}}
     <div class="lg:col-span-2">
-        <div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden">
-            <div class="px-card-padding py-4 border-b border-border-subtle flex items-center justify-between">
-                <h3 class="font-headline-md text-headline-md text-primary font-bold">My Workspaces</h3>
+        <x-portal.section-card flush title="My Workspaces">
+            <x-slot:actions>
                 <a href="{{ route('workspace.index') }}"
                    class="text-secondary font-label-md text-label-md hover:underline font-bold">
                     View All
                 </a>
-            </div>
+            </x-slot:actions>
 
             @if ($workspaceList->isEmpty())
-                <div class="p-8 text-center">
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
-                         style="background:rgba(0,88,190,0.06)">
-                        <span class="material-symbols-outlined text-secondary" style="font-size:24px;">workspaces</span>
-                    </div>
-                    <p class="font-body-sm text-body-sm text-outline">No active workspaces yet.</p>
-                    <p class="font-label-md text-label-md text-on-surface-variant mt-1">
-                        Your workspace will appear here once it's activated.
-                    </p>
-                </div>
+                <x-portal.empty-state
+                    compact
+                    icon="workspaces"
+                    title="No active workspaces yet"
+                    message="Your workspace will appear here once it's activated." />
             @else
                 <div class="divide-y divide-border-subtle">
                     @foreach ($workspaceList->take(5) as $ws)
@@ -316,17 +288,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
-                                @php
-                                    $statusColor = match($ws->status) {
-                                        'active'  => '#10B981',
-                                        'pending' => '#F59E0B',
-                                        default   => '#94A3B8',
-                                    };
-                                @endphp
-                                <span class="font-label-md text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                                      style="color:{{ $statusColor }};background:{{ $statusColor }}18;">
-                                    {{ ucfirst($ws->status) }}
-                                </span>
+                                <x-portal.status-badge :status="$ws->status" />
                                 <span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors"
                                       style="font-size:16px;">chevron_right</span>
                             </div>
@@ -334,7 +296,7 @@
                     @endforeach
                 </div>
             @endif
-        </div>
+        </x-portal.section-card>
     </div>
 
     {{-- Quick links sidebar --}}
@@ -373,23 +335,29 @@
         @endif
 
         {{-- Quick navigation --}}
-        <div class="bg-white rounded-xl border border-border-subtle p-card-padding shadow-sm">
-            <h4 class="font-label-md text-label-md text-outline uppercase tracking-wider mb-4">Quick Links</h4>
-            <div class="space-y-1">
-                @foreach ([
-                    ['label' => 'My Workspaces',  'icon' => 'workspaces',  'route' => route('workspace.index')],
-                    ['label' => 'Time Logs',       'icon' => 'schedule',    'route' => $defaultTimerWorkspace ? route('workspace.time-logs.index', $defaultTimerWorkspace) : route('workspace.index')],
-                    ['label' => 'Notifications',   'icon' => 'notifications','route' => route('notifications.index')],
-                    ['label' => 'My Profile',      'icon' => 'person',      'route' => route('profile.show')],
-                ] as $link)
-                <a href="{{ $link['route'] }}"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant
-                          hover:text-secondary hover:bg-surface-container-low transition-colors">
-                    <span class="material-symbols-outlined" style="font-size:18px;">{{ $link['icon'] }}</span>
-                    <span class="font-label-md text-label-md">{{ $link['label'] }}</span>
-                    <span class="material-symbols-outlined ml-auto" style="font-size:14px;color:#CBD5E1;">chevron_right</span>
-                </a>
-                @endforeach
+        <div>
+            <h4 class="font-label-md text-label-md text-outline uppercase tracking-wider mb-3 px-1">Quick Links</h4>
+            <div class="space-y-3">
+                <x-portal.action-card
+                    :href="route('workspace.index')"
+                    icon="workspaces"
+                    title="My Workspaces"
+                    description="View every workspace you're assigned to." />
+                <x-portal.action-card
+                    :href="$defaultTimerWorkspace ? route('workspace.time-logs.index', $defaultTimerWorkspace) : route('workspace.index')"
+                    icon="schedule"
+                    title="Time Logs"
+                    description="Review and submit your tracked hours." />
+                <x-portal.action-card
+                    :href="route('notifications.index')"
+                    icon="notifications"
+                    title="Notifications"
+                    description="Catch up on workspace activity and alerts." />
+                <x-portal.action-card
+                    :href="route('profile.show')"
+                    icon="person"
+                    title="My Profile"
+                    description="Update your details and preferences." />
             </div>
         </div>
 

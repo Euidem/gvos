@@ -145,18 +145,10 @@
 
     {{-- ── Session flash ──────────────────────────────────────────────────── --}}
     @if (session('success'))
-        <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg text-sm"
-             style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);color:#065F46;">
-            <span class="material-symbols-outlined flex-shrink-0" style="font-size: 18px;">check_circle</span>
-            {{ session('success') }}
-        </div>
+        <x-portal.alert type="success">{{ session('success') }}</x-portal.alert>
     @endif
     @if (session('error'))
-        <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg text-sm"
-             style="background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.25);color:#991B1B;">
-            <span class="material-symbols-outlined flex-shrink-0" style="font-size: 18px;">error</span>
-            {{ session('error') }}
-        </div>
+        <x-portal.alert type="error">{{ session('error') }}</x-portal.alert>
     @endif
 
     {{-- ── Kanban board — horizontal scrollable ─────────────────────────── --}}

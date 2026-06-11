@@ -7,6 +7,18 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 26 Batch 1 Notes (2026-06-11) — Portal shell polish
+
+### Info | Frontend | Low | `success`/`error` flash intentionally not globalized
+**Description:** The new global flash partial (`<x-portal.flash />`) renders only `status` and `warning`. `success` and `error` are still rendered per-page because ~17 portal pages already render them locally (often positioned for context, e.g. above the Kanban board). A global handler for those keys would double-render.
+**Status:** By design. New pages should use `<x-portal.alert type="success|error">`. A future batch could sweep all pages to a single global handler and remove the local blocks — out of scope for Batch 1.
+
+### Info | Frontend | Low | Per-dashboard redesigns still pending
+**Description:** Batch 1 establishes the shared shell + component library and updates 3 representative pages only. Manager, client, business-client, and lead dashboards plus most workspace module pages still use their pre-existing markup.
+**Status:** Planned for Phase 26 Batch 2+.
+
+---
+
 ## Hotfix (2026-06-11) — Non-admin login redirect
 
 ### RESOLVED | Auth/Redirect | Critical | Non-admin users redirected to `/admin` after login → 403

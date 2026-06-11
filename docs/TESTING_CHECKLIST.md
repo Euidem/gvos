@@ -5,6 +5,25 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 26 Batch 1 (2026-06-11) — Portal shell & design-system polish
+
+Run after deploy + `php artisan optimize:clear && php artisan view:clear`.
+
+- [ ] Login as **Talent** → dashboard renders: stat cards, My Workspaces section card, Quick Link action cards, status badges.
+- [ ] Login as **Manager** → dashboard loads with no layout/route errors (shell unchanged).
+- [ ] Login as **Client** → dashboard loads with no layout/route errors.
+- [ ] Visit **Workspaces** index → page header, workspace cards, status badges; empty state renders cleanly when no workspaces.
+- [ ] Visit **Tasks (Kanban)** index → board renders; success/error flash uses the new alert style; drag-and-drop still works.
+- [ ] Confirm a **flash `status`** message (e.g. log in as non-admin after visiting `/admin`) appears once, in the global alert, at the top of the content area — and is NOT duplicated.
+- [ ] Confirm `success`/`error` flashes still appear once per page (no duplication with the global stack).
+- [ ] **Mobile (<768px):** hamburger opens/closes the sidebar; backdrop works; cards stack; content gutters look right; long titles wrap.
+- [ ] Confirm **no admin/Filament UI** changed.
+- [ ] Confirm **no form action / CSRF / method spoofing** broke on the updated pages.
+- [ ] Confirm **no "GetVirtual"** text anywhere; only "GVOS".
+- [ ] Confirm **Visual Repair v3** marker + fallback CSS still present in `gvos.blade.php`.
+
+---
+
 ## Hotfix (2026-06-11) — Non-admin login redirect
 
 Run after deploy + `php artisan optimize:clear`. Use a fresh/incognito window for each role.

@@ -210,6 +210,28 @@ During the UI correction batches (Batches 1–6), do not add new routes, migrati
 
 ---
 
+## Rule 16 — Prefer Portal Components (Phase 26+)
+
+When building or polishing non-admin portal pages, use the reusable `portal` Blade
+components (`resources/views/components/portal/`) instead of hand-rolling page headers,
+stat cards, action cards, empty states, status badges, section cards, or alerts. The full
+list and signatures are in `docs/UI_SOURCE_OF_TRUTH.md` → "Portal Component Library".
+
+Do not over-engineer: only add a new shared component when it will be used on more than
+one page (or clearly will be soon).
+
+---
+
+## Rule 17 — Flash Message Placement
+
+- The shell renders `status` and `warning` globally via `<x-portal.flash />`. Do not add a
+  second global handler for these.
+- Pages render their own `success` and `error` using `<x-portal.alert type="success|error">`,
+  positioned where it makes sense for that page. Never render `success`/`error` from the
+  shell — it double-renders with the many pages that already show them locally.
+
+---
+
 ## Rule 15 — Test After Every Batch
 
 After completing each batch:

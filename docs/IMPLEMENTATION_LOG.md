@@ -7,6 +7,41 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-11 | Phase 26 Batch 1 | Shared Non-Admin Portal Shell & Design System Polish
+
+**What was done:** Established a reusable portal design-system foundation and polished the shared `<x-layouts.gvos>` shell, then applied it to a small set of representative pages to prove the pattern. No new features, routes, controllers, or migrations — Blade/components only. Filament admin, billing, vault, timer, invitation, and file-security logic were not touched.
+
+**Shell changes (`components/layouts/gvos.blade.php`):**
+- Page content now centered in a `max-w-[1440px]` container with responsive gutters (`p-4 sm:p-6 lg:p-8`).
+- Main background aligned to the `surface` token (`#f7f9fb`) for consistency with the body.
+- Added a global flash stack (`<x-portal.flash />`) rendering `status` + `warning` (keys no portal page rendered before — this is what surfaces the post-login redirect notice). `success`/`error` stay page-local by design.
+- Sidebar, header, mobile drawer behaviour, and Visual Repair v3 fallbacks preserved unchanged.
+
+**Components created (8):**
+
+| File | Purpose |
+|------|---------|
+| `components/portal/alert.blade.php` | Professional alert (info/status/success/error/warning) |
+| `components/portal/flash.blade.php` | Global status/warning flash stack for the shell |
+| `components/portal/page-header.blade.php` | Title + subtitle + optional badge + `actions` slot |
+| `components/portal/stat-card.blade.php` | Dashboard metric card (icon, value, hint, accent, conditional value color) |
+| `components/portal/action-card.blade.php` | Icon + title + description quick-action card |
+| `components/portal/empty-state.blade.php` | Reusable empty state with optional `action` slot |
+| `components/portal/status-badge.blade.php` | Status → colored pill (active/pending/completed/blocked/…) |
+| `components/portal/section-card.blade.php` | Titled card wrapper with `actions` slot + optional flush body |
+
+**Representative pages updated (3):**
+
+| File | Change |
+|------|--------|
+| `resources/views/dashboard/talent.blade.php` | page header flash → alert component; 3 metric cards → stat-card; My Workspaces → section-card; empty state → empty-state; status pill → status-badge; Quick Links → action-cards |
+| `resources/views/workspace/index.blade.php` | page header → page-header; empty state → empty-state; status pill → status-badge |
+| `resources/views/workspace/tasks/index.blade.php` | success/error flash → alert component |
+
+**Docs updated:** CURRENT_STATUS, UI_SOURCE_OF_TRUTH (component library), FRONTEND_IMPLEMENTATION_RULES (component + flash rules), TESTING_CHECKLIST, KNOWN_ISSUES.
+
+---
+
 ### 2026-06-11 | Hotfix | Non-admin login redirect
 
 **What was done:** Fixed a critical post-login redirect bug where every non-admin role landed on `/admin` and received a Filament 403. Root cause: `redirect()->intended()` honoured a stale `url.intended` of `/admin` (stored by Filament's `Authenticate` middleware when a guest touches an `/admin` route). The login flow now ignores an intended `/admin` URL for users who cannot access the panel, and falls back to the role dashboard via `User::getDashboardRoute()`. Added a safety-net middleware so an authenticated non-admin who reaches `/admin` by any path is redirected to their dashboard with a notice instead of a 403. Filament's `canAccessPanel()` security is unchanged.

@@ -3,44 +3,32 @@
     <div class="max-w-5xl mx-auto space-y-8">
 
         {{-- ── Page header ──────────────────────────────────────────────── --}}
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-on-surface">My Workspaces</h2>
-                <p class="text-sm text-on-surface-variant mt-1">All workspaces you are assigned to.</p>
-            </div>
-        </div>
+        <x-portal.page-header
+            title="My Workspaces"
+            subtitle="All workspaces you are assigned to." />
 
         {{-- ── Empty state ──────────────────────────────────────────────── --}}
         @if ($workspaces->isEmpty())
             @php $__wsUser = auth()->user(); @endphp
-            <div class="bg-white rounded-xl border border-border-subtle shadow-card px-8 py-12 text-center">
-                <div class="w-14 h-14 bg-surface-container-low rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <span class="material-symbols-outlined text-outline" style="font-size: 28px;">workspaces</span>
-                </div>
-                <h3 class="text-base font-semibold text-on-surface mb-2">No workspaces yet</h3>
-                @if ($__wsUser->hasAnyRole(['talent','line_manager']))
-                    <p class="text-sm text-on-surface-variant max-w-sm mx-auto">
-                        The GVOS operations team will create and assign your workspace when your engagement begins.
-                        You will receive an email notification once you are added.
-                    </p>
-                @elseif ($__wsUser->hasAnyRole(['individual_client','business_client_admin','business_client_staff']))
-                    <p class="text-sm text-on-surface-variant max-w-sm mx-auto">
-                        Your workspace will be set up by the GVOS team. If you believe this is an error,
-                        please contact us.
-                    </p>
-                @else
-                    <p class="text-sm text-on-surface-variant max-w-sm mx-auto">
-                        Workspaces are created by the GVOS team when your service begins.
-                        Check back soon or contact support.
-                    </p>
-                @endif
-                @if ($__wsUser->needsOnboarding())
-                    <a href="{{ route('onboarding.index') }}"
-                       class="mt-4 inline-flex items-center gap-2 bg-secondary text-on-secondary px-4 py-2 rounded-lg text-sm font-semibold hover:brightness-110 transition-all">
-                        <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
-                        Complete your profile while you wait
-                    </a>
-                @endif
+            <div class="bg-white rounded-xl border border-border-subtle shadow-card">
+                <x-portal.empty-state
+                    icon="workspaces"
+                    title="No workspaces yet"
+                    :message="$__wsUser->hasAnyRole(['talent','line_manager'])
+                        ? 'The GVOS operations team will create and assign your workspace when your engagement begins. You will receive an email notification once you are added.'
+                        : ($__wsUser->hasAnyRole(['individual_client','business_client_admin','business_client_staff'])
+                            ? 'Your workspace will be set up by the GVOS team. If you believe this is an error, please contact us.'
+                            : 'Workspaces are created by the GVOS team when your service begins. Check back soon or contact support.')">
+                    @if ($__wsUser->needsOnboarding())
+                        <x-slot:action>
+                            <a href="{{ route('onboarding.index') }}"
+                               class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md text-label-md hover:brightness-110 transition-all">
+                                <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
+                                Complete your profile while you wait
+                            </a>
+                        </x-slot:action>
+                    @endif
+                </x-portal.empty-state>
             </div>
 
         {{-- ── Workspace cards ──────────────────────────────────────────── --}}
@@ -48,19 +36,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 @foreach ($workspaces as $workspace)
                 @php
-                    $statusColors = [
-                        'active'    => 'bg-status-active/10 text-status-active border border-status-active/20',
-                        'pending'   => 'bg-status-payment-due/10 text-status-payment-due border border-status-payment-due/20',
-                        'paused'    => 'bg-secondary/5 text-secondary border border-secondary/20',
-                        'completed' => 'bg-status-completed/10 text-status-completed border border-status-completed/20',
-                        'cancelled' => 'bg-status-blocked/10 text-status-blocked border border-status-blocked/20',
-                    ];
                     $typeColors = [
                         'trial'   => 'bg-status-trial/10 text-status-trial border border-status-trial/20',
                         'ongoing' => 'bg-secondary/5 text-secondary border border-secondary/20',
                         'project' => 'bg-secondary/5 text-secondary border border-secondary/20',
                     ];
-                    $statusCls = $statusColors[$workspace->status] ?? 'bg-surface-container-low text-on-surface-variant border border-border-subtle';
                     $typeCls   = $typeColors[$workspace->type]   ?? 'bg-surface-container-low text-on-surface-variant border border-border-subtle';
                 @endphp
                 <a href="{{ route('workspace.show', $workspace) }}"
@@ -74,9 +54,7 @@
                             <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $typeCls }}">
                                 {{ ucfirst($workspace->type) }}
                             </span>
-                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $statusCls }}">
-                                {{ ucfirst($workspace->status) }}
-                            </span>
+                            <x-portal.status-badge :status="$workspace->status" />
                         </div>
                     </div>
 
