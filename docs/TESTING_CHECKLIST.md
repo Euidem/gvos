@@ -5,6 +5,34 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 24 — Final Production QA, Bug Bash and Launch Readiness
+
+> Full production-readiness manual test pass. The deployment commands, environment
+> requirements, and complete role-based smoke tests live in
+> **`docs/PRODUCTION_READINESS_CHECKLIST.md`** — run that document end-to-end before launch.
+
+### Static audit (completed in Phase 24 — re-verify after any change)
+- [x] No "GetVirtual" string in any Blade view
+- [x] No rendered "Phase X" / "PART X" labels (only server-side comments)
+- [x] Vault reveal route is POST + `throttle:vault-reveal`
+- [x] File download route auth-gated; internal files hidden from clients
+- [x] Notifications scoped to `$request->user()` everywhere
+- [x] Invitation registration cannot assign super_admin / operations_admin
+- [x] Billing internal notes gated to admin/manager; void invoices hidden from clients
+- [x] Weekly report drafts hidden from client roles
+- [x] `.env.example` contains no real secrets; APP_KEY warning present
+
+### Manual tests still required on cPanel (PHP unavailable locally)
+- [ ] Run `php artisan migrate --force` on a backed-up DB
+- [ ] Run `php artisan gvos:storage-check` — all checks green
+- [ ] Run `php artisan gvos:billing-refresh-statuses --dry-run` then the real run
+- [ ] Run `php artisan route:list` — confirm no missing controller methods
+- [ ] All role-based smoke tests in PRODUCTION_READINESS_CHECKLIST §4
+- [ ] `/admin/mail-test` sends a branded test email
+- [ ] Confirm `APP_DEBUG=false` and `SESSION_SECURE_COOKIE=true` in production `.env`
+
+---
+
 ## Phase 23 — Portal Dashboard and Workspace Experience Polish
 
 Run after `git pull && php artisan optimize:clear && php artisan view:clear`. No migrations required.

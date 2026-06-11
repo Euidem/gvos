@@ -17,6 +17,22 @@ The Stitch talent dashboard specifies a workspace switcher in the sidebar. This 
 
 ---
 
+## Phase 24 Notes (2026-06-11) — Production QA pass
+
+### RESOLVED | Config | Low | Misleading VAULT_ENCRYPTION_KEY comment in .env.example
+**Description:** `.env.example` documented `VAULT_ENCRYPTION_KEY` as a separate key used for vault encryption. It is **not referenced anywhere in code** — the vault `secret_value` uses Laravel's `encrypted` cast, which derives its key from `APP_KEY`. Risk: an operator could rotate the wrong key and permanently lose decryptability of vault secrets.
+**Resolution:** Corrected the comment to state the vault relies on `APP_KEY`, added an explicit APP_KEY stability warning, and marked `VAULT_ENCRYPTION_KEY` as reserved/unused. (No encryption logic changed.)
+
+### Info | Dead code | Low | Unused admin dashboard controller methods + views
+**Description:** `DashboardController::superAdmin()` and `operationsAdmin()` return `dashboard.super-admin` / `dashboard.operations-admin` views, but no route references them — `User::getDashboardRoute()` sends both admin roles to Filament `/admin`. These methods and the two Blade views are dead code.
+**Status:** Left in place (zero runtime risk). Flagged for a future cleanup phase. Not removed in Phase 24 to keep the QA pass non-invasive.
+
+### Info | Vault | Low | Vault encryption tied to APP_KEY (no separate key yet)
+**Description:** Vault secrets are encrypted via the `encrypted` cast (APP_KEY-derived). A dedicated vault key (`VAULT_ENCRYPTION_KEY`) is reserved but not implemented.
+**Status:** Acceptable for launch. Documented in PRODUCTION_READINESS_CHECKLIST APP_KEY warning. A future phase may introduce a dedicated key with a re-encryption migration.
+
+---
+
 ## Open Issues
 
 ### 2026-05-31 | UI Alignment | Medium | UI has drifted from Stitch source of truth

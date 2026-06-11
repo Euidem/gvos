@@ -10,6 +10,22 @@ Authorization is enforced at three layers:
 
 ---
 
+## Phase 24 — Permission Audit Confirmation (No permission changes)
+
+A full permission audit was performed in Phase 24 across all 11 roles and 22 modules. **No permission changes were made** — all gates were verified correct:
+
+- **Vault:** `requireAccess` blocks `none`/`observer`; `canReveal` blocks archived items and enforces role/owner/allowed-user rules; reveal is POST + `throttle:vault-reveal`.
+- **Files:** `requireAccess` blocks `none`; internal files visible to admin/workspace_admin/manager only; downloads verify workspace ownership + visibility + existence.
+- **Billing:** talent excluded from billing entirely; internal notes gated to admin/workspace_admin/manager; clients cannot view `void` invoices.
+- **Weekly reports:** `visibleStatusesFor($role)` — clients see `published` only, talent sees non-draft, observers blocked.
+- **Notifications:** every query scoped to `$request->user()` — no cross-user access.
+- **Invitations:** `resolveSafePlatformRole` forbids `super_admin`/`operations_admin`; email lock enforced on accept; existing-account guard on register.
+- **Middleware:** `check.status` blocks suspended/inactive; `check.billing` redirects restricted/suspended clients to the restricted page while always allowing billing/index/show.
+
+Result: **PASS — no leaks, no accidental blocks, no privilege escalation.**
+
+---
+
 ## Phase 23 — Portal UI Changes (No permission changes)
 
 Phase 23 made no permission changes. All changes were cosmetic Blade view polish:

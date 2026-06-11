@@ -1,8 +1,47 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-11
-**Current Phase:** Phase 23 - Portal Dashboard and Workspace Experience Polish - Complete
-**Current Activity:** Polished all non-admin Blade portal views. Added mobile-responsive sidebar with slide-in overlay, improved dynamic subtitle copy on all five role dashboards, improved empty states with role-specific copy across module pages, widened the workspace show max-width, and added notifications link to talent/manager quick links.
+**Current Phase:** Phase 24 - Final Production QA, Bug Bash and Launch Readiness - Complete
+**Current Activity:** Performed a full end-to-end production readiness review across routes, permissions, migrations, model helpers, billing, timers, reports, vault, files, notifications, invitations, onboarding, portal UI, admin panel, security config, and queries. The codebase is mature and clean — one confirmed config/documentation bug was found and fixed (misleading `VAULT_ENCRYPTION_KEY` comment). Added `docs/PRODUCTION_READINESS_CHECKLIST.md`. No new product modules. No payment gateway. No payroll.
+
+## Phase 24 Status - Complete (2026-06-11)
+
+### Final Production QA, Bug Bash and Launch Readiness
+
+**Goal:** Validate that GVOS is ready for real users via a full audit of every layer, fixing only confirmed bugs.
+
+#### Audit Result Summary
+
+| Area | Result |
+|------|--------|
+| Route audit | PASS — all routes resolve; vault reveal POST+throttle; file download protected; invitation public routes correct; no unsafe GET state changes; nested resources verify workspace ownership |
+| Permission audit | PASS — vault/file/billing/report/notification controllers correctly role-gate; no admin escalation via invitation; talent excluded from billing; clients see published reports only |
+| Migration audit | PASS — additive migrations, ordered safely, FKs valid, nullable new columns, no secrets in migrations |
+| Model helper audit | PASS — null-safe (`?->`, `??`); vault `canReveal` blocks archived items; billing/subscription helpers guarded |
+| Billing audit | PASS — internal notes hidden from clients; void invoices hidden from clients; manual suspension untouched by refresh command |
+| Timer/report audit | PASS — draft reports hidden from clients; observers blocked; client report visibility = published only |
+| Vault audit | PASS — `secret_value` encrypted + `$hidden`; reveal POST+CSRF+throttle; archived items unrevealable; access/audit logs exclude secret |
+| File audit | PASS — mimes whitelist + blocklist + extension sanitize; downloads auth-gated; internal files hidden from clients; private disk root |
+| Notification/email audit | PASS — notifications user-scoped; mail test admin-only; email logs exclude secrets |
+| Invitation/onboarding audit | PASS — email lock; no super_admin/operations_admin via invitation; token never logged; transaction-wrapped |
+| Portal UI audit | PASS — no "GetVirtual" in any view; "Phase X" only in server-side comments (never rendered); dynamic empty states |
+| Admin panel audit | PASS — 9 widgets, read-only audit logs, vault widgets count-only, correct nav groups |
+| Security/config audit | PASS — private disk `serve=false`; `.env.example` has no real secrets; APP_DEBUG/SESSION_SECURE_COOKIE production notes present |
+| Performance/query audit | PASS — lists paginated (notifications 20, files 20, reports 20, payments 20, audit logs in Filament); eager loading used |
+
+#### Confirmed Bugs Found & Fixed
+- **`.env.example` misleading vault key comment** — `VAULT_ENCRYPTION_KEY` was documented as "additional key for vault credential encryption (separate from APP_KEY)", but it is **never referenced in code**; the vault's `encrypted` cast relies on `APP_KEY`. An operator could be misled into rotating the wrong key and losing all vault secrets. Fixed the comment to accurately document APP_KEY dependence and added an explicit APP_KEY stability warning.
+
+#### Notes (non-blocking, documented in KNOWN_ISSUES)
+- `DashboardController::superAdmin()` / `operationsAdmin()` and the `dashboard.super-admin` / `dashboard.operations-admin` views are **dead code** — admins use Filament `/admin` (per `User::getDashboardRoute()`). Left in place (no risk); flagged for future cleanup.
+
+#### Constraints Respected
+- [x] No Phase 25 built
+- [x] No new product modules / payment gateway / payroll
+- [x] No invoice/payment/vault/timer/invitation/file logic changed (only a doc comment)
+- [x] No UI redesign
+- [x] No `GetVirtual` in visible UI; GVOS naming throughout
+- [x] No migrations added (no schema change needed)
 
 ## Phase 23 Status - Complete (2026-06-11)
 
