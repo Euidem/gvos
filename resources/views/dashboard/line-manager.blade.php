@@ -129,63 +129,34 @@
         :href="route('workspace.index')"
         :hint="$workspacesPending > 0 ? $workspacesPending . ' pending' : 'of ' . $myWorkspaces . ' total'" />
 
-    {{-- Tasks awaiting review --}}
-    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col gap-3"
-         style="min-height:140px;">
-        <div class="flex justify-between items-start">
-            <span class="font-label-md text-label-md text-outline">Tasks for Review</span>
-            <span class="material-symbols-outlined" style="font-size:18px;color:{{ $managerTasksSubmitted > 0 ? '#D97706' : '#76777d' }};">pending_actions</span>
-        </div>
-        <p class="font-headline-lg text-headline-lg" style="color:{{ $managerTasksSubmitted > 0 ? '#D97706' : '#191c1e' }};">
-            {{ $managerTasksSubmitted }}
-        </p>
-        <p class="font-label-md text-label-md text-on-surface-variant mt-auto">
-            {{ $managerTasksSubmitted > 0 ? 'Needs review' : 'All clear' }}
-        </p>
-        @php $pct = ($managerTasksOpen + $managerTasksSubmitted) > 0 ? min(100, round($managerTasksSubmitted / ($managerTasksOpen + $managerTasksSubmitted) * 100)) : 0; @endphp
-        <div class="w-full h-1.5 rounded-full" style="background:rgba(0,88,190,0.08);">
-            <div class="h-full rounded-full" style="width:{{ $pct }}%;background:#D97706;"></div>
-        </div>
-    </div>
+    @php
+        $reviewPct = ($managerTasksOpen + $managerTasksSubmitted) > 0
+            ? min(100, round($managerTasksSubmitted / ($managerTasksOpen + $managerTasksSubmitted) * 100))
+            : 0;
+    @endphp
+    <x-portal.stat-card
+        label="Tasks for Review"
+        :value="$managerTasksSubmitted"
+        icon="pending_actions"
+        :value-class="$managerTasksSubmitted > 0 ? 'text-status-payment-due' : 'text-primary'"
+        :hint="$managerTasksSubmitted > 0 ? 'Needs review' : 'All clear'"
+        :progress="$reviewPct"
+        progress-color="#D97706" />
 
-    {{-- Blocked tasks --}}
-    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col gap-3"
-         style="min-height:140px;">
-        <div class="flex justify-between items-start">
-            <span class="font-label-md text-label-md text-outline">Blocked Tasks</span>
-            <span class="material-symbols-outlined" style="font-size:18px;color:{{ $managerTasksBlocked > 0 ? '#EF4444' : '#76777d' }};">block</span>
-        </div>
-        <p class="font-headline-lg text-headline-lg" style="color:{{ $managerTasksBlocked > 0 ? '#EF4444' : '#191c1e' }};">
-            {{ $managerTasksBlocked }}
-        </p>
-        <p class="font-label-md text-label-md text-on-surface-variant mt-auto">
-            {{ $managerTasksBlocked > 0 ? 'Requires action' : 'No blockers' }}
-        </p>
-        <p class="font-label-md text-[11px] text-outline">{{ $managerTasksOpen }} open total</p>
-    </div>
+    <x-portal.stat-card
+        label="Blocked Tasks"
+        :value="$managerTasksBlocked"
+        icon="block"
+        :value-class="$managerTasksBlocked > 0 ? 'text-status-blocked' : 'text-primary'"
+        :hint="$managerTasksBlocked > 0 ? 'Requires action' : $managerTasksOpen . ' open, no blockers'" />
 
-    {{-- Pending review (time logs + reports) --}}
-    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col gap-3"
-         style="min-height:140px;">
-        <div class="flex justify-between items-start">
-            <span class="font-label-md text-label-md text-outline">Pending Review</span>
-            <span class="material-symbols-outlined text-secondary" style="font-size:18px;">rate_review</span>
-        </div>
-        <p class="font-headline-lg text-headline-lg text-on-surface">{{ $timeLogsPending + $reportsPending }}</p>
-        <p class="font-label-md text-label-md text-on-surface-variant mt-auto">
-            {{ $timeLogsPending }} time {{ Str::plural('log', $timeLogsPending) }}
-            @if ($reportsPending > 0)
-                &middot; {{ $reportsPending }} {{ Str::plural('report', $reportsPending) }}
-            @endif
-        </p>
-        @if ($reportsPending > 0)
-            <p class="font-label-md text-[11px] font-semibold" style="color:#D97706;">
-                {{ $reportsPending }} report {{ Str::plural('draft', $reportsPending) }} waiting
-            </p>
-        @else
-            <p class="font-label-md text-[11px] text-outline">Awaiting your review</p>
-        @endif
-    </div>
+    <x-portal.stat-card
+        label="Pending Review"
+        :value="$timeLogsPending + $reportsPending"
+        icon="rate_review"
+        accent="secondary"
+        :hint="$timeLogsPending . ' time ' . Str::plural('log', $timeLogsPending) . ($reportsPending > 0 ? ' · ' . $reportsPending . ' ' . Str::plural('report', $reportsPending) : '')"
+        :hint-class="$reportsPending > 0 ? 'text-status-payment-due' : 'text-outline'" />
 
 </section>
 

@@ -5,6 +5,49 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Stat Card Refinement (2026-06-11) — Portal dashboard stat card visual polish
+
+Run after deploy + `php artisan optimize:clear && php artisan view:clear`.
+
+### Shared stat card component (`x-portal.stat-card`)
+- [ ] Cards are compact — value sits near the top, not pushed to bottom of a tall card.
+- [ ] Label is small, uppercase, muted grey — not dominant.
+- [ ] Value (`font-headline-md`) is bold and clear directly below label.
+- [ ] Hint text renders on its own line below value when provided.
+- [ ] Progress bar renders correctly when `progress` prop is set (talent / manager cards).
+- [ ] Progress bar colour is `#D97706` (amber) for "Tasks for Review" manager card.
+- [ ] Progress bar colour is `#0058be` (blue default) for talent Weekly Time card.
+- [ ] Cards with `href` show pointer cursor and subtle hover border/shadow.
+- [ ] Cards without `href` have no pointer cursor.
+- [ ] Icon is subtly visible at ~55% opacity (not hidden until hover).
+- [ ] When value is `0`, card still looks balanced — no awkward empty space.
+- [ ] Hint with longer text does not break card layout.
+
+### Talent dashboard (`/talent/dashboard`)
+- [ ] Weekly Time card uses same component and matches other 3 stat cards visually.
+- [ ] Weekly Time shows: value `Xh`, hint `Xh / 40h goal` or `Weekly goal reached`, progress bar.
+- [ ] Progress bar fills proportionally to hours logged vs 40h goal.
+- [ ] Other 3 stat cards (Active Tasks, Due Soon, Blocked) visually match Weekly Time card.
+
+### Manager dashboard (`/manager/dashboard`)
+- [ ] All 4 stat cards have consistent height and spacing.
+- [ ] "Tasks for Review" shows amber value and amber progress bar when > 0; normal when 0.
+- [ ] "Blocked Tasks" shows red value when > 0; normal when 0.
+- [ ] "Pending Review" hint shows log + report counts; turns amber-class when reports pending.
+- [ ] Manager stat section has no mismatched tall/short cards.
+
+### Client dashboards
+- [ ] Individual client (`/client/dashboard`): 4 stat cards look compact and balanced.
+- [ ] Business client admin (`/client/dashboard`): 4 stat cards look compact and balanced.
+- [ ] Business client staff (`/client/dashboard`): 4 stat cards look compact and balanced.
+
+### Mobile (375px width)
+- [ ] All stat card grids stack to 2-col on mobile.
+- [ ] Cards are compact — not excessively tall on mobile.
+- [ ] No horizontal overflow.
+
+---
+
 ## Phase 26 Batch 3 (2026-06-11) — Manager dashboard & workspace operations redesign
 
 Run after deploy + `php artisan optimize:clear && php artisan view:clear`.

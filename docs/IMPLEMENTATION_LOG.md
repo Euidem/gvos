@@ -7,6 +7,49 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-11 | Stat Card Refinement | Portal dashboard stat card visual polish
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `resources/views/components/portal/stat-card.blade.php` | Layout rebuilt: compact, value near top, optional progress bar |
+| `resources/views/dashboard/talent.blade.php` | Weekly Time card converted to `x-portal.stat-card` with `progress` prop |
+| `resources/views/dashboard/line-manager.blade.php` | 3 custom stat cards replaced with `x-portal.stat-card` |
+
+**Changes to `stat-card.blade.php`:**
+- Padding: `p-card-padding` → `p-5` (tighter, consistent)
+- Layout: removed `justify-between`; value now sits directly below label with `mb-2` gap
+- Label: `font-label-md text-label-md uppercase tracking-wider` → `text-[11px] font-semibold uppercase tracking-widest` (smaller, crisper)
+- Value: `font-headline-lg` → `font-headline-md text-headline-md leading-none` (less oversized)
+- Icon: was hidden (`opacity-0`) until hover; now always visible at 55% opacity (`opacity:0.55`)
+- Hint: own line below value (was inline `flex items-baseline` alongside value)
+- Added `progress` prop (0–100 integer): renders a `h-1.5` blue progress bar below hint when set
+- Added `progressColor` prop: overrides bar fill colour (default `#0058be`)
+- `shadow-card` → `shadow-sm` (matches newer workspace pages)
+- No existing props removed; all current usages are backward-compatible
+
+**Weekly Time card fix:**
+- Removed hand-rolled custom card from `talent.blade.php`
+- Now uses `x-portal.stat-card` with `label="Weekly Time"`, `value="{$timeThisWeekH}h"`, hint showing `Xh / 40h goal`, and `:progress="$goalPct"` (computed in `@php` block above section)
+- Visual matches other 3 stat cards exactly; progress bar still present
+
+**Manager stat card fix:**
+- Replaced 3 hand-rolled divs in `line-manager.blade.php` with `x-portal.stat-card` calls:
+  - "Tasks for Review": amber value + amber progress bar via `progress-color="#D97706"`
+  - "Blocked Tasks": red value class (`text-status-blocked`) when > 0
+  - "Pending Review": hint shows log + report counts; amber hint when reports pending
+- All four manager stat cards now use the same component
+
+**Auto-improved dashboards (component-based, no changes needed):**
+- `individual-client.blade.php` — all 4 stat cards use component ✓
+- `business-client-admin.blade.php` — all 4 stat cards use component ✓
+- `business-client-staff.blade.php` — all 4 stat cards use component ✓
+
+**Backend logic:** No changes. All variables, counts, conditions, routes, links, and visibility rules preserved.
+
+---
+
 ### 2026-06-11 | Phase 26 Batch 3 | Manager Dashboard & Workspace Operations Redesign
 
 **Files modified:**

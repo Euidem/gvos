@@ -259,26 +259,16 @@
         :value-class="$myBlockedTasks > 0 ? 'text-status-blocked' : 'text-primary'"
         :hint="$myBlockedTasks > 0 ? 'Awaiting feedback' : 'No blockers'" />
 
-    {{-- Weekly time goal card (custom — has progress bar) --}}
-    <div class="bg-white p-card-padding rounded-xl border border-border-subtle shadow-card flex flex-col justify-between">
-        <div class="flex justify-between items-center">
-            <span class="font-label-md text-label-md text-outline uppercase tracking-wider">Weekly Time</span>
-            <span class="font-bold text-sm text-secondary">{{ $timeThisWeekH }}h</span>
-        </div>
-        <div class="mt-4">
-            @php $goalPct = min(100, $timeThisWeek > 0 ? round($timeThisWeek / (40 * 60) * 100) : 0); @endphp
-            <div class="w-full h-2 rounded-full overflow-hidden mb-3" style="background:rgba(0,88,190,0.08)">
-                <div class="bg-secondary h-full rounded-full transition-all" style="width: {{ $goalPct }}%"></div>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="font-headline-lg text-headline-lg text-primary">{{ $timeThisWeekH }}h</span>
-                <span class="font-label-md text-label-md text-outline">/ 40h goal</span>
-            </div>
-            <p class="font-label-md text-[10px] text-outline mt-1">
-                {{ 40 - $timeThisWeekH > 0 ? (40 - $timeThisWeekH) . 'h remaining this week' : 'Weekly goal reached' }}
-            </p>
-        </div>
-    </div>
+    @php
+        $goalPct = min(100, $timeThisWeek > 0 ? round($timeThisWeek / (40 * 60) * 100) : 0);
+    @endphp
+    <x-portal.stat-card
+        label="Weekly Time"
+        :value="$timeThisWeekH . 'h'"
+        icon="timer"
+        accent="secondary"
+        :hint="$goalPct >= 100 ? 'Weekly goal reached' : $timeThisWeekH . 'h / 40h goal'"
+        :progress="$goalPct" />
 </section>
 
 {{-- ── Main content: workspaces + sidebar ─────────────────────────────── --}}

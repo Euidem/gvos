@@ -159,7 +159,7 @@ Every screen follows this exact HTML structure:
 
 ---
 
-## Portal Component Library (Phase 26 Batch 1 — 2026-06-11)
+## Portal Component Library (Phase 26 Batch 1 — 2026-06-11, refined 2026-06-11)
 
 Reusable Blade components under `resources/views/components/portal/`. Use these on
 non-admin portal pages instead of hand-rolling markup, so structure and spacing stay
@@ -169,7 +169,7 @@ established inline-style banner pattern).
 | Component | Usage |
 |-----------|-------|
 | `<x-portal.page-header title subtitle badge badgeType>` + `<x-slot:actions>` | Standard page title block (Rule 9 compliant — no breadcrumbs) |
-| `<x-portal.stat-card label value hint icon accent valueClass hintClass href>` | Dashboard metric card |
+| `<x-portal.stat-card label value hint icon accent valueClass hintClass href progress progressColor>` | Dashboard metric card — compact, value near top, optional progress bar |
 | `<x-portal.action-card href icon title description>` | Quick-action / shortcut card |
 | `<x-portal.empty-state icon title message compact>` + `<x-slot:action>` | Empty states (in-card use `compact`) |
 | `<x-portal.status-badge :status label>` | Colored status pill from a raw status string |
