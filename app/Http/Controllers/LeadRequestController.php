@@ -92,4 +92,9 @@ class LeadRequestController extends Controller
 
         return redirect()->route('lead.request-service.success');
     }
+
+    public function success(): View
+    {
+        return view('lead.request-service-success');
+    }
 }

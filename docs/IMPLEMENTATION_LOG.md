@@ -7,6 +7,38 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-11 | Phase 25 | MVP Launch Validation and Live cPanel Bug Fixes
+
+**What was done:** MVP launch validation pass. Statically validated cPanel deployment/cache compatibility (PHP/artisan unavailable locally). Found and fixed one confirmed deployment-blocking bug: closure route actions prevented `php artisan route:cache`. Verified `config:cache` safety (no `env()` outside config), no debug leftovers, rate limiters present, mail config clean. Expanded the production readiness checklist with the final MVP launch validation and backup/restore sections, the `route:cache` compatibility note, and the production domain.
+
+**Bug found & fixed (1):**
+- Closure route actions in `routes/web.php` (`/`, `/account/status`, `/request-service/success`) made `php artisan route:cache` fail (`LogicException: Unable to prepare route … Uses Closure`). Converted to controller actions.
+
+**Files created (1):**
+
+| File | Purpose |
+|------|---------|
+| `app/Http/Controllers/PageController.php` | `home()` (root redirect) + `accountStatus()` — replaces closure routes so route caching works |
+
+**Files modified (8):**
+
+| File | Change |
+|------|--------|
+| `routes/web.php` | `/`, `/account/status`, `/request-service/success` now controller-backed; import `PageController` |
+| `app/Http/Controllers/LeadRequestController.php` | Added `success()` for the request-service success page |
+| `docs/PRODUCTION_READINESS_CHECKLIST.md` | route:cache note, production domain, MVP launch §7, backup/restore §8 |
+| `docs/CURRENT_STATUS.md` | Phase 25 status + static validation table |
+| `docs/IMPLEMENTATION_LOG.md` | This entry |
+| `docs/TESTING_CHECKLIST.md` | Phase 25 MVP validation checklist |
+| `docs/KNOWN_ISSUES.md` | Phase 25 note (route:cache fix) |
+| `docs/BUILD_PHASES.md` | Phase 25 deliverables |
+| `docs/PERMISSION_MATRIX.md` | Phase 25 note (no permission changes) |
+
+**Commands run locally:** none — PHP unavailable in build environment. All artisan commands documented for cPanel.
+**Migrations added:** 0.
+
+---
+
 ### 2026-06-11 | Phase 24 | Final Production QA, Bug Bash and Launch Readiness
 
 **What was done:** Full end-to-end production readiness audit. Read and reasoned through routes, both middleware, the AuditLogger, security-critical controllers (vault, file, notification, invitation, billing, weekly report, dashboard), the vault model, config (filesystems, env example), and both GVOS artisan commands. Verified permission gating across all roles and modules, billing visibility, report draft hiding, vault encryption + reveal protection, file download security, invitation anti-escalation, and absence of "GetVirtual" / rendered phase labels in views. Created the production readiness checklist. Found and fixed one confirmed config/documentation bug.

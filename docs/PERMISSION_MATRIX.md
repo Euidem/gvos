@@ -10,6 +10,20 @@ Authorization is enforced at three layers:
 
 ---
 
+## Phase 25 — MVP Launch Validation (No permission changes)
+
+Phase 25 made **no permission changes**. The only code change was infrastructure: three closure
+route actions (`/`, `/account/status`, `/request-service/success`) were moved into controllers
+(`PageController`, `LeadRequestController@success`) so `php artisan route:cache` succeeds. The
+routes keep identical middleware and behaviour:
+- `/` → `PageController@home`: redirects authenticated users to their role dashboard, guests to login (same logic as before).
+- `/account/status` → `PageController@accountStatus`: still inside the `auth` group.
+- `/request-service/success` → `LeadRequestController@success`: still public.
+
+No middleware, role gate, or access rule was altered.
+
+---
+
 ## Phase 24 — Permission Audit Confirmation (No permission changes)
 
 A full permission audit was performed in Phase 24 across all 11 roles and 22 modules. **No permission changes were made** — all gates were verified correct:

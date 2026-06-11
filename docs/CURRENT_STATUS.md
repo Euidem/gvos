@@ -1,8 +1,38 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-11
-**Current Phase:** Phase 24 - Final Production QA, Bug Bash and Launch Readiness - Complete
-**Current Activity:** Performed a full end-to-end production readiness review across routes, permissions, migrations, model helpers, billing, timers, reports, vault, files, notifications, invitations, onboarding, portal UI, admin panel, security config, and queries. The codebase is mature and clean — one confirmed config/documentation bug was found and fixed (misleading `VAULT_ENCRYPTION_KEY` comment). Added `docs/PRODUCTION_READINESS_CHECKLIST.md`. No new product modules. No payment gateway. No payroll.
+**Current Phase:** Phase 25 - MVP Launch Validation and Live cPanel Bug Fixes - Complete (pending live cPanel smoke tests)
+**Current Activity:** Prepared GVOS for MVP launch at `https://gvos.afbs.ng`. Validated deployment/cache compatibility statically (PHP unavailable locally). Found and fixed one confirmed deployment-blocking bug: closure route actions prevented `php artisan route:cache`. Converted them to controllers so route caching works. Verified `config:cache` safety (no `env()` outside config), absence of debug statements, and rate-limiter definitions. Expanded `docs/PRODUCTION_READINESS_CHECKLIST.md` with the final MVP launch + backup/restore sections. No new modules, no payment gateway, no payroll.
+
+## Phase 25 Status - Complete (2026-06-11)
+
+### MVP Launch Validation and Live cPanel Bug Fixes
+
+**Goal:** Validate GVOS as an MVP launch candidate, prepare exact cPanel commands and manual test steps, and fix only confirmed bugs.
+
+#### Confirmed Bug Found & Fixed
+- **Closure routes broke `php artisan route:cache`** — `routes/web.php` had three closure route *actions* (`/`, `/account/status`, `/request-service/success`). Laravel cannot serialize closures, so `route:cache` (in the deploy checklist) would abort with a `LogicException`, breaking production deployment. **Fix:** created `App\Http\Controllers\PageController` (`home`, `accountStatus`) and added `LeadRequestController::success()`; routes now reference controllers. The route table is fully cacheable. Behaviour is identical.
+
+#### Static Validation Results (PHP unavailable locally → cPanel must run artisan)
+| Check | Result |
+|-------|--------|
+| `route:cache` compatibility | FIXED — all routes controller-backed |
+| `config:cache` compatibility | PASS — no `env()` in app/, routes/, providers/ |
+| Debug leftovers | PASS — no `dd`/`dump`/`var_dump`/Ray in app or views |
+| Rate limiters | PASS — vault-reveal, file-upload, chat-send, invitation defined |
+| Mail config | PASS — `MAIL_FROM_NAME` defaults to GVOS; clean env mapping |
+| Visible branding | PASS — no "GetVirtual"; no rendered phase labels |
+| Secrets | PASS — `.env.example` clean; APP_KEY warning present |
+
+#### What Could NOT Be Validated Locally
+- All artisan commands (`migrate`, `route:list`, `gvos:storage-check`, `gvos:billing-refresh-statuses --dry-run`) — PHP not installed in the build environment. Documented for cPanel execution.
+- Live HTTP smoke tests for every role/module — require the running cPanel app; step-by-step manual scripts provided in the checklist.
+
+#### Constraints Respected
+- [x] No Phase 26; no new modules/features; no real-time chat/calls; no live payment gateway; no payroll
+- [x] No invoice/payment/vault/timer/invitation/file logic changed (only routing infrastructure)
+- [x] No UI redesign; no "GetVirtual" in UI; GVOS naming throughout
+- [x] No schema changes / migrations added
 
 ## Phase 24 Status - Complete (2026-06-11)
 

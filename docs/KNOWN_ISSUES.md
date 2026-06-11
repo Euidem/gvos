@@ -17,6 +17,18 @@ The Stitch talent dashboard specifies a workspace switcher in the sidebar. This 
 
 ---
 
+## Phase 25 Notes (2026-06-11) — MVP launch validation
+
+### RESOLVED | Deployment | High | Closure routes broke `php artisan route:cache`
+**Description:** `routes/web.php` defined three routes with closure actions (`/`, `/account/status`, `/request-service/success`). Laravel cannot serialize closures during `route:cache`, so the command — listed in the production deploy sequence — would abort with `LogicException: Unable to prepare route [...] for serialization. Uses Closure`, breaking deployment and leaving routes uncached.
+**Resolution:** Converted to controller actions — created `App\Http\Controllers\PageController` (`home`, `accountStatus`) and added `LeadRequestController::success()`. The route table is now fully controller-backed and cacheable. Behaviour is identical. **Do not reintroduce closure route actions.**
+
+### Info | Validation limitation | Medium | Live artisan/HTTP tests not run locally
+**Description:** PHP/artisan is unavailable in the build environment, so migrations, route/list inspection, the two `gvos:` commands, and live role/module HTTP smoke tests could not be executed during Phase 25. They were validated statically by source review.
+**Status:** Documented as required live tests in `docs/PRODUCTION_READINESS_CHECKLIST.md` §6/§7 and `docs/TESTING_CHECKLIST.md`. Must be run on cPanel before declaring GA.
+
+---
+
 ## Phase 24 Notes (2026-06-11) — Production QA pass
 
 ### RESOLVED | Config | Low | Misleading VAULT_ENCRYPTION_KEY comment in .env.example

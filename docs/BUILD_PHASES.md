@@ -5,6 +5,24 @@ GVOS is built in phases (Phase 0–18+). Each phase has a clear deliverable and 
 
 ---
 
+## Phase 25 — MVP Launch Validation and Live cPanel Bug Fixes ✅
+**Status:** Complete (2026-06-11) — pending live cPanel smoke tests
+**Goal:** Validate GVOS as an MVP launch candidate at `https://gvos.afbs.ng`; prepare exact cPanel commands and manual test steps; fix confirmed bugs only.
+
+### Deliverables
+- [x] Deployment/cache compatibility validated statically (PHP unavailable locally)
+- [x] **Confirmed bug fixed:** closure routes → controllers so `php artisan route:cache` works
+- [x] `config:cache` safety verified (no `env()` outside config)
+- [x] No debug statements; rate limiters present; mail config clean
+- [x] `PRODUCTION_READINESS_CHECKLIST.md` expanded: MVP launch status, required live tests, passed tests, remaining manual tests, non-blocking limitations, post-MVP pending features, backup/restore
+- [x] All other docs updated
+
+### Constraints Respected
+- No Phase 26; no new modules; no real-time chat/calls; no live payment gateway; no recurring invoice automation; no payroll
+- No invoice/payment/vault/timer/invitation/file logic changed; no UI redesign; no migrations
+
+---
+
 ## Phase 24 — Final Production QA, Bug Bash and Launch Readiness ✅
 **Status:** Complete (2026-06-11)
 **Goal:** Validate the full product for real users via an end-to-end audit; fix confirmed bugs only.

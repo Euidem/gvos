@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadRequestController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkspaceBillingController;
 use App\Http\Controllers\WorkspaceController;
@@ -33,18 +34,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ── Root redirect ────────────────────────────────────────────────────────
-Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect(auth()->user()->getDashboardRoute());
-    }
-    return redirect()->route('login');
-});
+// Controller-backed (not a closure) so `php artisan route:cache` can serialize it.
+Route::get('/', [PageController::class, 'home']);
 
 // ── Account status page (suspended / inactive users land here) ───────────
 Route::middleware('auth')->group(function () {
-    Route::get('/account/status', function () {
-        return view('account.status');
-    })->name('account.status');
+    Route::get('/account/status', [PageController::class, 'accountStatus'])->name('account.status');
 });
 
 // ── Profile and onboarding routes (all authenticated users) ──────────────
@@ -210,7 +205,7 @@ Route::middleware(['auth', 'check.status', 'role:active_lead'])
 // ── Public lead request form (no auth required) ──────────────────────────
 Route::get('/request-service', [LeadRequestController::class, 'show'])->name('lead.request-service');
 Route::post('/request-service', [LeadRequestController::class, 'store'])->name('lead.request-service.store');
-Route::get('/request-service/success', fn () => view('lead.request-service-success'))->name('lead.request-service.success');
+Route::get('/request-service/success', [LeadRequestController::class, 'success'])->name('lead.request-service.success');
 
 // ── Invitation routes (Phase 14) ─────────────────────────────────────────
 Route::get('/invitations/{token}', [WorkspaceInvitationController::class, 'show'])->name('workspace.invitations.show');

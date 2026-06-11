@@ -5,6 +5,34 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 25 — MVP Launch Validation and Live cPanel Bug Fixes
+
+> Live launch validation. The full deployment sequence, env requirements, role smoke tests,
+> and backup/restore steps are in **`docs/PRODUCTION_READINESS_CHECKLIST.md`** (§2, §4, §7, §8).
+
+### Static validation (completed Phase 25)
+- [x] All web routes controller-backed → `php artisan route:cache` compatible (closures removed)
+- [x] No `env()` outside `config/` → `php artisan config:cache` safe
+- [x] No `dd`/`dump`/`var_dump`/Ray debug statements in app or views
+- [x] Rate limiters defined: vault-reveal, file-upload, chat-send, invitation
+- [x] Mail `from.name` defaults to GVOS; no real secrets in `.env.example`
+
+### Live cPanel tests still required (PHP unavailable locally)
+- [ ] `git pull origin main`
+- [ ] `composer install --no-dev --optimize-autoloader` (if vendor missing / lock changed)
+- [ ] `php artisan migrate --force` (on a backed-up DB)
+- [ ] `php artisan optimize:clear && php artisan config:clear && php artisan route:clear && php artisan view:clear`
+- [ ] `php artisan config:cache && php artisan route:cache && php artisan view:cache` — **all succeed**
+- [ ] `php artisan permission:cache-reset`
+- [ ] `php artisan route:list` — no missing controller methods
+- [ ] `php artisan list | grep gvos` — both gvos commands listed
+- [ ] `php artisan gvos:storage-check` — green
+- [ ] `php artisan gvos:billing-refresh-statuses --dry-run` — clean
+- [ ] Role-based smoke tests (admin, talent, manager, clients, lead, suspended) per checklist §4
+- [ ] Confirm `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`, `APP_URL=https://gvos.afbs.ng`
+
+---
+
 ## Phase 24 — Final Production QA, Bug Bash and Launch Readiness
 
 > Full production-readiness manual test pass. The deployment commands, environment

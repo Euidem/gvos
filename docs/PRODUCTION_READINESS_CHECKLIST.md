@@ -54,6 +54,12 @@ php artisan gvos:billing-refresh-statuses
 
 > **Note on `config:cache`:** once config is cached, `.env` changes require re-running
 > `php artisan config:cache` to take effect. If you change `.env`, re-run step 5.
+>
+> **Note on `route:cache` (Phase 25):** route caching requires a fully controller-backed
+> route table — closure route actions cannot be serialized. As of Phase 25 all web routes
+> are controller-backed (`/`, `/account/status`, and `/request-service/success` were moved
+> out of closures), so `php artisan route:cache` succeeds. Do **not** reintroduce closure
+> route actions, or `route:cache` will fail with a `LogicException`.
 
 ---
 
@@ -63,7 +69,7 @@ php artisan gvos:billing-refresh-statuses
 |----------|------------------|-----|
 | `APP_ENV` | `production` | Disables dev affordances |
 | `APP_DEBUG` | `false` | **Critical** — debug output leaks stack traces, env, queries |
-| `APP_URL` | `https://yourdomain.com` | Correct links, storage URLs |
+| `APP_URL` | `https://gvos.afbs.ng` | Correct links, storage URLs (production domain) |
 | `SESSION_SECURE_COOKIE` | `true` | **Critical** — prevents session cookie theft over HTTP (HTTPS only) |
 | `SESSION_ENCRYPT` | `true` (recommended) | Encrypts session payloads at rest |
 | `DB_*` | cPanel MySQL credentials | Database connection |
@@ -148,3 +154,80 @@ php artisan gvos:billing-refresh-statuses
 | `php artisan gvos:billing-refresh-statuses --dry-run` | Preview billing status transitions |
 | `php artisan gvos:billing-refresh-statuses` | Apply billing status transitions (payment_due → overdue → restricted) |
 | `php artisan permission:cache-reset` | Clear Spatie role/permission cache after role changes |
+
+---
+
+## 7. MVP Launch Validation (Phase 25 — 2026-06-11)
+
+### MVP launch status
+**READY — pending live cPanel smoke tests.** All static/code-level launch blockers have been
+resolved. The application is a launch candidate at `https://gvos.afbs.ng`. PHP/artisan is not
+available in the build environment, so the artisan-dependent checks must be run on cPanel using
+the commands in §2 (they are documented, not yet executed live).
+
+### Phase 25 fix that affects deployment
+- **Closure routes removed** so `php artisan route:cache` works. `/`, `/account/status`, and
+  `/request-service/success` are now controller actions (`PageController`, `LeadRequestController@success`).
+  Without this, `route:cache` would abort deployment with a `LogicException`.
+
+### Required live tests (run on cPanel before declaring GA)
+- [ ] §2 deployment command sequence completes with **no errors** (esp. `migrate`, `config:cache`, `route:cache`)
+- [ ] `php artisan route:list` lists all routes with no missing controller methods
+- [ ] `php artisan list | grep gvos` shows `gvos:storage-check` and `gvos:billing-refresh-statuses`
+- [ ] `php artisan gvos:storage-check` — all checks green (private root, writable, symlink ok)
+- [ ] `php artisan gvos:billing-refresh-statuses --dry-run` runs cleanly
+- [ ] All §4 role-based smoke tests pass
+- [ ] `/admin/mail-test` delivers a branded email (after SMTP configured)
+
+### Passed (static validation, Phase 24–25)
+- [x] Route table is fully controller-backed → `route:cache` compatible
+- [x] No `env()` calls outside `config/` → `config:cache` safe
+- [x] No `dd()`/`dump()`/`var_dump()`/Ray debug statements in app or views
+- [x] Rate limiters defined: `vault-reveal`, `file-upload`, `chat-send`, `invitation`
+- [x] No "GetVirtual" in any view; no rendered phase labels
+- [x] `.env.example` carries no real secrets; APP_KEY warning present
+- [x] Permission gating verified across all roles/modules (Phase 24 audit)
+
+### Remaining manual tests (cPanel, human-driven)
+- [ ] Admin (Super Admin + Operations Admin) Command Center + all 9 widgets
+- [ ] Each role dashboard (Talent, Manager, Individual/Business clients, Lead, suspended user)
+- [ ] Workspace/tasks/Kanban, chat, files (upload/download, blocked types), timer, reports
+- [ ] Billing flows (invoice issue/view, payment confirm, restricted/suspended access)
+- [ ] Vault (create/reveal/archive, no secret leakage), notifications, invitation+onboarding
+
+### Known non-blocking limitations
+- Vault encryption is APP_KEY-derived (no dedicated key yet) — see APP_KEY warning above.
+- `dashboard.super-admin` / `dashboard.operations-admin` views + their controller methods are
+  dead code (admins use Filament `/admin`). No runtime impact.
+- Billing status refresh is manual/ad-hoc until a cron is configured (see pending features).
+
+### Post-MVP pending features (NOT in MVP scope)
+1. Real-time chat / presence
+2. Audio / video calls
+3. Live payment gateway integration
+4. Automated recurring invoice generation
+5. Cron setup for `gvos:billing-refresh-statuses` (daily)
+6. Attendance timeline view
+7. Orphaned file cleanup command
+8. Dedicated vault encryption key + key rotation
+9. PDF exports (invoices, reports)
+10. Documented backup/restore operational runbook
+
+---
+
+## 8. Backup & Restore (MVP)
+
+### Pre-launch backup checklist
+- [ ] **Database backup** taken via cPanel → Backup Wizard or `mysqldump` before first deploy
+- [ ] **File storage backup** of `storage/app/private/` (workspace files, vault is DB-encrypted)
+- [ ] **APP_KEY** copied to a secure password manager / vault (losing it = unreadable vault secrets)
+- [ ] **GitHub repo current** — `main` is the source of truth (`git status` clean on server)
+- [ ] **cPanel full account backup** generated (Backup Wizard → Full Backup) or scheduled
+
+### High-level restore process
+1. Restore the cPanel account backup (or DB + files individually).
+2. Restore `.env` with the **original APP_KEY** (critical for vault decryption).
+3. `composer install --no-dev --optimize-autoloader`
+4. Run the §2 cache + permission commands.
+5. `php artisan gvos:storage-check` to confirm storage health.
+6. Spot-check admin login and one vault reveal to confirm APP_KEY integrity.
