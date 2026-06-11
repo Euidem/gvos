@@ -1,7 +1,9 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-11
-**Current Phase:** Phase 26 Batch 1 - Shared Non-Admin Portal Shell & Design System Polish - Complete (pending live visual review)
+**Current Phase:** Phase 26 Batch 2 — Talent & Client Dashboard Redesign — Complete (pending live visual review)
+
+> **Phase 26 Batch 2 (2026-06-11) — Talent & client dashboard redesign:** Redesigned all four non-admin role dashboards: talent, individual client, business client admin, and business client staff. Each now has a gradient-accented hero panel with role label + welcome copy + primary CTA buttons, a stronger stats strip using `x-portal.stat-card`, workspace cards with per-workspace quick-link chips (Tasks / Time Logs / Files / Chat), polished role-specific empty states, and a bottom section (latest report + billing / quick actions). Dark business-account card preserved on the admin variant. Business client admin workspace portfolio shows a 2-column card grid with Reports | Billing | Files | Tasks action bar per card. Timer JS/forms, onboarding banners, billing banners, all route names, CSRF, and permission conditionals are unchanged. No backend logic, routes, controllers, or migrations changed. Manager dashboard redesign deferred to Batch 3. See IMPLEMENTATION_LOG "Phase 26 Batch 2".
 
 > **Phase 26 Batch 1 (2026-06-11) — Portal shell polish:** Polished the shared non-admin portal shell and introduced a reusable `portal` Blade component library (page-header, stat-card, action-card, empty-state, status-badge, section-card, alert) plus a global flash partial. The shell now renders `status`/`warning` flash messages globally (so the post-login redirect notice is visible portal-wide) while `success`/`error` remain page-local to avoid double-rendering across ~17 existing pages. Representative pages updated: talent dashboard, workspaces index, tasks (Kanban) index. Content is now centered at `max-w-[1440px]` with responsive gutters. No backend/business logic changed; Filament admin untouched. Per-dashboard redesigns remain for later batches. See IMPLEMENTATION_LOG "Phase 26 Batch 1".
 

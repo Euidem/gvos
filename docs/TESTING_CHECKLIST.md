@@ -5,6 +5,70 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 26 Batch 2 (2026-06-11) — Talent & client dashboard redesign
+
+Run after deploy + `php artisan optimize:clear && php artisan view:clear`.
+
+### Talent dashboard (`/talent/dashboard`)
+- [ ] Hero panel renders: role label "Talent Workspace", welcome heading, state-aware subtitle, CTA button(s).
+- [ ] Timer widget renders on the right: Clock In (no active timer) or active session with clock-out forms.
+- [ ] Clock In form selects workspace and task; submitting starts a timer without error.
+- [ ] Clock Out + Complete Work Session forms work as before.
+- [ ] Live timer counter ticks in the browser (JavaScript intact).
+- [ ] 4 stat cards render (Active Tasks, Due Soon, Blocked, Weekly Time with progress bar).
+- [ ] Workspace list shows quick-link chips (Tasks, Time Logs, Files, Chat) per workspace; links land on correct pages.
+- [ ] Empty state shows if no workspaces ("You have not been added to a workspace yet…").
+- [ ] Talent profile card shows training/equipment status when profile exists.
+- [ ] Quick Actions (All Workspaces, Time Logs, Notifications, My Profile) work.
+- [ ] Flash `success`/`error` renders inline (with optional "View active timer" link).
+
+### Individual Client dashboard (`/client/dashboard` as individual_client)
+- [ ] Hero panel: role label "Client Workspace", welcome heading, state-aware subtitle.
+- [ ] "Open Workspace" primary button appears when a workspace exists.
+- [ ] "View Reports" secondary button appears when published reports > 0.
+- [ ] Outstanding balance notice bar appears and shows billing link when balance > 0.
+- [ ] 4 stat cards render (Workspaces, Open Tasks, For Your Review, Progress Reports).
+- [ ] "Progress Reports" stat card is a link when reports > 0.
+- [ ] Workspace portfolio: cards with avatar, name, code, status badge, task counts, specialist name.
+- [ ] Per-card quick-link bar: Reports | Files | Tasks links work.
+- [ ] Empty state: "No workspaces yet" with polished copy when no workspaces.
+- [ ] "Latest Progress Report" card: shows report count + link when published; shows pending copy otherwise.
+- [ ] "Billing & Documents" card: shows outstanding amount + billing link; or up-to-date message.
+- [ ] Onboarding banner renders/hides correctly.
+- [ ] Billing warning banner renders when workspace has billing issue.
+
+### Business Client Admin dashboard (`/client/dashboard` as business_client_admin)
+- [ ] `x-portal.page-header` renders with company name + "My Workspaces" button.
+- [ ] Dark account card (navy) shows company name, domain, workspace count, billing status.
+- [ ] 2×2 stat cards render (Open Tasks, Awaiting Approval, Published Reports, Workspaces).
+- [ ] Published Reports stat card is a link when reports > 0.
+- [ ] Workspace Portfolio section shows cards in a 2-col grid.
+- [ ] Per-card quick-link bar: Reports | Billing | Files | Tasks links work.
+- [ ] Empty state: "No workspaces yet" with polished copy.
+- [ ] Billing Health card: shows outstanding amount + billing CTA when balance > 0; shows "good standing" otherwise.
+- [ ] Quick Actions list (Messages, Files, Reports, Notifications) all navigate correctly.
+- [ ] Onboarding and billing banners intact.
+
+### Business Client Staff dashboard (`/client/dashboard` as business_client_staff)
+- [ ] Hero panel: role label "Your GVOS Workspace Access", welcome heading, state-aware subtitle.
+- [ ] "My Workspaces" + "Notifications" buttons appear when workspaces > 0.
+- [ ] 4 stat cards render (Workspaces, Open Tasks, For Approval, Reports).
+- [ ] Workspace list shows per-workspace quick-link chips (Tasks, Reports, Files, Messages).
+- [ ] Empty state: "No workspaces assigned yet" with polished copy.
+- [ ] 4 action-cards at bottom (All Workspaces, Notifications, Shared Files, My Profile) work.
+- [ ] Onboarding banner renders/hides correctly.
+- [ ] No billing management, vault, or admin controls visible.
+
+### Shared across all redesigned dashboards
+- [ ] No "GetVirtual" text on any dashboard.
+- [ ] Visual Repair v3 marker + CSS still present in `gvos.blade.php`.
+- [ ] Mobile (`<768px`): hero stacks, CTAs wrap, stat cards stack to 2-col, workspace list/chips readable.
+- [ ] No horizontal overflow on any dashboard at 375px viewport width.
+- [ ] No Filament / admin UI changed.
+- [ ] No route names broken; all quick-links land on correct pages.
+
+---
+
 ## Phase 26 Batch 1 (2026-06-11) — Portal shell & design-system polish
 
 Run after deploy + `php artisan optimize:clear && php artisan view:clear`.

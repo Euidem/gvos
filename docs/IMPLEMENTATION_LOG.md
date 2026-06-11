@@ -7,6 +7,33 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-11 | Phase 26 Batch 2 | Talent & Client Dashboard Redesign
+
+**What was done:** Redesigned all four non-admin role dashboards (`talent`, `individual-client`, `business-client-admin`, `business-client-staff`) for a premium GVOS operations platform appearance. Blade/component changes only — no new routes, controllers, models, or migrations. Filament admin panel untouched. All timer forms/JS, billing banners, onboarding banners, CSRF tokens, route names, and permission conditionals preserved intact.
+
+**Files modified (4):**
+
+| File | Changes |
+|------|---------|
+| `resources/views/dashboard/talent.blade.php` | Hero panel (gradient-tinted white card, role label, welcome copy, state-aware subtitle, primary CTA + secondary action buttons); timer widget preserved in right column; 4-col stats strip (stat-card × 3 + custom weekly time progress-bar card); workspace list rows now show per-workspace quick-link chips (Tasks, Time Logs, Files, Chat); talent profile status card improved; quick actions column uses action-card |
+| `resources/views/dashboard/individual-client.blade.php` | Hero panel with state-aware subtitle + primary CTA; outstanding balance notice bar below hero; 4 stat cards; workspace portfolio: 2–3 card grid where each card has a bottom quick-link bar (Reports / Files / Tasks); latest progress report card; billing & documents card |
+| `resources/views/dashboard/business-client-admin.blade.php` | page-header component; dark account card preserved; 2×2 metric cards now use stat-card component; workspace portfolio now a 2-col card grid with per-card quick-link bar (Reports / Billing / Files / Tasks); billing health card; quick actions list card |
+| `resources/views/dashboard/business-client-staff.blade.php` | Hero panel; 4 stat cards; workspace list with per-workspace quick-link chips (Tasks, Reports, Files, Messages); 4 action-cards at bottom |
+
+**Design decisions:**
+- Hero gradient: `linear-gradient(135deg, rgba(0,88,190,0.03–0.04) 0%, rgba(255,255,255,0) 55%), #fff` — subtle brand-blue tint without overriding CDN Tailwind tokens.
+- Quick-link chips: inline-style `background:rgba(0,88,190,0.03)` + `border-border-subtle` → CDN-safe, no dynamic Tailwind class generation required.
+- Workspace card quick-link bars: surface-container-low tint + border-t + divide-x — follows same edge-to-edge pattern as Stitch card variants.
+- Business-client-admin dark account card: unchanged from Phase 18 (most premium visual on that dashboard).
+- `$primaryWorkspace` / `$billingWorkspace` / `$reportLinkWs` consolidated to a single `\App\Models\Workspace::find()` at top of each template — eliminates duplicate DB calls from the prior version.
+- Manager dashboard redesign deliberately deferred to Batch 3 per spec.
+
+**Backend logic changed:** None. Data queries are equivalent to prior versions (same models, same scopes, same conditions). No new DB calls added.
+
+**Docs updated:** CURRENT_STATUS, IMPLEMENTATION_LOG, UI_SOURCE_OF_TRUTH (fidelity status updated), TESTING_CHECKLIST.
+
+---
+
 ### 2026-06-11 | Phase 26 Batch 1 | Shared Non-Admin Portal Shell & Design System Polish
 
 **What was done:** Established a reusable portal design-system foundation and polished the shared `<x-layouts.gvos>` shell, then applied it to a small set of representative pages to prove the pattern. No new features, routes, controllers, or migrations — Blade/components only. Filament admin, billing, vault, timer, invitation, and file-security logic were not touched.

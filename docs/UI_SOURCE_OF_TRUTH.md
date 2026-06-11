@@ -38,11 +38,11 @@ Before editing any Blade view:
 |-----------|-------------------|----------------------|-----------------|----------------|-------|
 | Filament `/admin` | Filament (custom) | `admin_overview_gvos` | Reference | **Moderate drift** | Admin uses Filament; Stitch admin_overview is reference for layout patterns. |
 | `/manager/dashboard` | `resources/views/dashboard/line-manager.blade.php` | `manager_command_center_gvos` | Exact | **Major drift** | Stitch: rich metric cards, talent monitoring, task summary. Current: simpler card layout + Phase notice banner. |
-| `/talent/dashboard` | `resources/views/dashboard/talent.blade.php` | `talent_dashboard_gvos_1` | Exact | **Major drift** | Stitch: Clock-In widget with timer, workspace switcher in sidebar, task priority grid. Current: no clock-in, no timer, no workspace switcher. |
+| `/talent/dashboard` | `resources/views/dashboard/talent.blade.php` | `talent_dashboard_gvos_1` | Exact | **Phase 26 Batch 2 redesigned** | Hero panel + role label + timer widget + 4 stat cards + workspace list with quick-link chips (Tasks/Time Logs/Files/Chat) + talent profile card + quick actions. Clock-In/Out forms and JS preserved. Needs visual QA vs Stitch. |
 | `/talent/dashboard` (alt) | same | `talent_dashboard_gvos_2` | Reference | Not assessed | Second talent dashboard state. |
-| `/client/dashboard` | `resources/views/dashboard/individual-client.blade.php` | `client_dashboard_gvos` | Exact | **Moderate drift** | Stitch: project status, deliverable timeline. Current: simpler. |
-| `/client/dashboard` (business admin) | `resources/views/dashboard/business-client-admin.blade.php` | `business_admin_dashboard_gvos` | Exact | **Moderate drift** | Business admin specific dashboard. |
-| `/client/dashboard` (business staff) | `resources/views/dashboard/business-client-staff.blade.php` | `client_dashboard_gvos` | Reference | **Moderate drift** | Use client dashboard as reference. |
+| `/client/dashboard` | `resources/views/dashboard/individual-client.blade.php` | `client_dashboard_gvos` | Exact | **Phase 26 Batch 2 redesigned** | Hero panel + 4 stat cards + workspace card grid with quick-link bar (Reports/Files/Tasks) + latest report card + billing card. Needs visual QA vs Stitch. |
+| `/client/dashboard` (business admin) | `resources/views/dashboard/business-client-admin.blade.php` | `business_admin_dashboard_gvos` | Exact | **Phase 26 Batch 2 redesigned** | page-header + dark account card + 2×2 stat cards + workspace portfolio grid + billing health card + quick actions. Needs visual QA vs Stitch. |
+| `/client/dashboard` (business staff) | `resources/views/dashboard/business-client-staff.blade.php` | `client_dashboard_gvos` | Reference | **Phase 26 Batch 2 redesigned** | Hero panel + 4 stat cards + workspace list with quick-link chips (Tasks/Reports/Files/Messages) + 4 action-cards. Needs visual QA vs Stitch. |
 | `/lead/dashboard` | `resources/views/dashboard/lead.blade.php` | `lead_dashboard_gvos_1` + `lead_dashboard_gvos_2` | Exact | Not assessed | Two-state lead dashboard. |
 
 ### Workspace
