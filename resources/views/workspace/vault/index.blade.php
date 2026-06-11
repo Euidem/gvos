@@ -1,48 +1,50 @@
 <x-layouts.gvos :title="$workspace->name . ' — Password Vault'">
 
-    <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-5">
-        <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
-        <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
-        <span>Password Vault</span>
-    </div>
-
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary" style="font-size: 22px;">lock</span>
-                Password Vault
-            </h2>
-            <p class="text-xs text-outline mt-0.5">{{ $workspace->workspace_code }} &middot; {{ $items->count() }} visible item{{ $items->count() === 1 ? '' : 's' }}</p>
+    {{-- ── Page header ──────────────────────────────────────────────────────── --}}
+    <div class="mb-6">
+        <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-3">
+            <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
+            <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
+            <span>Password Vault</span>
         </div>
-        <div class="flex items-center gap-2">
-            @if ($canCreate)
-                <a href="{{ route('workspace.vault.create', $workspace) }}"
-                   class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:brightness-110"
-                   style="background-color:#0058be;">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
-                    New Item
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h1 class="font-headline-lg text-headline-lg text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">lock</span>
+                    Password Vault
+                </h1>
+                <p class="text-[12px] text-outline mt-1">
+                    {{ $workspace->workspace_code }}
+                    &middot; {{ $items->count() }} visible item{{ $items->count() === 1 ? '' : 's' }}
+                </p>
+            </div>
+            <div class="flex items-center gap-2 mt-1">
+                @if ($canCreate)
+                    <a href="{{ route('workspace.vault.create', $workspace) }}"
+                       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:brightness-110"
+                       style="background:#0058be;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
+                        New Item
+                    </a>
+                @endif
+                <a href="{{ route('workspace.show', $workspace) }}"
+                   class="inline-flex items-center gap-1.5 text-sm text-secondary hover:brightness-110 transition-all">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                    Workspace
                 </a>
-            @endif
-            <a href="{{ route('workspace.show', $workspace) }}"
-               class="text-sm text-secondary hover:brightness-110 transition-all flex items-center gap-1">
-                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
-                Workspace
-            </a>
+            </div>
         </div>
     </div>
 
     @if (session('success'))
-        <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg text-sm"
-             style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);color:#065F46;">
-            <span class="material-symbols-outlined flex-shrink-0" style="font-size: 18px;">check_circle</span>
-            {{ session('success') }}
-        </div>
+        <x-portal.alert type="success" class="mb-4">{{ session('success') }}</x-portal.alert>
     @endif
 
-    <div class="mb-5 rounded-xl border border-border-subtle bg-white p-5 shadow-sm">
+    {{-- ── Security notice ──────────────────────────────────────────────────── --}}
+    <div class="bg-white rounded-xl border border-border-subtle shadow-sm p-5 mb-5">
         <div class="flex items-start gap-3">
             <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                 style="background-color:rgba(0,88,190,.06);">
+                 style="background:rgba(0,88,190,0.06);">
                 <span class="material-symbols-outlined text-secondary" style="font-size: 20px;">verified_user</span>
             </div>
             <div>
@@ -54,10 +56,11 @@
         </div>
     </div>
 
+    {{-- ── Vault table ──────────────────────────────────────────────────────── --}}
     @if ($items->isEmpty())
         <div class="bg-white rounded-xl border border-border-subtle shadow-sm p-12 text-center">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
-                 style="background-color:rgba(0,88,190,.06);">
+                 style="background:rgba(0,88,190,0.06);">
                 <span class="material-symbols-outlined text-secondary" style="font-size: 26px;">lock</span>
             </div>
             <h4 class="text-sm font-semibold text-on-surface mb-1">No vault items visible</h4>
@@ -71,6 +74,15 @@
         </div>
     @else
         <div class="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden">
+            <div class="px-5 py-3.5 border-b border-border-subtle flex items-center justify-between"
+                 style="background:rgba(247,249,251,1);">
+                <span class="text-xs font-semibold text-outline uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 14px;">key</span>
+                    Credentials
+                </span>
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                      style="background:rgba(0,88,190,0.08);color:#0058be;">{{ $items->count() }}</span>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
@@ -84,45 +96,45 @@
                             <th class="text-right px-5 py-3 text-xs font-semibold text-outline"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[#F1F5F9]">
+                    <tbody class="divide-y divide-border-subtle">
                         @foreach ($items as $item)
                             @php
                                 $canManageItem = $item->canManage(auth()->user(), $role);
                                 $statusColor = $item->status === 'active' ? '#059669' : '#64748B';
                             @endphp
-                            <tr class="hover:bg-[#F8FAFC] transition-colors">
-                                <td class="px-5 py-3">
+                            <tr class="hover:bg-surface-container-low transition-colors">
+                                <td class="px-5 py-3.5">
                                     <a href="{{ route('workspace.vault.show', [$workspace, $item]) }}"
-                                       class="font-semibold text-on-surface hover:underline">
+                                       class="font-semibold text-on-surface hover:text-secondary transition-colors hover:underline">
                                         {{ $item->title }}
                                     </a>
                                     @if ($item->login_url)
-                                        <p class="text-[11px] text-outline truncate max-w-xs">{{ $item->login_url }}</p>
+                                        <p class="text-[11px] text-outline truncate max-w-xs mt-0.5">{{ $item->login_url }}</p>
                                     @endif
                                 </td>
-                                <td class="px-5 py-3 text-xs text-on-surface-variant">
+                                <td class="px-5 py-3.5 text-xs text-on-surface-variant">
                                     {{ $item->category ? $item->categoryLabel() : 'Other' }}
                                 </td>
-                                <td class="px-5 py-3 text-xs text-on-surface-variant">
-                                    {{ $item->username ?: '-' }}
+                                <td class="px-5 py-3.5 text-xs text-on-surface-variant font-mono">
+                                    {{ $item->username ?: '—' }}
                                 </td>
-                                <td class="px-5 py-3">
+                                <td class="px-5 py-3.5">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
                                           style="background:rgba(0,88,190,0.08);color:#0058be;">
                                         {{ $item->visibilityLabel() }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-3">
+                                <td class="px-5 py-3.5">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
                                           style="background:{{ $statusColor }}18;color:{{ $statusColor }};">
                                         {{ $item->statusLabel() }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-3 text-xs text-on-surface-variant whitespace-nowrap">
-                                    {{ $item->last_revealed_at ? $item->last_revealed_at->format('d M Y H:i') : '-' }}
+                                <td class="px-5 py-3.5 text-xs text-on-surface-variant whitespace-nowrap">
+                                    {{ $item->last_revealed_at ? $item->last_revealed_at->format('d M Y H:i') : '—' }}
                                 </td>
-                                <td class="px-5 py-3">
-                                    <div class="flex items-center justify-end gap-2">
+                                <td class="px-5 py-3.5">
+                                    <div class="flex items-center justify-end gap-3">
                                         <a href="{{ route('workspace.vault.show', [$workspace, $item]) }}"
                                            class="text-xs font-semibold hover:underline" style="color:#0058be;">View</a>
                                         @if ($canManageItem)

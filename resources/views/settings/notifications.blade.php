@@ -1,20 +1,30 @@
 {{-- No Stitch screen - based on: profile/edit and dashboard card patterns. --}}
 <x-layouts.gvos title="Notification Settings">
-    <div class="max-w-5xl mx-auto space-y-6">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div class="max-w-4xl mx-auto">
+
+        {{-- ── Page header ────────────────────────────────────────────────── --}}
+        <div class="flex items-start justify-between gap-4 mb-6">
             <div>
-                <h2 class="font-headline-lg text-headline-lg text-primary">Notification Settings</h2>
-                <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+                <h1 class="font-headline-lg text-headline-lg text-primary">Notification Settings</h1>
+                <p class="text-[12px] text-outline mt-1">
                     Choose which GVOS updates appear in-app and which can also be emailed.
                 </p>
             </div>
-
-            <a href="{{ route('notifications.index') }}"
-               class="inline-flex items-center justify-center gap-2 rounded-lg border border-border-subtle bg-white px-4 py-2 font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-all">
-                <span class="material-symbols-outlined" style="font-size:18px;">notifications</span>
-                Notification Inbox
-            </a>
+            <div class="flex items-center gap-2 mt-1">
+                <a href="{{ route('notifications.index') }}"
+                   class="inline-flex items-center gap-1.5 rounded-lg border border-border-subtle bg-white px-3 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-all">
+                    <span class="material-symbols-outlined" style="font-size:16px;">notifications</span>
+                    Notification Inbox
+                </a>
+                <a href="{{ route('profile.edit') }}"
+                   class="inline-flex items-center gap-1.5 text-sm text-secondary hover:brightness-110 transition-all">
+                    <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+                    Profile
+                </a>
+            </div>
         </div>
+
+        <div class="space-y-5">
 
         @if (session('success'))
             <div class="rounded-xl border border-status-active/20 bg-status-active/10 px-4 py-3 font-body-sm text-body-sm text-status-completed">
@@ -84,5 +94,6 @@
                 </button>
             </div>
         </form>
-    </div>
+    </div>{{-- /space-y-5 --}}
+</div>{{-- /max-w-4xl --}}
 </x-layouts.gvos>

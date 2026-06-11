@@ -5,58 +5,52 @@
     $canManage = in_array($role, ['admin', 'workspace_admin', 'manager'], true);
 @endphp
 
-    {{-- ── Breadcrumb ────────────────────────────────────────────────────── --}}
-    <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-5">
-        <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
-        <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
-        <span>Files</span>
-    </div>
-
     {{-- ── Page header ─────────────────────────────────────────────────── --}}
-    <div class="flex items-center justify-between mb-5">
-        <div>
-            <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary" style="font-size: 22px;">folder_open</span>
-                File Library
-            </h2>
-            <p class="text-xs text-outline mt-0.5">{{ $workspace->workspace_code }} &middot; {{ $files->total() }} file{{ $files->total() !== 1 ? 's' : '' }}</p>
+    <div class="mb-6">
+        <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-3">
+            <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
+            <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
+            <span>Files</span>
         </div>
-        <div class="flex items-center gap-2">
-            <a href="{{ route('workspace.chat.index', $workspace) }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
-               style="border-color:#0058be; color:#0058be;">
-                <span class="material-symbols-outlined" style="font-size: 14px;">forum</span>
-                Chat
-            </a>
-            <a href="{{ route('workspace.tasks.index', $workspace) }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
-               style="border-color:#6B7280; color:#6B7280;">
-                <span class="material-symbols-outlined" style="font-size: 14px;">view_kanban</span>
-                Task Board
-            </a>
-            <a href="{{ route('workspace.show', $workspace) }}"
-               class="text-sm text-secondary hover:brightness-110 transition-all flex items-center gap-1">
-                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
-                Workspace
-            </a>
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h1 class="font-headline-lg text-headline-lg text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">folder_open</span>
+                    File Library
+                </h1>
+                <p class="text-[12px] text-outline mt-1">{{ $workspace->workspace_code }} &middot; {{ $files->total() }} file{{ $files->total() !== 1 ? 's' : '' }}</p>
+            </div>
+            <div class="flex items-center gap-2 mt-1">
+                <a href="{{ route('workspace.chat.index', $workspace) }}"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                   style="border-color:#0058be;color:#0058be;">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">forum</span>
+                    Chat
+                </a>
+                <a href="{{ route('workspace.tasks.index', $workspace) }}"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/20 transition-all">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">view_kanban</span>
+                    Tasks
+                </a>
+                <a href="{{ route('workspace.show', $workspace) }}"
+                   class="inline-flex items-center gap-1.5 text-sm text-secondary hover:brightness-110 transition-all">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                    Workspace
+                </a>
+            </div>
         </div>
     </div>
 
     {{-- ── Session flash ─────────────────────────────────────────────────── --}}
     @if (session('success'))
-        <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg text-sm"
-             style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);color:#065F46;">
-            <span class="material-symbols-outlined flex-shrink-0" style="font-size: 18px;">check_circle</span>
-            {{ session('success') }}
-        </div>
+        <x-portal.alert type="success" class="mb-4">{{ session('success') }}</x-portal.alert>
     @endif
     @if ($errors->any())
-        <div class="mb-4 p-4 rounded-lg text-sm"
-             style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.25);color:#991B1B;">
+        <x-portal.alert type="error" class="mb-4">
             @foreach ($errors->all() as $error)
                 <p>{{ $error }}</p>
             @endforeach
-        </div>
+        </x-portal.alert>
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">

@@ -51,15 +51,17 @@ Before editing any Blade view:
 |-----------|-------------------|----------------------|-----------------|----------------|-------|
 | `/workspaces` | `resources/views/workspace/index.blade.php` | `workspaces_management_gvos` + `talent_workspace_overview_gvos` | Exact | **Moderate drift** | Admin sees management view; talent sees overview. |
 | `/workspaces/{workspace}` | `resources/views/workspace/show.blade.php` | `workspace_monitoring_gvos` | Exact | **Phase 26 Batch 3 redesigned** | Identity header + metric strip + 12-col team/schedule/kanban grid + 4-up module cards (Chat/Files/Logs/Reports) + billing/vault row. Needs visual QA vs Stitch. |
-| `/workspaces/{workspace}/tasks` | `resources/views/workspace/tasks/index.blade.php` | `task_board_gvos` | Exact | **Moderate drift** | Stitch: proper kanban columns with filter bar, rich task cards. Current: functional but different card styling. |
-| `/workspaces/{workspace}/tasks/{task}` | `resources/views/workspace/tasks/show.blade.php` | `task_detail_gvos` | Exact | **Moderate drift** | Stitch: detailed task card with progress, comments, attachments panel. |
+| `/workspaces/{workspace}/tasks` | `resources/views/workspace/tasks/index.blade.php` | `task_board_gvos` | Exact | **Phase 26 Batch 4 polished** | Header/breadcrumb polished with `font-headline-lg`; all Kanban JS/SortableJS/CSS preserved verbatim. Needs visual QA vs Stitch. |
+| `/workspaces/{workspace}/tasks/{task}` | `resources/views/workspace/tasks/show.blade.php` | `task_detail_gvos` | Exact | **Phase 26 Batch 4 redesigned** | Polished header with status accent bar, section-card wrappers, `x-portal.alert` flashes; all status transition/comment/file upload/timer forms and JS preserved verbatim. Needs visual QA. |
 | `/workspaces/{workspace}/tasks/create` | `resources/views/workspace/tasks/create.blade.php` | `create_task_gvos` | Exact | Not assessed | Must match Stitch create task form layout. |
-| `/workspaces/{workspace}/chat` | `resources/views/workspace/chat/index.blade.php` | `workspace_chat_gvos` | Exact | **Moderate drift** | Stitch: chat with message bubbles, thread support, attachment icons. |
-| `/workspaces/{workspace}/files` | `resources/views/workspace/files/index.blade.php` | `file_library_gvos` | Exact | **Moderate drift** | Stitch: file grid/list with category filters, preview thumbnails. |
+| `/workspaces/{workspace}/chat` | `resources/views/workspace/chat/index.blade.php` | `workspace_chat_gvos` | Exact | **Phase 26 Batch 4 redesigned** | Improved message header strip, polished message rows with hover states; message form/delete forms preserved verbatim. Needs visual QA. |
+| `/workspaces/{workspace}/files` | `resources/views/workspace/files/index.blade.php` | `file_library_gvos` | Exact | **Phase 26 Batch 4 polished** | Header redesigned with breadcrumb + `font-headline-lg`; `x-portal.alert` flashes; upload/download/delete forms unchanged. Needs visual QA. |
 | `/workspaces/{workspace}/time-logs` | `resources/views/workspace/time-logs/index.blade.php` | `time_tracking_daily_reports_gvos` | Exact | **Phase 26 Batch 3 redesigned** | Page header with nav chips + timer panel (Clock Out / Complete Session forms preserved) + running-timers manager panel + polished log table. Needs visual QA vs Stitch. |
 | `/workspaces/{workspace}/time-logs/{log}` | `resources/views/workspace/time-logs/show.blade.php` | `exact_time_logs_review_gvos` | Exact | **Moderate drift** | Stitch: detailed review panel for managers. |
 | `/workspaces/{workspace}/reports` | `resources/views/workspace/reports/index.blade.php` | `weekly_report_gvos` | Exact | **Phase 26 Batch 3 redesigned** | Page header with generate/write actions + colour-coded report cards (status-tinted header + summary preview + published date + View Report CTA). Needs visual QA vs Stitch. |
 | `/workspaces/{workspace}/reports/{report}` | `resources/views/workspace/reports/show.blade.php` | `weekly_report_gvos` | Reference | **Moderate drift** | Use weekly_report_gvos as reference for show view. |
+| `/workspaces/{workspace}/billing` | `resources/views/workspace/billing/index.blade.php` | `billing_invoices_gvos` | Reference | **Phase 26 Batch 4 polished** | Header polished with breadcrumb + `font-headline-lg`; subscription card, invoice table, payments list unchanged. Needs visual QA. |
+| `/workspaces/{workspace}/members` | `resources/views/workspace/members/index.blade.php` | `workspace_settings_gvos` | Reference | **Phase 26 Batch 4 redesigned** | 4 `x-portal.stat-card` for team counts + avatar initials in table + polished header. All add/update/deactivate/invite/resend/revoke forms preserved verbatim. Needs visual QA. |
 
 ### Workspace Settings (Future)
 
@@ -71,8 +73,9 @@ Before editing any Blade view:
 
 | App Route | Current Blade View | Stitch Source Folder | Fidelity Target | Current Status | Notes |
 |-----------|-------------------|----------------------|-----------------|----------------|-------|
-| `/notifications` | `resources/views/notifications/index.blade.php` | `workspace_monitoring_gvos` + `client_dashboard_gvos` | Reference | Phase 11 foundation built | No dedicated Stitch notification screen; uses GVOS shell, card list, badges, and action-button patterns. |
-| `/settings/notifications` | `resources/views/settings/notifications.blade.php` | `workspace_settings_gvos` + `profile/edit` pattern | Reference | Phase 11 foundation built | No dedicated Stitch notification settings screen; uses GVOS shell and compact settings rows. |
+| `/notifications` | `resources/views/notifications/index.blade.php` | `workspace_monitoring_gvos` + `client_dashboard_gvos` | Reference | **Phase 26 Batch 4 polished** | Level-icon squares, compact unread badge header chip, `x-portal.alert` for flash; mark-read/mark-all forms unchanged. |
+| `/settings/notifications` | `resources/views/settings/notifications.blade.php` | `workspace_settings_gvos` + `profile/edit` pattern | Reference | **Phase 26 Batch 4 polished** | Polished header with Profile back link; form and preferences toggles unchanged. |
+| `/profile` | `resources/views/profile/edit.blade.php` | `workspace_settings_gvos` (reference) | Reference | **Phase 26 Batch 4 redesigned** | 3-column layout: main forms (2 cols) + user card sidebar (1 col) with avatar/name/role/quick links. Both personal info and password forms preserved verbatim. |
 
 ### Admin / Operations Management Screens (Filament)
 
@@ -100,7 +103,7 @@ Before editing any Blade view:
 | Feature | Current Blade View | Stitch Source Folder | Fidelity Target | Current Status | Notes |
 |---------|-------------------|----------------------|-----------------|----------------|-------|
 | Billing | Not built | `billing_invoices_gvos` + `global_billing_overview_gvos` | Exact | Not started | Do not build yet. |
-| Password vault | `resources/views/workspace/vault/*.blade.php` | `password_vault_gvos` | Reference | Phase 10 foundation built | Adapted to keep vault tables metadata-only; plaintext reveal happens only on the item detail page after access logging. |
+| Password vault | `resources/views/workspace/vault/*.blade.php` | `password_vault_gvos` | Reference | **Phase 26 Batch 4 redesigned** | `vault/index`: polished header + security notice + section-card table. `vault/show`: polished 3-col grid layout with metadata card, reveal/copy card (reveal/copy JS preserved verbatim), access sidebar. |
 
 ### Mobile Variants (Reference only — not priority)
 
