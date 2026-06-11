@@ -50,7 +50,15 @@
     <div>
         <h2 class="font-headline-lg text-headline-lg text-primary">Welcome back, {{ $name }}</h2>
         <p class="font-body-md text-body-md text-on-surface-variant mt-1">
-            Your operations are running smoothly.
+            @if ($myWorkspaces === 0)
+                Your workspace is being set up. You'll be notified when it's ready.
+            @elseif ($outstandingBalance > 0)
+                You have an outstanding balance. Contact your account manager to resolve.
+            @elseif ($clientSubmittedTasks > 0)
+                {{ $clientSubmittedTasks }} {{ Str::plural('task', $clientSubmittedTasks) }} {{ $clientSubmittedTasks === 1 ? 'is' : 'are' }} awaiting your approval.
+            @else
+                Everything is up to date. No pending actions.
+            @endif
         </p>
     </div>
     <div class="flex gap-3">

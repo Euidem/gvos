@@ -7,6 +7,16 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 23 Notes (2026-06-11)
+
+### Mobile sidebar uses CSS-only fixed overlay
+The mobile sidebar is driven by a `position:fixed` CSS approach with JS class toggling. On browsers that don't support `cubic-bezier` transitions (very old WebKit), the slide animation falls back to instant show/hide — functionally correct. No impact on production use.
+
+### Workspace switcher not in sidebar
+The Stitch talent dashboard specifies a workspace switcher in the sidebar. This is not implemented — talent users select workspace via the Time Logs quick link or the Workspace list page. Acceptable for the current phase.
+
+---
+
 ## Open Issues
 
 ### 2026-05-31 | UI Alignment | Medium | UI has drifted from Stitch source of truth

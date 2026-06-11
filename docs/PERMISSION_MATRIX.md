@@ -10,6 +10,18 @@ Authorization is enforced at three layers:
 
 ---
 
+## Phase 23 — Portal UI Changes (No permission changes)
+
+Phase 23 made no permission changes. All changes were cosmetic Blade view polish:
+- Mobile sidebar toggle (layout-level, no auth)
+- Dashboard subtitle copy (reads existing computed variables, no new queries)
+- Module page empty state copy (role-checked via `auth()->user()->hasRole()` on existing user object)
+- max-w change on workspace show (CSS only)
+
+No new routes, no new middleware, no policy changes.
+
+---
+
 ## Role Reference
 
 | Friendly Label | DB Slug | Portal |

@@ -171,8 +171,13 @@
                     </div>
                     <h4 class="text-sm font-semibold mb-1" style="color:#1E293B;">No files yet</h4>
                     <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
+                        @php $__fileUser = auth()->user(); @endphp
                         @if ($canUpload)
                             Upload the first file using the form on the left.
+                        @elseif ($__fileUser->hasRole('talent'))
+                            No files shared yet. Your manager will upload project files here.
+                        @elseif ($__fileUser->hasAnyRole(['individual_client','business_client_admin','business_client_staff']))
+                            No files shared yet. Your team will upload project deliverables and briefs here.
                         @else
                             No files have been shared in this workspace yet.
                         @endif

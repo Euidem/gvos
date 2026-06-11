@@ -67,8 +67,10 @@
             <p class="text-xs max-w-xs mx-auto" style="color:#94A3B8;">
                 @if ($canCreate)
                     Create the first weekly report for this workspace.
+                @elseif ($isClient)
+                    Your manager will publish weekly progress reports here once your engagement is underway.
                 @else
-                    No reports are available yet.
+                    No reports have been created in this workspace yet.
                 @endif
             </p>
             @if ($canCreate)

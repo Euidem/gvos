@@ -151,7 +151,9 @@
                     <p class="font-label-md text-label-md text-outline uppercase tracking-wider">Published Reports</p>
                 </div>
                 <p class="font-headline-lg text-headline-lg text-primary font-bold">{{ $publishedReports }}</p>
-                <p class="font-body-sm text-body-sm text-outline mt-1">Available to view</p>
+                <p class="font-body-sm text-body-sm text-outline mt-1">
+                    {{ $publishedReports > 0 ? 'Ready to view' : 'Published when ready' }}
+                </p>
             </div>
         @endif
 

@@ -152,7 +152,14 @@
 
             @if ($managedWorkspaceIds->isEmpty())
                 <div class="p-8 text-center">
-                    <p class="font-body-sm text-body-sm text-outline">No workspaces assigned yet.</p>
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3"
+                         style="background:rgba(0,88,190,0.06)">
+                        <span class="material-symbols-outlined text-secondary" style="font-size:20px;">workspaces</span>
+                    </div>
+                    <p class="font-label-md text-label-md text-on-surface font-semibold mb-1">No workspaces yet</p>
+                    <p class="font-label-md text-label-md text-outline max-w-xs mx-auto">
+                        Workspaces will appear here once your administrator assigns them to you.
+                    </p>
                 </div>
             @else
                 @php
@@ -251,6 +258,7 @@
             <div class="space-y-1">
                 @foreach ([
                     ['label' => 'Workspaces',        'icon' => 'workspaces',       'route' => route('workspace.index')],
+                    ['label' => 'Notifications',      'icon' => 'notifications',    'route' => route('notifications.index')],
                     ['label' => 'My Profile',         'icon' => 'manage_accounts',  'route' => route('profile.show')],
                 ] as $link)
                 <a href="{{ $link['route'] }}"

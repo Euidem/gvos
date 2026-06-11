@@ -29,7 +29,13 @@
     <div>
         <h2 class="font-headline-lg text-headline-lg text-primary">Welcome back, {{ $name }}</h2>
         <p class="font-body-md text-body-md text-on-surface-variant mt-1">
-            Your workspace access and current task status.
+            @if ($myWorkspaces === 0)
+                No workspaces yet. Contact your business admin to get access.
+            @elseif ($clientSubmittedTasks > 0)
+                {{ $clientSubmittedTasks }} {{ Str::plural('task', $clientSubmittedTasks) }} pending approval across your {{ Str::plural('workspace', $myWorkspaces) }}.
+            @else
+                {{ $myWorkspaces }} active {{ Str::plural('workspace', $myWorkspaces) }}. No pending actions.
+            @endif
         </p>
     </div>
 </section>

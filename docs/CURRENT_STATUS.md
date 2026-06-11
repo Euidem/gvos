@@ -1,8 +1,58 @@
 # GVOS — Current Status
 
 **Last Updated:** 2026-06-11
-**Current Phase:** Phase 22 - Admin Dashboard and Operational Command Center Polish - Complete
-**Current Activity:** Transformed the Filament admin panel into a useful command center. Added 9 operational widgets, a custom Dashboard heading, an AuditLogResource, re-grouped all navigation into logical sections (Operations / People / Billing / Security / Communications / Leads & Trials), and added a read-only audit log viewer.
+**Current Phase:** Phase 23 - Portal Dashboard and Workspace Experience Polish - Complete
+**Current Activity:** Polished all non-admin Blade portal views. Added mobile-responsive sidebar with slide-in overlay, improved dynamic subtitle copy on all five role dashboards, improved empty states with role-specific copy across module pages, widened the workspace show max-width, and added notifications link to talent/manager quick links.
+
+## Phase 23 Status - Complete (2026-06-11)
+
+### Portal Dashboard and Workspace Experience Polish
+
+**Goal:** Make the GVOS portal feel like a premium product — mobile responsive, context-aware copy, practical empty states, and consistent visual patterns.
+
+#### What Was Built / Changed
+
+**Layout shell (`resources/views/components/layouts/gvos.blade.php`):**
+- [x] Mobile sidebar: `#gvos-sidebar` slides in as a fixed overlay on screens < 768px
+- [x] Backdrop overlay (`#gvos-sidebar-backdrop`) closes the sidebar when tapped
+- [x] Hamburger button (`#gvos-menu-btn`) appears in the header on mobile only, hidden on desktop via CSS
+- [x] Sidebar links auto-close the sidebar on mobile after navigation
+
+**Talent dashboard (`resources/views/dashboard/talent.blade.php`):**
+- [x] Dynamic subtitle: 3-state copy (tasks active / all clear / no workspaces)
+- [x] Quick Links: Time Logs now links directly to first workspace's time-logs page; Notifications link added
+
+**Line Manager dashboard (`resources/views/dashboard/line-manager.blade.php`):**
+- [x] Workspace list empty state: added icon + improved guidance copy
+- [x] Quick Links: Notifications link added
+
+**Individual Client dashboard (`resources/views/dashboard/individual-client.blade.php`):**
+- [x] Dynamic subtitle: 4-state copy (no workspace / outstanding balance / tasks awaiting / all clear)
+
+**Business Client Admin dashboard (`resources/views/dashboard/business-client-admin.blade.php`):**
+- [x] Published Reports card: "Available to view" → context-aware copy ("Ready to view" / "Published when ready")
+
+**Business Client Staff dashboard (`resources/views/dashboard/business-client-staff.blade.php`):**
+- [x] Dynamic subtitle: 3-state copy (no workspaces / pending approvals / all clear)
+
+**Workspace show (`resources/views/workspace/show.blade.php`):**
+- [x] Widened content area: `max-w-4xl` → `max-w-5xl`
+
+**Module empty states:**
+- [x] Reports index: client-role copy "Your manager will publish weekly progress reports here once your engagement is underway."
+- [x] Files index: role-specific copy for talent and client roles in empty state
+- [x] Vault index: fixed title separator (` - ` → ` — ` em dash)
+
+#### Constraints Respected
+- [x] No Phase 24 built
+- [x] No new backend modules
+- [x] No payment gateway integration
+- [x] No invoice/payment/vault/timer/invitation/file logic changes
+- [x] No admin command center widget changes
+- [x] No payroll
+- [x] No `GetVirtual` in visible UI
+- [x] GVOS naming throughout
+- [x] No migrations
 
 ## Phase 22 Status - Complete (2026-06-11)
 

@@ -179,6 +179,14 @@
         .active\:scale-\[0\.98\]:active{transform:scale(.98)}
         .active\:scale-95:active{transform:scale(.95)}
         .hover\:bg-secondary\/10:hover{background-color:rgba(0,88,190,.1)}
+        /* ── Mobile sidebar ────────────────────────────────────────────── */
+        @media(max-width:767px){
+            #gvos-sidebar{position:fixed;top:0;left:0;height:100vh;overflow-y:auto;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:60}
+            #gvos-sidebar.gvos-sidebar-open{transform:translateX(0)}
+            #gvos-sidebar-backdrop{position:fixed;inset:0;background:rgba(11,15,25,.55);z-index:55;opacity:0;pointer-events:none;transition:opacity .28s ease}
+            #gvos-sidebar-backdrop.gvos-backdrop-visible{opacity:1;pointer-events:auto}
+        }
+        @media(min-width:768px){#gvos-menu-btn{display:none}}
     </style>
 </head>
 <body class="bg-background text-on-surface font-body-md h-full" style="background-color:#f7f9fb">
@@ -203,7 +211,7 @@
     {{-- ── Sidebar (Stitch: w-[280px] fixed dark sidebar) ─────────────────── --}}
     {{-- Note: flex-shrink-0 keeps 280px column without fixed positioning.    --}}
     {{-- Visual Repair v3: inline style is the structural fallback for #0B0F19 --}}
-    <aside class="w-[280px] text-white flex flex-col flex-shrink-0 min-h-screen py-gutter px-4 z-50"
+    <aside id="gvos-sidebar" class="w-[280px] text-white flex flex-col flex-shrink-0 min-h-screen py-gutter px-4"
            style="background-color:#0B0F19">
 
         {{-- ── Logo (Stitch: hub icon + GVOS Platform + Enterprise Ops, no border below) --}}
@@ -317,6 +325,9 @@
 
     </aside>
 
+    {{-- ── Mobile sidebar backdrop ──────────────────────────────────────────── --}}
+    <div id="gvos-sidebar-backdrop" onclick="gvosCloseSidebar()"></div>
+
     {{-- ── Main content column ─────────────────────────────────────────────── --}}
     <div class="flex-1 flex flex-col min-w-0">
 
@@ -325,8 +336,13 @@
                        px-gutter flex items-center justify-between z-40"
                 style="background-color:#ffffff">
 
-            {{-- Left: GVOS bold brand text + search bar --}}
-            <div class="flex items-center gap-8">
+            {{-- Left: hamburger (mobile) + GVOS bold brand text + search bar --}}
+            <div class="flex items-center gap-3 md:gap-8">
+                <button id="gvos-menu-btn" type="button" onclick="gvosToggleSidebar()"
+                        class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors flex-shrink-0"
+                        aria-label="Open navigation menu">
+                    <span class="material-symbols-outlined" style="font-size:22px;">menu</span>
+                </button>
                 <span class="font-headline-md text-headline-md font-black text-secondary leading-none">GVOS</span>
                 <div class="relative hidden lg:block">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline"
@@ -413,5 +429,20 @@
 
 </div>
 
+<script>
+    function gvosToggleSidebar(){
+        document.getElementById('gvos-sidebar').classList.toggle('gvos-sidebar-open');
+        document.getElementById('gvos-sidebar-backdrop').classList.toggle('gvos-backdrop-visible');
+    }
+    function gvosCloseSidebar(){
+        document.getElementById('gvos-sidebar').classList.remove('gvos-sidebar-open');
+        document.getElementById('gvos-sidebar-backdrop').classList.remove('gvos-backdrop-visible');
+    }
+    document.addEventListener('DOMContentLoaded',function(){
+        document.querySelectorAll('#gvos-sidebar a').forEach(function(a){
+            a.addEventListener('click',function(){if(window.innerWidth<768)gvosCloseSidebar();});
+        });
+    });
+</script>
 </body>
 </html>

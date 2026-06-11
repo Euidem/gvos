@@ -7,6 +7,27 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-11 | Phase 23 | Portal Dashboard and Workspace Experience Polish
+
+**What was done:** Polished all non-admin portal Blade views for a premium product feel. Added a mobile-responsive sidebar with slide-in overlay and hamburger toggle. Improved all five role dashboards with dynamic, context-aware subtitle copy. Added role-specific empty state copy to module pages (reports, files). Improved empty states in the workspace list on the line-manager dashboard. Added Notifications quick links to talent and manager dashboards. Linked the talent Time Logs quick link directly to the first workspace's time-logs page. Widened the workspace show page from max-w-4xl to max-w-5xl. Fixed em dash inconsistency in the vault page title.
+
+**Files modified (10):**
+
+| File | Change |
+|------|--------|
+| `resources/views/components/layouts/gvos.blade.php` | Mobile sidebar toggle, hamburger button, CSS + JS |
+| `resources/views/dashboard/talent.blade.php` | Dynamic subtitle, Time Logs route fix, Notifications link |
+| `resources/views/dashboard/line-manager.blade.php` | Empty state polish, Notifications link |
+| `resources/views/dashboard/individual-client.blade.php` | Dynamic subtitle (4 states) |
+| `resources/views/dashboard/business-client-admin.blade.php` | Reports card zero-state copy |
+| `resources/views/dashboard/business-client-staff.blade.php` | Dynamic subtitle (3 states) |
+| `resources/views/workspace/show.blade.php` | max-w-4xl → max-w-5xl |
+| `resources/views/workspace/reports/index.blade.php` | Role-specific empty state for clients |
+| `resources/views/workspace/files/index.blade.php` | Role-specific empty state for talent + clients |
+| `resources/views/workspace/vault/index.blade.php` | Title em dash fix |
+
+---
+
 ### 2026-06-11 | Phase 22 | Admin Dashboard and Operational Command Center Polish
 
 **What was done:** Transformed the Filament admin panel from a generic list of resources into an operational command center. Added 9 new widgets covering platform health, workspace operations, billing status, time/productivity, reports, vault/security, operational alerts, recent audit activity, and quick action links. Created a custom Dashboard page override with GVOS branding. Added a read-only AuditLogResource so admins can browse the audit trail without CLI access. Re-grouped all 23 Filament resources from generic groups into semantic groups: Operations, People, Billing, Security, Communications, Leads & Trials.

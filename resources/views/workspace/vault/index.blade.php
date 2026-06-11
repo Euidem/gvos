@@ -1,4 +1,4 @@
-<x-layouts.gvos :title="$workspace->name . ' - Password Vault'">
+<x-layouts.gvos :title="$workspace->name . ' — Password Vault'">
 
     <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-5">
         <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>

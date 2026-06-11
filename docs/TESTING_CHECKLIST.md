@@ -5,6 +5,63 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 23 — Portal Dashboard and Workspace Experience Polish
+
+Run after `git pull && php artisan optimize:clear && php artisan view:clear`. No migrations required.
+
+### cPanel Commands
+```bash
+git pull origin main
+php artisan optimize:clear
+php artisan view:clear
+php artisan permission:cache-reset
+```
+
+### Mobile Sidebar Tests
+- [ ] On a mobile viewport (< 768px), the sidebar is hidden by default
+- [ ] Tapping the hamburger button in the header slides the sidebar in
+- [ ] Tapping the backdrop closes the sidebar
+- [ ] Tapping a nav link on mobile closes the sidebar and navigates
+- [ ] On desktop (≥ 768px), the hamburger button is hidden and the sidebar is always visible
+
+### Talent Dashboard Tests
+- [ ] With active tasks: subtitle shows task count and workspace count
+- [ ] With workspaces but no tasks: subtitle shows "All caught up"
+- [ ] With no workspaces: subtitle shows "No workspaces assigned yet"
+- [ ] Time Logs quick link navigates to `/workspaces/{id}/time-logs` when a workspace exists
+- [ ] Notifications quick link is present and navigates to notifications page
+
+### Line Manager Dashboard Tests
+- [ ] With no workspaces: empty state shows icon + "No workspaces yet" heading + guidance copy
+- [ ] Notifications quick link is present
+
+### Individual Client Dashboard Tests
+- [ ] With no workspaces: subtitle shows workspace setup message
+- [ ] With outstanding balance: subtitle shows balance warning
+- [ ] With tasks awaiting approval: subtitle shows pending count
+- [ ] Otherwise: subtitle shows "Everything is up to date"
+
+### Business Client Admin Dashboard Tests
+- [ ] When published reports = 0: Reports card shows "Published when ready"
+- [ ] When published reports > 0: Reports card shows "Ready to view"
+
+### Business Client Staff Dashboard Tests
+- [ ] With no workspaces: subtitle shows "No workspaces yet. Contact your business admin to get access."
+- [ ] With pending approvals: subtitle shows count
+- [ ] Otherwise: subtitle shows active workspace count
+
+### Workspace Show Tests
+- [ ] Workspace detail page uses wider layout (max-w-5xl) on wide screens
+
+### Module Empty State Tests
+- [ ] Reports index as client with no reports: shows "Your manager will publish weekly progress reports here once your engagement is underway."
+- [ ] Reports index as manager with no reports: shows "Create the first weekly report for this workspace."
+- [ ] Files index as talent with no files: shows "No files shared yet. Your manager will upload project files here."
+- [ ] Files index as client with no files: shows "No files shared yet. Your team will upload project deliverables and briefs here."
+- [ ] Vault index: page title uses em dash (` — Password Vault`), not hyphen
+
+---
+
 ## Phase 22 — Admin Dashboard and Operational Command Center Polish
 
 Run after `git pull && php artisan optimize:clear && php artisan view:clear`. No migrations required.

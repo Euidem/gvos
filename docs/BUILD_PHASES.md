@@ -5,6 +5,32 @@ GVOS is built in phases (Phase 0–18+). Each phase has a clear deliverable and 
 
 ---
 
+## Phase 23 — Portal Dashboard and Workspace Experience Polish ✅
+**Status:** Complete (2026-06-11)
+**Goal:** Make the non-admin GVOS portal feel like a premium product — mobile responsive, context-aware copy, practical empty states, and consistent visual patterns.
+
+### Deliverables
+- [x] Mobile sidebar: slide-in overlay on screens < 768px with hamburger button and backdrop
+- [x] Talent dashboard: dynamic subtitle (tasks / all clear / no workspaces), Time Logs quick link fix, Notifications link
+- [x] Line Manager dashboard: workspace list empty state with icon + guidance, Notifications link
+- [x] Individual Client dashboard: dynamic 4-state subtitle (no workspace / balance / pending / clear)
+- [x] Business Client Admin dashboard: Reports card zero-state copy improved
+- [x] Business Client Staff dashboard: dynamic 3-state subtitle
+- [x] Workspace show: widened content area max-w-4xl → max-w-5xl
+- [x] Reports module: client-role empty state with practical guidance copy
+- [x] Files module: talent + client role empty state copy
+- [x] Vault module: title em dash consistency fix
+
+### Constraints Respected
+- No Phase 24 built
+- No new backend modules
+- No payment gateway, invoice, payment, vault, timer, invitation, or file logic changes
+- No admin command center widget changes
+- No payroll
+- No GetVirtual in visible UI
+
+---
+
 ## Phase 22 — Admin Dashboard and Operational Command Center Polish ✅
 **Status:** Complete (2026-06-11)
 **Goal:** Transform the Filament admin panel into a useful command center for Super Admin and Operations Admin roles.

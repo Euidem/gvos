@@ -64,8 +64,10 @@
             @if ($myAssignedTasks > 0)
                 You have {{ $myAssignedTasks }} active {{ Str::plural('task', $myAssignedTasks) }}
                 across {{ $myWorkspaces }} {{ Str::plural('workspace', $myWorkspaces) }}.
+            @elseif ($myWorkspaces > 0)
+                All caught up. {{ $myWorkspaces === 1 ? 'Your workspace is' : 'All your workspaces are' }} active.
             @else
-                Your workspaces are ready. Start your session when you're ready.
+                No workspaces assigned yet. You'll be notified when one is ready.
             @endif
         </p>
     </div>
@@ -376,7 +378,8 @@
             <div class="space-y-1">
                 @foreach ([
                     ['label' => 'My Workspaces',  'icon' => 'workspaces',  'route' => route('workspace.index')],
-                    ['label' => 'Time Logs',       'icon' => 'schedule',    'route' => route('workspace.index')],
+                    ['label' => 'Time Logs',       'icon' => 'schedule',    'route' => $defaultTimerWorkspace ? route('workspace.time-logs.index', $defaultTimerWorkspace) : route('workspace.index')],
+                    ['label' => 'Notifications',   'icon' => 'notifications','route' => route('notifications.index')],
                     ['label' => 'My Profile',      'icon' => 'person',      'route' => route('profile.show')],
                 ] as $link)
                 <a href="{{ $link['route'] }}"
