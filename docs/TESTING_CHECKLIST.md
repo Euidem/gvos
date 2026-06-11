@@ -5,6 +5,75 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 26 Batch 3 (2026-06-11) — Manager dashboard & workspace operations redesign
+
+Run after deploy + `php artisan optimize:clear && php artisan view:clear`.
+
+### Manager dashboard (`/manager/dashboard`)
+- [ ] Hero panel renders: role label "Manager Command Center", greeting, state-aware subtitle (all clear / review items / blocked).
+- [ ] Hero CTAs: "My Workspaces" always shown; "Review Time Logs" with badge count when `$timeLogsPending > 0`; "Notifications" always shown.
+- [ ] Manager profile card renders (when `$managerProfile` exists): code, capacity ratio, active workspaces, load progress bar. Bar is green / amber / red at <70% / 70–89% / ≥90%.
+- [ ] 4 stat cards render: Active Workspaces (linked), Tasks for Review (amber when >0, with progress bar), Blocked Tasks (red when >0), Pending Review (total logs + reports).
+- [ ] Workspace list shows per-workspace: avatar, name, code, talent name, status badge, alert chips (task reviews / blocked / log reviews), quick-link chips (Tasks / Logs / Reports / View).
+- [ ] Alert chips only show when counts > 0.
+- [ ] Action queue sidebar shows count badges for time logs / tasks / reports; shows check_circle when 0.
+- [ ] Quick links sidebar: All Workspaces, Notifications, My Profile — all link correctly.
+- [ ] Empty state renders when no managed workspaces.
+- [ ] Mobile: hero stacks to single column (profile card below text); stat cards stack 2×2.
+
+### Workspace show (`/workspaces/{workspace}`)
+- [ ] Identity header: avatar, workspace name, status badge (dot + text), code + type + start date.
+- [ ] Status banner (pending / active / completed) renders with correct colours.
+- [ ] Billing warning banner included from partial.
+- [ ] New member orientation card renders (within 7 days of joining or profile incomplete).
+- [ ] Metric strip: 4 columns (Tasks, Team, Time Logs, Reports) with correct counts per role.
+- [ ] 12-col grid: Team card (5 cols) shows manager + talent + overflow members. Schedule card (7 cols) shows status / type / dates / remaining hours.
+- [ ] Kanban summary card: metric strip (Total / Blocked / For Review), status chips, 3-task preview, "View all N tasks" link.
+- [ ] 4-up module cards: Chat, Files, Time Logs, Reports — all links correct, counts displayed.
+- [ ] Reports module card: shows draft count warning in amber when > 0; shows "Generate" button for managers; "View Latest" for clients when a published report exists.
+- [ ] Billing card visible for non-talent roles; dashed placeholder shown for talent.
+- [ ] Vault card visible when `$canSeeVault`.
+- [ ] Back link at bottom works.
+- [ ] Client role: time log count shows only approved+client_summary logs; report count shows only published; no draft count warning visible.
+
+### Time logs index (`/workspaces/{workspace}/time-logs`)
+- [ ] Page header: breadcrumb, heading, "Log Time" button (talent only), Reports link, Workspace back link.
+- [ ] Timer panel renders for talent with no active timer: task select + "Start Timer" button.
+- [ ] Start Timer form submits without error; timer starts.
+- [ ] Active timer panel shows: workspace name, started time, task (if set), live ticking counter, Clock Out form, Complete Work Session form.
+- [ ] Clock Out form submits `status=draft` — does not change time log review logic.
+- [ ] Complete Work Session form requires `work_summary`; submits to `time-tracker.complete` route.
+- [ ] "You have a running timer in another workspace" notice renders when `$userActiveTimer` and no local active timer.
+- [ ] Running timers panel (manager view): shows each running talent with ticking counter and View link; hidden when no running timers.
+- [ ] Timer JS ticks correctly in browser (setInterval preserved).
+- [ ] Log table: Date / Logged By / Summary / Duration / Task / Status / View columns; Logged By and Status columns hidden for clients.
+- [ ] Client sees `client_visible_summary` (if set) rather than `work_summary`.
+- [ ] Status pills colour-coded per status (draft/running/submitted/reviewed/approved/rejected).
+- [ ] Empty state shows role-appropriate message (talent / manager / client variant).
+- [ ] Pagination renders when > 1 page.
+
+### Reports index (`/workspaces/{workspace}/reports`)
+- [ ] Page header: breadcrumb, heading, "Generate Report" + "Write Manually" buttons (manager only), Time Logs link, Workspace back link.
+- [ ] Client sees neither Generate nor Write Manually.
+- [ ] Empty state: manager sees generate/write CTAs; client sees "your manager will publish" message.
+- [ ] Each report card: status-tinted header (bg matches status colour), icon, week label, duration, preparer name, auto-generated tag (when applicable).
+- [ ] Status badge in card header colour-coded (draft=grey, submitted=blue, approved=purple, published=green).
+- [ ] Card body: summary preview (or "No summary added." italic); published_at date (when published); "View Report" CTA styled in status colour.
+- [ ] All "View Report" links route to `workspace.reports.show`.
+- [ ] Client sees only published reports (no draft/submitted/approved).
+- [ ] Pagination renders when > 1 page.
+
+### Shared (all Batch 3 pages)
+- [ ] No "GetVirtual" text visible anywhere.
+- [ ] No "Phase" or internal development labels visible.
+- [ ] GVOS branding consistent throughout.
+- [ ] Material Symbols icons render.
+- [ ] Mobile: all pages stack gracefully (no horizontal scroll on main content).
+- [ ] Flash messages (success/error) render correctly on relevant pages.
+- [ ] Navigation back links all work.
+
+---
+
 ## Phase 26 Batch 2 (2026-06-11) — Talent & client dashboard redesign
 
 Run after deploy + `php artisan optimize:clear && php artisan view:clear`.

@@ -37,7 +37,7 @@ Before editing any Blade view:
 | App Route | Current Blade View | Stitch Source Folder | Fidelity Target | Current Status | Notes |
 |-----------|-------------------|----------------------|-----------------|----------------|-------|
 | Filament `/admin` | Filament (custom) | `admin_overview_gvos` | Reference | **Moderate drift** | Admin uses Filament; Stitch admin_overview is reference for layout patterns. |
-| `/manager/dashboard` | `resources/views/dashboard/line-manager.blade.php` | `manager_command_center_gvos` | Exact | **Major drift** | Stitch: rich metric cards, talent monitoring, task summary. Current: simpler card layout + Phase notice banner. |
+| `/manager/dashboard` | `resources/views/dashboard/line-manager.blade.php` | `manager_command_center_gvos` | Exact | **Phase 26 Batch 3 redesigned** | Hero panel + manager profile card with load bar + 4 stat cards + supervised workspace list with alert badges and quick-link chips + action queue sidebar. Needs visual QA vs Stitch. |
 | `/talent/dashboard` | `resources/views/dashboard/talent.blade.php` | `talent_dashboard_gvos_1` | Exact | **Phase 26 Batch 2 redesigned** | Hero panel + role label + timer widget + 4 stat cards + workspace list with quick-link chips (Tasks/Time Logs/Files/Chat) + talent profile card + quick actions. Clock-In/Out forms and JS preserved. Needs visual QA vs Stitch. |
 | `/talent/dashboard` (alt) | same | `talent_dashboard_gvos_2` | Reference | Not assessed | Second talent dashboard state. |
 | `/client/dashboard` | `resources/views/dashboard/individual-client.blade.php` | `client_dashboard_gvos` | Exact | **Phase 26 Batch 2 redesigned** | Hero panel + 4 stat cards + workspace card grid with quick-link bar (Reports/Files/Tasks) + latest report card + billing card. Needs visual QA vs Stitch. |
@@ -50,15 +50,15 @@ Before editing any Blade view:
 | App Route | Current Blade View | Stitch Source Folder | Fidelity Target | Current Status | Notes |
 |-----------|-------------------|----------------------|-----------------|----------------|-------|
 | `/workspaces` | `resources/views/workspace/index.blade.php` | `workspaces_management_gvos` + `talent_workspace_overview_gvos` | Exact | **Moderate drift** | Admin sees management view; talent sees overview. |
-| `/workspaces/{workspace}` | `resources/views/workspace/show.blade.php` | `workspace_monitoring_gvos` | Exact | **Major drift** | Stitch: rich workspace overview with live metrics, activity feed. Current: card grid with placeholder sections. |
+| `/workspaces/{workspace}` | `resources/views/workspace/show.blade.php` | `workspace_monitoring_gvos` | Exact | **Phase 26 Batch 3 redesigned** | Identity header + metric strip + 12-col team/schedule/kanban grid + 4-up module cards (Chat/Files/Logs/Reports) + billing/vault row. Needs visual QA vs Stitch. |
 | `/workspaces/{workspace}/tasks` | `resources/views/workspace/tasks/index.blade.php` | `task_board_gvos` | Exact | **Moderate drift** | Stitch: proper kanban columns with filter bar, rich task cards. Current: functional but different card styling. |
 | `/workspaces/{workspace}/tasks/{task}` | `resources/views/workspace/tasks/show.blade.php` | `task_detail_gvos` | Exact | **Moderate drift** | Stitch: detailed task card with progress, comments, attachments panel. |
 | `/workspaces/{workspace}/tasks/create` | `resources/views/workspace/tasks/create.blade.php` | `create_task_gvos` | Exact | Not assessed | Must match Stitch create task form layout. |
 | `/workspaces/{workspace}/chat` | `resources/views/workspace/chat/index.blade.php` | `workspace_chat_gvos` | Exact | **Moderate drift** | Stitch: chat with message bubbles, thread support, attachment icons. |
 | `/workspaces/{workspace}/files` | `resources/views/workspace/files/index.blade.php` | `file_library_gvos` | Exact | **Moderate drift** | Stitch: file grid/list with category filters, preview thumbnails. |
-| `/workspaces/{workspace}/time-logs` | `resources/views/workspace/time-logs/index.blade.php` | `time_tracking_daily_reports_gvos` | Exact | **Major drift** | Stitch: timer widget at top, daily log list below. Current: table-only, no timer UI. |
+| `/workspaces/{workspace}/time-logs` | `resources/views/workspace/time-logs/index.blade.php` | `time_tracking_daily_reports_gvos` | Exact | **Phase 26 Batch 3 redesigned** | Page header with nav chips + timer panel (Clock Out / Complete Session forms preserved) + running-timers manager panel + polished log table. Needs visual QA vs Stitch. |
 | `/workspaces/{workspace}/time-logs/{log}` | `resources/views/workspace/time-logs/show.blade.php` | `exact_time_logs_review_gvos` | Exact | **Moderate drift** | Stitch: detailed review panel for managers. |
-| `/workspaces/{workspace}/reports` | `resources/views/workspace/reports/index.blade.php` | `weekly_report_gvos` | Exact | **Moderate drift** | Stitch: report list with summary cards. |
+| `/workspaces/{workspace}/reports` | `resources/views/workspace/reports/index.blade.php` | `weekly_report_gvos` | Exact | **Phase 26 Batch 3 redesigned** | Page header with generate/write actions + colour-coded report cards (status-tinted header + summary preview + published date + View Report CTA). Needs visual QA vs Stitch. |
 | `/workspaces/{workspace}/reports/{report}` | `resources/views/workspace/reports/show.blade.php` | `weekly_report_gvos` | Reference | **Moderate drift** | Use weekly_report_gvos as reference for show view. |
 
 ### Workspace Settings (Future)

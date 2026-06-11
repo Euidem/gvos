@@ -7,6 +7,36 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-06-11 | Phase 26 Batch 3 | Manager Dashboard & Workspace Operations Redesign
+
+**Files modified:**
+
+| File | Change |
+|------|--------|
+| `resources/views/dashboard/line-manager.blade.php` | Full redesign |
+| `resources/views/workspace/show.blade.php` | Full redesign |
+| `resources/views/workspace/time-logs/index.blade.php` | Full redesign |
+| `resources/views/workspace/reports/index.blade.php` | Full redesign |
+| `docs/CURRENT_STATUS.md` | Updated phase entry |
+| `docs/IMPLEMENTATION_LOG.md` | This entry |
+| `docs/UI_SOURCE_OF_TRUTH.md` | Updated status rows |
+| `docs/TESTING_CHECKLIST.md` | Added Batch 3 checklist |
+
+**Design decisions:**
+
+- **Manager hero panel**: two-column flex layout — welcome/CTA left, manager profile card right (capacity bar uses green/amber/red at 0/70/90%). Hero gradient matches Batch 2 formula: `linear-gradient(135deg,rgba(0,88,190,0.04)...),#fff`.
+- **Action queue sidebar**: live count badges (amber for time logs, purple for tasks, blue for reports) in a sectioned card. Shows check_circle icon when count is 0 to reinforce "all clear" state.
+- **Workspace list per-row**: identity row (avatar + name + code + talent + status badge) + alert chips row (task reviews / blocked / time log reviews) + quick-link chips (Tasks / Logs / Reports / View). Same chip pattern as Batch 2.
+- **Workspace show metric strip**: 4-column strip in a single card (Tasks / Team / Time Logs / Reports) replaces the old 2×2 grid for at-a-glance density.
+- **Workspace show module cards**: 4-up grid (Chat / Files / Time Logs / Reports) replaces the old 2-col layout. Reports card keeps generate/view actions inline and shows draft count warning.
+- **Time logs timer panel**: preserved Clock Out form (`status=draft`) and Complete Work Session form (`work_summary` + complete route) verbatim. Running timer JS preserved verbatim. Only the card chrome changed.
+- **Reports index cards**: header uses status-tinted background (`$sc['bg']`) for visual differentiation by status. Body shows summary + published date + "View Report" CTA styled in the status color.
+- **Client visibility**: `$isClient` / `$canCreate` / `$canReview` gates all preserved. Client still sees only approved logs and published reports. Draft reports never surfaced.
+
+**Backend logic note:** No controllers, models, migrations, or routes changed.
+
+---
+
 ### 2026-06-11 | Phase 26 Batch 2 | Talent & Client Dashboard Redesign
 
 **What was done:** Redesigned all four non-admin role dashboards (`talent`, `individual-client`, `business-client-admin`, `business-client-staff`) for a premium GVOS operations platform appearance. Blade/component changes only — no new routes, controllers, models, or migrations. Filament admin panel untouched. All timer forms/JS, billing banners, onboarding banners, CSRF tokens, route names, and permission conditionals preserved intact.
