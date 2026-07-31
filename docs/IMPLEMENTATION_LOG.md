@@ -7,6 +7,83 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-07-31 | Phase 27 | Demo environment preparation and team testing data
+
+**Goal:** A clean, realistic and repeatable demo environment for internal team testing. Data and tooling only — no product features, no schema changes.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `app/Support/Demo/DemoDefinition.php` | Single source of truth for controlled demo identifiers (12 emails, 4 workspace codes, 2 company names, 2 plan codes, invoice/payment prefixes, lead/trial codes, `[GVOS-DEMO]` marker) |
+| `app/Support/Demo/DemoBuilder.php` | Idempotent construction of all demo users, companies, workspaces, memberships, subscriptions, tasks, comments, chat, files, time logs, reports, invoices, payments, vault items, invitations and notifications |
+| `app/Support/Demo/DemoCleaner.php` | Content-scope and full-scope removal in safe FK order, anchored strictly to `DemoDefinition` |
+| `app/Console/Commands/GvosDemoAudit.php` | `php artisan gvos:demo-audit` — read-only audit |
+| `app/Console/Commands/GvosDemoSetup.php` | `php artisan gvos:demo-setup` — idempotent build |
+| `app/Console/Commands/GvosDemoVerify.php` | `php artisan gvos:demo-verify` — 16 PASS/FAIL checks |
+| `app/Console/Commands/GvosDemoClean.php` | `php artisan gvos:demo-clean` — dry run by default |
+| `docs/DEMO_ENVIRONMENT.md` | Full demo environment documentation |
+
+**Files modified:** `docs/CURRENT_STATUS.md`, `docs/IMPLEMENTATION_LOG.md`, `docs/DATABASE_SCHEMA.md` (audit action names only), `docs/TESTING_CHECKLIST.md`, `docs/KNOWN_ISSUES.md`, `docs/BUILD_PHASES.md`, `docs/PRODUCTION_READINESS_CHECKLIST.md`.
+
+**Migrations added:** none. No schema change was required.
+
+#### Design decisions
+
+**Controlled vs heuristic demo data.** The brief asked the audit command to match on patterns like "email contains test" but the cleanup command to never delete on that basis. These are modelled as two separate concepts. `DemoDefinition` holds exact anchors; `DemoCleaner` only ever reaches records through those anchors. `gvos:demo-audit` additionally runs the loose heuristics and prints those matches in a clearly separated "REPORT ONLY — never deleted" section.
+
+**No `observer` platform role exists.** GVOS has eight platform roles (`super_admin`, `operations_admin`, `line_manager`, `talent`, `individual_client`, `business_client_admin`, `business_client_staff`, `active_lead`). "Observer" is a *workspace member* role. Naomi Observer therefore holds `business_client_staff` (lowest-privilege client role) with an `observer` membership in `DEMO-CX-002`. No role was created; no permission was changed.
+
+**ApexBridge Consulting is `type = individual`.** This satisfies "create the demo company" and "the individual client may remain an individual account" simultaneously — Amina Yusuf keeps `client_type = individual` while being attached to a named organisation.
+
+**No running timer is seeded.** `WorkspaceTimeTrackerController` enforces one running timer per user globally. A seeded running timer would occupy that slot for the assigned talent and prevent testers from starting their own. Documented in `DEMO_ENVIRONMENT.md`.
+
+**`Payment::confirm()` is deliberately not called.** Invoices and subscriptions are seeded directly in their final consistent state. Calling `confirm()` would re-apply the payment amount to an already-paid invoice and mutate subscription status — and the brief forbids changing billing calculations. Invoice totals still come from the real `InvoiceItem` boot hook, so line-item arithmetic is genuine.
+
+**`firstOrNew` instead of `updateOrCreate` where soft deletes matter.** `deleted_at` is not a fillable attribute on `BillingPlan`, `LeadRequest`, `WorkspaceSubscription`, `Company` or `Workspace`, so an `updateOrCreate` array containing `'deleted_at' => null` would be silently dropped and a previously soft-deleted demo record would never be restored. Those five use `firstOrNew` + explicit assignment + `save()`.
+
+**Historical timestamps.** `created_at` / `updated_at` are not fillable on the content models, so `Model::create(['created_at' => …])` would silently fall back to `now()`. Content models are built with `new Model(...)`, explicit timestamp assignment, then `save()` — Eloquent preserves timestamps that are already dirty.
+
+**Chat message deletion order.** `workspace_messages.parent_id` is self-referential, so `DemoCleaner` removes replies before roots even though the seeded demo threads are currently flat. This keeps cleanup correct if a tester posts a threaded reply.
+
+**Invoice item deletion uses the query builder.** `InvoiceItem`'s `deleted` boot hook recalculates and re-saves the parent invoice. Deleting items through Eloquent immediately before deleting their invoices would resurrect and re-save rows that are about to go. `DemoCleaner` deletes `invoice_items` via `DB::table(...)` for that step only.
+
+#### Security handling
+- The plaintext password reaches only `GvosDemoSetup::resolvePassword()`, is hashed by `Hash::make()`, and the local variable is unset immediately. It never appears in source, migrations, seeders, committed docs, logs, or audit context.
+- `gvos:demo-setup` forces `mail.default = array` for the process, so no email can leave the server regardless of the configured `MAIL_MAILER`. Notifications use `GvosNotification`'s default `['database']` channel.
+- Vault secrets are obviously fake placeholders written through the normal `encrypted` cast. `gvos:demo-verify` decrypts each one into a local variable purely to confirm decryption succeeds, then discards it — no command prints a secret value.
+- Invitation tokens are auto-generated by the model and are only ever counted by status, never printed.
+- No payment provider is contacted; no webhook fires; `APP_KEY` is untouched.
+
+#### Documentation correction found during testing
+`docs/DATABASE_SCHEMA.md` documented `workspaces.task_limit` and `workspaces.file_limit_mb` as **nullable**. The migration actually declares `unsignedInteger(...)->default(0)->comment('0 = unlimited')` — both are NOT NULL. The first `gvos:demo-setup` run failed on `Column 'task_limit' cannot be null` (and rolled back cleanly, as designed). The builder now writes `0` (= unlimited) and the schema doc has been corrected. No migration was added and no column was changed.
+
+#### Local verification (isolated MySQL 8.4 on port 3399, PHP 8.3.30)
+
+| Step | Result |
+|------|--------|
+| `php artisan migrate` | 39 migrations DONE |
+| `php artisan db:seed --class=RoleSeeder` | 8 roles seeded |
+| `php artisan gvos:demo-audit` (baseline) | all controlled counts 0; no heuristic matches |
+| `php artisan gvos:demo-setup` | built 12 users / 2 companies / 4 workspaces / 144 controlled records |
+| `php artisan gvos:demo-verify` | **16/16 PASS**, exit code 0 |
+| `gvos:demo-setup` re-run ×2 | **idempotent** — `demo-audit --json` byte-identical across runs |
+| Mail suppression | `email_delivery_logs` = 0 rows after seeding |
+| Secret handling | password absent from `storage/logs/`, from all tracked repo files, and from `app/`, `docs/`, `database/`; `audit_logs.context` contains counts only (0 rows matching the password or any vault placeholder) |
+| Permission spot-checks (tinker) | talent→`talent` in EXEC, observer→`observer` in CX, restricted client→blocked, internal staff→allowed; manager-only vault item not revealable by talent; 2 of 5 EXEC time logs client-visible; client report visibility = `published` only |
+| Physical files | 5 files present on the private disk; PDF starts `%PDF-1.4` and ends `%%EOF` |
+| Invoice states | `0001` paid/balance 0.00, `0002` issued/dueSoon=true, `0003` overdue/isOverdue=true |
+| **Cleanup safety test** | Created 3 decoy *genuine* records that look like demo data (`real.tester@gvos.test`, `Demo Lookalike Ltd`, `DEMO-NOT-CONTROLLED-999`). `demo-audit` listed them under REPORT ONLY; `gvos:demo-clean --execute --force` removed all 144 controlled records and **left all 3 decoys intact** |
+| Post-clean state | all controlled counts 0; `audit_logs` preserved; 0 orphan `model_has_roles` rows; demo storage directories removed |
+| `gvos:demo-clean --content-only --execute` | removed content only; users/companies/workspaces/subscriptions/plans/lead/trial preserved |
+| Empty-state handling | `demo-verify` exits 1 with clear FAILs; `demo-clean` reports "Nothing to remove" |
+| `php artisan route:list` | 167 routes |
+| `php artisan view:cache` / `route:cache` / `config:cache` | all succeed (deploy-cache safe) |
+
+The local environment (isolated MySQL data dir, `.env`, `vendor/`, demo storage) was torn down afterwards; the working tree contains only the Phase 27 source and documentation changes.
+
+---
+
 ### 2026-06-11 | Stat Card Refinement | Portal dashboard stat card visual polish
 
 **Files modified:**

@@ -13,6 +13,8 @@
 
 - [ ] All work committed and pushed to `main`
 - [ ] `.env.example` reviewed — contains **no real secrets** (verified Phase 24)
+- [ ] **Demo data removed** if this is a public production launch — `php artisan gvos:demo-clean --execute` (Phase 27; see `docs/DEMO_ENVIRONMENT.md`)
+- [ ] Demo shared password is **not** present in any committed file, doc, or log (Phase 27)
 - [ ] Database backup taken of the current production DB
 - [ ] File storage backup taken of `storage/app/private/` (workspace files + uploads)
 - [ ] Note the current `APP_KEY` value — see the **APP_KEY warning** below
@@ -51,6 +53,36 @@ php artisan gvos:billing-refresh-statuses --dry-run
 # 9. Billing status refresh — ACTUAL run (writes status changes)
 php artisan gvos:billing-refresh-statuses
 ```
+
+### Optional — internal team testing environment (Phase 27)
+
+Only for a **staging / internal testing** deployment. See `docs/DEMO_ENVIRONMENT.md`.
+
+```bash
+# Preview what exists (read-only, never deletes)
+php artisan gvos:demo-audit
+
+# Create or refresh the 12 demo accounts and 4 demo workspaces.
+# Prompts twice for a hidden temporary password — do NOT pass --password
+# unless the run is non-interactive (it leaks into shell history).
+php artisan gvos:demo-setup
+
+# Confirm the environment is healthy (16 PASS/FAIL checks)
+php artisan gvos:demo-verify
+```
+
+**Before public launch, remove the demo data:**
+
+```bash
+php artisan gvos:demo-clean            # dry run — shows what would be removed
+php artisan gvos:demo-clean --execute  # deletes (type DELETE DEMO to confirm)
+php artisan gvos:demo-audit            # confirm zero controlled demo records remain
+```
+
+> The demo commands never use `migrate:fresh` or `TRUNCATE`, never delete audit logs,
+> and only remove records matching the exact identifiers in
+> `App\Support\Demo\DemoDefinition`. Anything that merely *looks* like test data is
+> reported by `gvos:demo-audit` and must be reviewed and removed manually.
 
 > **Note on `config:cache`:** once config is cached, `.env` changes require re-running
 > `php artisan config:cache` to take effect. If you change `.env`, re-run step 5.

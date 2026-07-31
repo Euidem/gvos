@@ -7,6 +7,34 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 27 Notes (2026-07-31) — Demo environment
+
+### Info | Demo | Low | No `observer` platform role exists in GVOS
+**Description:** The Phase 27 brief asked for an "Observer" demo account. GVOS has eight platform roles (`super_admin`, `operations_admin`, `line_manager`, `talent`, `individual_client`, `business_client_admin`, `business_client_staff`, `active_lead`). "Observer" exists only as a **workspace member** role in `workspace_members.role`.
+**Status:** By design. Naomi Observer (`observer.demo@gvos.test`) holds the lowest-privilege client platform role (`business_client_staff`) and is added to `DEMO-CX-002` with member role `observer`, which is read-only. No role was created and no permission was changed. Documented in `docs/DEMO_ENVIRONMENT.md`.
+
+### Info | Demo | Low | No running timer is seeded
+**Description:** The brief allowed one running timer "only if doing so will not interfere with testing". GVOS enforces one running timer per user globally (`WorkspaceTimeTrackerController::start`). A seeded running timer would occupy that slot for the assigned demo talent and stop testers from starting their own.
+**Status:** By design — no running timer is created. Testers should start a timer manually to test the tracker. `gvos:demo-verify` warns if a running timer is ever found in a demo workspace.
+
+### Info | Demo | Low | Demo cleanup is deliberately narrow
+**Description:** `gvos:demo-clean` only removes records anchored to the exact identifiers in `App\Support\Demo\DemoDefinition` (12 emails, 4 workspace codes, 2 company names, 2 plan codes, `GVOS-INV-DEMO-*`, `GVOS-PAY-DEMO-*`, `DEMO-LEAD-001`, `DEMO-TRIAL-001`). Records that merely look like test data — for example an email containing the word "test", or a `DEMO-` workspace created by hand — are reported by `gvos:demo-audit` but never deleted.
+**Status:** By design and required by the brief. Anything in the audit's "REPORT ONLY" section must be removed manually after review.
+
+### Info | Demo | Low | `gvos:demo-clean --execute` can fail on a cross-referenced demo account
+**Description:** `workspace_tasks.created_by_user_id` and `workspace_task_comments.user_id` are `RESTRICT` foreign keys. If a tester assigns a demo account as the creator of a task or comment inside a **genuine** (non-demo) workspace, deleting that demo user will raise a foreign-key error.
+**Status:** Expected and safe — the whole cleanup runs in a transaction, so it rolls back and nothing is removed. The command prints an explanation. Reassign or remove the offending non-demo record, then re-run.
+
+### Info | Demo | Low | Stray demo files after a rolled-back setup
+**Description:** `gvos:demo-setup` writes the five demo files to the private disk inside the database transaction. If the transaction rolls back, the bytes remain on disk while the file records do not.
+**Status:** Harmless. Demo filenames are deterministic (`workspaces/{id}/demo-*.ext`), so the next successful run overwrites them, and `gvos:demo-clean --execute` removes the whole `workspaces/{demo_id}/` directory.
+
+### Medium | Dependencies | Medium | `laravel/framework ^11.0` is flagged by Composer security advisories
+**Description:** Running `composer install` with Composer 2.9 fails outright: every `laravel/framework` v11 release matched by the current constraint is covered by published security advisories, and Composer's `audit.block-insecure` (default `true` since 2.9) refuses to install them. This affects any fresh `composer install` — including a clean deploy.
+**Status:** Open — **out of scope for Phase 27**, which is forbidden from changing product dependencies. The local Phase 27 verification ran with `audit.block-insecure=false` in an isolated `COMPOSER_HOME`; neither `composer.json` nor the machine's global Composer config was modified. **Recommended follow-up:** a dedicated maintenance phase to move to a patched Laravel 11.x (or Laravel 12) and refresh `composer.lock`. On cPanel, existing deployments with a working `vendor/` directory are unaffected until dependencies are reinstalled.
+
+---
+
 ## Phase 26 Batch 1 Notes (2026-06-11) — Portal shell polish
 
 ### Info | Frontend | Low | `success`/`error` flash intentionally not globalized

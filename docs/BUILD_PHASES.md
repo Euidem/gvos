@@ -5,6 +5,47 @@ GVOS is built in phases (Phase 0–18+). Each phase has a clear deliverable and 
 
 ---
 
+## Phase 27 — Demo Environment Preparation and Team Testing Data ✅
+**Status:** Complete (2026-07-31)
+**Goal:** Prepare GVOS for internal team testing with a clean, realistic and repeatable demo environment with predefined users, workspaces and operational scenarios.
+
+### Deliverables
+- [x] `app/Support/Demo/DemoDefinition.php` — single source of truth for controlled demo identifiers
+- [x] `app/Support/Demo/DemoBuilder.php` — idempotent demo construction
+- [x] `app/Support/Demo/DemoCleaner.php` — anchored, FK-safe removal
+- [x] `php artisan gvos:demo-audit` — read-only; separates controlled data from heuristically demo-looking data
+- [x] `php artisan gvos:demo-setup` — idempotent; runtime password prompt; mail suppressed; transactional
+- [x] `php artisan gvos:demo-verify` — 16 PASS/FAIL checks
+- [x] `php artisan gvos:demo-clean` — dry run by default; `--execute` + typed confirmation required
+- [x] 12 demo accounts, 2 companies, 4 workspaces, and full operational content (tasks, chat, files, time logs, reports, billing, vault, invitations, notifications, lead/trial)
+- [x] `docs/DEMO_ENVIRONMENT.md` created; all other phase docs updated
+
+### Constraints Respected
+- No new product features; none of the ten deferred post-MVP features
+- No portal redesign; no Filament styling changes
+- No permission / billing calculation / vault encryption / timer / file security / invitation security changes
+- No `migrate:fresh`; no truncation; no automatic deletion of existing data
+- No plaintext demo password committed; no secrets printed; no email sent; no payment gateway contacted
+- No migrations added (no schema change required)
+
+---
+
+## Phase 26 — Portal Premium Redesign (Batches 1–4) ✅
+**Status:** Complete (2026-06-11)
+**Goal:** Bring the non-admin GVOS portal to a premium visual standard: shared shell + component library, then per-dashboard and per-module redesigns.
+
+### Deliverables
+- [x] Batch 1 — portal shell polish + reusable `portal` Blade component library
+- [x] Batch 2 — talent and client dashboard redesign
+- [x] Batch 3 — manager dashboard and workspace operations redesign
+- [x] Batch 4 — 11 workspace module pages redesigned
+
+### Constraints Respected
+- Presentation only; no backend, route, controller or migration changes
+- All timer JS, vault reveal JS, Kanban SortableJS, CSRF tokens and permission checks preserved verbatim
+
+---
+
 ## Phase 25 — MVP Launch Validation and Live cPanel Bug Fixes ✅
 **Status:** Complete (2026-06-11) — pending live cPanel smoke tests
 **Goal:** Validate GVOS as an MVP launch candidate at `https://gvos.afbs.ng`; prepare exact cPanel commands and manual test steps; fix confirmed bugs only.

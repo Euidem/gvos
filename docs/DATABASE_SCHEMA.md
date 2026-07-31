@@ -200,6 +200,8 @@ Phase 11 actions: `notification_preferences.updated`
 
 Phase 13 actions: `workspace_member.added`, `workspace_member.role_changed`, `workspace_member.deactivated`, `workspace_invitation.created`, `workspace_invitation.resent`, `workspace_invitation.revoked`, `workspace_invitation.accepted`
 
+Phase 27 actions: `gvos_demo.setup_ran`, `gvos_demo.cleaned` — written by the demo environment commands. Context holds record **counts only**; it never contains the demo password, vault secrets, or invitation tokens. **Phase 27 added no tables and no columns** — the demo environment is data + Artisan tooling only. See `docs/DEMO_ENVIRONMENT.md`.
+
 ---
 
 ## Phase 3 Tables (live)
@@ -302,8 +304,8 @@ Workspace records linking a trial/company/client to a team and task board.
 | type | enum | trial, ongoing, project |
 | starts_at | timestamp nullable | |
 | ends_at | timestamp nullable | |
-| task_limit | integer unsigned nullable | |
-| file_limit_mb | integer unsigned nullable | |
+| task_limit | integer unsigned NOT NULL | default: 0 — **0 = unlimited**. Corrected 2026-07-31: previously documented as nullable, but the migration declares `->default(0)` NOT NULL. |
+| file_limit_mb | integer unsigned NOT NULL | default: 0 — **0 = unlimited**. Same correction as `task_limit`. |
 | notes | text nullable | internal only |
 | created_at / updated_at | timestamps | |
 | deleted_at | timestamp nullable | soft deletes |

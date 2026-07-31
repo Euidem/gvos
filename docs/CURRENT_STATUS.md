@@ -1,7 +1,61 @@
 # GVOS — Current Status
 
-**Last Updated:** 2026-06-11
-**Current Phase:** Phase 26 Batch 4 — Workspace Module Pages Premium Redesign — Complete (pending live visual review)
+**Last Updated:** 2026-07-31
+**Current Phase:** Phase 27 — Demo Environment Preparation and Team Testing Data — Complete
+
+## Phase 27 Status - Complete (2026-07-31)
+
+### Demo Environment Preparation and Team Testing Data
+
+**Goal:** Give the internal team a clean, realistic and repeatable demo environment with predefined users, workspaces and operational scenarios, so GVOS makes sense immediately when testers log in under different roles.
+
+**No product features were built.** This phase creates data and tooling only. No permission, billing calculation, vault encryption, timer, file security or invitation security logic was changed. No migration was added.
+
+#### What Was Built
+
+**Support classes (`app/Support/Demo/`):**
+- `DemoDefinition.php` — single source of truth for what counts as controlled demo data: 12 exact emails, 4 exact workspace codes, 2 exact company names, 2 billing plan codes, `GVOS-INV-DEMO-*` / `GVOS-PAY-DEMO-*` prefixes, `DEMO-LEAD-001` / `DEMO-TRIAL-001`, and the `[GVOS-DEMO]` notes marker.
+- `DemoBuilder.php` — idempotent construction of the whole demo environment.
+- `DemoCleaner.php` — content-scope and full-scope removal, anchored strictly to `DemoDefinition`.
+
+**Artisan commands (`app/Console/Commands/`):**
+- `gvos:demo-audit` — read-only. Separates *controlled* demo data from *heuristically demo-looking* data (emails containing `demo`/`test`, other `DEMO-` codes, `Demo*` companies) and states plainly that the second group is never deleted.
+- `gvos:demo-setup` — idempotent build. Prompts for a hidden password (or `--password` for non-interactive use), hashes it immediately, forces the mail transport to `array`, and runs inside a transaction.
+- `gvos:demo-verify` — 16 PASS/FAIL checks; exit code 1 on any failure.
+- `gvos:demo-clean` — dry run by default; `--execute` required to delete; interactive runs must type `DELETE DEMO`; `--force` for non-interactive; `--content-only` keeps accounts and workspaces.
+
+**Demo content created:** 12 users (+ role profiles), 2 companies, 4 workspaces, 15 memberships, 4 subscriptions, 2 billing plans, 22 tasks across 7 statuses, 11 task comments, 19 chat messages (public + internal), 5 real files on the private disk (incl. a hand-built valid PDF), 14 time logs (draft/submitted/approved/rejected), 3 weekly reports (2 published + 1 draft), 3 invoices (paid / due soon / overdue), 2 payments (confirmed + pending), 3 vault items, 4 invitations (pending/accepted/revoked/expired), 12 database notifications, 1 lead + price estimate + trial.
+
+#### Safety Controls
+- Cleanup is anchored to exact identifiers only — never to loose words like "test".
+- `TRUNCATE` and `migrate:fresh` are never used.
+- `audit_logs` are never deleted; demo user deletion nulls `user_id` and preserves the trail.
+- Physical file removal is limited to `storage/app/private/workspaces/{demo_workspace_id}/`.
+- The plaintext password is never stored in source, migrations, seeders, committed docs, logs or audit context.
+- No email is sent and no payment provider is contacted during seeding.
+- No running timer is seeded (it would occupy the one-timer-per-user slot and block testers).
+
+#### Constraints Respected
+- [x] No new product features; none of the ten deferred post-MVP features
+- [x] No portal redesign; no Filament styling changes
+- [x] No permission, billing calculation, vault encryption, timer, file security or invitation security changes
+- [x] No `migrate:fresh`; no truncation; no automatic deletion of existing data
+- [x] No plaintext demo password committed
+- [x] No `GetVirtual` in visible UI; GVOS naming throughout
+- [x] No migrations added (no schema change required)
+
+#### Local Verification (executed, not just static)
+A full local run was performed against an isolated MySQL 8.4 instance with PHP 8.3.30:
+`migrate` (39 DONE) → `db:seed --class=RoleSeeder` → `gvos:demo-audit` → `gvos:demo-setup` → `gvos:demo-verify` (**16/16 PASS**) → `gvos:demo-setup` ×2 more (**idempotent**: `demo-audit --json` byte-identical) → cleanup safety test with 3 decoy lookalike records (**all 3 survived**) → `gvos:demo-clean --execute` (144 controlled records removed, audit logs preserved) → `gvos:demo-clean --content-only` → `route:list` (167 routes) → `view:cache` / `route:cache` / `config:cache`.
+
+Confirmed during the run: 0 rows in `email_delivery_logs` (no mail sent); the password appears in no log, no tracked file and no audit context; vault secrets decrypt but are never printed; the PDF is structurally valid. Full detail in the Phase 27 entry of `docs/IMPLEMENTATION_LOG.md`.
+
+#### One Documentation Correction
+`docs/DATABASE_SCHEMA.md` incorrectly documented `workspaces.task_limit` / `file_limit_mb` as nullable; the migration declares them NOT NULL with `default(0)` (0 = unlimited). Corrected. No migration was added and no column was changed.
+
+---
+
+## Phase 26 Batch 4 — Workspace Module Pages Premium Redesign — Complete (2026-06-11)
 
 > **Phase 26 Batch 4 (2026-06-11) — Workspace module pages redesign:** Redesigned 11 non-admin portal module pages to match dashboard quality. Files changed: `workspace/tasks/index.blade.php` (header/breadcrumb polish, `font-headline-lg` title, preserved all Kanban JS/CSS/SortableJS verbatim), `workspace/tasks/show.blade.php` (polished header with status accent bar, section-card wrappers, `x-portal.alert` flashes, preserved all status transition forms/comment forms/file upload/timer JS), `workspace/files/index.blade.php` (polished header, `x-portal.alert` flashes), `workspace/chat/index.blade.php` (improved message header strip, polished message rows, `x-portal.alert` flashes, preserved message form/delete forms), `workspace/vault/index.blade.php` (polished header + security notice + section-card table wrapper), `workspace/vault/show.blade.php` (polished grid layout, metadata card with header strip, preserved reveal/copy JS verbatim), `workspace/billing/index.blade.php` (polished page header structure), `workspace/members/index.blade.php` (replaced 4 raw stat cards with `x-portal.stat-card`, avatar initials in table, polished header + invitation list, preserved all add-member/update/deactivate/resend/revoke forms), `notifications/index.blade.php` (level-icon squares, compact header chip, `x-portal.alert` for success, preserved mark-read/mark-all forms), `profile/edit.blade.php` (added 3-column layout with user card sidebar showing avatar/name/role/quick links, polished form cards with header strips, preserved both forms verbatim), `settings/notifications.blade.php` (polished page header with Profile back link). No route names, form actions, CSRF tokens, timer JS, vault reveal JS/forms, SortableJS Kanban JS, or permission checks changed. No backend changes.
 

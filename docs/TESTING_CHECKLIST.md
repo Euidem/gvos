@@ -5,6 +5,102 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 27 (2026-07-31) — Demo Environment and Team Testing Data
+
+Run after `git pull` + `composer install --no-dev --optimize-autoloader` + `php artisan migrate --force` + `php artisan optimize:clear`.
+
+### A. Commands — safety behaviour
+- [ ] `php artisan gvos:demo-audit` runs and changes nothing (re-run and confirm identical counts).
+- [ ] Audit output separates **CONTROLLED DEMO DATA** from **OTHER LIKELY DEMO / TEST DATA — REPORT ONLY**.
+- [ ] Audit prints no password, password hash, vault secret or invitation token.
+- [ ] `php artisan gvos:demo-clean` (no flags) reports a **DRY RUN** and deletes nothing.
+- [ ] `php artisan gvos:demo-clean --execute` prompts for the literal text `DELETE DEMO`; typing anything else aborts with nothing deleted.
+- [ ] `php artisan gvos:demo-setup` prompts twice for a hidden password; mismatched entries abort.
+- [ ] Setup prints `Outbound mail suppressed for this run`.
+- [ ] Running `gvos:demo-setup` a second time succeeds and produces the **same counts** (idempotency).
+- [ ] `php artisan gvos:demo-verify` reports 16/16 PASS and exits with code 0.
+
+### B. Logins (all 12 accounts, shared runtime password)
+- [ ] `superadmin.demo@gvos.test` → lands on `/admin` (GVOS Command Center).
+- [ ] `operations.demo@gvos.test` → lands on `/admin`.
+- [ ] `manager.demo@gvos.test` → lands on `/manager/dashboard` with 4 supervised workspaces.
+- [ ] `talent.one.demo@gvos.test` → `/talent/dashboard` with active tasks visible.
+- [ ] `talent.two.demo@gvos.test` → `/talent/dashboard`.
+- [ ] `individual.client.demo@gvos.test` → `/client/dashboard`.
+- [ ] `business.admin.demo@gvos.test` → `/client/dashboard` (business admin variant).
+- [ ] `business.staff.demo@gvos.test` → `/client/dashboard` (staff variant).
+- [ ] `lead.demo@gvos.test` → `/lead/dashboard`.
+- [ ] `observer.demo@gvos.test` → `/client/dashboard`.
+- [ ] `restricted.client.demo@gvos.test` → `/client/dashboard` with a billing banner.
+- [ ] `suspended.demo@gvos.test` → blocked at `/account/status`, **cannot** reach a dashboard.
+
+### C. Tasks and Kanban
+- [ ] `DEMO-CX-002` Kanban shows cards in pending, in progress, blocked, submitted, revision requested, approved and closed columns.
+- [ ] At least one task shows a **Blocked** state and at least one shows **Submitted / awaiting review**.
+- [ ] Priorities render across low → urgent; some due dates are overdue and some are due soon.
+- [ ] Task detail pages show public comments to all members.
+- [ ] Internal comments and `internal_notes` are visible to manager/admin and **hidden from clients and talent**.
+
+### D. Chat
+- [ ] Each demo workspace chat has a readable professional thread.
+- [ ] Internal messages appear for manager/admin only.
+- [ ] Logged in as a client, internal messages are **not** visible.
+
+### E. Files
+- [ ] `DEMO-EXEC-001` file list shows the operations brief, weekly checklist and client summary PDF.
+- [ ] Downloading each file succeeds and the content matches the filename (no 404, no zero-byte file).
+- [ ] `Demo Client Summary.pdf` opens in a PDF reader.
+- [ ] `Demo Weekly Checklist.txt` (internal) is **not** listed for the client account.
+- [ ] A task-attached file appears on its task detail page.
+- [ ] No demo file is reachable via a direct `/storage/...` URL.
+
+### F. Time logs
+- [ ] Manager sees draft, submitted, approved and rejected logs.
+- [ ] Talent sees their own logs.
+- [ ] Client sees **only** approved logs with a client summary — never raw internal work details.
+- [ ] No timer is running on any demo account; a tester can start their own timer successfully.
+
+### G. Weekly reports
+- [ ] Manager sees both the published and the draft report on `DEMO-EXEC-001`.
+- [ ] Client sees the **published** report only — the draft is absent.
+- [ ] Blockers and next steps (internal) are not visible to the client on the published report.
+
+### H. Billing
+- [ ] `GVOS-INV-DEMO-0001` shows as paid with a confirmed payment.
+- [ ] `GVOS-INV-DEMO-0002` shows as issued and due soon.
+- [ ] `GVOS-INV-DEMO-0003` shows as overdue with a pending payment.
+- [ ] `DEMO-RESTRICTED-004`: logged in as Restricted Client, opening a workspace module redirects to the billing restricted page.
+- [ ] `DEMO-RESTRICTED-004`: logged in as Grace Manager or Daniel Okafor, all modules remain accessible.
+- [ ] Internal invoice notes are not visible to the client.
+
+### I. Vault
+- [ ] Manager sees all three demo vault items.
+- [ ] Daniel Okafor can reveal **Demo CRM Login**.
+- [ ] Daniel Okafor **cannot** see or reveal **Demo Shared Support Inbox** (workspace admins/managers only).
+- [ ] Naomi Observer (observer membership) has **no** vault access.
+- [ ] Revealing a secret writes a vault access log entry that contains no secret value.
+
+### J. Notifications and invitations
+- [ ] Notification inbox is populated for manager, talent and client accounts.
+- [ ] `DEMO-CX-002` members page lists invitations in pending, accepted and revoked states.
+- [ ] `DEMO-EXEC-001` lists an expired invitation.
+- [ ] No invitation token is visible anywhere in the UI listing.
+- [ ] **No email arrived** at any address during setup (check the mailbox and `/admin/email-delivery-logs`).
+
+### K. Lead and trial
+- [ ] `lead.demo@gvos.test` sees trial context on `/lead/dashboard`.
+- [ ] Admin panel Leads & Trials shows `DEMO-LEAD-001` (status trial active) and `DEMO-TRIAL-001` (status active).
+- [ ] `DEMO-RESEARCH-003` shows a trial subscription.
+
+### L. Cleanup safety
+- [ ] Create a throwaway non-demo user with "test" in the email; `gvos:demo-clean --execute` does **not** delete it.
+- [ ] After `gvos:demo-clean --execute`, `gvos:demo-audit` reports zero controlled demo records.
+- [ ] Genuine users, workspaces and invoices are untouched after cleanup.
+- [ ] Audit log entries still exist after cleanup (`/admin/audit-logs`).
+- [ ] `storage/app/private/workspaces/{demo_id}/` directories are gone after cleanup.
+
+---
+
 ## Stat Card Refinement (2026-06-11) — Portal dashboard stat card visual polish
 
 Run after deploy + `php artisan optimize:clear && php artisan view:clear`.
