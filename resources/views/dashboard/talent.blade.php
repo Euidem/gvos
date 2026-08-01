@@ -1,230 +1,37 @@
-<x-layouts.gvos title="My Dashboard">
-{{-- Stitch reference: talent_dashboard_gvos_1/code.html --}}
+{{-- Phase 28 — Talent home. Answers "what am I doing right now?" before anything else. --}}
+<x-layouts.gvos title="Home">
+
 @php
-    $user = auth()->user();
-    $profile = $user->profile;
-    $talentProfile = $user->talentProfile;
-
-    $workspaceList = \App\Models\Workspace::where(function ($q) use ($user) {
-            $q->where('primary_talent_id', $user->id)
-              ->orWhereHas('members', fn ($m) => $m->where('user_id', $user->id)->where('status', 'active'));
-        })
-        ->whereIn('status', ['pending', 'active'])
-        ->with(['primaryManager'])
-        ->latest()
-        ->get();
-
-    $myWorkspaces = $workspaceList->count();
-    $activeTimer = \App\Models\WorkspaceTimeLog::activeTimerFor($user);
-    $defaultTimerWorkspace = $workspaceList->first();
-    $timerTasks = $workspaceList->isNotEmpty()
-        ? \App\Models\WorkspaceTask::whereIn('workspace_id', $workspaceList->pluck('id'))
-            ->where(function ($q) use ($user) {
-                $q->where('assigned_to_user_id', $user->id)
-                  ->orWhereNull('assigned_to_user_id');
-            })
-            ->whereIn('status', ['pending', 'in_progress', 'blocked', 'revision_requested'])
-            ->orderBy('title')
-            ->get()
-        : collect();
-
-    $myAssignedTasks = \App\Models\WorkspaceTask::where('assigned_to_user_id', $user->id)
-        ->whereIn('status', ['pending', 'in_progress', 'blocked', 'revision_requested'])
-        ->count();
-    $myDueSoonTasks = \App\Models\WorkspaceTask::where('assigned_to_user_id', $user->id)
-        ->whereIn('status', ['pending', 'in_progress'])
-        ->whereNotNull('due_date')
-        ->whereDate('due_date', '<=', now()->addDays(3))
-        ->count();
-    $myBlockedTasks = \App\Models\WorkspaceTask::where('assigned_to_user_id', $user->id)
-        ->where('status', 'blocked')
-        ->count();
-
-    $weekStart    = now()->startOfWeek();
-    $timeThisWeek = \App\Models\WorkspaceTimeLog::where('user_id', $user->id)
-        ->where('status', 'approved')
-        ->whereBetween('log_date', [$weekStart->format('Y-m-d'), now()->format('Y-m-d')])
-        ->sum('duration_minutes');
-    $timeThisWeekH = intdiv($timeThisWeek, 60);
-
-    $name = $profile?->first_name ?? $user->name ?? 'there';
+    $first     = auth()->user()->profile?->first_name ?? explode(' ', auth()->user()->name)[0];
+    $weekHours = intdiv($weekMinutes, 60);
+    $weekMins  = $weekMinutes % 60;
+    $openCount = $myTasks->count();
+    $timerWs   = $workspaces->first();
 @endphp
 
-{{-- Phase 16: onboarding banner --}}
-@php $__obUser = $user; @endphp
+@php $__obUser = auth()->user(); @endphp
 @include('partials.onboarding-banner')
 
-{{-- ── Hero panel (welcome left + timer right) ──────────────────────────── --}}
-<div class="rounded-2xl border border-border-subtle shadow-sm overflow-hidden mb-8"
-     style="background:linear-gradient(135deg,rgba(0,88,190,0.04) 0%,rgba(255,255,255,0) 55%),#fff;">
-    <div class="flex flex-col lg:flex-row lg:items-stretch">
+<x-portal.page-header
+    title="Hello, {{ $first }}"
+    :subtitle="$activeTimer
+        ? 'You are clocked in. Stop the timer when you finish this session.'
+        : ($openCount > 0
+            ? 'You have ' . $openCount . ' open ' . Str::plural('task', $openCount) . '. Start with the one below.'
+            : ($workspaces->isEmpty()
+                ? 'You have not been added to a workspace yet.'
+                : 'Nothing is waiting on you right now.'))"
+    :divider="false" />
 
-        {{-- Welcome / status panel --}}
-        <div class="flex-1 p-6 lg:p-8 border-b border-border-subtle lg:border-b-0 lg:border-r flex flex-col justify-center gap-4">
-            <div>
-                <p class="font-label-md text-label-md text-secondary uppercase tracking-widest mb-2">Talent Workspace</p>
-                <h2 class="font-headline-lg text-headline-lg text-on-surface">Welcome back, {{ $name }}</h2>
-                <p class="font-body-md text-body-md text-on-surface-variant mt-2">
-                    @if ($activeTimer)
-                        You have an active work session running now.
-                    @elseif ($myAssignedTasks > 0)
-                        You have {{ $myAssignedTasks }} active {{ Str::plural('task', $myAssignedTasks) }}
-                        across {{ $myWorkspaces }} {{ Str::plural('workspace', $myWorkspaces) }}.
-                    @elseif ($myWorkspaces > 0)
-                        All caught up. {{ $myWorkspaces === 1 ? 'Your workspace is' : 'All your workspaces are' }} active.
-                    @else
-                        No workspaces assigned yet. You'll be notified when one is ready.
-                    @endif
-                </p>
-            </div>
-            <div class="flex flex-wrap gap-3">
-                @if ($activeTimer && $activeTimer->workspace)
-                    <a href="{{ route('workspace.show', $activeTimer->workspace) }}"
-                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:brightness-110 shadow-sm transition-all">
-                        <span class="material-symbols-outlined" style="font-size:16px;">workspaces</span>
-                        View Active Workspace
-                    </a>
-                @elseif ($defaultTimerWorkspace)
-                    <a href="{{ route('workspace.show', $defaultTimerWorkspace) }}"
-                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:brightness-110 shadow-sm transition-all">
-                        <span class="material-symbols-outlined" style="font-size:16px;">workspaces</span>
-                        Open Workspace
-                    </a>
-                @endif
-                <a href="{{ route('notifications.index') }}"
-                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-label-md text-label-md border border-border-subtle text-on-surface-variant hover:bg-surface-container-low hover:border-secondary/30 transition-all">
-                    <span class="material-symbols-outlined" style="font-size:16px;">notifications</span>
-                    Notifications
-                </a>
-                @if ($defaultTimerWorkspace)
-                    <a href="{{ route('workspace.time-logs.index', $defaultTimerWorkspace) }}"
-                       class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-label-md text-label-md border border-border-subtle text-on-surface-variant hover:bg-surface-container-low hover:border-secondary/30 transition-all">
-                        <span class="material-symbols-outlined" style="font-size:16px;">schedule</span>
-                        Time Logs
-                    </a>
-                @endif
-            </div>
-        </div>
-
-        {{-- Clock-In / Out timer widget --}}
-        <div class="lg:w-[420px] p-6 lg:p-8 flex flex-col justify-center">
-            @if ($activeTimer)
-                <div class="flex items-start gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse"
-                         style="background:rgba(16,185,129,0.1);color:#10B981;">
-                        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">timer</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="font-label-md text-[10px] text-outline uppercase tracking-widest">Active session</p>
-                        <p class="font-mono-sm text-lg font-bold text-primary tracking-tight js-running-timer"
-                           data-started-at="{{ $activeTimer->started_at?->toIso8601String() }}">
-                            {{ $activeTimer->durationForHumans() }}
-                        </p>
-                        <p class="text-xs text-on-surface-variant mt-1">
-                            {{ $activeTimer->workspace?->name ?? 'Workspace' }}
-                            @if ($activeTimer->task)
-                                &middot; {{ Str::limit($activeTimer->task->title, 42) }}
-                            @endif
-                        </p>
-                        <p class="text-[10px] text-outline mt-0.5">
-                            Started {{ $activeTimer->started_at?->format('d M Y H:i') }}
-                        </p>
-                    </div>
-                </div>
-                <div class="space-y-3">
-                    <form method="POST" action="{{ route('workspace.time-tracker.stop', $activeTimer->workspace) }}">
-                        @csrf
-                        <input type="hidden" name="time_log_id" value="{{ $activeTimer->id }}">
-                        <input type="hidden" name="status" value="draft">
-                        <button type="submit"
-                                class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border transition-all"
-                                style="border-color:#F59E0B;color:#92400E;background:rgba(245,158,11,0.08);">
-                            <span class="material-symbols-outlined" style="font-size:16px;">stop_circle</span>
-                            Clock Out
-                        </button>
-                    </form>
-                    <form method="POST" action="{{ route('workspace.time-tracker.complete', $activeTimer->workspace) }}" class="space-y-2">
-                        @csrf
-                        <input type="hidden" name="time_log_id" value="{{ $activeTimer->id }}">
-                        <input type="text" name="work_summary" required maxlength="1000"
-                               placeholder="Work summary for review"
-                               class="w-full px-3 py-2 rounded-lg border border-border-subtle text-sm focus:outline-none focus:ring-2 focus:ring-[#0058be]">
-                        <button type="submit"
-                                class="w-full inline-flex items-center justify-center gap-2 bg-secondary text-on-secondary px-4 py-2 rounded-lg text-sm font-semibold hover:brightness-110 transition-all">
-                            <span class="material-symbols-outlined" style="font-size:16px;">task_alt</span>
-                            Complete Work Session
-                        </button>
-                    </form>
-                </div>
-            @elseif ($workspaceList->isNotEmpty() && $defaultTimerWorkspace)
-                <form id="dashboard-start-timer-form"
-                      method="POST"
-                      action="{{ route('workspace.time-tracker.start', $defaultTimerWorkspace) }}"
-                      class="space-y-3">
-                    @csrf
-                    <div class="flex items-center gap-3 mb-1">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                             style="background:rgba(0,88,190,0.08);color:#0058be;">
-                            <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">timer</span>
-                        </div>
-                        <div>
-                            <p class="font-label-md text-[10px] text-outline uppercase tracking-widest">Session</p>
-                            <p class="font-mono-sm text-lg font-bold text-primary tracking-tight">Ready to start</p>
-                        </div>
-                    </div>
-                    <select id="dashboard-timer-workspace"
-                            class="w-full px-3 py-2 rounded-lg border border-border-subtle text-sm focus:outline-none focus:ring-2 focus:ring-[#0058be]">
-                        @foreach ($workspaceList as $timerWorkspace)
-                            <option value="{{ $timerWorkspace->id }}"
-                                    data-start-url="{{ route('workspace.time-tracker.start', $timerWorkspace) }}">
-                                {{ $timerWorkspace->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <select id="dashboard-timer-task"
-                            name="workspace_task_id"
-                            class="w-full px-3 py-2 rounded-lg border border-border-subtle text-sm focus:outline-none focus:ring-2 focus:ring-[#0058be]">
-                        <option value="">No specific task</option>
-                        @foreach ($timerTasks as $timerTask)
-                            <option value="{{ $timerTask->id }}" data-workspace-id="{{ $timerTask->workspace_id }}">
-                                {{ $timerTask->task_code }} - {{ Str::limit($timerTask->title, 48) }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <button type="submit"
-                            class="w-full bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold font-label-md text-label-md hover:brightness-110 transition-all active:scale-95"
-                            style="box-shadow:0 4px 12px rgba(0,88,190,0.2);">
-                        Clock In
-                    </button>
-                </form>
-            @else
-                <div class="flex items-center gap-4 p-4 rounded-xl border border-border-subtle"
-                     style="background:rgba(148,163,184,0.04);">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                         style="background:rgba(148,163,184,0.12);color:#64748B;">
-                        <span class="material-symbols-outlined text-2xl">timer_off</span>
-                    </div>
-                    <div>
-                        <p class="font-label-md text-[10px] text-outline uppercase tracking-widest">Session</p>
-                        <p class="font-body-sm font-semibold text-on-surface-variant mt-0.5">No workspace assigned yet</p>
-                        <p class="text-xs text-outline mt-0.5">Your timer will appear once a workspace is activated.</p>
-                    </div>
-                </div>
-            @endif
-        </div>
-    </div>
-</div>
-
-{{-- ── Flash alerts ─────────────────────────────────────────────────────── --}}
 @if (session('success'))
-    <x-portal.alert type="success" class="mb-6">
+    <x-portal.alert type="success">
         {{ session('success') }}
         @if (session('active_timer_url'))
             <a href="{{ session('active_timer_url') }}" class="font-semibold underline ml-1">View active timer</a>
         @endif
     </x-portal.alert>
 @elseif (session('error'))
-    <x-portal.alert type="error" class="mb-6">
+    <x-portal.alert type="error">
         {{ session('error') }}
         @if (session('active_timer_url'))
             <a href="{{ session('active_timer_url') }}" class="font-semibold underline ml-1">View active timer</a>
@@ -232,231 +39,224 @@
     </x-portal.alert>
 @endif
 
-{{-- ── Work status strip ────────────────────────────────────────────────── --}}
-<section class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+{{-- ── 1. Now: timer + focus task ──────────────────────────────────────────── --}}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
 
-    <x-portal.stat-card
-        label="Active Tasks"
-        :value="$myAssignedTasks"
-        icon="task_alt"
-        accent="secondary"
-        :hint="$myDueSoonTasks > 0 ? $myDueSoonTasks . ' due soon' : ($myAssignedTasks === 0 ? 'No active tasks' : null)"
-        :hint-class="$myDueSoonTasks > 0 ? 'text-status-payment-due' : 'text-outline'" />
+    {{-- Timer — the talent's most-used control, first on every screen size --}}
+    <div class="bg-white rounded-xl border border-border-subtle shadow-card p-5 flex flex-col">
+        @if ($activeTimer)
+            <div class="flex items-center gap-2 mb-3">
+                <span class="w-2 h-2 rounded-full animate-pulse" style="background:#10B981;"></span>
+                <span class="text-[12px] font-semibold" style="color:#047857;">Clocked in</span>
+            </div>
+            <p class="font-mono-sm text-[30px] font-bold text-on-surface leading-none js-running-timer tracking-tight"
+               data-started-at="{{ $activeTimer->started_at?->toIso8601String() }}">
+                {{ $activeTimer->durationForHumans() }}
+            </p>
+            <p class="text-[12.5px] text-on-surface-variant mt-2">
+                {{ $activeTimer->workspace?->name }}
+                @if ($activeTimer->task) · {{ $activeTimer->task->title }} @endif
+            </p>
 
-    <x-portal.stat-card
-        label="Due Soon"
-        :value="$myDueSoonTasks"
-        icon="schedule"
-        accent="status-urgent"
-        :value-class="$myDueSoonTasks > 0 ? 'text-status-urgent' : 'text-primary'"
-        :hint="$myDueSoonTasks > 0 ? 'within 3 days' : 'No urgent items'" />
-
-    <x-portal.stat-card
-        label="Blocked"
-        :value="$myBlockedTasks"
-        icon="block"
-        accent="status-blocked"
-        :value-class="$myBlockedTasks > 0 ? 'text-status-blocked' : 'text-primary'"
-        :hint="$myBlockedTasks > 0 ? 'Awaiting feedback' : 'No blockers'" />
-
-    @php
-        $goalPct = min(100, $timeThisWeek > 0 ? round($timeThisWeek / (40 * 60) * 100) : 0);
-    @endphp
-    <x-portal.stat-card
-        label="Weekly Time"
-        :value="$timeThisWeekH . 'h'"
-        icon="timer"
-        accent="secondary"
-        :hint="$goalPct >= 100 ? 'Weekly goal reached' : $timeThisWeekH . 'h / 40h goal'"
-        :progress="$goalPct" />
-</section>
-
-{{-- ── Main content: workspaces + sidebar ─────────────────────────────── --}}
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-    {{-- My Workspaces (with per-workspace quick links) --}}
-    <div class="lg:col-span-2">
-        <x-portal.section-card flush title="My Workspaces">
-            <x-slot:actions>
-                <a href="{{ route('workspace.index') }}"
-                   class="text-secondary font-label-md text-label-md hover:underline font-bold flex items-center gap-1">
-                    View All
-                    <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
-                </a>
-            </x-slot:actions>
-
-            @if ($workspaceList->isEmpty())
-                <x-portal.empty-state
-                    compact
-                    icon="workspaces"
-                    title="No active workspaces yet"
-                    message="You have not been added to a workspace yet. Once your workspace is ready, it will appear here." />
-            @else
-                <div class="divide-y divide-border-subtle">
-                    @foreach ($workspaceList->take(5) as $ws)
-                        <div class="px-card-padding pt-4 pb-3">
-                            {{-- Workspace identity row --}}
-                            <div class="flex items-center justify-between gap-3 mb-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white flex-shrink-0"
-                                         style="background-color:#0058be;">
-                                        {{ strtoupper(substr($ws->name, 0, 2)) }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <a href="{{ route('workspace.show', $ws) }}"
-                                           class="font-body-sm font-semibold text-on-surface hover:text-secondary transition-colors leading-snug block truncate">
-                                            {{ $ws->name }}
-                                        </a>
-                                        <p class="font-label-md text-[10px] text-outline">
-                                            {{ $ws->workspace_code }}
-                                            @if ($ws->primaryManager)
-                                                &middot; {{ $ws->primaryManager->name }}
-                                            @endif
-                                        </p>
-                                    </div>
-                                </div>
-                                <x-portal.status-badge :status="$ws->status" />
-                            </div>
-                            {{-- Quick-link chips --}}
-                            <div class="flex flex-wrap gap-2">
-                                <a href="{{ route('workspace.tasks.index', $ws) }}"
-                                   class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/40 hover:text-secondary transition-all"
-                                   style="background:rgba(0,88,190,0.03);">
-                                    <span class="material-symbols-outlined" style="font-size:13px;">task_alt</span>
-                                    Tasks
-                                </a>
-                                <a href="{{ route('workspace.time-logs.index', $ws) }}"
-                                   class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/40 hover:text-secondary transition-all"
-                                   style="background:rgba(0,88,190,0.03);">
-                                    <span class="material-symbols-outlined" style="font-size:13px;">schedule</span>
-                                    Time Logs
-                                </a>
-                                <a href="{{ route('workspace.files.index', $ws) }}"
-                                   class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/40 hover:text-secondary transition-all"
-                                   style="background:rgba(0,88,190,0.03);">
-                                    <span class="material-symbols-outlined" style="font-size:13px;">folder_open</span>
-                                    Files
-                                </a>
-                                <a href="{{ route('workspace.chat.index', $ws) }}"
-                                   class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/40 hover:text-secondary transition-all"
-                                   style="background:rgba(0,88,190,0.03);">
-                                    <span class="material-symbols-outlined" style="font-size:13px;">forum</span>
-                                    Chat
-                                </a>
-                            </div>
-                        </div>
+            <form method="POST" action="{{ route('workspace.time-tracker.complete', $activeTimer->workspace) }}" class="mt-4 space-y-2">
+                @csrf
+                <input type="hidden" name="time_log_id" value="{{ $activeTimer->id }}">
+                <label for="talent-summary" class="sr-only">What did you work on?</label>
+                <input id="talent-summary" type="text" name="work_summary" required maxlength="1000"
+                       placeholder="What did you work on?"
+                       class="w-full px-3 py-2 rounded-lg border border-border-subtle text-[13.5px] focus:outline-none focus:ring-2 focus:ring-[#0058be]">
+                <x-portal.btn variant="primary" icon="task_alt" class="w-full">Finish &amp; Submit Session</x-portal.btn>
+            </form>
+            <form method="POST" action="{{ route('workspace.time-tracker.stop', $activeTimer->workspace) }}" class="mt-2">
+                @csrf
+                <input type="hidden" name="time_log_id" value="{{ $activeTimer->id }}">
+                <input type="hidden" name="status" value="draft">
+                <x-portal.btn variant="ghost" size="sm" icon="pause_circle" class="w-full">Pause &amp; save as draft</x-portal.btn>
+            </form>
+        @elseif ($timerWs)
+            <p class="text-[12px] text-outline mb-1">Time tracking</p>
+            <p class="text-[15px] font-semibold text-on-surface">Not clocked in</p>
+            <p class="text-[12.5px] text-on-surface-variant mt-1 mb-4">
+                {{ $weekHours }}h {{ $weekMins }}m approved this week.
+            </p>
+            <form id="talent-start-timer" method="POST"
+                  action="{{ route('workspace.time-tracker.start', $timerWs) }}" class="mt-auto space-y-2">
+                @csrf
+                @if ($workspaces->count() > 1)
+                    <label for="timer-ws" class="sr-only">Workspace</label>
+                    <select id="timer-ws" class="w-full px-3 py-2 rounded-lg border border-border-subtle text-[13.5px]">
+                        @foreach ($workspaces as $w)
+                            <option value="{{ $w->id }}" data-start-url="{{ route('workspace.time-tracker.start', $w) }}">{{ $w->name }}</option>
+                        @endforeach
+                    </select>
+                @endif
+                <label for="timer-task" class="sr-only">Task</label>
+                <select id="timer-task" name="workspace_task_id"
+                        class="w-full px-3 py-2 rounded-lg border border-border-subtle text-[13.5px]">
+                    <option value="">No specific task</option>
+                    @foreach ($timerTasks as $t)
+                        <option value="{{ $t->id }}" data-workspace-id="{{ $t->workspace_id }}">{{ $t->task_code }} — {{ $t->title }}</option>
                     @endforeach
-                </div>
-            @endif
-        </x-portal.section-card>
+                </select>
+                <x-portal.btn variant="primary" icon="play_circle" class="w-full">Clock In</x-portal.btn>
+            </form>
+        @else
+            <p class="text-[12px] text-outline mb-1">Time tracking</p>
+            <p class="text-[15px] font-semibold text-on-surface">Unavailable</p>
+            <p class="text-[12.5px] text-on-surface-variant mt-1">
+                Your timer appears once you are added to a workspace.
+            </p>
+        @endif
     </div>
 
-    {{-- Sidebar: talent profile + quick actions --}}
-    <div class="space-y-5">
-
-        {{-- Talent profile status --}}
-        @if ($talentProfile)
-            <div class="bg-white rounded-xl border border-border-subtle shadow-card p-card-padding">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                         style="background:rgba(0,88,190,0.06)">
-                        <span class="material-symbols-outlined text-secondary" style="font-size:20px;">badge</span>
-                    </div>
-                    <div>
-                        <p class="font-body-sm font-semibold text-on-surface">Talent Profile</p>
-                        @if ($talentProfile->talent_code)
-                            <p class="font-mono-sm text-mono-sm text-outline">{{ $talentProfile->talent_code }}</p>
-                        @endif
-                    </div>
-                </div>
-                <div class="space-y-0">
-                    <div class="flex items-center justify-between py-2.5 border-b border-border-subtle">
-                        <span class="font-body-sm text-on-surface-variant">Training</span>
-                        <span class="font-label-md text-label-md text-on-surface font-semibold">
-                            {{ ucwords(str_replace('_', ' ', $talentProfile->training_status)) }}
-                        </span>
-                    </div>
-                    <div class="flex items-center justify-between pt-2.5">
-                        <span class="font-body-sm text-on-surface-variant">Equipment</span>
-                        <span class="font-label-md text-label-md text-on-surface font-semibold">
-                            {{ ucwords(str_replace('_', ' ', $talentProfile->equipment_status)) }}
-                        </span>
-                    </div>
-                </div>
+    {{-- Focus task --}}
+    <div class="lg:col-span-2 bg-white rounded-xl border border-border-subtle shadow-card p-5 flex flex-col">
+        @if ($focusTask)
+            <p class="text-[12px] text-outline mb-2">Start here</p>
+            {{-- Not a link: the "Open Task" button below is the single action
+                 for this card, so the title must not duplicate its href. --}}
+            <p class="text-[18px] font-semibold text-on-surface leading-snug">{{ $focusTask->title }}</p>
+            <div class="flex items-center gap-2 flex-wrap mt-2.5">
+                <x-portal.status-badge :status="$focusTask->status" />
+                @if ($focusTask->isOverdue())
+                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                          style="color:#B91C1C;background:rgba(239,68,68,0.10);">
+                        Overdue · due {{ $focusTask->due_date->format('j M') }}
+                    </span>
+                @elseif ($focusTask->due_date)
+                    <span class="text-[11.5px] text-on-surface-variant">Due {{ $focusTask->due_date->format('j M') }}</span>
+                @endif
+                <span class="text-[11.5px] text-outline">{{ $focusTask->workspace?->name }}</span>
             </div>
+            @if ($focusTask->description)
+                <p class="text-[13.5px] text-on-surface-variant mt-3 leading-relaxed line-clamp-3">
+                    {{ Str::limit(strip_tags($focusTask->description), 220) }}
+                </p>
+            @endif
+            {{-- Secondary, not primary: "Clock In" is the one primary action
+                 above the fold on this page. --}}
+            <div class="mt-auto pt-4 flex items-center gap-2">
+                <x-portal.btn variant="secondary" icon="open_in_new"
+                              :href="route('workspace.tasks.show', [$focusTask->workspace_id, $focusTask])">
+                    Open Task
+                </x-portal.btn>
+                <x-portal.btn variant="ghost"
+                              :href="route('workspace.tasks.index', $focusTask->workspace_id)">
+                    View Board
+                </x-portal.btn>
+            </div>
+        @else
+            <x-portal.empty-state
+                icon="task_alt"
+                title="{{ $workspaces->isEmpty() ? 'No workspace yet' : 'No open tasks' }}"
+                message="{{ $workspaces->isEmpty()
+                    ? 'Your GVOS manager will add you to a workspace. It will appear here as soon as it is ready.'
+                    : 'Everything assigned to you is done. New work will appear here when your manager assigns it.' }}" />
         @endif
-
-        {{-- Quick actions --}}
-        <div>
-            <p class="font-label-md text-label-md text-outline uppercase tracking-wider mb-3 px-1">Quick Actions</p>
-            <div class="space-y-3">
-                <x-portal.action-card
-                    :href="route('workspace.index')"
-                    icon="workspaces"
-                    title="All Workspaces"
-                    description="View every workspace you are assigned to." />
-                <x-portal.action-card
-                    :href="$defaultTimerWorkspace ? route('workspace.time-logs.index', $defaultTimerWorkspace) : route('workspace.index')"
-                    icon="schedule"
-                    title="Time Logs"
-                    description="Review and submit your tracked hours." />
-                <x-portal.action-card
-                    :href="route('notifications.index')"
-                    icon="notifications"
-                    title="Notifications"
-                    description="Catch up on workspace activity and updates." />
-                <x-portal.action-card
-                    :href="route('profile.show')"
-                    icon="person"
-                    title="My Profile"
-                    description="Update your details and preferences." />
-            </div>
-        </div>
-
     </div>
 </div>
 
+{{-- ── 2. My work ───────────────────────────────────────────────────────────── --}}
+@if ($myTasks->count() > 1 || $logsNeedingAction->isNotEmpty())
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+
+        <div class="lg:col-span-2">
+            <x-portal.section title="My work" subtitle="Most urgent first" flush>
+                <x-slot:actions>
+                    @if ($timerWs)
+                        <a href="{{ route('workspace.tasks.index', $timerWs) }}"
+                           class="text-[12.5px] font-semibold text-secondary hover:underline">Open board</a>
+                    @endif
+                </x-slot:actions>
+                <div class="divide-y divide-border-subtle">
+                    @foreach ($myTasks->skip(1)->take(6) as $t)
+                        <x-portal.attention-item
+                            :href="route('workspace.tasks.show', [$t->workspace_id, $t])"
+                            :title="$t->title"
+                            :meta="$t->workspace?->name . ($t->due_date ? ' · due ' . $t->due_date->format('j M') : '')"
+                            :badge="$t->statusLabel()"
+                            :tone="$t->status === 'blocked' ? 'urgent' : ($t->isOverdue() ? 'warn' : ($t->status === 'revision_requested' ? 'warn' : 'info'))"
+                            action="Open" />
+                    @endforeach
+                </div>
+            </x-portal.section>
+        </div>
+
+        <div class="space-y-5">
+            @if ($logsNeedingAction->isNotEmpty())
+                <x-portal.section title="Your time entries" flush>
+                    <div class="divide-y divide-border-subtle">
+                        @foreach ($logsNeedingAction as $log)
+                            <x-portal.attention-item
+                                :href="route('workspace.time-logs.show', [$log->workspace_id, $log])"
+                                :title="$log->status === 'rejected' ? 'Time entry needs changes' : 'Draft time entry'"
+                                :meta="$log->workspace?->name . ' · ' . $log->log_date?->format('j M') . ' · ' . $log->durationForHumans()"
+                                :tone="$log->status === 'rejected' ? 'warn' : 'default'"
+                                :action="$log->status === 'rejected' ? 'Fix' : 'Submit'" />
+                        @endforeach
+                    </div>
+                </x-portal.section>
+            @endif
+
+            @if ($latestMessage)
+                <x-portal.section title="Latest message">
+                    <p class="text-[12px] text-outline mb-1.5">
+                        {{ $latestMessage->user?->name }} · {{ $latestMessage->workspace?->name }}
+                    </p>
+                    <p class="text-[13.5px] text-on-surface-variant leading-relaxed">
+                        {{ Str::limit($latestMessage->message, 180) }}
+                    </p>
+                    <a href="{{ route('workspace.chat.index', $latestMessage->workspace_id) }}"
+                       class="inline-flex items-center gap-1 mt-3 text-[12.5px] font-semibold text-secondary hover:underline">
+                        Open messages
+                        <span class="material-symbols-outlined" style="font-size:15px;">chevron_right</span>
+                    </a>
+                </x-portal.section>
+            @endif
+        </div>
+    </div>
+@endif
+
+{{-- ── 3. Workspaces + supporting numbers ───────────────────────────────────── --}}
+@if ($workspaces->isNotEmpty())
+    <x-portal.section title="Your workspaces" flush class="mb-6">
+        <div class="divide-y divide-border-subtle">
+            @foreach ($workspaces as $w)
+                <x-portal.workspace-row
+                    :workspace="$w"
+                    :meta="$w->primaryManager ? 'Manager · ' . $w->primaryManager->name : null" />
+            @endforeach
+        </div>
+    </x-portal.section>
+
+    <x-portal.metric-strip :metrics="[
+        ['label' => 'Open tasks', 'value' => $openCount],
+        $blockedCount > 0 ? ['label' => 'Blocked', 'value' => $blockedCount, 'tone' => 'urgent'] : null,
+        $overdueCount > 0 ? ['label' => 'Overdue', 'value' => $overdueCount, 'tone' => 'warn'] : null,
+        ['label' => 'Approved this week', 'value' => $weekHours . 'h ' . $weekMins . 'm', 'tone' => 'muted'],
+    ]" />
+@endif
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        function formatElapsed(startedAt) {
-            var started = new Date(startedAt);
-            var totalSeconds = Math.max(0, Math.floor((Date.now() - started.getTime()) / 1000));
-            var hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-            var minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-            var seconds = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
-            return hours + ':' + minutes + ':' + seconds;
+        var wsSel = document.getElementById('timer-ws');
+        var taskSel = document.getElementById('timer-task');
+        var form = document.getElementById('talent-start-timer');
+        if (!taskSel || !form) return;
+
+        function sync() {
+            var wsId = wsSel ? wsSel.value : null;
+            if (wsSel) {
+                form.action = wsSel.options[wsSel.selectedIndex].dataset.startUrl;
+            }
+            taskSel.querySelectorAll('option[data-workspace-id]').forEach(function (o) {
+                var visible = !wsId || o.dataset.workspaceId === wsId;
+                o.hidden = !visible;
+                if (!visible && o.selected) taskSel.value = '';
+            });
         }
-
-        document.querySelectorAll('.js-running-timer[data-started-at]').forEach(function (timer) {
-            var tick = function () {
-                timer.textContent = formatElapsed(timer.dataset.startedAt);
-            };
-            tick();
-            window.setInterval(tick, 1000);
-        });
-
-        var workspaceSelect = document.getElementById('dashboard-timer-workspace');
-        var taskSelect = document.getElementById('dashboard-timer-task');
-        var startForm = document.getElementById('dashboard-start-timer-form');
-
-        if (workspaceSelect && taskSelect && startForm) {
-            var syncTimerForm = function () {
-                var selected = workspaceSelect.options[workspaceSelect.selectedIndex];
-                var workspaceId = workspaceSelect.value;
-                startForm.action = selected.dataset.startUrl;
-
-                taskSelect.querySelectorAll('option[data-workspace-id]').forEach(function (option) {
-                    var visible = option.dataset.workspaceId === workspaceId;
-                    option.hidden = ! visible;
-                    if (! visible && option.selected) {
-                        taskSelect.value = '';
-                    }
-                });
-            };
-
-            workspaceSelect.addEventListener('change', syncTimerForm);
-            syncTimerForm();
-        }
+        if (wsSel) wsSel.addEventListener('change', sync);
+        sync();
     });
 </script>
 

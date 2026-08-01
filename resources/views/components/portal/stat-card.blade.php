@@ -19,9 +19,9 @@
 <{{ $__tag }} @if($href) href="{{ $href }}" @endif
     {{ $attributes->merge(['class' => "bg-white p-5 rounded-xl border border-border-subtle shadow-sm flex flex-col transition-all group {$__hoverBorder} hover:shadow-md" . ($href ? ' cursor-pointer' : '')]) }}>
 
-    {{-- Label + icon row --}}
+    {{-- Label + icon row. Phase 28: uppercase is reserved for status badges only. --}}
     <div class="flex items-center justify-between mb-2">
-        <span class="text-[11px] font-semibold text-outline uppercase tracking-widest">{{ $label }}</span>
+        <span class="text-[12px] font-medium text-outline">{{ $label }}</span>
         @if ($icon)
             <span class="material-symbols-outlined text-{{ $accent }} transition-opacity"
                   style="font-size:15px;opacity:0.55;">{{ $icon }}</span>

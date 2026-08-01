@@ -44,36 +44,24 @@
     };
 @endphp
 
-    {{-- ── Page header ────────────────────────────────────────────────────── --}}
-    <div class="mb-6">
-        <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-3">
-            <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
-            <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
-            <a href="{{ route('workspace.tasks.index', $workspace) }}" class="hover:text-secondary transition-colors">Kanban Board</a>
-            <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
-            <span class="font-mono text-outline">{{ $task->task_code }}</span>
-        </div>
-        <div class="flex items-start justify-between gap-4">
-            <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $statusCls }}">
-                        {{ $statusLabels[$task->status] ?? ucfirst($task->status) }}
-                    </span>
-                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $priorityCls }}">
-                        {{ ucfirst($task->priority) }}
-                    </span>
-                </div>
-                <h1 class="font-headline-lg text-headline-lg text-primary leading-tight">{{ $task->title }}</h1>
-            </div>
+    {{-- ── Page header (Phase 28: standard header + single back affordance) ── --}}
+    <x-portal.page-header
+        :title="$task->title"
+        :subtitle="$task->task_code . ' · ' . ucfirst($task->priority) . ' priority'
+            . ($task->due_date ? ' · due ' . $task->due_date->format('j M Y') : '')"
+        :badge="$statusLabels[$task->status] ?? ucfirst($task->status)"
+        :badge-type="in_array($task->status, ['blocked','revision_requested']) ? 'warning'
+            : (in_array($task->status, ['approved','closed']) ? 'success' : 'info')"
+        eyebrow="Tasks"
+        :eyebrow-href="route('workspace.tasks.index', $workspace)">
+        <x-slot:actions>
             @if ($canEdit)
-                <a href="{{ route('workspace.tasks.edit', [$workspace, $task]) }}"
-                   class="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/20 transition-all mt-1">
-                    <span class="material-symbols-outlined" style="font-size: 15px;">edit</span>
+                <x-portal.btn variant="secondary" icon="edit" :href="route('workspace.tasks.edit', [$workspace, $task])">
                     Edit Task
-                </a>
+                </x-portal.btn>
             @endif
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-portal.page-header>
 
     {{-- ── Session messages ────────────────────────────────────────────────── --}}
     @if (session('success'))

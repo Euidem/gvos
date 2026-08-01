@@ -11,37 +11,21 @@
         $pendingInviteCount = $invitations->where('status', 'pending')->count();
     @endphp
 
-    {{-- ── Page header ──────────────────────────────────────────────────────── --}}
-    <div class="mb-6">
-        <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-3">
-            <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
-            <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
-            <span>Members</span>
-        </div>
-        <div class="flex items-start justify-between gap-4">
-            <div>
-                <h1 class="font-headline-lg text-headline-lg text-primary">Workspace Members</h1>
-                <p class="text-[12px] text-outline mt-1">
-                    {{ $workspace->name }} &middot; {{ $workspace->workspace_code }}
-                </p>
-            </div>
-            <div class="flex items-center gap-2 mt-1">
-                @if ($canInvite)
-                    <a href="{{ route('workspace.members.invite', $workspace) }}"
-                       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white hover:brightness-110 transition-all"
-                       style="background:#0058be;">
-                        <span class="material-symbols-outlined" style="font-size: 16px;">person_add</span>
-                        Invite
-                    </a>
-                @endif
-                <a href="{{ route('workspace.show', $workspace) }}"
-                   class="inline-flex items-center gap-1.5 text-sm text-secondary hover:brightness-110 transition-all">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
-                    Workspace
-                </a>
-            </div>
-        </div>
-    </div>
+    {{-- ── Page header (Phase 28: module nav lives in the shell tab bar) ─── --}}
+    <x-portal.page-header
+        title="Team"
+        :subtitle="$activeMembers->count() . ' ' . Str::plural('person', $activeMembers->count()) . ' with access'
+            . ($pendingInviteCount > 0 ? ' · ' . $pendingInviteCount . ' invitation' . ($pendingInviteCount === 1 ? '' : 's') . ' pending' : '')"
+        :eyebrow="$workspace->name"
+        :eyebrow-href="route('workspace.show', $workspace)">
+        <x-slot:actions>
+            @if ($canInvite)
+                <x-portal.btn variant="primary" icon="person_add" :href="route('workspace.members.invite', $workspace)">
+                    Invite Team Member
+                </x-portal.btn>
+            @endif
+        </x-slot:actions>
+    </x-portal.page-header>
 
     {{-- ── Flash ────────────────────────────────────────────────────────────── --}}
     @if (session('success'))

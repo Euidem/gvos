@@ -5,6 +5,91 @@ Run the relevant checklist at the end of each phase before requesting approval t
 
 ---
 
+## Phase 28 (2026-08-01) — Full Non-Admin Portal UX Rebuild
+
+Run after `git pull` + `composer install --no-dev --optimize-autoloader` + `php artisan optimize:clear` + `php artisan view:cache`.
+Test at **1440 × 900** and **390 × 844**.
+
+### A. Shell — every role
+- [ ] Sidebar shows **only** items that role can use (compare against the matrix in `docs/PORTAL_UX_REDESIGN_SPEC.md` §3.2).
+- [ ] Sidebar has **no** "Quick Action", "Settings" duplicate, or disabled "Support" item.
+- [ ] Top bar has **no** search box and **no** "Workspace / Messages / Files" links.
+- [ ] Clients, business staff, observers and leads **do not** see a "Clock In" button anywhere in the shell.
+- [ ] The active sidebar item is visually obvious and carries `aria-current="page"`.
+- [ ] Group labels ("Work", "Communication", "Account") are sentence case, not uppercase blocks.
+- [ ] Notification count appears both on the sidebar item and the bell, and matches.
+- [ ] Running-timer chip appears in the top bar **only** while a timer is running, and ticks live.
+- [ ] Sign out works from the sidebar footer.
+
+### B. Workspace navigation
+- [ ] Inside any workspace, the top bar shows "Workspace / {name}".
+- [ ] A tab bar appears under the header: Overview · Tasks · Messages · Files · Time · Reports · Team · Billing · Vault.
+- [ ] Talent: **no Billing tab**. Observer: **no Time, Reports, Billing or Vault tabs**.
+- [ ] Clicking any tab navigates without going via the overview first.
+- [ ] No tab leads to a 403 for any role.
+- [ ] On mobile the tab strip scrolls horizontally and the active tab is scrolled into view.
+
+### C. Dashboards
+- [ ] **Talent**: timer and the single highest-priority task are both above the fold; the task is named and links to itself.
+- [ ] **Manager**: the review queue is the first block and lists *actual* time entries / tasks / reports, each linking to that item.
+- [ ] **Manager**: "Working now" shows live running timers, or an honest empty state.
+- [ ] **Individual client**: "Waiting for your approval" appears first when items exist; each links to the task.
+- [ ] **Business admin**: company name is the page title; billing appears **once**; team access link present.
+- [ ] **Business staff**: no billing, no vault, no member administration.
+- [ ] **Observer**: no "For approval" block and no approve affordances anywhere.
+- [ ] **Active lead**: "What happens next" is the first block with a single clear next step; no full client navigation.
+- [ ] No dashboard opens with a row of four generic statistic cards.
+- [ ] Supporting metrics render as a caption strip at the **bottom**, not as bordered cards at the top.
+
+### D. Restricted and empty states
+- [ ] **Restricted billing client**: the restriction is stated **once**, at the top. Count the occurrences — it must not repeat.
+- [ ] **Suspended user**: lands on the account status page and cannot reach any dashboard.
+- [ ] A user with no workspaces sees helpful empty states, not zero-value cards.
+- [ ] No empty state contains hedging copy such as "…if this page is empty".
+
+### E. Concrete bug regressions
+- [ ] No literal `&amp;` is visible anywhere (previously on business admin + staff dashboards).
+- [ ] Every money amount shows a currency (e.g. `USD 1,980.00`) — previously bare `1,980.00`.
+- [ ] No workspace or person name is truncated mid-word in a card ("Executive Support Operat…").
+- [ ] `/settings/notifications` loads (HTTP 200) — it previously returned **500**.
+- [ ] The workspace overview does **not** render a "Billing — Not available for this role" card to talent.
+
+### F. Duplication
+- [ ] On any page, count links to `/workspaces` — the shell should contribute **one**, not five.
+- [ ] Manager dashboard: no "Quick Links" panel repeating sidebar destinations.
+- [ ] Business admin dashboard: no "Quick Actions" panel whose links all resolve to `/workspaces`.
+- [ ] Workspace overview: no more than a couple of links to the task board (previously 8).
+- [ ] Workspace overview has exactly **one** back affordance (previously two).
+
+### G. Workflows still work (critical — nothing below may regress)
+- [ ] Login redirects: admin → `/admin`; every non-admin → their role dashboard, never `/admin`.
+- [ ] Talent clock in → timer starts; chip appears in top bar.
+- [ ] Talent "Finish & Submit Session" → time log submitted.
+- [ ] Talent "Pause & save as draft" → log saved as draft.
+- [ ] Task drag on the Kanban board still changes status (SortableJS intact).
+- [ ] Task status transition buttons on task detail still work per role.
+- [ ] Task comment posts; internal comments hidden from clients and talent.
+- [ ] Chat message sends; internal messages hidden from clients and talent.
+- [ ] File upload succeeds; download succeeds; internal file hidden from clients.
+- [ ] Manager reviews/approves/rejects a time log.
+- [ ] Report generate → edit → publish; clients see published only; internal notes hidden.
+- [ ] Billing restriction still blocks the restricted client from workspace modules.
+- [ ] Vault reveal still requires POST + CSRF, is rate limited, and is logged.
+- [ ] Invitation create / resend / revoke still work; no token is ever displayed.
+- [ ] Notifications are user-scoped; mark read and mark all read work.
+
+### H. Visual QA at both viewports
+- [ ] No horizontal overflow on any page (`document.documentElement.scrollWidth === clientWidth`).
+- [ ] No clipped controls; no card with its value pushed to the bottom.
+- [ ] No large unexplained blank areas.
+- [ ] Flash messages appear once, above content, and do not compete with the page title.
+- [ ] Text contrast is legible throughout.
+- [ ] No `GetVirtual` text anywhere.
+- [ ] No "Phase N" label rendered anywhere.
+- [ ] Every page looks like part of the same product.
+
+---
+
 ## Phase 27 (2026-07-31) — Demo Environment and Team Testing Data
 
 Run after `git pull` + `composer install --no-dev --optimize-autoloader` + `php artisan migrate --force` + `php artisan optimize:clear`.

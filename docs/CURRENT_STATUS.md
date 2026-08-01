@@ -1,7 +1,82 @@
 # GVOS — Current Status
 
-**Last Updated:** 2026-07-31
-**Current Phase:** Phase 27 — Demo Environment Preparation and Team Testing Data — Complete
+**Last Updated:** 2026-08-01
+**Current Phase:** Phase 28 — Full Non-Admin Portal UX Rebuild — Complete
+
+## Phase 28 Status - Complete (2026-08-01)
+
+### Full Non-Admin Portal UX Rebuild
+
+**Goal:** Make the non-admin portal intuitive, visually cohesive and role-aware, so a
+first-time user understands each page within seconds.
+
+> **`docs/PORTAL_UX_REDESIGN_SPEC.md` is now the layout authority for the non-admin portal
+> and supersedes earlier portal layout decisions where they conflict** — including
+> `UI_SOURCE_OF_TRUTH.md` (Stitch as layout source) and Frontend Rules 1, 3, 6 and 9.
+> Stitch remains the reference for colour, typography and card styling, and still governs
+> the auth screens. Filament admin is untouched.
+
+#### What the audit measured (docs/PORTAL_UX_AUDIT.md)
+Measured against the live deployment with the demo accounts:
+- The **shell was identical for all 8 roles** and alone emitted **5 links to `/workspaces`**
+  and 2 to `/profile` on every page — header "Workspace", "Messages" and "Files" all pointed
+  at the same URL, plus a dead "Support" item, a "Quick Action" alias, a non-functional
+  search box and a **"Clock In" button shown to clients, staff, observers and leads**.
+- The manager dashboard carried **11 links to `/workspaces`**; the workspace overview carried
+  **8 links to the same task board**.
+- On mobile a manager scrolled **2.14 screens (1,804 px)** past a decorative capacity meter
+  before reaching the review queue.
+- Concrete bugs: literal `&amp;` rendered as text, money printed with **no currency**, names
+  truncated mid-word, a **"Billing — Not available for this role"** card shown to talent, and
+  a **"For approval"** call to action shown to a read-only observer.
+
+#### What was rebuilt
+- **`app/Support/Portal/PortalNav.php`** — single source of truth for role-aware sidebar
+  groups and workspace tabs. Tab visibility mirrors the real controller gates, so navigation
+  can never lead to a 403.
+- **Shell** — grouped role-aware sidebar, workspace context in the top bar, a **workspace tab
+  bar** (Overview · Tasks · Messages · Files · Time · Reports · Team · Billing · Vault), a
+  running-timer chip shown only while a timer runs, and a usable mobile drawer. All dead and
+  duplicate controls removed.
+- **Components** — new `btn`, `metric-strip`, `attention-item`, `workspace-row`, `section`;
+  `page-header` extended with an eyebrow (the single back affordance) and now emits the page's
+  only `<h1>`.
+- **All six dashboards** rebuilt attention-first. The manager's review queue lists the actual
+  submitted time entries, tasks and unpublished reports, each deep-linked.
+- **Workspace overview and all module pages** — standard headers, module navigation moved into
+  the shell tab bar.
+
+#### Bugs fixed
+- **`/settings/notifications` returned HTTP 500 for every user** — the view called
+  `route('profile.edit')`, which does not exist. Confirmed against the pre-change build and
+  fixed under the "confirmed broken link" allowance. Now returns 200.
+- Literal `&amp;`; money without currency; mid-word truncation; disabled billing card shown to
+  talent; approval CTA shown to observers; dead "GVOS Support" card on the lead dashboard.
+
+#### Verification (executed, not assumed)
+- **143 of 144 page requests returned OK** across all 8 demo roles (the one failure was a
+  client-side curl timeout during first-request compilation; re-verified individually as 200).
+- All 8 non-admin logins landed on their own role dashboard; **none reached `/admin`**.
+- Navigation reachability checked per role: every sidebar and workspace-tab link requested.
+- `view:cache`, `route:cache`, `config:cache` all succeed.
+- **Three regressions I introduced were caught by QA and fixed** — see `docs/PORTAL_UX_QA.md` §4.
+
+> **Visual limitation:** pixel screenshots were unavailable in this environment, so QA was done
+> by measuring the rendered DOM and computed layout in a real browser rather than by visual
+> comparison. Subjective aesthetics still need an owner review pass.
+
+#### Constraints Respected
+- [x] No Phase 29; no new product modules; **no new or renamed routes**; no migrations
+- [x] No changes to permissions, authorization, billing calculations, payment confirmation,
+      vault encryption/reveal, timer logic, report generation/publication, file security or
+      invitation security
+- [x] Route names, form actions, CSRF and method spoofing preserved
+- [x] Filament admin untouched; login redirect logic untouched
+- [x] Visual Repair v3 retained; no `GetVirtual` in visible UI; GVOS naming throughout
+
+---
+
+## Phase 27 Status - Complete (2026-07-31)
 
 ## Phase 27 Status - Complete (2026-07-31)
 

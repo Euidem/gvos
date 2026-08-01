@@ -5,6 +5,34 @@ GVOS is built in phases (Phase 0–18+). Each phase has a clear deliverable and 
 
 ---
 
+## Phase 28 — Full Non-Admin Portal UX Rebuild ✅
+**Status:** Complete (2026-08-01)
+**Goal:** Rework the entire non-admin portal so it is intuitive, visually premium, role-aware and understandable to a first-time user.
+
+### Deliverables
+- [x] `docs/PORTAL_UX_AUDIT.md` — measured audit of every role and page (live deployment + source)
+- [x] `docs/PORTAL_UX_REDESIGN_SPEC.md` — role journeys, IA, design system; **supersedes earlier portal layout decisions**
+- [x] `docs/PORTAL_UX_QA.md` — QA record
+- [x] `app/Support/Portal/PortalNav.php` — role-aware sidebar + workspace tab resolver
+- [x] Shell rebuilt: grouped role-aware sidebar, workspace context, workspace tab bar, running-timer chip, usable mobile drawer
+- [x] Dead/duplicate shell controls removed (Quick Action, Settings alias, Support, search, universal Clock In, mislabelled header links)
+- [x] Shared components: new `btn`, `metric-strip`, `attention-item`, `workspace-row`, `section`; `page-header` extended with eyebrow + `<h1>`
+- [x] All six role dashboards rebuilt attention-first
+- [x] Workspace overview rebuilt; workspace sub-navigation added across all module pages
+- [x] Module page headers standardised
+- [x] Dashboard + workspace-overview queries moved from Blade into controllers with eager loading and limits
+- [x] **Bug fixed:** `/settings/notifications` returned HTTP 500 for every user (`route('profile.edit')` undefined)
+- [x] Rendering bugs fixed: literal `&amp;`, currency printed without a currency, mid-word name truncation
+
+### Constraints Respected
+- No Phase 29; no new product modules; no new routes; no real-time chat, calls, payment gateway or payroll
+- No changes to permissions, authorization, billing calculations, payment confirmation, vault encryption/reveal, timer logic, report generation/publication, file security or invitation security
+- Route names, form actions, CSRF and method spoofing preserved
+- Filament admin untouched; login redirect logic untouched
+- Visual Repair v3 retained; no `GetVirtual` in visible UI
+
+---
+
 ## Phase 27 — Demo Environment Preparation and Team Testing Data ✅
 **Status:** Complete (2026-07-31)
 **Goal:** Prepare GVOS for internal team testing with a clean, realistic and repeatable demo environment with predefined users, workspaces and operational scenarios.

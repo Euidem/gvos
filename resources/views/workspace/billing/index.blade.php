@@ -1,35 +1,17 @@
 <x-layouts.gvos :title="$workspace->name . ' — Billing'">
 
-    {{-- ── Page header ─────────────────────────────────────────────────── --}}
-    <div class="mb-6">
-        <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-3">
-            <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
-            <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
-            <span>Billing</span>
-        </div>
-        <div class="flex items-start justify-between gap-4">
-            <div>
-                <h1 class="font-headline-lg text-headline-lg text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">receipt_long</span>
-                    Billing &amp; Payments
-                </h1>
-                <p class="text-[12px] text-outline mt-1">{{ $workspace->workspace_code }}</p>
-            </div>
-            <div class="flex items-center gap-2 mt-1">
-                <a href="{{ route('workspace.billing.payments', $workspace) }}"
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
-                   style="border-color:#0058be;color:#0058be;">
-                    <span class="material-symbols-outlined" style="font-size: 14px;">payments</span>
-                    Payments
-                </a>
-                <a href="{{ route('workspace.show', $workspace) }}"
-                   class="inline-flex items-center gap-1.5 text-sm text-secondary hover:brightness-110 transition-all">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
-                    Workspace
-                </a>
-            </div>
-        </div>
-    </div>
+    {{-- ── Page header (Phase 28: module nav lives in the shell tab bar) ─── --}}
+    <x-portal.page-header
+        title="Billing"
+        subtitle="Invoices and payments for this workspace."
+        :eyebrow="$workspace->name"
+        :eyebrow-href="route('workspace.show', $workspace)">
+        <x-slot:actions>
+            <x-portal.btn variant="secondary" icon="payments" :href="route('workspace.billing.payments', $workspace)">
+                Payment History
+            </x-portal.btn>
+        </x-slot:actions>
+    </x-portal.page-header>
 
     {{-- ── Phase 18: Billing warning banner ───────────────────────────────── --}}
     @php

@@ -1,200 +1,135 @@
-<x-layouts.gvos title="My Dashboard">
-{{-- Stitch reference: client_dashboard_gvos/code.html (staff variant) --}}
+{{-- Phase 28 — Business client staff / observer overview. Deliberately simpler:
+     no billing, no vault, no member administration. When the user is an observer
+     in every workspace, approval affordances are hidden entirely. --}}
+<x-layouts.gvos title="Overview">
+
 @php
-    $user = auth()->user();
-    $profile = $user->profile;
-    $clientProfile = $user->clientProfile;
-
-    $clientWorkspaceIds = \App\Models\WorkspaceMember::where('user_id', $user->id)
-        ->where('status', 'active')->pluck('workspace_id');
-
-    $myWorkspaces         = \App\Models\Workspace::whereIn('id', $clientWorkspaceIds)
-        ->whereIn('status', ['pending', 'active'])->count();
-    $clientOpenTasks      = \App\Models\WorkspaceTask::whereIn('workspace_id', $clientWorkspaceIds)
-        ->whereIn('status', ['pending', 'in_progress', 'blocked'])->count();
-    $clientSubmittedTasks = \App\Models\WorkspaceTask::whereIn('workspace_id', $clientWorkspaceIds)
-        ->where('status', 'submitted')->count();
-    $publishedReports     = \App\Models\WorkspaceWeeklyReport::whereIn('workspace_id', $clientWorkspaceIds)
-        ->where('status', 'published')->count();
-
-    $name = $profile?->first_name ?? $user->name ?? 'there';
+    $first    = auth()->user()->profile?->first_name ?? explode(' ', auth()->user()->name)[0];
+    $needsYou = $isObserver ? 0 : $awaitingApproval->count();
 @endphp
 
-{{-- Phase 16: onboarding banner --}}
-@php $__obUser = $user; @endphp
+@php $__obUser = auth()->user(); @endphp
 @include('partials.onboarding-banner')
 
-{{-- ── Hero panel ───────────────────────────────────────────────────────── --}}
-<div class="rounded-2xl border border-border-subtle shadow-sm overflow-hidden mb-8"
-     style="background:linear-gradient(135deg,rgba(0,88,190,0.03) 0%,rgba(255,255,255,0) 55%),#fff;">
-    <div class="p-6 lg:p-8">
-        <p class="font-label-md text-label-md text-secondary uppercase tracking-widest mb-2">Your GVOS Workspace Access</p>
-        <h2 class="font-headline-lg text-headline-lg text-on-surface">Welcome back, {{ $name }}</h2>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-2">
-            @if ($myWorkspaces === 0)
-                You have not been added to a workspace yet. Contact your business admin to get access.
-            @elseif ($clientSubmittedTasks > 0)
-                {{ $clientSubmittedTasks }} {{ Str::plural('task', $clientSubmittedTasks) }} pending approval across your {{ Str::plural('workspace', $myWorkspaces) }}.
+<x-portal.page-header
+    title="Hello, {{ $first }}"
+    :subtitle="$isObserver
+        ? 'You have view-only access to your team\'s workspaces.'
+        : ($needsYou > 0
+            ? $needsYou . ' ' . Str::plural('item', $needsYou) . ' ' . ($needsYou === 1 ? 'needs' : 'need') . ' your review.'
+            : ($workspaces->isEmpty()
+                ? 'You have not been added to a workspace yet.'
+                : 'Nothing needs your attention right now.'))"
+    :divider="false" />
+
+@if (session('success'))
+    <x-portal.alert type="success">{{ session('success') }}</x-portal.alert>
+@elseif (session('error'))
+    <x-portal.alert type="error">{{ session('error') }}</x-portal.alert>
+@endif
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+
+    <div class="lg:col-span-2 space-y-5">
+
+        {{-- Observers never see an approval call to action. --}}
+        @if ($needsYou > 0)
+            <x-portal.section title="Waiting for your review" flush>
+                <div class="divide-y divide-border-subtle">
+                    @foreach ($awaitingApproval as $t)
+                        <x-portal.attention-item
+                            :href="route('workspace.tasks.show', [$t->workspace_id, $t])"
+                            :title="$t->title"
+                            :meta="$t->workspace?->name . ' · completed by ' . ($t->assignedTo?->name ?? 'the team')"
+                            icon="rate_review"
+                            tone="warn"
+                            action="Review" />
+                    @endforeach
+                </div>
+            </x-portal.section>
+        @endif
+
+        <x-portal.section title="Latest progress report">
+            @if ($latestReport)
+                <p class="text-[12px] text-outline mb-1">
+                    {{ $latestReport->workspace?->name }} · {{ $latestReport->weekLabel() }}
+                </p>
+                <p class="text-[14px] text-on-surface leading-relaxed max-w-[720px]">
+                    {{ Str::limit($latestReport->summary, 300) }}
+                </p>
+                <x-portal.btn variant="primary" icon="summarize" class="mt-4"
+                              :href="route('workspace.reports.show', [$latestReport->workspace_id, $latestReport])">
+                    Read Full Report
+                </x-portal.btn>
             @else
-                {{ $myWorkspaces }} active {{ Str::plural('workspace', $myWorkspaces) }}. View updates, files, tasks and reports shared with your team.
+                <x-portal.empty-state
+                    compact
+                    icon="summarize"
+                    title="No report published yet"
+                    message="Weekly progress reports appear here once your GVOS team publishes the first one." />
             @endif
-        </p>
-        @if ($myWorkspaces > 0)
-            <div class="flex flex-wrap gap-3 mt-4">
-                <a href="{{ route('workspace.index') }}"
-                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:brightness-110 shadow-sm transition-all">
-                    <span class="material-symbols-outlined" style="font-size:16px;">workspaces</span>
-                    My Workspaces
+        </x-portal.section>
+
+        @if ($inProgress->isNotEmpty())
+            <x-portal.section title="Being worked on now" flush>
+                <div class="divide-y divide-border-subtle">
+                    @foreach ($inProgress as $t)
+                        <x-portal.attention-item
+                            :href="route('workspace.tasks.show', [$t->workspace_id, $t])"
+                            :title="$t->title"
+                            :meta="$t->workspace?->name . ($t->due_date ? ' · expected ' . $t->due_date->format('j M') : '')"
+                            :tone="$t->status === 'in_progress' ? 'info' : 'default'"
+                            :badge="$t->status === 'in_progress' ? 'In progress' : 'Not started'"
+                            action="View" />
+                    @endforeach
+                </div>
+            </x-portal.section>
+        @endif
+    </div>
+
+    <div class="space-y-5">
+        <x-portal.section title="Your workspaces" flush>
+            @if ($workspaces->isEmpty())
+                <x-portal.empty-state
+                    compact
+                    icon="workspaces"
+                    title="No access yet"
+                    message="Your account administrator will give you access to a workspace." />
+            @else
+                <div class="divide-y divide-border-subtle">
+                    @foreach ($workspaces as $w)
+                        <x-portal.workspace-row
+                            :workspace="$w"
+                            :meta="$w->primaryTalent ? 'Specialist · ' . $w->primaryTalent->name : null" />
+                    @endforeach
+                </div>
+            @endif
+        </x-portal.section>
+
+        @if ($latestMessage)
+            <x-portal.section title="From your team">
+                <p class="text-[12px] text-outline mb-1.5">
+                    {{ $latestMessage->user?->name }} · {{ $latestMessage->workspace?->name }}
+                </p>
+                <p class="text-[13.5px] text-on-surface-variant leading-relaxed">
+                    {{ Str::limit($latestMessage->message, 170) }}
+                </p>
+                <a href="{{ route('workspace.chat.index', $latestMessage->workspace_id) }}"
+                   class="inline-flex items-center gap-1 mt-3 text-[12.5px] font-semibold text-secondary hover:underline">
+                    {{ $isObserver ? 'Open messages' : 'Reply' }}
+                    <span class="material-symbols-outlined" style="font-size:15px;">chevron_right</span>
                 </a>
-                <a href="{{ route('notifications.index') }}"
-                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-label-md text-label-md border border-border-subtle text-on-surface-variant hover:bg-surface-container-low hover:border-secondary/30 transition-all">
-                    <span class="material-symbols-outlined" style="font-size:16px;">notifications</span>
-                    Notifications
-                </a>
-            </div>
+            </x-portal.section>
         @endif
     </div>
 </div>
 
-{{-- ── Access stats (4 cards) ──────────────────────────────────────────── --}}
-<section class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-
-    <x-portal.stat-card
-        label="Workspaces"
-        :value="$myWorkspaces"
-        icon="workspaces"
-        accent="secondary"
-        :href="route('workspace.index')"
-        :hint="$myWorkspaces === 0 ? 'Access pending' : 'Active &amp; pending'" />
-
-    <x-portal.stat-card
-        label="Open Tasks"
-        :value="$clientOpenTasks"
-        icon="task_alt"
-        accent="secondary"
-        :hint="$clientOpenTasks === 0 ? 'No active tasks' : 'In progress'" />
-
-    <x-portal.stat-card
-        label="For Approval"
-        :value="$clientSubmittedTasks"
-        icon="pending_actions"
-        accent="status-payment-due"
-        :value-class="$clientSubmittedTasks > 0 ? 'text-status-payment-due' : 'text-primary'"
-        :hint="$clientSubmittedTasks > 0 ? 'Awaiting review' : 'Nothing pending'" />
-
-    <x-portal.stat-card
-        label="Reports"
-        :value="$publishedReports"
-        icon="summarize"
-        accent="status-active"
-        :hint="$publishedReports === 0 ? 'First report pending' : 'Shared with your team'" />
-
-</section>
-
-{{-- ── Workspace list (with quick links per workspace) ───────────────────── --}}
-<x-portal.section-card flush title="Your Workspaces" class="mb-6">
-    <x-slot:actions>
-        @if ($myWorkspaces > 0)
-            <a href="{{ route('workspace.index') }}"
-               class="text-secondary font-label-md text-label-md hover:underline flex items-center gap-1">
-                View all
-                <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
-            </a>
-        @endif
-    </x-slot:actions>
-
-    @if ($myWorkspaces === 0)
-        <x-portal.empty-state
-            compact
-            icon="workspaces"
-            title="No workspaces assigned yet"
-            message="You have not been added to a workspace yet. Contact your business admin to request access." />
-    @else
-        @php
-            $workspaceList = \App\Models\Workspace::whereIn('id', $clientWorkspaceIds)
-                ->whereIn('status', ['pending', 'active'])
-                ->with(['primaryTalent'])
-                ->limit(5)
-                ->get();
-        @endphp
-        <div class="divide-y divide-border-subtle">
-            @foreach ($workspaceList as $ws)
-                <div class="px-card-padding pt-4 pb-3">
-                    {{-- Workspace identity --}}
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                             style="background-color:#0058be;">
-                            {{ strtoupper(substr($ws->name, 0, 2)) }}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <a href="{{ route('workspace.show', $ws) }}"
-                               class="font-body-sm font-semibold text-on-surface hover:text-secondary transition-colors block truncate">
-                                {{ $ws->name }}
-                            </a>
-                            <p class="font-label-md text-[10px] text-outline">
-                                {{ $ws->workspace_code }}
-                                @if ($ws->primaryTalent)
-                                    &middot; {{ $ws->primaryTalent->name }}
-                                @endif
-                            </p>
-                        </div>
-                        <x-portal.status-badge :status="$ws->status" />
-                    </div>
-                    {{-- Quick-link chips --}}
-                    <div class="flex flex-wrap gap-2">
-                        <a href="{{ route('workspace.tasks.index', $ws) }}"
-                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/40 hover:text-secondary transition-all"
-                           style="background:rgba(0,88,190,0.03);">
-                            <span class="material-symbols-outlined" style="font-size:13px;">task_alt</span>
-                            Tasks
-                        </a>
-                        <a href="{{ route('workspace.reports.index', $ws) }}"
-                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/40 hover:text-secondary transition-all"
-                           style="background:rgba(0,88,190,0.03);">
-                            <span class="material-symbols-outlined" style="font-size:13px;">summarize</span>
-                            Reports
-                        </a>
-                        <a href="{{ route('workspace.files.index', $ws) }}"
-                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/40 hover:text-secondary transition-all"
-                           style="background:rgba(0,88,190,0.03);">
-                            <span class="material-symbols-outlined" style="font-size:13px;">folder_open</span>
-                            Files
-                        </a>
-                        <a href="{{ route('workspace.chat.index', $ws) }}"
-                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border-subtle text-on-surface-variant hover:border-secondary/40 hover:text-secondary transition-all"
-                           style="background:rgba(0,88,190,0.03);">
-                            <span class="material-symbols-outlined" style="font-size:13px;">forum</span>
-                            Messages
-                        </a>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    @endif
-</x-portal.section-card>
-
-{{-- ── Quick action cards ───────────────────────────────────────────────── --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <x-portal.action-card
-        :href="route('workspace.index')"
-        icon="workspaces"
-        title="All Workspaces"
-        description="View every workspace your team has access to." />
-    <x-portal.action-card
-        :href="route('notifications.index')"
-        icon="notifications"
-        title="Notifications"
-        description="Stay updated on team activity and workspace changes." />
-    <x-portal.action-card
-        :href="route('workspace.index')"
-        icon="folder_open"
-        title="Shared Files"
-        description="Access documents and deliverables shared with your team. No files have been shared yet if this page is empty." />
-    <x-portal.action-card
-        :href="route('profile.show')"
-        icon="person"
-        title="My Profile"
-        description="Update your personal details and preferences." />
-</div>
+@if ($workspaces->isNotEmpty())
+    <x-portal.metric-strip :metrics="[
+        ['label' => 'Workspaces', 'value' => $workspaces->count()],
+        $needsYou > 0 ? ['label' => 'Needs your review', 'value' => $needsYou, 'tone' => 'warn'] : null,
+        ['label' => 'Being worked on', 'value' => $inProgress->count(), 'tone' => 'muted'],
+    ]" />
+@endif
 
 </x-layouts.gvos>

@@ -1,10 +1,9 @@
 <x-layouts.gvos title="My Profile">
 
     {{-- ── Page header ────────────────────────────────────────────────────────── --}}
-    <div class="mb-6">
-        <h1 class="font-headline-lg text-headline-lg text-primary">My Profile</h1>
-        <p class="text-[12px] text-outline mt-1">Update your personal information and account settings.</p>
-    </div>
+    <x-portal.page-header
+        title="Profile"
+        subtitle="Your details and password." />
 
     {{-- ── Success banners ──────────────────────────────────────────────────── --}}
     @if (session('status') === 'profile-updated')
@@ -73,12 +72,8 @@
                         <span class="material-symbols-outlined" style="font-size:15px;">tune</span>
                         Notification Preferences
                     </a>
-                    <a href="{{ auth()->user()->getDashboardRoute() }}"
-                       class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-secondary hover:brightness-110 transition-all border border-secondary/20"
-                       style="background:rgba(0,88,190,0.04);">
-                        <span class="material-symbols-outlined" style="font-size:15px;">dashboard</span>
-                        Back to Dashboard
-                    </a>
+                    {{-- Phase 28: "Back to Dashboard" removed — the sidebar already
+                         provides it on every page, so this duplicated navigation. --}}
                 </div>
             </div>
         </div>

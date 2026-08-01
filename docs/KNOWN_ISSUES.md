@@ -7,6 +7,31 @@ Severity levels: Critical | High | Medium | Low | Info
 
 ---
 
+## Phase 28 Notes (2026-08-01) — Portal UX redesign
+
+### RESOLVED | Settings | **Critical** | `/settings/notifications` returned HTTP 500 for every user
+**Description:** `resources/views/settings/notifications.blade.php` called `route('profile.edit')`. That route does not exist — `routes/web.php` defines only `profile.show` (GET) and `profile.update` (PUT). Every request to the Notification Settings page threw `RouteNotFoundException` and returned a 500. Confirmed by request against a local build of the pre-Phase-28 code: `settings/notifications -> HTTP 500 … RouteNotFoundException`.
+**Why it was missed:** no automated route-reference check, and the page is reachable only from a secondary link on the profile page.
+**Resolution:** the header was rebuilt with `<x-portal.page-header>` and the eyebrow now points at `route('notifications.index')`. The dead `profile.edit` reference is gone. Fixed under the Phase 28 allowance to repair confirmed broken links.
+
+### Info | UX | Low | Sub-pages keep their own back link
+**Description:** Detail and form pages (invoice detail, report show/create/edit, time-log show/create/edit, vault show/create/edit, member invite, payments) still render their own `arrow_back` link rather than the new page-header eyebrow.
+**Status:** Acceptable — each has exactly one back affordance, satisfying the Phase 28 rule. Converting them to the eyebrow pattern is cosmetic tidy-up for a later pass.
+
+### Info | UX | Low | Workspace-scoped sidebar links use the primary workspace
+**Description:** Sidebar items such as Time, Reports, Messages, Files, Billing and Vault are workspace-scoped. When a user belongs to exactly one workspace they link straight to it; with several they link to the workspace list so the user picks first.
+**Status:** By design. A workspace switcher in the shell would be a better long-term answer but is a new feature and out of Phase 28 scope.
+
+### Info | Performance | Low | Local render times are not representative
+**Description:** Page renders took 15–45 s on the development machine. This is an artefact of running `php artisan serve` against a OneDrive-synced working tree with no opcache — not an application performance problem.
+**Status:** Informational. Production runs on cPanel with opcache and a local filesystem.
+
+### Info | Frontend | Medium | Tailwind is still loaded from the CDN
+**Description:** Phase 28 keeps Visual Repair v3 (CDN Tailwind + CSS token fallbacks + safeguard div) as instructed. The new shell adds hand-written CSS classes (`.gvos-nav-item`, `.gvos-tab`, `.gvos-group-label`) in the layout's `<style>` block rather than relying on CDN JIT, so navigation styling cannot break if the CDN is slow or blocked.
+**Status:** Open by design. Moving to a compiled Vite build remains the right long-term fix and is unchanged from previous phases.
+
+---
+
 ## Phase 27 Notes (2026-07-31) — Demo environment
 
 ### Info | Demo | Low | No `observer` platform role exists in GVOS

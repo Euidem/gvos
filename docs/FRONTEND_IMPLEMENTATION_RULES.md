@@ -1,8 +1,35 @@
 # GVOS — Frontend Implementation Rules
 
 **Created:** 2026-05-31
+**Updated:** 2026-08-01 (Phase 28)
 **Authority:** These rules apply to ALL frontend work from this point forward.
 **Stitch Export Location:** `design-reference/stitch_gvos_operations_platform/`
+
+---
+
+## ⚠ Phase 28 supersedes several rules below
+
+`docs/PORTAL_UX_REDESIGN_SPEC.md` is now the **layout authority for the non-admin
+portal**. Where it conflicts with the rules below, the spec wins. Specifically:
+
+| Rule | Status after Phase 28 |
+|------|----------------------|
+| **Rule 1** (Stitch is the source of truth) | **Superseded for the portal.** Stitch remains a reference for colour, typography and card styling, but it has no role-aware navigation, no workspace sub-navigation and no attention-first dashboards, so it is no longer the layout authority. Still applies to auth screens. |
+| **Rule 3** (same layout shell) | **Updated.** The shell is now role-aware (`App\Support\Portal\PortalNav`) and 260 px wide; header nav links and the search box were removed. |
+| **Rule 5** (typography) | **Updated.** Page titles are 26 px, section headings 15 px. Uppercase is reserved for status badges only. |
+| **Rule 6** (card structure) | **Updated.** Cards are for independent, actionable objects. Collections use list rows; single numbers use `<x-portal.metric-strip>`. Max 6 card containers per page. |
+| **Rule 9** (no breadcrumbs) | **Superseded.** Workspace-scoped pages use a single-level breadcrumb as the page-header eyebrow, replacing the ad-hoc `arrow_back` links. |
+| **Rule 11** (Visual Repair v3) | **Still in force.** Unchanged. |
+| **Rule 16** (prefer portal components) | **Strengthened.** See the expanded component list in `docs/UI_SOURCE_OF_TRUTH.md`. |
+
+New Phase 28 rules:
+
+- **One `<h1>` per page**, rendered by `<x-portal.page-header>`.
+- **One primary button above the fold.** Use `<x-portal.btn variant="primary">` exactly once.
+- **Never render a control the role cannot use** — omit it rather than disabling it.
+- **Never state a condition twice on one page** (billing, restriction, counts).
+- **Always name the item.** "1 item needs review" must link to that item.
+- **Navigation belongs in the shell**, not repeated in page bodies.
 
 ---
 

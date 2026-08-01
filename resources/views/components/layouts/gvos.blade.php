@@ -56,8 +56,8 @@
                         "gutter":            "24px",
                         "input-gap":         "16px",
                         "container-margin":  "32px",
-                        "card-padding":      "24px",
-                        "section-gap":       "40px"
+                        "card-padding":      "20px",
+                        "section-gap":       "32px"
                     },
                     fontFamily: {
                         "headline-lg":        ["Manrope", "sans-serif"],
@@ -72,18 +72,18 @@
                         "sans":               ["Inter", "ui-sans-serif", "system-ui"]
                     },
                     fontSize: {
-                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700", "letterSpacing": "-0.01em"}],
-                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                        "body-lg":     ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "body-md":     ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "body-sm":     ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "label-md":    ["12px", {"lineHeight": "16px", "fontWeight": "600", "letterSpacing": "0.02em"}],
+                        "headline-lg": ["26px", {"lineHeight": "32px", "fontWeight": "700", "letterSpacing": "-0.015em"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700", "letterSpacing": "-0.01em"}],
+                        "body-lg":     ["17px", {"lineHeight": "26px", "fontWeight": "400"}],
+                        "body-md":     ["15px", {"lineHeight": "23px", "fontWeight": "400"}],
+                        "body-sm":     ["13.5px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-md":    ["12.5px", {"lineHeight": "16px", "fontWeight": "600", "letterSpacing": "0.01em"}],
                         "mono-sm":     ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
-                        "display-lg":  ["48px", {"lineHeight": "56px", "fontWeight": "800", "letterSpacing": "-0.02em"}]
+                        "display-lg":  ["40px", {"lineHeight": "48px", "fontWeight": "800", "letterSpacing": "-0.02em"}]
                     },
                     boxShadow: {
-                        "card": "0px 4px 20px rgba(0,0,0,0.04)",
-                        "subtle": "0px 4px 20px rgba(0,0,0,0.04)"
+                        "card": "0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.06)",
+                        "subtle": "0 1px 2px rgba(16,24,40,0.04)"
                     }
                 }
             }
@@ -110,8 +110,8 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .card-lift:hover {
-            transform: translateY(-2px);
-            box-shadow: 0px 8px 24px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(16,24,40,0.08);
         }
         /* ── GVOS Design Token CSS Fallback ────────────────────────────────────
            Ensures GVOS custom Tailwind tokens render even if the CDN JIT misses
@@ -138,8 +138,8 @@
         .text-outline{color:#76777d}
         .text-outline-variant{color:#c6c6cd}
         .border-border-subtle{border-color:#E2E8F0}
-        .shadow-card{box-shadow:0px 4px 20px rgba(0,0,0,.04)}
-        .shadow-subtle{box-shadow:0px 4px 20px rgba(0,0,0,.04)}
+        .shadow-card{box-shadow:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.06)}
+        .shadow-subtle{box-shadow:0 1px 2px rgba(16,24,40,.04)}
         .bg-status-active{background-color:#10B981}.text-status-active{color:#10B981}.border-status-active{border-color:#10B981}
         .bg-status-completed{background-color:#059669}.text-status-completed{color:#059669}.border-status-completed{border-color:#059669}
         .bg-status-payment-due{background-color:#F59E0B}.text-status-payment-due{color:#F59E0B}.border-status-payment-due{border-color:#F59E0B}
@@ -179,14 +179,35 @@
         .active\:scale-\[0\.98\]:active{transform:scale(.98)}
         .active\:scale-95:active{transform:scale(.95)}
         .hover\:bg-secondary\/10:hover{background-color:rgba(0,88,190,.1)}
-        /* ── Mobile sidebar ────────────────────────────────────────────── */
-        @media(max-width:767px){
-            #gvos-sidebar{position:fixed;top:0;left:0;height:100vh;overflow-y:auto;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:60}
+
+        /* ── Phase 28 portal shell ─────────────────────────────────────────── */
+        .gvos-nav-item{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:8px;
+            color:#9aa2b4;transition:background-color .15s ease,color .15s ease;position:relative}
+        .gvos-nav-item:hover{color:#d8e2ff;background-color:rgba(255,255,255,.06)}
+        .gvos-nav-item.is-active{color:#ffffff;background-color:rgba(255,255,255,.10);font-weight:600}
+        .gvos-nav-item.is-active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;
+            width:3px;border-radius:0 3px 3px 0;background:#adc6ff}
+        .gvos-group-label{font-size:11px;font-weight:600;letter-spacing:.04em;color:#5f6879;
+            padding:0 12px;margin:18px 0 6px}
+        /* Workspace tabs */
+        .gvos-tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+        .gvos-tabs::-webkit-scrollbar{display:none}
+        .gvos-tab{display:inline-flex;align-items:center;gap:7px;padding:10px 12px;white-space:nowrap;
+            font-size:13.5px;font-weight:500;color:#5b6472;border-bottom:2px solid transparent;transition:color .15s ease,border-color .15s ease}
+        .gvos-tab:hover{color:#0058be}
+        .gvos-tab.is-active{color:#0058be;border-bottom-color:#0058be;font-weight:600}
+        /* Mobile sidebar */
+        @media(max-width:1023px){
+            #gvos-sidebar{position:fixed;top:0;left:0;height:100dvh;overflow-y:auto;transform:translateX(-100%);
+                transition:transform .26s cubic-bezier(.4,0,.2,1);z-index:60}
             #gvos-sidebar.gvos-sidebar-open{transform:translateX(0)}
-            #gvos-sidebar-backdrop{position:fixed;inset:0;background:rgba(11,15,25,.55);z-index:55;opacity:0;pointer-events:none;transition:opacity .28s ease}
+            #gvos-sidebar-backdrop{position:fixed;inset:0;background:rgba(11,15,25,.5);z-index:55;opacity:0;
+                pointer-events:none;transition:opacity .26s ease}
             #gvos-sidebar-backdrop.gvos-backdrop-visible{opacity:1;pointer-events:auto}
         }
-        @media(min-width:768px){#gvos-menu-btn{display:none}}
+        @media(min-width:1024px){#gvos-menu-btn{display:none}}
+        /* Tap targets on touch devices */
+        @media(max-width:767px){.gvos-nav-item{padding:12px}.gvos-tab{padding:12px 14px}}
     </style>
 </head>
 <body class="bg-background text-on-surface font-body-md h-full" style="background-color:#f7f9fb">
@@ -206,120 +227,93 @@
     font-body-md text-body-md font-body-sm text-body-sm
     transition-transform transition-colors"></div>
 
+@php
+    use App\Support\Portal\PortalNav;
+
+    $__user = auth()->user();
+
+    // Workspace context — set when the current route is workspace-scoped.
+    $__ws     = request()->route('workspace');
+    $__ws     = $__ws instanceof \App\Models\Workspace ? $__ws : null;
+    $__wsRole = ($__ws && $__user) ? $__ws->resolveUserWorkspaceRole($__user) : null;
+    $__wsTabs = ($__ws && $__wsRole && $__wsRole !== 'none') ? PortalNav::workspaceTabs($__ws, $__wsRole) : [];
+
+    $__groups = $__user ? PortalNav::sidebar($__user) : [];
+
+    // Running timer chip — only queried for roles that can actually log time.
+    $__timer = null;
+    if ($__user && $__user->hasAnyRole(['talent', 'line_manager', 'super_admin', 'operations_admin'])) {
+        $__timer = \App\Models\WorkspaceTimeLog::activeTimerFor($__user);
+    }
+
+    $__unread = $__user ? $__user->unreadNotifications()->count() : 0;
+@endphp
+
 <div class="min-h-screen flex">
 
-    {{-- ── Sidebar (Stitch: w-[280px] fixed dark sidebar) ─────────────────── --}}
-    {{-- Note: flex-shrink-0 keeps 280px column without fixed positioning.    --}}
+    {{-- ── Sidebar ──────────────────────────────────────────────────────────── --}}
     {{-- Visual Repair v3: inline style is the structural fallback for #0B0F19 --}}
-    <aside id="gvos-sidebar" class="w-[280px] text-white flex flex-col flex-shrink-0 min-h-screen py-gutter px-4"
+    <aside id="gvos-sidebar" class="w-[260px] text-white flex flex-col flex-shrink-0 min-h-screen py-5 px-3"
            style="background-color:#0B0F19">
 
-        {{-- ── Logo (Stitch: hub icon + GVOS Platform + Enterprise Ops, no border below) --}}
-        <div class="mb-8 px-2 flex items-center gap-3">
-            <div class="w-10 h-10 bg-secondary-container rounded-lg flex items-center justify-center flex-shrink-0">
+        {{-- Brand --}}
+        <a href="{{ $__user ? PortalNav::homeUrl($__user) : url('/') }}"
+           class="mb-2 px-2 flex items-center gap-3 group">
+            <div class="w-9 h-9 bg-secondary-container rounded-lg flex items-center justify-center flex-shrink-0">
                 <span class="material-symbols-outlined text-on-secondary"
-                      style="font-variation-settings: 'FILL' 1; font-size: 20px;">hub</span>
+                      style="font-variation-settings: 'FILL' 1; font-size: 19px;">hub</span>
             </div>
-            <div>
-                <h1 class="font-headline-md text-headline-md font-bold text-secondary-fixed leading-none">GVOS Platform</h1>
-                <p class="font-label-md text-label-md text-on-primary-container">Enterprise Ops</p>
+            <div class="min-w-0">
+                <p class="font-headline-md text-[17px] font-bold text-white leading-none">GVOS</p>
+                @auth
+                    <p class="text-[11px] text-on-primary-container mt-1 truncate">{{ PortalNav::roleLabel($__user) }}</p>
+                @endauth
             </div>
-        </div>
+        </a>
 
-        {{-- ── Navigation ───────────────────────────────────────────────────── --}}
-        @php
-            $dashboardActive = request()->is('/') || request()->is('*/dashboard');
-            $workspaceActive = request()->routeIs('workspace.*');
-            $profileActive   = request()->routeIs('profile.*');
-        @endphp
-
-        {{-- Stitch: active = bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95 --}}
-        {{-- Stitch: inactive = text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors --}}
-        <nav class="flex-1 space-y-1">
-
-            <a href="{{ url('/') }}"
-               class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors
-                      {{ $dashboardActive
-                           ? 'bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95'
-                           : 'text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5' }}">
-                <span class="material-symbols-outlined" style="font-size: 20px;">dashboard</span>
-                <span class="font-label-md text-label-md">Dashboard</span>
-            </a>
-
-            <a href="{{ route('workspace.index') }}"
-               class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors
-                      {{ $workspaceActive
-                           ? 'bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95'
-                           : 'text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5' }}">
-                <span class="material-symbols-outlined" style="font-size: 20px;">workspaces</span>
-                <span class="font-label-md text-label-md">Workspaces</span>
-            </a>
-
-            <a href="{{ route('profile.show') }}"
-               class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors
-                      {{ $profileActive
-                           ? 'bg-white/10 border-l-4 border-secondary-fixed text-secondary-fixed-dim font-bold active:scale-95'
-                           : 'text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5' }}">
-                <span class="material-symbols-outlined" style="font-size: 20px;">person</span>
-                <span class="font-label-md text-label-md">My Profile</span>
-            </a>
-
+        @auth
+        {{-- Navigation groups --}}
+        <nav class="flex-1 overflow-y-auto mt-4 -mx-1 px-1">
+            @foreach ($__groups as $__group)
+                @if ($__group['label'])
+                    <p class="gvos-group-label">{{ $__group['label'] }}</p>
+                @endif
+                <div class="space-y-0.5">
+                    @foreach ($__group['items'] as $__item)
+                        <a href="{{ $__item['href'] }}"
+                           class="gvos-nav-item {{ $__item['active'] ? 'is-active' : '' }}"
+                           @if ($__item['active']) aria-current="page" @endif>
+                            <span class="material-symbols-outlined flex-shrink-0" style="font-size:19px;">{{ $__item['icon'] }}</span>
+                            <span class="text-[13.5px] leading-none">{{ $__item['label'] }}</span>
+                            @if ($__item['label'] === 'Notifications' && $__unread > 0)
+                                <span class="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold leading-none text-white"
+                                      style="background-color:#EF4444;">{{ $__unread > 9 ? '9+' : $__unread }}</span>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            @endforeach
         </nav>
 
-        {{-- ── Sidebar footer (Stitch: border-t → Quick Action → Settings → Support → Profile card) --}}
-        @auth
-        <div class="mt-auto pt-gutter border-t border-white/10 space-y-1">
-
-            {{-- Quick Action button (Stitch: bg-secondary rounded-xl with add icon) --}}
-            {{-- Routes to workspace index as the primary action entry point --}}
-            <a href="{{ route('workspace.index') }}"
-               class="w-full flex items-center justify-center gap-2 bg-secondary text-on-secondary py-3 rounded-xl font-label-md text-label-md mb-5 hover:brightness-110 transition-all">
-                <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
-                Quick Action
-            </a>
-
-            {{-- Settings → Profile in GVOS context --}}
-            <a href="{{ route('profile.show') }}"
-               class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5 transition-colors">
-                <span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
-                <span class="font-label-md text-label-md">Settings</span>
-            </a>
-
-            {{-- Support (placeholder — no support portal in scope yet) --}}
-            <div class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-surface-variant opacity-40 cursor-not-allowed select-none"
-                 title="Support portal coming soon">
-                <span class="material-symbols-outlined" style="font-size: 20px;">help</span>
-                <span class="font-label-md text-label-md">Support</span>
-            </div>
-
-            {{-- User profile card (Stitch: bg-white/5 rounded-xl, avatar initial, name, role) --}}
-            <div class="flex items-center gap-3 px-3 py-4 mt-3 bg-white/5 rounded-xl">
-                <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center
-                            text-on-secondary text-sm font-bold flex-shrink-0 border border-secondary-fixed/30">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+        {{-- Account footer --}}
+        <div class="mt-4 pt-4 border-t border-white/10">
+            <div class="flex items-center gap-3 px-2 py-2">
+                <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center
+                            text-on-secondary text-[12px] font-bold flex-shrink-0">
+                    {{ strtoupper(substr($__user->name, 0, 1)) }}
                 </div>
                 <div class="overflow-hidden flex-1 min-w-0">
-                    <p class="font-label-md text-label-md text-white truncate leading-snug">
-                        {{ auth()->user()->name }}
-                    </p>
-                    <p class="text-[10px] text-on-primary-container truncate uppercase tracking-wider mt-0.5">
-                        {{ str_replace('_', ' ', auth()->user()->getGvosRoleName()) }}
-                    </p>
+                    <p class="text-[13px] font-medium text-white truncate leading-tight">{{ $__user->name }}</p>
+                    <p class="text-[11px] text-on-primary-container truncate">{{ $__user->email }}</p>
                 </div>
             </div>
-
-            {{-- Sign out --}}
             <form method="POST" action="{{ route('logout') }}" class="mt-1">
                 @csrf
-                <button type="submit"
-                        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
-                               text-on-surface-variant hover:text-secondary-fixed hover:bg-white/5
-                               transition-colors text-left">
-                    <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
-                    <span class="font-label-md text-label-md">Sign Out</span>
+                <button type="submit" class="gvos-nav-item w-full text-left">
+                    <span class="material-symbols-outlined flex-shrink-0" style="font-size:19px;">logout</span>
+                    <span class="text-[13.5px] leading-none">Sign out</span>
                 </button>
             </form>
-
         </div>
         @endauth
 
@@ -331,99 +325,81 @@
     {{-- ── Main content column ─────────────────────────────────────────────── --}}
     <div class="flex-1 flex flex-col min-w-0">
 
-        {{-- ── Top header (Stitch: h-16 surface-container-lowest, GVOS brand + search | nav + actions) --}}
-        <header class="sticky top-0 h-16 bg-surface-container-lowest border-b border-border-subtle shadow-sm
-                       px-gutter flex items-center justify-between z-40"
+        {{-- ── Top bar: context on the left, status on the right ───────────── --}}
+        <header class="sticky top-0 h-14 bg-surface-container-lowest border-b border-border-subtle
+                       px-4 sm:px-6 flex items-center justify-between gap-3 z-40"
                 style="background-color:#ffffff">
 
-            {{-- Left: hamburger (mobile) + GVOS bold brand text + search bar --}}
-            <div class="flex items-center gap-3 md:gap-8">
+            <div class="flex items-center gap-2 min-w-0">
                 <button id="gvos-menu-btn" type="button" onclick="gvosToggleSidebar()"
-                        class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors flex-shrink-0"
+                        class="p-2 -ml-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors flex-shrink-0"
                         aria-label="Open navigation menu">
                     <span class="material-symbols-outlined" style="font-size:22px;">menu</span>
                 </button>
-                <span class="font-headline-md text-headline-md font-black text-secondary leading-none">GVOS</span>
-                <div class="relative hidden lg:block">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline"
-                          style="font-size: 18px;">search</span>
-                    <input type="text"
-                           class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 w-64
-                                  font-body-sm text-body-sm focus:ring-2 focus:ring-secondary transition-all outline-none"
-                           placeholder="Search workspace...">
+                {{-- Current location. Workspace context takes priority over page title. --}}
+                <div class="min-w-0">
+                    @if ($__ws)
+                        <p class="text-[11px] text-outline leading-none mb-0.5">Workspace</p>
+                        <p class="text-[14px] font-semibold text-on-surface truncate leading-tight">{{ $__ws->name }}</p>
+                    @else
+                        <p class="text-[14px] font-semibold text-on-surface truncate leading-tight">{{ $title }}</p>
+                    @endif
                 </div>
             </div>
 
-            {{-- Right: nav links + icons + Clock In --}}
             @auth
-            @php
-                $headerActiveTimer = \App\Models\WorkspaceTimeLog::activeTimerFor(auth()->user());
-                $headerTimerUrl = $headerActiveTimer?->workspace
-                    ? route('workspace.time-logs.show', [$headerActiveTimer->workspace, $headerActiveTimer])
-                    : (auth()->user()->hasRole('talent') ? route('talent.dashboard') : route('workspace.index'));
-                $notificationUnreadCount = auth()->user()->unreadNotifications()->count();
-            @endphp
-            <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2 flex-shrink-0">
 
-                {{-- Quick nav links (Stitch: Workspace active, Messages + Files as hints) --}}
-                <nav class="hidden md:flex items-center gap-5">
-                    <a href="{{ route('workspace.index') }}"
-                       class="font-label-md text-label-md transition-all pb-0.5
-                              {{ $workspaceActive
-                                   ? 'text-secondary border-b-2 border-secondary font-bold'
-                                   : 'text-outline hover:text-primary' }}">
-                        Workspace
-                    </a>
-                    {{-- Messages and Files route to workspace list — universal context not available in shared layout --}}
-                    <a href="{{ route('workspace.index') }}"
-                       class="font-label-md text-label-md text-outline hover:text-primary transition-all"
-                       title="Access messages from your workspace">
-                        Messages
-                    </a>
-                    <a href="{{ route('workspace.index') }}"
-                       class="font-label-md text-label-md text-outline hover:text-primary transition-all"
-                       title="Access files from your workspace">
-                        Files
-                    </a>
-                </nav>
-
-                {{-- Notifications bell --}}
-                <a href="{{ route('notifications.index') }}"
-                        class="relative p-2 text-outline hover:bg-surface-container-low rounded-full transition-all"
-                        title="Notifications">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
-                    @if ($notificationUnreadCount > 0)
-                        <span class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-status-blocked px-1.5 text-[10px] font-bold leading-none text-white">
-                            {{ $notificationUnreadCount > 9 ? '9+' : $notificationUnreadCount }}
+                {{-- Running timer chip — shown only when a timer is genuinely running --}}
+                @if ($__timer && $__timer->workspace)
+                    <a href="{{ route('workspace.time-logs.show', [$__timer->workspace, $__timer]) }}"
+                       class="hidden sm:inline-flex items-center gap-2 pl-2.5 pr-3 py-1.5 rounded-full text-[12.5px] font-semibold transition-all hover:brightness-105"
+                       style="background:rgba(16,185,129,0.10);color:#047857;border:1px solid rgba(16,185,129,0.25);"
+                       title="You have a work session running">
+                        <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#10B981;"></span>
+                        <span class="js-running-timer font-mono-sm" data-started-at="{{ $__timer->started_at?->toIso8601String() }}">
+                            {{ $__timer->durationForHumans() }}
                         </span>
+                    </a>
+                @endif
+
+                {{-- Notifications --}}
+                <a href="{{ route('notifications.index') }}"
+                   class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors"
+                   aria-label="Notifications{{ $__unread > 0 ? ' (' . $__unread . ' unread)' : '' }}">
+                    <span class="material-symbols-outlined" style="font-size:21px;">notifications</span>
+                    @if ($__unread > 0)
+                        <span class="absolute right-1 top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold leading-none text-white"
+                              style="background-color:#EF4444;">{{ $__unread > 9 ? '9+' : $__unread }}</span>
                     @endif
                 </a>
-
-                {{-- Vertical divider --}}
-                <div class="h-6 w-px bg-border-subtle"></div>
-
-                {{-- Clock In button --}}
-                {{-- Active timer entry point --}}
-                <a href="{{ $headerTimerUrl }}"
-                   class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md text-label-md hover:brightness-110 transition-all inline-flex items-center gap-2"
-                   title="{{ $headerActiveTimer ? 'View your active timer' : 'Go to your workspace to log time' }}">
-                    @if ($headerActiveTimer)
-                        <span class="material-symbols-outlined" style="font-size:15px;">timer</span>
-                        Timer Running
-                    @else
-                        Clock In
-                    @endif
-                </a>
-
             </div>
             @endauth
 
         </header>
 
+        {{-- ── Workspace sub-navigation (only inside a workspace) ──────────── --}}
+        @if ($__wsTabs)
+            <div class="bg-surface-container-lowest border-b border-border-subtle px-4 sm:px-6 sticky top-14 z-30"
+                 style="background-color:#ffffff">
+                <div class="max-w-[1280px] mx-auto">
+                    <nav class="gvos-tabs" aria-label="Workspace sections">
+                        @foreach ($__wsTabs as $__tab)
+                            <a href="{{ $__tab['href'] }}"
+                               class="gvos-tab {{ $__tab['active'] ? 'is-active' : '' }}"
+                               @if ($__tab['active']) aria-current="page" @endif>
+                                <span class="material-symbols-outlined" style="font-size:17px;">{{ $__tab['icon'] }}</span>
+                                {{ $__tab['label'] }}
+                            </a>
+                        @endforeach
+                    </nav>
+                </div>
+            </div>
+        @endif
+
         {{-- ── Page content --}}
-        {{-- Responsive gutters + centered max-width keep content readable on wide screens. --}}
-        <main class="flex-1 p-4 sm:p-6 lg:p-8" style="background-color:#f7f9fb">
-            <div class="max-w-[1440px] mx-auto w-full">
+        <main class="flex-1 px-4 py-6 sm:px-6 sm:py-7 lg:px-8" style="background-color:#f7f9fb">
+            <div class="max-w-[1280px] mx-auto w-full">
                 {{-- Global flash stack (status / warning). success+error stay page-local. --}}
                 <x-portal.flash />
                 {{ $slot }}
@@ -445,8 +421,25 @@
     }
     document.addEventListener('DOMContentLoaded',function(){
         document.querySelectorAll('#gvos-sidebar a').forEach(function(a){
-            a.addEventListener('click',function(){if(window.innerWidth<768)gvosCloseSidebar();});
+            a.addEventListener('click',function(){if(window.innerWidth<1024)gvosCloseSidebar();});
         });
+        document.addEventListener('keydown',function(e){if(e.key==='Escape')gvosCloseSidebar();});
+
+        // Live tick for any running-timer element (shell chip + page widgets).
+        function fmt(s){
+            var t=Math.max(0,Math.floor((Date.now()-new Date(s).getTime())/1000));
+            return String(Math.floor(t/3600)).padStart(2,'0')+':'+
+                   String(Math.floor((t%3600)/60)).padStart(2,'0')+':'+
+                   String(t%60).padStart(2,'0');
+        }
+        document.querySelectorAll('.js-running-timer[data-started-at]').forEach(function(el){
+            var tick=function(){el.textContent=fmt(el.dataset.startedAt);};
+            tick(); setInterval(tick,1000);
+        });
+
+        // Keep the active workspace tab in view on small screens.
+        var tabs=document.querySelector('.gvos-tabs .is-active');
+        if(tabs&&tabs.scrollIntoView){tabs.scrollIntoView({inline:'center',block:'nearest'});}
     });
 </script>
 </body>

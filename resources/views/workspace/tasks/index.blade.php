@@ -102,48 +102,21 @@
     {{-- ── Toast mount ────────────────────────────────────────────────────── --}}
     <div id="kanban-toast"></div>
 
-    {{-- ── Page header ──────────────────────────────────────────────────── --}}
-    <div class="mb-5">
-        <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-3">
-            <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
-            <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
-            <span>Kanban Board</span>
-        </div>
-        <div class="flex items-start justify-between gap-4">
-            <div>
-                <h1 class="font-headline-lg text-headline-lg text-primary">Kanban Board</h1>
-                <p class="text-[12px] text-outline mt-0.5">
-                    <span id="kanban-total-count">{{ $tasks->count() }}</span>
-                    task{{ $tasks->count() !== 1 ? 's' : '' }}
-                    &middot; {{ $workspace->workspace_code }}
-                    @if (in_array($role, $draggableRoles))
-                        &middot; <span style="color:#0058be;">Drag cards to change status</span>
-                    @endif
-                </p>
-                {{-- PART I: debug role line — visible only for admin / workspace_admin / manager --}}
-                @if (!empty($showDebugRole))
-                    <p class="text-xs mt-1" style="color:#9CA3AF;">
-                        Task role: <span style="font-weight:600; color:#6B7280;">{{ $effectiveRole ?? $role }}</span>
-                    </p>
-                @endif
-            </div>
-            <div class="flex items-center gap-2 mt-1">
-                @if ($canCreate)
-                    <a href="{{ route('workspace.tasks.create', $workspace) }}"
-                       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:brightness-110"
-                       style="background:#0058be;">
-                        <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
-                        New Task
-                    </a>
-                @endif
-                <a href="{{ route('workspace.show', $workspace) }}"
-                   class="inline-flex items-center gap-1.5 text-sm text-secondary hover:brightness-110 transition-all">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
-                    Workspace
-                </a>
-            </div>
-        </div>
-    </div>
+    {{-- ── Page header (Phase 28: standard header; module nav is in the shell tab bar) --}}
+    <x-portal.page-header
+        title="Tasks"
+        :subtitle="$tasks->count() . ' ' . Str::plural('task', $tasks->count())
+            . (in_array($role, $draggableRoles) ? ' · drag a card to change its status' : '')"
+        :eyebrow="$workspace->name"
+        :eyebrow-href="route('workspace.show', $workspace)">
+        <x-slot:actions>
+            @if ($canCreate)
+                <x-portal.btn variant="primary" icon="add" :href="route('workspace.tasks.create', $workspace)">
+                    New Task
+                </x-portal.btn>
+            @endif
+        </x-slot:actions>
+    </x-portal.page-header>
 
     {{-- ── Session flash ──────────────────────────────────────────────────── --}}
     @if (session('success'))

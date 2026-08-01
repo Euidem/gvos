@@ -3,26 +3,15 @@
     <div class="max-w-4xl mx-auto">
 
         {{-- ── Page header ────────────────────────────────────────────────── --}}
-        <div class="flex items-start justify-between gap-4 mb-6">
-            <div>
-                <h1 class="font-headline-lg text-headline-lg text-primary">Notification Settings</h1>
-                <p class="text-[12px] text-outline mt-1">
-                    Choose which GVOS updates appear in-app and which can also be emailed.
-                </p>
-            </div>
-            <div class="flex items-center gap-2 mt-1">
-                <a href="{{ route('notifications.index') }}"
-                   class="inline-flex items-center gap-1.5 rounded-lg border border-border-subtle bg-white px-3 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-all">
-                    <span class="material-symbols-outlined" style="font-size:16px;">notifications</span>
-                    Notification Inbox
-                </a>
-                <a href="{{ route('profile.edit') }}"
-                   class="inline-flex items-center gap-1.5 text-sm text-secondary hover:brightness-110 transition-all">
-                    <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
-                    Profile
-                </a>
-            </div>
-        </div>
+        {{-- Phase 28 bugfix: this block previously called route('profile.edit'),
+             which is not a defined route (only profile.show / profile.update
+             exist). Every request to this page threw RouteNotFoundException and
+             returned HTTP 500. The eyebrow now links to the real profile route. --}}
+        <x-portal.page-header
+            title="Notification Settings"
+            subtitle="Choose which GVOS updates appear in the app, and which are also emailed to you."
+            eyebrow="Notifications"
+            :eyebrow-href="route('notifications.index')" />
 
         <div class="space-y-5">
 

@@ -1,263 +1,193 @@
-<x-layouts.gvos title="Welcome to GVOS">
-{{-- Stitch reference: lead_dashboard_gvos_1/code.html --}}
+{{-- Phase 28 — Active lead. Deliberately narrow: status, next step, what we need
+     from you, and how to proceed. No full client workspace navigation. --}}
+<x-layouts.gvos title="My Request">
+
 @php
-    $user    = auth()->user();
-    $profile = $user->profile;
+    $first  = auth()->user()->profile?->first_name ?? explode(' ', auth()->user()->name)[0];
+    $status = $leadRequest?->status;
 
-    $trial       = \App\Models\Trial::where('active_lead_user_id', $user->id)->latest()->first();
-    $leadRequest = $trial?->leadRequest
-        ?? \App\Models\LeadRequest::where('email', $user->email)->latest()->first();
-    $estimate    = $trial?->priceEstimate ?? $leadRequest?->latestAcceptedEstimate();
+    /* One clear "next step" per pipeline stage. */
+    [$stepTitle, $stepBody, $stepAction, $stepHref] = match (true) {
+        $trial && $trial->isActive() && $workspace => [
+            'Your trial is running',
+            'Work is underway in your trial workspace. Review what the team has produced and share feedback in the workspace messages.',
+            'Open Trial Workspace',
+            route('workspace.show', $workspace),
+        ],
+        $status === 'trial_approved' => [
+            'Your trial has been approved',
+            'Your GVOS manager is preparing the workspace. You will be notified as soon as it opens.',
+            null, null,
+        ],
+        $status === 'price_estimated' => [
+            'Review your estimate',
+            'We have prepared a cost estimate for your request. Your GVOS contact will walk you through it and answer any questions.',
+            null, null,
+        ],
+        $status === 'price_accepted' => [
+            'Estimate accepted',
+            'Thank you. We are matching you with a specialist and will confirm your trial shortly.',
+            null, null,
+        ],
+        $status === 'trial_completed', $status === 'payment_pending' => [
+            'Ready to continue',
+            'Your trial is complete. Your GVOS contact will confirm the next steps to move to a full engagement.',
+            null, null,
+        ],
+        $status === 'converted' => [
+            'You are now a GVOS client',
+            'Your full workspace is being set up. Your dashboard will update automatically.',
+            null, null,
+        ],
+        default => [
+            'We have your request',
+            'Your request is with our team. We will be in touch to confirm the details and prepare an estimate.',
+            null, null,
+        ],
+    };
 
-    $workspace = $trial ? \App\Models\Workspace::where('trial_id', $trial->id)->first() : null;
-
-    $hoursRemaining = $trial?->hoursRemaining() ?? 0;
-    $trialStatus    = $trial?->status ?? null;
-    $statusLabels   = [
-        'pending'   => 'Pending',
-        'approved'  => 'Approved',
-        'active'    => 'Active',
-        'completed' => 'Completed',
-        'expired'   => 'Expired',
-        'cancelled' => 'Cancelled',
-        'converted' => 'Converted',
-    ];
-    $trialLabel = $trialStatus ? ($statusLabels[$trialStatus] ?? ucfirst($trialStatus)) : null;
-
-    $name = $profile?->first_name ?? $user->name ?? 'there';
-
-    // Countdown display
-    $hoursLeft   = intdiv($hoursRemaining, 1);
-    $minsLeft    = (int)(($hoursRemaining - $hoursLeft) * 60);
-    $countdownStr = $hoursLeft > 0
-        ? "{$hoursLeft}h {$minsLeft}m remaining"
-        : ($hoursRemaining > 0 ? "{$minsLeft}m remaining" : 'Ended');
+    /* What we still need from the requester, derived from empty fields. */
+    $missing = collect([
+        ! auth()->user()->profile?->phone            ? 'A contact phone number on your profile' : null,
+        ! $leadRequest?->work_description            ? 'A short description of the work you need' : null,
+        ! $leadRequest?->estimated_hours_per_week    ? 'Roughly how many hours per week you need' : null,
+        ! $leadRequest?->preferred_start_date        ? 'Your preferred start date' : null,
+    ])->filter()->values();
 @endphp
 
-{{-- ── Page header + Trial countdown ─────────────────────────────────── --}}
-{{-- Stitch: 3-col grid — header (2 cols) + countdown card (1 col) --}}
-<section class="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6 items-end">
-    <div class="lg:col-span-2">
-        <h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">
-            Welcome back, {{ $name }}.
-        </h2>
-        <p class="font-body-lg text-body-lg text-on-surface-variant">
-            @if ($trial && $trialStatus === 'active')
-                Your trial workspace is active.
-                @if ($hoursRemaining > 0)
-                    {{ $countdownStr }} of your trial.
+<x-portal.page-header
+    title="Hello, {{ $first }}"
+    :subtitle="$leadRequest ? 'Your GVOS request' . ($leadRequest->lead_code ? ' · ' . $leadRequest->lead_code : '') : 'Your GVOS request'"
+    :badge="$leadRequest ? \App\Models\LeadRequest::statusLabels()[$status] ?? null : null"
+    badge-type="info"
+    :divider="false" />
+
+@if (session('success'))
+    <x-portal.alert type="success">{{ session('success') }}</x-portal.alert>
+@endif
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+
+    <div class="lg:col-span-2 space-y-5">
+
+        {{-- 1. Next step — the single most important thing on this page --}}
+        <x-portal.section title="What happens next">
+            <p class="text-[17px] font-semibold text-on-surface leading-snug">{{ $stepTitle }}</p>
+            <p class="text-[14px] text-on-surface-variant mt-2 leading-relaxed max-w-[640px]">{{ $stepBody }}</p>
+
+            @if ($trial && $trial->isActive() && $trial->ends_at)
+                <p class="text-[12.5px] mt-3" style="color:#92400E;">
+                    Trial ends {{ $trial->ends_at->format('j M Y, H:i') }}
+                    ({{ number_format($trial->hoursRemaining(), 0) }} hours remaining)
+                </p>
+            @endif
+
+            @if ($stepAction && $stepHref)
+                <x-portal.btn variant="primary" icon="open_in_new" class="mt-4" :href="$stepHref">
+                    {{ $stepAction }}
+                </x-portal.btn>
+            @endif
+        </x-portal.section>
+
+        {{-- 2. What we need from you --}}
+        @if ($missing->isNotEmpty())
+            <x-portal.section title="What we still need from you">
+                <ul class="space-y-2.5">
+                    @foreach ($missing as $item)
+                        <li class="flex items-start gap-2.5 text-[13.5px] text-on-surface-variant">
+                            <span class="material-symbols-outlined flex-shrink-0 mt-0.5"
+                                  style="font-size:17px;color:#B45309;">radio_button_unchecked</span>
+                            {{ $item }}
+                        </li>
+                    @endforeach
+                </ul>
+                <x-portal.btn variant="secondary" icon="person" class="mt-4" :href="route('profile.show')">
+                    Update My Details
+                </x-portal.btn>
+            </x-portal.section>
+        @endif
+
+        {{-- 3. Your request --}}
+        @if ($leadRequest)
+            <x-portal.section title="Your request">
+                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                    @if ($leadRequest->role_needed)
+                        <div>
+                            <dt class="text-[12px] text-outline">Role requested</dt>
+                            <dd class="text-[13.5px] text-on-surface mt-0.5">
+                                {{ \App\Models\LeadRequest::roleLabels()[$leadRequest->role_needed] ?? $leadRequest->role_needed_other ?? 'Not specified' }}
+                            </dd>
+                        </div>
+                    @endif
+                    @if ($leadRequest->company_name)
+                        <div>
+                            <dt class="text-[12px] text-outline">Organisation</dt>
+                            <dd class="text-[13.5px] text-on-surface mt-0.5">{{ $leadRequest->company_name }}</dd>
+                        </div>
+                    @endif
+                    @if ($leadRequest->estimated_hours_per_week)
+                        <div>
+                            <dt class="text-[12px] text-outline">Hours per week</dt>
+                            <dd class="text-[13.5px] text-on-surface mt-0.5">{{ $leadRequest->estimated_hours_per_week }}</dd>
+                        </div>
+                    @endif
+                    @if ($leadRequest->preferred_start_date)
+                        <div>
+                            <dt class="text-[12px] text-outline">Preferred start</dt>
+                            <dd class="text-[13.5px] text-on-surface mt-0.5">{{ $leadRequest->preferred_start_date->format('j M Y') }}</dd>
+                        </div>
+                    @endif
+                </dl>
+            </x-portal.section>
+        @endif
+    </div>
+
+    <div class="space-y-5">
+
+        @if ($estimate)
+            <x-portal.section title="Your estimate">
+                <p class="font-headline-md text-[22px] font-bold text-on-surface leading-none">
+                    {{ $estimate->currency }} {{ number_format((float) $estimate->estimated_amount, 2) }}
+                </p>
+                <p class="text-[12.5px] text-on-surface-variant mt-1.5">
+                    {{ $estimate->billing_cycle === 'bi_weekly' ? 'every two weeks' : 'per month' }}
+                    @if ($estimate->estimated_hours_per_week)
+                        · {{ $estimate->estimated_hours_per_week }} hours per week
+                    @endif
+                </p>
+                <p class="text-[12px] mt-3">
+                    <x-portal.status-badge :status="$estimate->status" />
+                </p>
+            </x-portal.section>
+        @endif
+
+        @if ($trial)
+            <x-portal.section title="Your GVOS team">
+                <div class="space-y-3">
+                    @if ($trial->assignedManager)
+                        <div>
+                            <p class="text-[12px] text-outline">Your manager</p>
+                            <p class="text-[13.5px] text-on-surface mt-0.5">{{ $trial->assignedManager->name }}</p>
+                        </div>
+                    @endif
+                    @if ($trial->assignedTalent)
+                        <div>
+                            <p class="text-[12px] text-outline">Your specialist</p>
+                            <p class="text-[13.5px] text-on-surface mt-0.5">{{ $trial->assignedTalent->name }}</p>
+                        </div>
+                    @endif
+                </div>
+                @if ($workspace)
+                    <a href="{{ route('workspace.chat.index', $workspace) }}"
+                       class="inline-flex items-center gap-1 mt-4 text-[12.5px] font-semibold text-secondary hover:underline">
+                        Message your team
+                        <span class="material-symbols-outlined" style="font-size:15px;">chevron_right</span>
+                    </a>
                 @endif
-            @elseif ($trial && $trialStatus === 'completed')
-                Your trial has completed. Contact us to discuss next steps.
-            @elseif ($trial && $trialStatus === 'converted')
-                Welcome aboard! Your trial has been converted to a full workspace.
-            @elseif ($leadRequest)
-                Your service request is being reviewed by our team.
-            @else
-                Thank you for your interest in GVOS.
-            @endif
-        </p>
+            </x-portal.section>
+        @endif
+
     </div>
-
-    {{-- Trial countdown card (Stitch: dark bg-primary-container with timer) --}}
-    @if ($trial && $trialStatus === 'active' && $hoursRemaining > 0)
-    <div class="p-card-padding rounded-xl border text-white shadow-lg relative overflow-hidden group"
-         style="background-color:#131b2e;border-color:#131b2e;">
-        <div class="absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-20 blur-2xl"
-             style="background:#0058be;"></div>
-        <div class="flex items-center justify-between mb-2 relative z-10">
-            <span class="font-label-md text-label-md uppercase tracking-widest" style="color:#d8e2ff;">
-                Trial Countdown
-            </span>
-            <span class="material-symbols-outlined" style="color:#d8e2ff;font-size:18px;">timer</span>
-        </div>
-        <div class="relative z-10">
-            <p class="font-bold text-3xl text-secondary-fixed-dim tracking-tight">
-                {{ $countdownStr }}
-            </p>
-        </div>
-        <div class="mt-4 w-full h-1.5 rounded-full relative z-10" style="background:rgba(255,255,255,0.1)">
-            @php $pct = min(100, max(0, 100 - ($hoursRemaining / max(1, 72) * 100))); @endphp
-            <div class="h-full rounded-full" style="width:{{ $pct }}%;background:#d8e2ff;"></div>
-        </div>
-    </div>
-    @elseif ($trial && in_array($trialStatus, ['completed', 'expired']))
-    <div class="p-card-padding rounded-xl border shadow-sm"
-         style="background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.3);">
-        <div class="flex items-center gap-3 mb-2">
-            <span class="material-symbols-outlined text-status-payment-due" style="font-size:20px;">hourglass_empty</span>
-            <p class="font-label-md text-label-md font-semibold text-on-surface">Trial {{ ucfirst($trialStatus) }}</p>
-        </div>
-        <p class="font-body-sm text-body-sm text-on-surface-variant">
-            Contact the GVOS team to discuss continuing your engagement.
-        </p>
-    </div>
-    @endif
-</section>
-
-{{-- ── Bento grid content ──────────────────────────────────────────────── --}}
-<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
-
-    {{-- Service request summary (4 cols) --}}
-    @if ($leadRequest)
-    <div class="md:col-span-4 bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
-        <div class="flex items-center justify-between mb-5">
-            <span class="font-label-md text-[10px] px-2 py-0.5 rounded-full font-bold uppercase"
-                  style="background:rgba(139,92,246,0.1);color:#8B5CF6;">
-                Service Request
-            </span>
-            <span class="material-symbols-outlined text-outline" style="font-size:18px;">verified</span>
-        </div>
-        <div class="space-y-3">
-            @if ($leadRequest->service_type)
-            <div class="flex justify-between items-center">
-                <span class="font-label-md text-label-md text-outline">Service Type</span>
-                <span class="font-label-md text-label-md font-semibold text-on-surface">
-                    {{ Str::limit($leadRequest->service_type, 18) }}
-                </span>
-            </div>
-            @endif
-            @if ($leadRequest->company_name)
-            <div class="flex justify-between items-center">
-                <span class="font-label-md text-label-md text-outline">Company</span>
-                <span class="font-label-md text-label-md font-semibold text-on-surface">
-                    {{ Str::limit($leadRequest->company_name, 18) }}
-                </span>
-            </div>
-            @endif
-            <div class="flex justify-between items-center">
-                <span class="font-label-md text-label-md text-outline">Status</span>
-                @php
-                    $reqStatusColor = match($leadRequest->status) {
-                        'new'              => '#0058be',
-                        'under_review'     => '#8B5CF6',
-                        'trial_approved'   => '#10B981',
-                        'trial_active'     => '#059669',
-                        'payment_pending'  => '#F59E0B',
-                        'converted'        => '#059669',
-                        default            => '#76777d',
-                    };
-                @endphp
-                <span class="font-label-md text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style="color:{{ $reqStatusColor }};background:{{ $reqStatusColor }}18;">
-                    {{ ucwords(str_replace('_', ' ', $leadRequest->status)) }}
-                </span>
-            </div>
-        </div>
-    </div>
-    @endif
-
-    {{-- Trial / team info (spans remaining cols) --}}
-    @if ($trial)
-    <div class="md:col-span-{{ $leadRequest ? '5' : '8' }} bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm">
-        <div class="flex items-center justify-between mb-5">
-            <h3 class="font-headline-md text-headline-md text-on-surface font-bold">Trial Details</h3>
-            @if ($trialLabel)
-            <span class="font-label-md text-[10px] font-bold px-2 py-0.5 rounded-full"
-                  style="background:rgba(0,88,190,0.08);color:#0058be;">
-                {{ $trialLabel }}
-            </span>
-            @endif
-        </div>
-        <div class="space-y-3">
-            @if ($trial->assignedTalent)
-            <div class="flex justify-between items-center">
-                <span class="font-label-md text-label-md text-outline">Assigned Talent</span>
-                <span class="font-label-md text-label-md font-semibold text-on-surface flex items-center gap-1.5">
-                    <span class="w-2 h-2 bg-status-active rounded-full"></span>
-                    {{ $trial->assignedTalent->name }}
-                </span>
-            </div>
-            @endif
-            @if ($trial->assignedManager)
-            <div class="flex justify-between items-center">
-                <span class="font-label-md text-label-md text-outline">Your Manager</span>
-                <span class="font-label-md text-label-md font-semibold text-on-surface">
-                    {{ $trial->assignedManager->name }}
-                </span>
-            </div>
-            @endif
-            @if ($estimate)
-            <div class="flex justify-between items-center">
-                <span class="font-label-md text-label-md text-outline">Price Estimate</span>
-                <span class="font-label-md text-label-md font-semibold text-on-surface">
-                    {{ $estimate->currency ?? 'USD' }} {{ number_format($estimate->estimated_amount ?? 0, 2) }}/mo
-                </span>
-            </div>
-            @endif
-            @if ($trial->started_at)
-            <div class="flex justify-between items-center">
-                <span class="font-label-md text-label-md text-outline">Trial Started</span>
-                <span class="font-label-md text-label-md font-semibold text-on-surface">
-                    {{ $trial->started_at->format('d M Y') }}
-                </span>
-            </div>
-            @endif
-        </div>
-    </div>
-    @endif
-
-    {{-- Workspace access card (spans 3 cols) --}}
-    @if ($workspace)
-    <div class="md:col-span-3 bg-white p-card-padding rounded-xl border border-border-subtle shadow-sm flex flex-col">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold"
-                 style="background-color:#0058be;">
-                {{ strtoupper(substr($workspace->name, 0, 2)) }}
-            </div>
-            <div>
-                <p class="font-label-md text-label-md font-semibold text-on-surface">{{ Str::limit($workspace->name, 20) }}</p>
-                <p class="font-label-md text-[10px] text-outline">{{ $workspace->workspace_code }}</p>
-            </div>
-        </div>
-        <a href="{{ route('workspace.show', $workspace) }}"
-           class="mt-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-secondary text-white rounded-lg font-label-md text-label-md hover:brightness-110 transition-all">
-            <span class="material-symbols-outlined" style="font-size:16px;">open_in_new</span>
-            Open Workspace
-        </a>
-    </div>
-    @endif
-
-</div>
-
-{{-- ── Next steps cards ─────────────────────────────────────────────────── --}}
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-    @if ($workspace)
-    <a href="{{ route('workspace.show', $workspace) }}"
-       class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm hover:border-secondary/30 hover:shadow-md transition-all group">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
-             style="background:rgba(0,88,190,0.06);">
-            <span class="material-symbols-outlined text-secondary" style="font-size:18px;">workspaces</span>
-        </div>
-        <p class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-secondary transition-colors">
-            My Trial Workspace
-        </p>
-        <p class="font-label-md text-[10px] text-outline mt-0.5">View tasks and activity</p>
-    </a>
-    @endif
-
-    <a href="{{ route('profile.show') }}"
-       class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm hover:border-secondary/30 hover:shadow-md transition-all group">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
-             style="background:rgba(16,185,129,0.06);">
-            <span class="material-symbols-outlined text-status-active" style="font-size:18px;">person</span>
-        </div>
-        <p class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-secondary transition-colors">
-            Complete Profile
-        </p>
-        <p class="font-label-md text-[10px] text-outline mt-0.5">Update your details</p>
-    </a>
-
-    <div class="bg-white p-5 rounded-xl border border-border-subtle shadow-sm">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
-             style="background:rgba(139,92,246,0.06);">
-            <span class="material-symbols-outlined text-status-trial" style="font-size:18px;">support_agent</span>
-        </div>
-        <p class="font-label-md text-label-md font-semibold text-on-surface">GVOS Support</p>
-        <p class="font-label-md text-[10px] text-outline mt-0.5">Contact your dedicated team</p>
-    </div>
-
 </div>
 
 </x-layouts.gvos>

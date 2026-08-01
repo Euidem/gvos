@@ -7,6 +7,57 @@ Each entry: Date | Phase | What was done | Who / Tool
 
 ## Log
 
+### 2026-08-01 | Phase 28 | Full non-admin portal UX rebuild
+
+**Goal:** Make the non-admin portal intuitive, role-aware and cohesive. Presentation, information architecture and view-data plumbing only — no new features, routes, migrations or permission changes.
+
+**Files created:**
+
+| File | Purpose |
+|------|---------|
+| `docs/PORTAL_UX_AUDIT.md` | Measured audit of the live portal, every role and page |
+| `docs/PORTAL_UX_REDESIGN_SPEC.md` | Role journeys + IA + design system; **layout authority for the portal** |
+| `docs/PORTAL_UX_QA.md` | QA record |
+| `app/Support/Portal/PortalNav.php` | Role-aware sidebar groups + workspace tab resolver |
+| `resources/views/components/portal/btn.blade.php` | Action hierarchy (primary/secondary/ghost/danger) |
+| `resources/views/components/portal/metric-strip.blade.php` | Supporting numbers as a caption strip |
+| `resources/views/components/portal/attention-item.blade.php` | Named, deep-linked "needs attention" row |
+| `resources/views/components/portal/workspace-row.blade.php` | One row per workspace with attention badges |
+| `resources/views/components/portal/section.blade.php` | Grouping with or without a card border |
+
+**Files modified (source):** `resources/views/components/layouts/gvos.blade.php`; `components/portal/{page-header,section-card,stat-card,empty-state}.blade.php`; all six dashboards (`talent`, `line-manager`, `individual-client`, `business-client-admin`, `business-client-staff`, `active-lead`); `workspace/{index,show}`; `workspace/{tasks/index,tasks/show,chat/index,files/index,time-logs/index,reports/index,billing/index,vault/index,members/index}`; `notifications/index`; `settings/notifications`; `profile/edit`; `app/Http/Controllers/{DashboardController,WorkspaceController}.php`.
+
+**Migrations added:** none. **Routes added or renamed:** none.
+
+#### Key decisions
+
+**The shell was the root cause, not the pages.** Measurement showed the shell alone emitted five links to `/workspaces` and two to `/profile` on every page for every role, plus a decorative search box, a permanently disabled "Support" item, a "Quick Action" button that duplicated "Workspaces", and a "Clock In" button shown to clients and leads who cannot log time. Fixing the shell removed more duplication than any per-page change.
+
+**Navigation moved out of page bodies.** A workspace tab bar (Overview · Tasks · Messages · Files · Time · Reports · Team · Billing · Vault) now lives in the shell. Module pages previously hand-rolled their own cross-links and `arrow_back` affordances; those were deleted. Moving from Tasks to Files no longer requires a detour via the overview.
+
+**Tab visibility mirrors the controllers exactly.** `PortalNav::workspaceTabs()` encodes the real gates (observer is 403 on time logs, reports and vault; talent is 403 on billing), so navigation can never lead to a 403. Hiding a link is a usability decision — every destination is still guarded by its own controller. No authorization logic was touched.
+
+**Dashboards lead with work, not counts.** Each dashboard now opens with named, deep-linked items. The manager's review queue lists the actual submitted time entries, submitted tasks and unpublished reports rather than three numbers with no destination. Supporting metrics moved to a caption strip at the bottom of the page.
+
+**No new route for the review queue.** The brief asked for a manager "Review Queue" but also forbade new modules and route changes. It is implemented as an anchored block (`#review-queue`) on the manager dashboard, listing real items with deep links into the existing per-workspace pages.
+
+**Queries moved from Blade to controllers.** Every dashboard previously ran 6–10 unbounded queries inside an `@php` block, and `workspace/show` ran ~15 `count()` calls. These now live in `DashboardController` and `WorkspaceController@show` with eager loading, `limit()` on every list, and per-workspace attention counts derived in memory from already-fetched collections instead of querying inside the view loop.
+
+#### Bugs found and fixed
+
+1. **`/settings/notifications` returned HTTP 500 for every user.** The view called `route('profile.edit')`, which is not a defined route (only `profile.show` and `profile.update` exist). Reproduced against the pre-change code: `settings/notifications -> HTTP 500 … RouteNotFoundException`. Fixed under the "confirmed broken link" allowance.
+2. **Literal `&amp;` rendered as visible text** on the business-admin and staff dashboards — `&amp;` written inside a Blade echo, which escapes it a second time.
+3. **Money printed with no currency** — `number_format()` with no currency prefix produced a bare `1,980.00`. The controller now returns the currency alongside the amount.
+4. **Names truncated mid-word** in dashboard cards (`Str::limit(..., 16–24)`), e.g. "Executive Support Operat…". Truncation removed; layout handles overflow.
+5. **A disabled "Billing — Not available for this role" card** was rendered to talent on the workspace overview. Removed — the module is simply absent for roles that cannot use it.
+6. **An observer saw a "For approval" call to action** despite being read-only. The staff dashboard now detects observer-only membership and hides approval affordances.
+7. **Dead "GVOS Support" card** on the lead dashboard (styled as a link, no `href`). Removed.
+
+#### Preserved verbatim
+Route names, form actions, CSRF tokens, method spoofing, every authorization condition, billing restriction gates, vault reveal flow and rate limits, timer start/stop/complete, SortableJS Kanban behaviour, file validation and download authorization, notification scoping, invitation token handling and client data-visibility rules. Visual Repair v3 (CDN Tailwind + token fallbacks + safeguard div) retained; the new shell adds its own hand-written CSS for navigation so styling cannot depend on CDN JIT.
+
+---
+
 ### 2026-07-31 | Phase 27 | Demo environment preparation and team testing data
 
 **Goal:** A clean, realistic and repeatable demo environment for internal team testing. Data and tooling only — no product features, no schema changes.

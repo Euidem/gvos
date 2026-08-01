@@ -1,6 +1,31 @@
 # GVOS — UI Source of Truth Map
 
-**Status:** Active — Stitch export is the frontend source of truth as of 2026-05-31.
+**Status (updated 2026-08-01, Phase 28):**
+**`docs/PORTAL_UX_REDESIGN_SPEC.md` is the layout authority for the non-admin portal.**
+The Stitch export remains the reference for colour, typography and card styling, and is
+still the source of truth for the **auth screens** and as a visual reference for Filament.
+
+> **Why this changed.** The owner's Phase 28 feedback superseded the earlier assumption
+> that the Stitch layouts must be preserved. Stitch has no role-aware navigation, no
+> workspace sub-navigation and no attention-first dashboards — the three things the
+> redesign required. The per-screen mapping below is retained for historical reference and
+> for styling cues; it is no longer a fidelity target for portal layout.
+
+### Phase 28 portal structure (current)
+
+| Layer | Location |
+|-------|----------|
+| Role-aware navigation | `app/Support/Portal/PortalNav.php` |
+| Shell (sidebar, top bar, workspace tabs) | `resources/views/components/layouts/gvos.blade.php` |
+| Shared components | `resources/views/components/portal/*.blade.php` |
+| Dashboard data | `app/Http/Controllers/DashboardController.php` |
+| Workspace overview data | `app/Http/Controllers/WorkspaceController@show` |
+
+---
+
+## Historical map (pre-Phase 28)
+
+**Original status:** Stitch export was the frontend source of truth as of 2026-05-31.
 
 **Stitch Export Location:**
 `design-reference/stitch_gvos_operations_platform/` (extracted from `stitch_gvos_operations_platform (1).zip`)
@@ -169,9 +194,25 @@ non-admin portal pages instead of hand-rolling markup, so structure and spacing 
 consistent. They are token-compliant and CDN-Tailwind safe (status colors follow the
 established inline-style banner pattern).
 
+### Phase 28 additions / changes
+
 | Component | Usage |
 |-----------|-------|
-| `<x-portal.page-header title subtitle badge badgeType>` + `<x-slot:actions>` | Standard page title block (Rule 9 compliant — no breadcrumbs) |
+| `<x-portal.btn href variant icon size>` | Action hierarchy: `primary` (once per page above the fold), `secondary`, `ghost`, `danger` |
+| `<x-portal.metric-strip :metrics=[…]>` | Supporting numbers as a caption strip — replaces walls of stat cards. Each entry: `label`, `value`, optional `href`, `tone` (`default`/`urgent`/`warn`/`good`/`muted`) |
+| `<x-portal.attention-item href title meta tone badge icon action>` | A row in any "needs attention" block. Always names the item and links to it |
+| `<x-portal.workspace-row :workspace :meta :alerts>` | One row per workspace, with attention badges |
+| `<x-portal.section title subtitle :card :flush id>` + `<x-slot:actions>` | Grouping. `:card="false"` groups with heading + space only (no border) |
+| `<x-portal.page-header … eyebrow eyebrowHref divider>` | **Extended**: `eyebrow` renders the single back affordance / workspace breadcrumb; emits `<h1>` |
+
+Changed in Phase 28: `section-card` heading dropped to 15 px `<h2>`; `stat-card` label is no
+longer uppercase; `empty-state` no longer renders a decorative icon tile.
+
+### Original library
+
+| Component | Usage |
+|-----------|-------|
+| `<x-portal.page-header title subtitle badge badgeType>` + `<x-slot:actions>` | Standard page title block |
 | `<x-portal.stat-card label value hint icon accent valueClass hintClass href progress progressColor>` | Dashboard metric card — compact, value near top, optional progress bar |
 | `<x-portal.action-card href icon title description>` | Quick-action / shortcut card |
 | `<x-portal.empty-state icon title message compact>` + `<x-slot:action>` | Empty states (in-card use `compact`) |

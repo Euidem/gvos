@@ -1,51 +1,25 @@
 <x-layouts.gvos :title="$workspace->name . ' — Weekly Reports'">
 {{-- Stitch reference: weekly_report_gvos/code.html — Phase 26 Batch 3 --}}
 
-    {{-- ── Page header ─────────────────────────────────────────────────── --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-            <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-1">
-                <a href="{{ route('workspace.show', $workspace) }}" class="hover:text-secondary transition-colors">{{ $workspace->name }}</a>
-                <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
-                <span>Weekly Reports</span>
-            </div>
-            <h2 class="font-headline-md text-headline-md text-on-surface font-bold flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary" style="font-size:22px;">summarize</span>
-                Weekly Reports
-            </h2>
-            <p class="font-label-md text-label-md text-outline mt-0.5">
-                {{ $workspace->workspace_code }}
-                @if ($isClient) &middot; Showing published reports only @endif
-            </p>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
+    {{-- ── Page header (Phase 28: module nav lives in the shell tab bar) ─── --}}
+    <x-portal.page-header
+        title="Reports"
+        :subtitle="$isClient
+            ? 'Weekly progress updates published by your team.'
+            : 'Weekly progress reports for this workspace.'"
+        :eyebrow="$workspace->name"
+        :eyebrow-href="route('workspace.show', $workspace)">
+        <x-slot:actions>
             @if ($canCreate)
-                <a href="{{ route('workspace.reports.generate', $workspace) }}"
-                   class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:brightness-110"
-                   style="background-color:#0058be;">
-                    <span class="material-symbols-outlined" style="font-size:16px;">auto_awesome</span>
+                <x-portal.btn variant="primary" icon="auto_awesome" :href="route('workspace.reports.generate', $workspace)">
                     Generate Report
-                </a>
-                <a href="{{ route('workspace.reports.create', $workspace) }}"
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
-                   style="border-color:#0058be;color:#0058be;">
-                    <span class="material-symbols-outlined" style="font-size:14px;">edit_note</span>
+                </x-portal.btn>
+                <x-portal.btn variant="secondary" icon="edit_note" :href="route('workspace.reports.create', $workspace)">
                     Write Manually
-                </a>
+                </x-portal.btn>
             @endif
-            <a href="{{ route('workspace.time-logs.index', $workspace) }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
-               style="border-color:#0058be;color:#0058be;">
-                <span class="material-symbols-outlined" style="font-size:14px;">schedule</span>
-                Time Logs
-            </a>
-            <a href="{{ route('workspace.show', $workspace) }}"
-               class="inline-flex items-center gap-1.5 text-secondary font-label-md text-label-md hover:brightness-110 transition-all">
-                <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
-                Workspace
-            </a>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-portal.page-header>
 
     {{-- ── Flash messages ───────────────────────────────────────────────── --}}
     @if (session('success'))
